@@ -411,15 +411,23 @@ Returns or sets the type of underline applied to the font.
                     for (int index = row_tc_starting; index <= rngLast.Row; index++)
                     {
                         Object cell_value2;
+                        String key, group, summary, status, links;
 
-                        // Make sure Key of TC is not empty
                         cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Key]].Value2;
-                        if (cell_value2 == null) { break; }
-                        String key = cell_value2.ToString(),
-                                        group = WorkingSheet.Cells[index, col_name_list[TestCase.col_Group]].Value2.ToString(),
-                                        summary = WorkingSheet.Cells[index, col_name_list[TestCase.col_Summary]].Value2.ToString(),
-                                        status = WorkingSheet.Cells[index, col_name_list[TestCase.col_Group]].Value2.ToString(),
-                                        links = WorkingSheet.Cells[index, col_name_list[TestCase.col_Summary]].Value2.ToString();
+                        key = (cell_value2==null)?"":cell_value2.ToString();
+
+                        cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Group]].Value2;
+                        group = (cell_value2==null)?"":cell_value2.ToString();
+
+                        cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Summary]].Value2;
+                        summary = (cell_value2==null)?"":cell_value2.ToString();
+
+                        cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Status]].Value2;
+                        status = (cell_value2==null)?"":cell_value2.ToString();
+
+                        cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Links]].Value2;
+                        links = (cell_value2==null)?"":cell_value2.ToString();
+
                         ret_tc_list.Add(new TestCase(key, group, summary, status, links));
                     }
                 }
@@ -497,45 +505,21 @@ Returns or sets the type of underline applied to the font.
         //
         static public void ProcessTCJiraAndSaveToReport(string tclist_filename, string report_filename, Dictionary<string, List<StyleString>> bug_list)
         {
-            Dictionary<string, Object> testgourp_issue_list = new Dictionary<string, Object>();
+            testcase_list = GenerateTestCaseList(tclist_filename);
 
-            // Open excel (read-only & corrupt-load)
-            Excel.Application myTCExcel = ExcelAction.OpenPreviousExcel(tclist_filename);
-            //Excel.Application myTCExcel = OpenOridnaryExcel(tclist_filename);
-            if (myTCExcel != null)
+            if (testcase_list.Count > 0)
             {
-                Worksheet tc_worksheet = ExcelAction.Find_Worksheet(myTCExcel, sheet_TC_Jira);
-                if (tc_worksheet != null)
+                // Re-arrange test-case list into dictionary of summary/links pair
+                Dictionary<String, String> group_note_issue = new Dictionary<String, String>();
+                foreach (TestCase tc in testcase_list)
                 {
-                    const int tc_row_column_naming = 1;
-                    Dictionary<string, int> tc_col_name_list = CreateTableColumnIndex(tc_worksheet, tc_row_column_naming);
-
-                    // Get the last (row,col) of excel
-                    Range rngLast = tc_worksheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
-
-                    const string col_Key = "Key";
-                    const string col_Links = "Links";
-                    const int row_tc_starting = 2;
-                    for (int index = row_tc_starting; index <= rngLast.Row; index++)
+                    String key = tc.Summary;
+                    if(key!="")
                     {
-                        Object cell_value2 = tc_worksheet.Cells[index, tc_col_name_list[col_Key]].Value2;
-                        // Make sure Key of TC is not empty
-                        if (cell_value2 != null)
-                        {
-                            String tc_group = cell_value2.ToString();
-                            if (tc_group.Contains(TC_KEY))
-                            {
-                                testgourp_issue_list.Add(tc_group, tc_worksheet.Cells[index, tc_col_name_list[col_Links]].Value2);
-                            }
-                        }
+                        group_note_issue.Add(key, tc.Links);
                     }
                 }
-            }
-            ExcelAction.CloseExcelWithoutSaveChanges(myTCExcel);
-            myTCExcel = null;
 
-            if (testgourp_issue_list.Count > 0)
-            {
                 //Excel.Application myReportExcel = ExcelAction.OpenPreviousExcel(report_filename);
                 Excel.Application myReportExcel = ExcelAction.OpenOridnaryExcel(report_filename);
                 if (myReportExcel != null)
@@ -561,10 +545,8 @@ Returns or sets the type of underline applied to the font.
                             Object cell_value2 = result_worksheet.Cells[index, col_group].Value2;
                             if (cell_value2 == null) { break; }
                             // Check if empty issue-list in this test_group
-                            cell_value2 = testgourp_issue_list[cell_value2.ToString()];
-                            if (cell_value2== null) { break; }
-                            // extend non-empty issue-list into style strings
-                            List<StyleString> str_list = ExtendIssueDescription(cell_value2.ToString(), bug_list);
+                            String links = group_note_issue[cell_value2.ToString()];
+                            List<StyleString> str_list = ExtendIssueDescription(links, bug_list);
                             Range rng = result_worksheet.Cells[index, col_issue];
                             WriteSytleString(ref rng, str_list);
                         }
