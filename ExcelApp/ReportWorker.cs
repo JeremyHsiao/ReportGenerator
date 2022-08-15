@@ -162,14 +162,14 @@ Returns or sets the type of underline applied to the font.
 
         public String Summary   // property
         {
-            get { return Summary; }   // get method
-            set { Summary = value; }  // set method
+            get { return summary; }   // get method
+            set { summary = value; }  // set method
         }
 
         public String Status   // property
         {
-            get { return Status; }   // get method
-            set { Status = value; }  // set method
+            get { return status; }   // get method
+            set { status = value; }  // set method
         }
 
         public String Links   // property
@@ -545,7 +545,7 @@ Returns or sets the type of underline applied to the font.
                             Object cell_value2 = result_worksheet.Cells[index, col_group].Value2;
                             if (cell_value2 == null) { break; }
                             // Check if empty issue-list in this test_group
-                            String links = group_note_issue[cell_value2.ToString()];
+                            String links = group_note_issue[cell_value2.ToString().Trim()];
                             List<StyleString> str_list = ExtendIssueDescription(links, bug_list);
                             Range rng = result_worksheet.Cells[index, col_issue];
                             WriteSytleString(ref rng, str_list);
