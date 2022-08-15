@@ -1,4 +1,4 @@
-﻿namespace WindowsFormsApplication1
+﻿namespace ExcelReportApplication
 {
     partial class Form1
     {
