@@ -13,136 +13,6 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace WindowsFormsApplication1
 {
-    /*  Font property
-     * 
-        Background	
-        Returns or sets the type of background for text used in charts. Can be one of the XlBackground constants.
-
-        Bold	
-        True if the font is bold.
-
-        Color	
-        Returns or sets the primary color of the font.
-
-        ColorIndex	
-        Returns or sets the color of the font.
-
-        Creator	
-        Returns a 32-bit integer that indicates the application in which this object was created.
-
-        FontStyle	
-        Returns or sets the font style.
-
-        Italic	
-        True if the font style is italic.
-
-        OutlineFont	
-        True if the font is an outline font.
-
-        Shadow	
-        True if the font is a shadow font or if the object has a shadow.
-
-        Size	
-        Returns or sets the size of the font.
-
-        Strikethrough	
-        True if the font is struck through with a horizontal line.
-
-        Subscript	
-        True if the font is formatted as subscript. False by default.
-
-        Superscript	
-        True if the font is formatted as superscript. False by default.
-
-        ThemeColor	
-        Returns or sets the theme color in the applied color scheme that is associated with the specified object. Read/write Object.
-
-        ThemeFont	
-        Returns or sets the theme font in the applied font scheme that is associated with the specified object. Read/write XlThemeFont.
-
-        TintAndShade	
-        Returns or sets a Single that lightens or darkens a color.
-    v
-        Underline	
-        Returns or sets the type of underline applied to the font.
-     */
-
-    public class StyleString
-    {
-        private String text;
-        private String font_name;
-        private Color font_color;
-        private int font_size;
-        private bool font_property_changed;
-        
-        public String Text   // property
-        {
-            get { return text; }   // get method
-            set { text = value; }  // set method
-        }
-        public String Font   // property
-        {
-            get { return font_name; }   // get method
-            set { font_name = value; font_property_changed = true; }  // set method
-        }
-        public Color Color   // property
-        {
-            get { return font_color; }   // get method
-            set { font_color = value; font_property_changed = true; }  // set method
-        }
-        public int Size   // property
-        {
-            get { return font_size; }   // get method
-            set { font_size = value; font_property_changed = true; }  // set method
-        }
-        public bool FontPropertyChanged  // property
-        {
-            get { return font_property_changed; }   // get method
-        }
-
-        static public string default_font = "Gill Sans MT";
-        static public int default_size = 10;
-        static public Color default_color = System.Drawing.Color.Black;
-            
-        public StyleString()
-        {
-            text = "";
-            SetDefaultFontProperty();
-        }
-
-        public StyleString(string string_text)
-        {
-            text = string_text;
-            SetDefaultFontProperty();
-        }
-
-        public StyleString(string string_text, Color string_color)
-        {
-            text = string_text;
-            font_color = string_color;
-            font_name = default_font;
-            font_size = default_size;
-            font_property_changed = true;
-        }
-
-        public StyleString(string string_text, Color string_color, string string_fontname, int string_fontsize)
-        {
-            text = string_text;
-            font_color = string_color;
-            font_name = string_fontname;
-            font_size = string_fontsize;
-            font_property_changed = true;
-        }
-
-        public void SetDefaultFontProperty()
-        {
-            font_color = Color.Black;
-            font_name = default_font;
-            font_size = default_size;
-            font_property_changed = false;
-        }
-    }
-
     public partial class Form1 : Form
     {
         public Form1()
@@ -497,4 +367,135 @@ namespace WindowsFormsApplication1
             GC.Collect();
         }
     }
+
+    /*  Font property
+ * 
+    Background	
+    Returns or sets the type of background for text used in charts. Can be one of the XlBackground constants.
+
+    Bold	
+    True if the font is bold.
+
+    Color	
+    Returns or sets the primary color of the font.
+
+    ColorIndex	
+    Returns or sets the color of the font.
+
+    Creator	
+    Returns a 32-bit integer that indicates the application in which this object was created.
+
+    FontStyle	
+    Returns or sets the font style.
+
+    Italic	
+    True if the font style is italic.
+
+    OutlineFont	
+    True if the font is an outline font.
+
+    Shadow	
+    True if the font is a shadow font or if the object has a shadow.
+
+    Size	
+    Returns or sets the size of the font.
+
+    Strikethrough	
+    True if the font is struck through with a horizontal line.
+
+    Subscript	
+    True if the font is formatted as subscript. False by default.
+
+    Superscript	
+    True if the font is formatted as superscript. False by default.
+
+    ThemeColor	
+    Returns or sets the theme color in the applied color scheme that is associated with the specified object. Read/write Object.
+
+    ThemeFont	
+    Returns or sets the theme font in the applied font scheme that is associated with the specified object. Read/write XlThemeFont.
+
+    TintAndShade	
+    Returns or sets a Single that lightens or darkens a color.
+v
+    Underline	
+    Returns or sets the type of underline applied to the font.
+ */
+
+    public class StyleString
+    {
+        private String text;
+        private String font_name;
+        private Color font_color;
+        private int font_size;
+        private bool font_property_changed;
+
+        public String Text   // property
+        {
+            get { return text; }   // get method
+            set { text = value; }  // set method
+        }
+        public String Font   // property
+        {
+            get { return font_name; }   // get method
+            set { font_name = value; font_property_changed = true; }  // set method
+        }
+        public Color Color   // property
+        {
+            get { return font_color; }   // get method
+            set { font_color = value; font_property_changed = true; }  // set method
+        }
+        public int Size   // property
+        {
+            get { return font_size; }   // get method
+            set { font_size = value; font_property_changed = true; }  // set method
+        }
+        public bool FontPropertyChanged  // property
+        {
+            get { return font_property_changed; }   // get method
+        }
+
+        static public string default_font = "Gill Sans MT";
+        static public int default_size = 10;
+        static public Color default_color = System.Drawing.Color.Black;
+
+        public StyleString()
+        {
+            text = "";
+            SetDefaultFontProperty();
+        }
+
+        public StyleString(string string_text)
+        {
+            text = string_text;
+            SetDefaultFontProperty();
+        }
+
+        public StyleString(string string_text, Color string_color)
+        {
+            text = string_text;
+            font_color = string_color;
+            font_name = default_font;
+            font_size = default_size;
+            font_property_changed = true;
+        }
+
+        public StyleString(string string_text, Color string_color, string string_fontname, int string_fontsize)
+        {
+            text = string_text;
+            font_color = string_color;
+            font_name = string_fontname;
+            font_size = string_fontsize;
+            font_property_changed = true;
+        }
+
+        public void SetDefaultFontProperty()
+        {
+            font_color = Color.Black;
+            font_name = default_font;
+            font_size = default_size;
+            font_property_changed = false;
+        }
+    }
+
 }
