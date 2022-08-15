@@ -303,8 +303,32 @@ Returns or sets the type of underline applied to the font.
             return extended_str;
         }
 
-        static public void CreateTestReport()
+        static public void WriteSytleString(ref Range input_range, List<StyleString> sytle_string_list)
         {
+            // Fill the text into excel cell with default font settings.
+            string txt_str = "";
+            foreach (StyleString style_str in sytle_string_list)
+            {
+                txt_str += style_str.Text;
+            }
+            input_range.Value2 = txt_str;
+            input_range.Characters.Font.Name = StyleString.default_font;
+            input_range.Characters.Font.Size = StyleString.default_size;
+            input_range.Characters.Font.Color = StyleString.default_color;
+
+            // Change font settings when required for the string portion
+            int chr_index = 1;
+            foreach (StyleString style_str in sytle_string_list)
+            {
+                int len = style_str.Text.Length;
+                if (style_str.FontPropertyChanged == true)
+                {
+                    input_range.get_Characters(chr_index, len).Font.Name = style_str.Font;
+                    input_range.get_Characters(chr_index, len).Font.Color = style_str.Color;
+                    input_range.get_Characters(chr_index, len).Font.Size = style_str.Size;
+                }
+                chr_index += len;
+            }
         }
 
         static public void ProcessTCJiraExcel(string tclist_filename, Dictionary<string, List<StyleString>> bug_list)
@@ -343,30 +367,7 @@ Returns or sets the type of underline applied to the font.
                         {
                             List<StyleString> str_list = ExtendIssueDescription(cell_value2.ToString(), bug_list);
 
-                            // Fill the text into excel cell with default font settings.
-                            string txt_str = "";
-                            foreach (StyleString style_str in str_list)
-                            {
-                                txt_str += style_str.Text;
-                            }
-                            rng.Value2 = txt_str;
-                            rng.Characters.Font.Name = StyleString.default_font;
-                            rng.Characters.Font.Size = StyleString.default_size;
-                            rng.Characters.Font.Color = StyleString.default_color;
-
-                            // Change font settings when required for the string portion
-                            int chr_index = 1;
-                            foreach (StyleString style_str in str_list)
-                            {
-                                int len = style_str.Text.Length;
-                                if (style_str.FontPropertyChanged == true)
-                                {
-                                    rng.get_Characters(chr_index, len).Font.Name = style_str.Font;
-                                    rng.get_Characters(chr_index, len).Font.Color = style_str.Color;
-                                    rng.get_Characters(chr_index, len).Font.Size = style_str.Size;
-                                }
-                                chr_index += len;
-                            }
+                            WriteSytleString(ref rng, str_list);
                         }
                     }
 
