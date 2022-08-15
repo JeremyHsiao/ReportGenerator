@@ -163,6 +163,27 @@ Returns or sets the type of underline applied to the font.
             return myBugExcel;
         }
 
+        static public void CloseExcelWithoutSaveChanges(Excel.Application myExcel)
+        {
+            myExcel.ActiveWorkbook.Close(SaveChanges: false);
+            myExcel.Quit();
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(myExcel);
+        }
+
+        static public void SaveChangesAndCloseExcel(Excel.Application myExcel)
+        {
+            myExcel.ActiveWorkbook.Close(SaveChanges: true);
+            myExcel.Quit();
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(myExcel);
+        }
+
+        static public void SaveChangesAndCloseExcel(Excel.Application myExcel, String filename)
+        {
+            myExcel.ActiveWorkbook.Close(SaveChanges: true, Filename: filename);
+            myExcel.Quit();
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(myExcel);
+        }
+
         // List all workshees within excel
         static public void ListSheets(Excel.Application curExcel)
         {
@@ -310,12 +331,9 @@ Returns or sets the type of underline applied to the font.
                 if (WorkingSheet != null)
                 {
                     myBug_list = CreateBugList(WorkingSheet);
-                    myBugExcel.ActiveWorkbook.Close(SaveChanges: false);
                 }
 
-                myBugExcel.Quit();
-                //釋放Excel資源 
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(myBugExcel);
+                ExcelAction.CloseExcelWithoutSaveChanges(myBugExcel);
                 WorkingSheet = null;
                 myBugExcel = null;
             }
@@ -434,14 +452,19 @@ Returns or sets the type of underline applied to the font.
                         int file_wo_ext_len = tclist_filename.Length - ext_str.Length;
                         updated_tc_list_filename = tclist_filename.Substring(0, file_wo_ext_len) + "_" +
                                                             DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
-                        myTCExcel.ActiveWorkbook.Close(SaveChanges: true, Filename: updated_tc_list_filename);
                     }
-
+                    else
+                    {
+                        updated_tc_list_filename = tclist_filename + "_" +
+                                                            DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+                    }
+                    ExcelAction.SaveChangesAndCloseExcel(myTCExcel, updated_tc_list_filename);
                 }
-
-                myTCExcel.Quit();
-                //釋放Excel資源 
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(myTCExcel);
+                else
+                {
+                    // worksheet not found, close immediately
+                    ExcelAction.CloseExcelWithoutSaveChanges(myTCExcel);
+                }
                 WorkingSheet = null;
                 myTCExcel = null;
             }
