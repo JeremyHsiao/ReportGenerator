@@ -146,6 +146,7 @@ Returns or sets the type of underline applied to the font.
         // constant strings for worksheet used in this application.
         const string sheet_BUG_General_Result = "general_report";
         const string sheet_TC_Jira = "TC_BenQ27105_Result";
+        const string sheet_Report_Result = "Result";
 
         // Key value
         const string BUG_KEY = "BENSE";
@@ -395,6 +396,106 @@ Returns or sets the type of underline applied to the font.
                 myTCExcel = null;
             }
         }
-    }
 
+        //
+        // To Be tested
+        //
+        static public void ProcessTCJiraAndSaveToReport(string tclist_filename, string report_filename, Dictionary<string, List<StyleString>> bug_list)
+        {
+            Dictionary<string, Object> testgourp_issue_list = new Dictionary<string, Object>();
+
+            // Open excel (read-only & corrupt-load)
+            Excel.Application myTCExcel = ExcelAction.OpenPreviousExcel(tclist_filename);
+            //Excel.Application myTCExcel = OpenOridnaryExcel(tclist_filename);
+            if (myTCExcel != null)
+            {
+                Worksheet tc_worksheet = ExcelAction.Find_Worksheet(myTCExcel, sheet_TC_Jira);
+                if (tc_worksheet != null)
+                {
+                    const int tc_row_column_naming = 1;
+                    Dictionary<string, int> tc_col_name_list = CreateTableColumnIndex(tc_worksheet, tc_row_column_naming);
+
+                    // Get the last (row,col) of excel
+                    Range rngLast = tc_worksheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
+
+                    const string col_Key = "Key";
+                    const string col_Links = "Links";
+                    const int row_tc_starting = 2;
+                    for (int index = row_tc_starting; index <= rngLast.Row; index++)
+                    {
+                        Object cell_value2 = tc_worksheet.Cells[index, tc_col_name_list[col_Key]].Value2;
+                        // Make sure Key of TC is not empty
+                        if (cell_value2 != null)
+                        {
+                            String tc_group = cell_value2.ToString();
+                            if (tc_group.Contains(TC_KEY))
+                            {
+                                testgourp_issue_list.Add(tc_group, tc_worksheet.Cells[index, tc_col_name_list[col_Links]].Value2);
+                            }
+                        }
+                    }
+                }
+            }
+            ExcelAction.CloseExcelWithoutSaveChanges(myTCExcel);
+            myTCExcel = null;
+
+            if (testgourp_issue_list.Count > 0)
+            {
+                //Excel.Application myReportExcel = ExcelAction.OpenPreviousExcel(report_filename);
+                Excel.Application myReportExcel = ExcelAction.OpenOridnaryExcel(report_filename);
+                if (myReportExcel != null)
+                {
+                    Worksheet result_worksheet = ExcelAction.Find_Worksheet(myReportExcel, sheet_Report_Result);
+                    if (result_worksheet != null)
+                    {
+                        //const int result_row_column_naming = 5;
+                        //const string col_Key = "TEST   ITEM";
+                        //const string col_Links = "Links";
+                        //Dictionary<string, int> result_col_name_list = CreateTableColumnIndex(result_worksheet, result_row_column_naming);
+                        
+                        // Get the last (row,col) of excel
+                        Range rngLast = result_worksheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
+
+                        const int col_group = 1; // column "A"
+                        const int col_issue = 3; // column "C"
+                        const int row_result_starting = 6; // row starting from 6
+
+                        for (int index = row_result_starting; index <= rngLast.Row; index++)
+                        {
+                            // find out which test_group
+                            Object cell_value2 = result_worksheet.Cells[index, col_group].Value2;
+                            if (cell_value2 == null) { break; }
+                            // Check if empty issue-list in this test_group
+                            cell_value2 = testgourp_issue_list[cell_value2.ToString()];
+                            if (cell_value2== null) { break; }
+                            // extend non-empty issue-list into style strings
+                            List<StyleString> str_list = ExtendIssueDescription(cell_value2.ToString(), bug_list);
+                            Range rng = result_worksheet.Cells[index, col_issue];
+                            WriteSytleString(ref rng, str_list);
+                        }
+
+                        // Save as another file //yyyyMMddHHmmss
+                        string updated_report_filename, ext_str = Path.GetExtension(report_filename);
+                        if (ext_str != null)
+                        {
+                            int file_wo_ext_len = tclist_filename.Length - ext_str.Length;
+                            updated_report_filename = report_filename.Substring(0, file_wo_ext_len) + "_" +
+                                                            DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+                        }
+                        else
+                        {
+                            updated_report_filename = report_filename + "_" +
+                                                            DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+                        }
+                        ExcelAction.SaveChangesAndCloseExcel(myReportExcel, updated_report_filename);
+                    }
+                    else
+                    {
+                        // worksheet not found, close immediately
+                        ExcelAction.CloseExcelWithoutSaveChanges(myReportExcel);
+                    }
+                }
+            }
+        }
+    }
 }
