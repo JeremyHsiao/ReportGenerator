@@ -439,65 +439,90 @@ Returns or sets the type of underline applied to the font.
 
         static public void ProcessTCJiraExcel(string tclist_filename, Dictionary<string, List<StyleString>> bug_list)
         {
-            // Open excel (read-only & corrupt-load)
-            Excel.Application myTCExcel = ExcelAction.OpenPreviousExcel(tclist_filename);
-            //Excel.Application myTCExcel = OpenOridnaryExcel(tclist_filename);
-            if (myTCExcel != null)
+            testcase_list = GenerateTestCaseList(tclist_filename);
+
+            if (testcase_list.Count > 0)
             {
-                Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myTCExcel, sheet_TC_Jira);
-                if (WorkingSheet != null)
+                // Re-arrange test-case list into dictionary of key/links pair
+                Dictionary<String, String> group_note_issue = new Dictionary<String, String>();
+                foreach (TestCase tc in testcase_list)
                 {
-                    const int row_column_naming = 1;
-                    Dictionary<string, int> col_name_list = CreateTableColumnIndex(WorkingSheet, row_column_naming);
-
-                    // Get the last (row,col) of excel
-                    Range rngLast = WorkingSheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
-
-                    // Visit all rows and replace Bug-ID with long description of Bug.
-                    const int row_tc_starting = 2;
-                    for (int index = row_tc_starting; index <= rngLast.Row; index++)
+                    String key = tc.Key;
+                    if (key != "")
                     {
-                        Object cell_value2;
-
-                        // Make sure Key of TC is not empty
-                        cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Key]].Value2;
-                        if (cell_value2 == null) { break; }
-                        if (cell_value2.ToString().Contains(TC_KEY) == false) { break; }
-
-                        // If Links is not empty, extend bug key into long string with font settings
-                        Range rng = WorkingSheet.Cells[index, col_name_list[TestCase.col_Links]];
-                        cell_value2 = rng.Value2;
-                        if (cell_value2 != null)
-                        {
-                            List<StyleString> str_list = ExtendIssueDescription(cell_value2.ToString(), bug_list);
-
-                            WriteSytleString(ref rng, str_list);
-                        }
+                        group_note_issue.Add(key, tc.Links);
                     }
+                }
 
-                    // Save as another file //yyyyMMddHHmmss
-                    string updated_tc_list_filename, ext_str = Path.GetExtension(tclist_filename);
-                    if (ext_str != null)
-                    {
-                        int file_wo_ext_len = tclist_filename.Length - ext_str.Length;
-                        updated_tc_list_filename = tclist_filename.Substring(0, file_wo_ext_len) + "_" +
-                                                            DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
-                    }
-                    else
-                    {
-                        updated_tc_list_filename = tclist_filename + "_" +
-                                                            DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
-                    }
-                    ExcelAction.SaveChangesAndCloseExcel(myTCExcel, updated_tc_list_filename);
+                // Copy tc file to another file
+                // 1. generate a filename
+                string dest_filename, ext_str = Path.GetExtension(tclist_filename);
+                if (ext_str != null)
+                {
+                    int file_wo_ext_len = tclist_filename.Length - ext_str.Length;
+                    dest_filename = tclist_filename.Substring(0, file_wo_ext_len); 
                 }
                 else
                 {
-                    // worksheet not found, close immediately
-                    ExcelAction.CloseExcelWithoutSaveChanges(myTCExcel);
+                    dest_filename = tclist_filename;
                 }
-                WorkingSheet = null;
-                myTCExcel = null;
+                dest_filename += "_" + DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+                // 2. Copy Excel
+                File.Copy(tclist_filename, dest_filename);
+
+                // 3. Write to the other file
+                if (!File.Exists(dest_filename))
+                {
+                    // Open excel (read-only & corrupt-load)
+                    Excel.Application myTCExcel = ExcelAction.OpenPreviousExcel(dest_filename);
+                    //Excel.Application myTCExcel = OpenOridnaryExcel(dest_filename);
+                    if (myTCExcel != null)
+                    {
+                        Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myTCExcel, sheet_TC_Jira);
+                        if (WorkingSheet != null)
+                        {
+                            const int row_column_naming = 1;
+                            Dictionary<string, int> col_name_list = CreateTableColumnIndex(WorkingSheet, row_column_naming);
+
+                            // Get the last (row,col) of excel
+                            Range rngLast = WorkingSheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
+
+                            // Visit all rows and replace Bug-ID with long description of Bug.
+                            const int row_tc_starting = 2;
+                            for (int index = row_tc_starting; index <= rngLast.Row; index++)
+                            {
+                                Object cell_value2;
+
+                                // Make sure Key of TC is not empty
+                                cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Key]].Value2;
+                                if (cell_value2 == null) { break; }
+                                String key = cell_value2.ToString();
+                                if (key.Contains(TC_KEY) == false) { break; }
+
+                                // If Links is not empty, extend bug key into long string with font settings
+                                Range rng = WorkingSheet.Cells[index, col_name_list[TestCase.col_Links]];
+                                cell_value2 = rng.Value2;
+                                if (cell_value2 != null)
+                                {
+                                    List<StyleString> str_list = ExtendIssueDescription(group_note_issue[key], bug_list);
+
+                                    WriteSytleString(ref rng, str_list);
+                                }
+                            }
+
+                            ExcelAction.SaveChangesAndCloseExcel(myTCExcel, dest_filename);
+                        }
+                        else
+                        {
+                            // worksheet not found, close immediately
+                            ExcelAction.CloseExcelWithoutSaveChanges(myTCExcel);
+                        }
+                        WorkingSheet = null;
+                        myTCExcel = null;
+                    }
+                }
             }
+
         }
 
         //
