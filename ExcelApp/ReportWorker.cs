@@ -206,7 +206,8 @@ Returns or sets the type of underline applied to the font.
         const string BUG_KEY = "BENSE";
         const string TC_KEY = "TCBEN";
 
-        static public List<TestCase> testcase_list = new List<TestCase> ();
+        static public Dictionary<string, List<StyleString>> global_bug_list = new Dictionary<string, List<StyleString>>();
+        static public List<TestCase> global_testcase_list = new List<TestCase> ();
 
         static public Dictionary<string, int> CreateTableColumnIndex(Worksheet bug_worksheet, int naming_row)
         {
@@ -224,7 +225,7 @@ Returns or sets the type of underline applied to the font.
             return col_name_list;
         }
 
-        static public Dictionary<string, List<StyleString>> CreateBugList(Worksheet bug_worksheet)
+        static public Dictionary<string, List<StyleString>> CreateBugListFromBugJiraFile(Worksheet bug_worksheet)
         {
             const string col_Key = "Key";
             const string col_Summary = "Summary";
@@ -300,7 +301,7 @@ Returns or sets the type of underline applied to the font.
             return bug_list;
         }
 
-        static public Dictionary<string, List<StyleString>> ProcessJiraBugFile(string buglist_filename)
+        static public Dictionary<string, List<StyleString>> ProcessBugList(string buglist_filename)
         {
             Dictionary<string, List<StyleString>> myBug_list = new Dictionary<string, List<StyleString>>();
 
@@ -312,7 +313,7 @@ Returns or sets the type of underline applied to the font.
                 Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myBugExcel, sheet_BUG_General_Result);
                 if (WorkingSheet != null)
                 {
-                    myBug_list = CreateBugList(WorkingSheet);
+                    myBug_list = CreateBugListFromBugJiraFile(WorkingSheet);
                 }
 
                 ExcelAction.CloseExcelWithoutSaveChanges(myBugExcel);
@@ -436,93 +437,73 @@ Returns or sets the type of underline applied to the font.
             }
             return ret_tc_list;
         }
-
-        static public void ProcessTCJiraExcel(string tclist_filename, Dictionary<string, List<StyleString>> bug_list)
+        //WriteBacktoTCJiraExcel
+        static public void WriteBacktoTCJiraExcel(String tclist_filename)
         {
-            testcase_list = GenerateTestCaseList(tclist_filename);
-
-            if (testcase_list.Count > 0)
+            // Re-arrange test-case list into dictionary of key/links pair
+            Dictionary<String, String> group_note_issue = new Dictionary<String, String>();
+            foreach (TestCase tc in global_testcase_list)
             {
-                // Re-arrange test-case list into dictionary of key/links pair
-                Dictionary<String, String> group_note_issue = new Dictionary<String, String>();
-                foreach (TestCase tc in testcase_list)
+                String key = tc.Key;
+                if (key != "")
                 {
-                    String key = tc.Key;
-                    if (key != "")
-                    {
-                        group_note_issue.Add(key, tc.Links);
-                    }
-                }
-
-                // Copy tc file to another file
-                // 1. generate a filename
-                string dest_filename, ext_str = Path.GetExtension(tclist_filename);
-                if (ext_str != null)
-                {
-                    int file_wo_ext_len = tclist_filename.Length - ext_str.Length;
-                    dest_filename = tclist_filename.Substring(0, file_wo_ext_len); 
-                }
-                else
-                {
-                    dest_filename = tclist_filename;
-                }
-                dest_filename += "_" + DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
-                // 2. Copy Excel
-                File.Copy(tclist_filename, dest_filename);
-
-                // 3. Write to the other file
-                if (!File.Exists(dest_filename))
-                {
-                    // Open excel (read-only & corrupt-load)
-                    Excel.Application myTCExcel = ExcelAction.OpenPreviousExcel(dest_filename);
-                    //Excel.Application myTCExcel = OpenOridnaryExcel(dest_filename);
-                    if (myTCExcel != null)
-                    {
-                        Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myTCExcel, sheet_TC_Jira);
-                        if (WorkingSheet != null)
-                        {
-                            const int row_column_naming = 1;
-                            Dictionary<string, int> col_name_list = CreateTableColumnIndex(WorkingSheet, row_column_naming);
-
-                            // Get the last (row,col) of excel
-                            Range rngLast = WorkingSheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
-
-                            // Visit all rows and replace Bug-ID with long description of Bug.
-                            const int row_tc_starting = 2;
-                            for (int index = row_tc_starting; index <= rngLast.Row; index++)
-                            {
-                                Object cell_value2;
-
-                                // Make sure Key of TC is not empty
-                                cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Key]].Value2;
-                                if (cell_value2 == null) { break; }
-                                String key = cell_value2.ToString();
-                                if (key.Contains(TC_KEY) == false) { break; }
-
-                                // If Links is not empty, extend bug key into long string with font settings
-                                Range rng = WorkingSheet.Cells[index, col_name_list[TestCase.col_Links]];
-                                cell_value2 = rng.Value2;
-                                if (cell_value2 != null)
-                                {
-                                    List<StyleString> str_list = ExtendIssueDescription(group_note_issue[key], bug_list);
-
-                                    WriteSytleString(ref rng, str_list);
-                                }
-                            }
-
-                            ExcelAction.SaveChangesAndCloseExcel(myTCExcel, dest_filename);
-                        }
-                        else
-                        {
-                            // worksheet not found, close immediately
-                            ExcelAction.CloseExcelWithoutSaveChanges(myTCExcel);
-                        }
-                        WorkingSheet = null;
-                        myTCExcel = null;
-                    }
+                    group_note_issue.Add(key, tc.Links);
                 }
             }
 
+            // 1. generate a filename
+            string dest_filename, ext_str = Path.GetExtension(tclist_filename);
+            int file_wo_ext_len = tclist_filename.Length - ext_str.Length;
+            dest_filename = tclist_filename.Substring(0, file_wo_ext_len);
+            dest_filename += "_" + DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+            dest_filename += ext_str;
+
+            // Open excel (read-only & corrupt-load)
+            Excel.Application myTCExcel = ExcelAction.OpenPreviousExcel(tclist_filename);
+            if (myTCExcel != null)
+            {
+                Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myTCExcel, sheet_TC_Jira);
+                if (WorkingSheet != null)
+                {
+                    const int row_column_naming = 1;
+                    Dictionary<string, int> col_name_list = CreateTableColumnIndex(WorkingSheet, row_column_naming);
+
+                    // Get the last (row,col) of excel
+                    Range rngLast = WorkingSheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
+
+                    // Visit all rows and replace Bug-ID with long description of Bug.
+                    const int row_tc_starting = 2;
+                    for (int index = row_tc_starting; index <= rngLast.Row; index++)
+                    {
+                        Object cell_value2;
+
+                        // Make sure Key of TC is not empty
+                        cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Key]].Value2;
+                        if (cell_value2 == null) { break; }
+                        String key = cell_value2.ToString();
+                        if (key.Contains(TC_KEY) == false) { break; }
+
+                        // If Links is not empty, extend bug key into long string with font settings
+                        Range rng = WorkingSheet.Cells[index, col_name_list[TestCase.col_Links]];
+                        cell_value2 = rng.Value2;
+                        if (cell_value2 != null)
+                        {
+                            List<StyleString> str_list = ExtendIssueDescription(group_note_issue[key], global_bug_list);
+
+                            WriteSytleString(ref rng, str_list);
+                        }
+                    }
+
+                    ExcelAction.SaveChangesAndCloseExcel(myTCExcel, dest_filename);
+                }
+                else
+                {
+                    // worksheet not found, close immediately
+                    ExcelAction.CloseExcelWithoutSaveChanges(myTCExcel);
+                }
+                WorkingSheet = null;
+                myTCExcel = null;
+            }
         }
 
         //
@@ -530,13 +511,9 @@ Returns or sets the type of underline applied to the font.
         //
         static public void ProcessTCJiraAndSaveToReport(string tclist_filename, string report_filename, Dictionary<string, List<StyleString>> bug_list)
         {
-            testcase_list = GenerateTestCaseList(tclist_filename);
-
-            if (testcase_list.Count > 0)
-            {
                 // Re-arrange test-case list into dictionary of summary/links pair
                 Dictionary<String, String> group_note_issue = new Dictionary<String, String>();
-                foreach (TestCase tc in testcase_list)
+                foreach (TestCase tc in global_testcase_list)
                 {
                     String key = tc.Summary;
                     if(key!="")
@@ -598,6 +575,5 @@ Returns or sets the type of underline applied to the font.
                     }
                 }
             }
-        }
     }
 }

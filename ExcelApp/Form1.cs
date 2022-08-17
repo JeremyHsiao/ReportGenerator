@@ -30,7 +30,7 @@ namespace ExcelReportApplication
         const string workbook_TC_Jira = "TC_Jira.xls";
         const string workbook_Report = "Report_Template.xlsx";
 
-        private Dictionary<string, List<StyleString>> global_bug_list = new Dictionary<string, List<StyleString>>();
+        private List<TestCase> global_tc_list = new List<TestCase>();
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -46,10 +46,11 @@ namespace ExcelReportApplication
             else
             {
                 MsgWindow.AppendText("Processing bug_list:" + args_str + ".\n");
-                global_bug_list = ReportWorker.ProcessJiraBugFile(@args_str);
+                ReportWorker.global_bug_list = ReportWorker.ProcessBugList(@args_str);
                 MsgWindow.AppendText("bug_list finished!\n");
             }
 
+            // TestCase_Jira
             tclist_filename = workbook_TC_Jira;
             args_str = Directory.GetCurrentDirectory() + '\\' + tclist_filename;
             if (!File.Exists(@args_str))
@@ -59,11 +60,20 @@ namespace ExcelReportApplication
             else
             {
                 MsgWindow.AppendText("Processing tc_list:" + args_str + ".\n");
-                //ReportWorker.ProcessTCJiraExcel(@args_str, global_bug_list);  
+                ReportWorker.global_testcase_list = ReportWorker.GenerateTestCaseList(@args_str);
                 MsgWindow.AppendText("tc_list finished!\n");
             }
 
+            ///*
+            // Write extended string back to tc-file
             tclist_filename = workbook_TC_Jira;
+            args_str = Directory.GetCurrentDirectory() + '\\' + tclist_filename;
+            if (File.Exists(@args_str))
+            {
+                ReportWorker.WriteBacktoTCJiraExcel(@args_str);
+            }
+            //*/
+
             report_filename = workbook_Report;
             args_str = Directory.GetCurrentDirectory() + '\\' + tclist_filename;
             args_str2 = Directory.GetCurrentDirectory() + '\\' + report_filename;
@@ -73,8 +83,7 @@ namespace ExcelReportApplication
             }
             else
             {
-                //ReportWorker.ProcessTCJiraExcel(@args_str, global_bug_list);  ProcessTCJiraAndSaveToReport
-                ReportWorker.ProcessTCJiraAndSaveToReport(@args_str, @args_str2, global_bug_list);
+                //ReportWorker.ProcessTCJiraAndSaveToReport(@args_str, @args_str2, global_bug_list);
                 MsgWindow.AppendText("report finished!\n");
             }
 
