@@ -356,8 +356,8 @@ Returns or sets the type of underline applied to the font.
                 }
                 extended_str.Add(new_line_str);
             }
-            extended_str.RemoveAt(extended_str.Count - 1);  // remove last '\n'
-
+            if (extended_str.Count > 0) { extended_str.RemoveAt(extended_str.Count - 1); } // remove last '\n'
+ 
             return extended_str;
         }
 
