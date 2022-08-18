@@ -70,6 +70,7 @@ Returns or sets the type of underline applied to the font.
         private String font_name;
         private Color font_color;
         private int font_size;
+        private FontStyle font_style;
         private bool font_property_changed;
 
         public String Text   // property
@@ -92,6 +93,11 @@ Returns or sets the type of underline applied to the font.
             get { return font_size; }   // get method
             set { font_size = value; font_property_changed = true; }  // set method
         }
+        public FontStyle FontStyle   // property
+        {
+            get { return font_style; }   // get method
+            set { font_style = value; font_property_changed = true; }  // set method
+        }
         public bool FontPropertyChanged  // property
         {
             get { return font_property_changed; }   // get method
@@ -100,43 +106,50 @@ Returns or sets the type of underline applied to the font.
         static public string default_font = "Gill Sans MT";
         static public int default_size = 10;
         static public Color default_color = System.Drawing.Color.Black;
+        static public FontStyle default_fontstyle = FontStyle.Regular;
+
+        public void SetProperty(Color string_color, string string_fontname, int string_fontsize, FontStyle string_fontstyle)
+        {
+            font_color = string_color;
+            font_name = string_fontname;
+            font_size = string_fontsize;
+            font_style = string_fontstyle;
+            font_property_changed = true;
+        }
+
+        public void SetDefaultProperty()
+        {
+            SetProperty(default_color, default_font, default_size, default_fontstyle);
+            font_property_changed = false;
+        }
+
+        public void SetDefaultProperty(String string_text)
+        {
+            SetDefaultProperty();
+            Text = string_text;
+        }
 
         public StyleString()
         {
-            text = "";
-            SetDefaultFontProperty();
+            SetDefaultProperty("");
         }
 
         public StyleString(string string_text)
         {
-            text = string_text;
-            SetDefaultFontProperty();
+            SetDefaultProperty(string_text);
         }
 
         public StyleString(string string_text, Color string_color)
         {
+            SetDefaultProperty(string_text);
+            Color = string_color;
             text = string_text;
-            font_color = string_color;
-            font_name = default_font;
-            font_size = default_size;
-            font_property_changed = true;
         }
 
         public StyleString(string string_text, Color string_color, string string_fontname, int string_fontsize)
         {
+            SetProperty(string_color, string_fontname, string_fontsize, default_fontstyle);
             text = string_text;
-            font_color = string_color;
-            font_name = string_fontname;
-            font_size = string_fontsize;
-            font_property_changed = true;
-        }
-
-        public void SetDefaultFontProperty()
-        {
-            font_color = Color.Black;
-            font_name = default_font;
-            font_size = default_size;
-            font_property_changed = false;
         }
     }
 
@@ -373,6 +386,7 @@ Returns or sets the type of underline applied to the font.
             input_range.Characters.Font.Name = StyleString.default_font;
             input_range.Characters.Font.Size = StyleString.default_size;
             input_range.Characters.Font.Color = StyleString.default_color;
+            input_range.Characters.Font.FontStyle = StyleString.default_fontstyle;
 
             // Change font settings when required for the string portion
             int chr_index = 1;
@@ -384,6 +398,7 @@ Returns or sets the type of underline applied to the font.
                     input_range.get_Characters(chr_index, len).Font.Name = style_str.Font;
                     input_range.get_Characters(chr_index, len).Font.Color = style_str.Color;
                     input_range.get_Characters(chr_index, len).Font.Size = style_str.Size;
+                    input_range.get_Characters(chr_index, len).Font.FontStyle = style_str.FontStyle;
                 }
                 chr_index += len;
             }
@@ -493,6 +508,8 @@ Returns or sets the type of underline applied to the font.
                             WriteSytleString(ref rng, str_list);
                         }
                     }
+                        // auto-fit-height of column links
+                    WorkingSheet.Columns[col_name_list[TestCase.col_Links]].AutoFit();
 
                     ExcelAction.SaveChangesAndCloseExcel(myTCExcel, dest_filename);
                 }
@@ -545,7 +562,7 @@ Returns or sets the type of underline applied to the font.
                         Range rng;
                         Object cell_value2; 
                         List<StyleString> str_list = new List<StyleString>();
-                        String key, result, note;
+                        String key, note;
 
                         // find out which test_group
                         rng = result_worksheet.Cells[index, col_group];
