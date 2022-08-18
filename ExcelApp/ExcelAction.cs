@@ -52,18 +52,15 @@ namespace ExcelReportApplication
             System.Runtime.InteropServices.Marshal.ReleaseComObject(myExcel);
         }
 
-        // List all workshees within excel
-        static public void ListSheets(Excel.Application curExcel)
+        // List all worksheets within excel
+        static public List<String> ListSheetName(Excel.Application curExcel)
         {
-            int index = 0;
-
-            Excel.Range rng = curExcel.get_Range("A1");
-
+            List<String> ret_sheetname = new List<String>();
             foreach (Excel.Worksheet displayWorksheet in curExcel.Worksheets)
             {
-                rng.get_Offset(index, 0).Value2 = displayWorksheet.Name;
-                index++;
+                ret_sheetname.Add(displayWorksheet.Name);
             }
+            return ret_sheetname;
         }
 
         // return worksheet with specified sheet_name; return null if not found
