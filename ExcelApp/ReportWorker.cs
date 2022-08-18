@@ -341,7 +341,7 @@ Returns or sets the type of underline applied to the font.
                 StyleString new_line_str = new StyleString("\n");
                 if (bug_list.ContainsKey(trimmed_key))
                 {
-                    List<StyleString> bug_str = bug_list[trimmed_key]; /// why 46 has count 2?
+                    List<StyleString> bug_str = bug_list[trimmed_key]; 
 
                     foreach (StyleString style_str in bug_str)
                     {
