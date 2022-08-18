@@ -30,12 +30,11 @@ namespace ExcelReportApplication
         const string workbook_TC_Jira = "TC_Jira.xls";
         const string workbook_Report = "Report_Template.xlsx";
 
-        private List<TestCase> global_tc_list = new List<TestCase>();
-
         private void button1_Click(object sender, EventArgs e)
         {
-            string buglist_filename, tclist_filename, report_filename, args_str, args_str2;
+            string buglist_filename, tclist_filename, report_filename, args_str;
 
+            // Create global bug list
             // BUG_Jira
             buglist_filename = workbook_BUG_Jira;
             args_str = Directory.GetCurrentDirectory() + '\\' + buglist_filename;
@@ -50,7 +49,7 @@ namespace ExcelReportApplication
                 MsgWindow.AppendText("bug_list finished!\n");
             }
 
-            // TestCase_Jira
+            // Create global TestCase list
             tclist_filename = workbook_TC_Jira;
             args_str = Directory.GetCurrentDirectory() + '\\' + tclist_filename;
             if (!File.Exists(@args_str))
@@ -64,7 +63,7 @@ namespace ExcelReportApplication
                 MsgWindow.AppendText("tc_list finished!\n");
             }
 
-            ///*
+            /*
             // Write extended string back to tc-file
             tclist_filename = workbook_TC_Jira;
             args_str = Directory.GetCurrentDirectory() + '\\' + tclist_filename;
@@ -72,18 +71,18 @@ namespace ExcelReportApplication
             {
                 ReportWorker.WriteBacktoTCJiraExcel(@args_str);
             }
-            //*/
+            */
 
+            // Write extended string to report-file (fill template and save as other file)
             report_filename = workbook_Report;
-            args_str = Directory.GetCurrentDirectory() + '\\' + tclist_filename;
-            args_str2 = Directory.GetCurrentDirectory() + '\\' + report_filename;
-            if (!File.Exists(@args_str) || !File.Exists(args_str2))
+            args_str = Directory.GetCurrentDirectory() + '\\' + report_filename;
+            if (!File.Exists(@args_str))
             {
-                MsgWindow.AppendText("One or more files do not exist. Please check again.\n");
+                MsgWindow.AppendText("Report file template does not exist. Please check again.\n");
             }
             else
             {
-                //ReportWorker.ProcessTCJiraAndSaveToReport(@args_str, @args_str2, global_bug_list);
+                ReportWorker.SaveToReportTemplate(@args_str);
                 MsgWindow.AppendText("report finished!\n");
             }
 

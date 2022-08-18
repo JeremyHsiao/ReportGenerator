@@ -509,71 +509,97 @@ Returns or sets the type of underline applied to the font.
         //
         // To Be tested
         //
-        static public void ProcessTCJiraAndSaveToReport(string tclist_filename, string report_filename, Dictionary<string, List<StyleString>> bug_list)
+        static public void SaveToReportTemplate(string report_filename)
         {
-                // Re-arrange test-case list into dictionary of summary/links pair
-                Dictionary<String, String> group_note_issue = new Dictionary<String, String>();
-                foreach (TestCase tc in global_testcase_list)
+            // Re-arrange test-case list into dictionary of summary/links pair
+            Dictionary<String, String> group_note_issue = new Dictionary<String, String>();
+            foreach (TestCase tc in global_testcase_list)
+            {
+                String key = tc.Summary;
+                if (key != "")
                 {
-                    String key = tc.Summary;
-                    if(key!="")
-                    {
-                        group_note_issue.Add(key, tc.Links);
-                    }
+                    group_note_issue.Add(key, tc.Links);
                 }
+            }
 
-                //Excel.Application myReportExcel = ExcelAction.OpenPreviousExcel(report_filename);
-                Excel.Application myReportExcel = ExcelAction.OpenOridnaryExcel(report_filename);
-                if (myReportExcel != null)
+            //Excel.Application myReportExcel = ExcelAction.OpenPreviousExcel(report_filename);
+            Excel.Application myReportExcel = ExcelAction.OpenOridnaryExcel(report_filename);
+            if (myReportExcel != null)
+            {
+                Worksheet result_worksheet = ExcelAction.Find_Worksheet(myReportExcel, sheet_Report_Result);
+                if (result_worksheet != null)
                 {
-                    Worksheet result_worksheet = ExcelAction.Find_Worksheet(myReportExcel, sheet_Report_Result);
-                    if (result_worksheet != null)
+                    //const int result_row_column_naming = 5;
+                    //const string col_Key = "TEST   ITEM";
+                    //const string col_Links = "Links";
+                    //Dictionary<string, int> result_col_name_list = CreateTableColumnIndex(result_worksheet, result_row_column_naming);
+
+                    // Get the last (row,col) of excel
+                    Range rngLast = result_worksheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
+
+                    const int col_group = 1, col_result = 2, col_issue = 3; // column "A" - "C"
+                    const int row_result_starting = 6; // row starting from 6
+
+                    for (int index = row_result_starting; index <= rngLast.Row; index++)
                     {
-                        //const int result_row_column_naming = 5;
-                        //const string col_Key = "TEST   ITEM";
-                        //const string col_Links = "Links";
-                        //Dictionary<string, int> result_col_name_list = CreateTableColumnIndex(result_worksheet, result_row_column_naming);
-                        
-                        // Get the last (row,col) of excel
-                        Range rngLast = result_worksheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
+                        Range rng;
+                        Object cell_value2; 
+                        List<StyleString> str_list = new List<StyleString>();
+                        String key, result, note;
 
-                        const int col_group = 1; // column "A"
-                        const int col_issue = 3; // column "C"
-                        const int row_result_starting = 6; // row starting from 6
+                        // find out which test_group
+                        rng = result_worksheet.Cells[index, col_group];
+                        cell_value2 = rng.Value2;
+                        if (cell_value2 == null) { break; } // if no value in test_group-->end of report
+                        key = cell_value2.ToString();
 
-                        for (int index = row_result_starting; index <= rngLast.Row; index++)
+                        // goes to next row if Result is N/A
+                        rng = result_worksheet.Cells[index, col_result];
+                        if (rng.Value2.ToString().Trim() == "N/A") { continue; } // goes to next row if N/A
+ 
+                        // Get data to be filled into Note
+                        // if key does not exist, Note will be empty string
+                        if (!group_note_issue.TryGetValue(key, out note))
                         {
-                            // find out which test_group
-                            Object cell_value2 = result_worksheet.Cells[index, col_group].Value2;
-                            if (cell_value2 == null) { break; }
-                            // Check if empty issue-list in this test_group
-                            String links = group_note_issue[cell_value2.ToString().Trim()];
-                            List<StyleString> str_list = ExtendIssueDescription(links, bug_list);
-                            Range rng = result_worksheet.Cells[index, col_issue];
-                            WriteSytleString(ref rng, str_list);
+                            note = "";
                         }
 
-                        // Save as another file //yyyyMMddHHmmss
-                        string updated_report_filename, ext_str = Path.GetExtension(report_filename);
-                        if (ext_str != null)
+                        if (note!="")
                         {
-                            int file_wo_ext_len = tclist_filename.Length - ext_str.Length;
-                            updated_report_filename = report_filename.Substring(0, file_wo_ext_len) + "_" +
-                                                            DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+                            rng = result_worksheet.Cells[index, col_result];
+                            rng.Value2 = "Fail";
+                            // Fill "Note" 
+                            str_list = ExtendIssueDescription(note, global_bug_list);
+                            rng = result_worksheet.Cells[index, col_issue];
+                            WriteSytleString(ref rng, str_list);
                         }
                         else
                         {
-                            updated_report_filename = report_filename + "_" +
-                                                            DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+                            // no issue --> pass
+                            rng = result_worksheet.Cells[index, col_result];
+                            rng.Value2 = "Pass";
+                            rng = result_worksheet.Cells[index, col_issue];
+                            rng.Value2 = "";
                         }
-                        ExcelAction.SaveChangesAndCloseExcel(myReportExcel, updated_report_filename);
-                    }
-                    else
-                    {
-                        // worksheet not found, close immediately
-                        ExcelAction.CloseExcelWithoutSaveChanges(myReportExcel);
-                    }
+
+                        // auto-fit-height of current row
+                        rng.Rows.AutoFit();
+                     }
+
+                    // Save as another file //yyyyMMddHHmmss
+                    string dest_filename, ext_str = Path.GetExtension(report_filename);
+                    int file_wo_ext_len = report_filename.Length - ext_str.Length;
+                    dest_filename = report_filename.Substring(0, file_wo_ext_len);
+                    dest_filename += "_" + DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+                    dest_filename += ext_str;
+                    ExcelAction.SaveChangesAndCloseExcel(myReportExcel, dest_filename);
+                }
+                else
+                {
+                    // worksheet not found, close immediately
+                    ExcelAction.CloseExcelWithoutSaveChanges(myReportExcel);
                 }
             }
+        }
     }
 }
