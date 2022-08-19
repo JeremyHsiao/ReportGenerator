@@ -27,7 +27,7 @@ namespace ExcelReportApplication
         // constant strings for workbook used in this application.
         //const string workbook_test_buglist = "SE27205_0803.xlsx";
         const string workbook_BUG_Jira = "Jira 2022-08-12T15_20_08+0800.xls";
-        const string workbook_TC_Jira = "TC_Jira.xls";
+        const string workbook_TC_Jira = "TC_Jira 2022-08-12T15_16_38+0800.xls";
         const string workbook_Report = "Report_Template.xlsx";
 
         private void button1_Click(object sender, EventArgs e)
@@ -41,6 +41,7 @@ namespace ExcelReportApplication
             if (!File.Exists(@args_str))
             {
                 MsgWindow.AppendText(args_str + " does not exist. Please check again.\n");
+                return;
             }
             else
             {
@@ -55,6 +56,7 @@ namespace ExcelReportApplication
             if (!File.Exists(@args_str))
             {
                 MsgWindow.AppendText(args_str + " does not exist. Please check again.\n");
+                return;
             }
             else
             {
@@ -79,6 +81,7 @@ namespace ExcelReportApplication
             if (!File.Exists(@args_str))
             {
                 MsgWindow.AppendText("Report file template does not exist. Please check again.\n");
+                return;
             }
             else
             {

@@ -195,8 +195,7 @@ Returns or sets the type of underline applied to the font.
         public const string col_Group = "Test Group";
         public const string col_Summary = "Summary";
         public const string col_Status = "Status";
-        public const string col_Links = "Links";
-
+        public const string col_Links = "Linked Issues";
         public TestCase()
         {
         }
@@ -212,7 +211,7 @@ Returns or sets the type of underline applied to the font.
 
         // constant strings for worksheet used in this application.
         const string sheet_BUG_General_Result = "general_report";
-        const string sheet_TC_Jira = "TC_BenQ27105_Result";
+        const string sheet_TC_Jira = "general_report";
         const string sheet_Report_Result = "Result";
 
         // Key value
@@ -416,14 +415,14 @@ Returns or sets the type of underline applied to the font.
                 Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myTCExcel, sheet_TC_Jira);
                 if (WorkingSheet != null)
                 {
-                    const int row_column_naming = 1;
+                    const int row_column_naming = 4;
                     Dictionary<string, int> col_name_list = CreateTableColumnIndex(WorkingSheet, row_column_naming);
 
                     // Get the last (row,col) of excel
                     Range rngLast = WorkingSheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
 
-                    // Visit all rows and replace Bug-ID with long description of Bug.
-                    const int row_tc_starting = 2;
+                    // Visit all rows and add content of TestCase
+                    const int row_tc_starting = 5;
                     for (int index = row_tc_starting; index <= rngLast.Row; index++)
                     {
                         Object cell_value2;
