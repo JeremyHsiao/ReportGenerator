@@ -15,7 +15,7 @@ namespace ExcelReportApplication
         {
             // Open excel (read-only)
             Excel.Application myBugExcel = new Excel.Application();
-            Workbook working_book = myBugExcel.Workbooks.Open(@filename, ReadOnly: true);
+            Workbook working_book = myBugExcel.Workbooks.Open(filename, ReadOnly: true);
             myBugExcel.Visible = true;
             return myBugExcel;
         }
@@ -26,7 +26,7 @@ namespace ExcelReportApplication
             Excel.Application myBugExcel = new Excel.Application();
             //Workbook working_book = myBugExcel.Workbooks.Open(@filename)
             //Workbook working_book = myBugExcel.Workbooks.Open(@filename, ReadOnly: true, CorruptLoad: XlCorruptLoad.xlExtractData);
-            myBugExcel.Workbooks.Open(@filename, ReadOnly: true, CorruptLoad: XlCorruptLoad.xlExtractData);
+            myBugExcel.Workbooks.Open(filename, ReadOnly: true, CorruptLoad: XlCorruptLoad.xlExtractData);
             myBugExcel.Visible = true;
             return myBugExcel;
         }
