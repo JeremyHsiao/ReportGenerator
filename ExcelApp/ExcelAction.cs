@@ -63,18 +63,25 @@ namespace ExcelReportApplication
             return ret_sheetname;
         }
 
-        // return worksheet with specified sheet_name; return null if not found
-        static public Worksheet Find_Worksheet(Excel.Application curExcel, string sheet_name)
+        static public bool WorksheetExist(Excel.Application curExcel, string sheet_name)
         {
-            Worksheet ret = null;
-
             foreach (Excel.Worksheet displayWorksheet in curExcel.Worksheets)
             {
                 if (displayWorksheet.Name.CompareTo(sheet_name) == 0)
                 {
-                    ret = displayWorksheet;
-                    break;
+                    return true;
                 }
+            }
+            return false;
+        }
+
+        // return worksheet with specified sheet_name; return null if not found
+        static public Worksheet Find_Worksheet(Excel.Application curExcel, string sheet_name)
+        {
+            Worksheet ret = null;
+            if (WorksheetExist(curExcel, sheet_name))
+            {
+                ret = curExcel.Sheets.Item[sheet_name];
             }
             return ret;
         }
