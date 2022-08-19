@@ -1,6 +1,6 @@
 ﻿namespace ExcelReportApplication
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// 設計工具所需的變數。
@@ -51,15 +51,15 @@
             this.MsgWindow.Size = new System.Drawing.Size(490, 208);
             this.MsgWindow.TabIndex = 1;
             // 
-            // Form1
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(514, 261);
             this.Controls.Add(this.MsgWindow);
             this.Controls.Add(this.btn_run);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "MainForm";
+            this.Text = "ReportGenerator";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
