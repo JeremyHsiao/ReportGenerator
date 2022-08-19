@@ -57,6 +57,7 @@
             this.MsgWindow.Location = new System.Drawing.Point(12, 152);
             this.MsgWindow.Multiline = true;
             this.MsgWindow.Name = "MsgWindow";
+            this.MsgWindow.ReadOnly = true;
             this.MsgWindow.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.MsgWindow.Size = new System.Drawing.Size(490, 208);
             this.MsgWindow.TabIndex = 1;
@@ -75,6 +76,7 @@
             // 
             this.txtBugFile.Location = new System.Drawing.Point(99, 9);
             this.txtBugFile.Name = "txtBugFile";
+            this.txtBugFile.ReadOnly = true;
             this.txtBugFile.Size = new System.Drawing.Size(330, 22);
             this.txtBugFile.TabIndex = 3;
             // 
@@ -100,6 +102,7 @@
             // 
             this.txtTCFile.Location = new System.Drawing.Point(99, 37);
             this.txtTCFile.Name = "txtTCFile";
+            this.txtTCFile.ReadOnly = true;
             this.txtTCFile.Size = new System.Drawing.Size(330, 22);
             this.txtTCFile.TabIndex = 6;
             // 
@@ -127,6 +130,7 @@
             // 
             this.txtReportFile.Location = new System.Drawing.Point(99, 65);
             this.txtReportFile.Name = "txtReportFile";
+            this.txtReportFile.ReadOnly = true;
             this.txtReportFile.Size = new System.Drawing.Size(330, 22);
             this.txtReportFile.TabIndex = 9;
             // 
