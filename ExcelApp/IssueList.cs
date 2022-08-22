@@ -60,8 +60,6 @@ namespace ExcelReportApplication
          // Key value
         static public string KeyPrefix = "BENSE";
 
-        static public Dictionary<string, List<StyleString>> issue_description_list = new Dictionary<string, List<StyleString>>();
-
         static public List<IssueList> GenerateIssueList(string buglist_filename)
         {
             List<IssueList> ret_issue_list = new List<IssueList>();
