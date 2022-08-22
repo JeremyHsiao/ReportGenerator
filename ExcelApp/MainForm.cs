@@ -21,12 +21,11 @@ namespace ExcelReportApplication
             txtBugFile.Text = workbook_BUG_Jira;
             txtTCFile.Text = workbook_TC_Jira;
             txtReportFile.Text = workbook_Report;
-            buglist_filename = FileFunction.GetFullPath(workbook_BUG_Jira);
-            tclist_filename = FileFunction.GetFullPath(workbook_TC_Jira);
-            report_filename = FileFunction.GetFullPath(workbook_Report);
-            if ((buglist_filename == "") || (tclist_filename == "") || (report_filename == ""))
+            if ((FileFunction.GetFullPath(txtBugFile.Text) == "") ||
+                (FileFunction.GetFullPath(txtTCFile.Text) == "") ||
+                (FileFunction.GetFullPath(txtReportFile.Text) == ""))
             {
-                MsgWindow.AppendText("WARNING: some sample data do not exist.\n");
+                MsgWindow.AppendText("WARNING: one or more sample files do not exist.\n");
             }
         }
 
@@ -36,12 +35,11 @@ namespace ExcelReportApplication
         const string workbook_TC_Jira = @".\SampleData\TC_Jira 2022-08-12T15_16_38+0800.xls";
         const string workbook_Report = @".\SampleData\Report_Template.xlsx";
 
-        private string buglist_filename, tclist_filename, report_filename;
-
         private void button1_Click(object sender, EventArgs e)
         {
             // Create global bug list
             // BUG_Jira
+            String buglist_filename = FileFunction.GetFullPath(txtBugFile.Text);
             if (!FileFunction.Exists(buglist_filename))
             {
                 MsgWindow.AppendText(buglist_filename + " does not exist. Please check again.\n");
@@ -55,6 +53,7 @@ namespace ExcelReportApplication
             }
 
             // Create global TestCase list
+            String tclist_filename = FileFunction.GetFullPath(txtTCFile.Text);
             if (!FileFunction.Exists(tclist_filename))
             {
                 MsgWindow.AppendText(tclist_filename + " does not exist. Please check again.\n");
@@ -77,6 +76,7 @@ namespace ExcelReportApplication
             */
 
             // Write extended string to report-file (fill template and save as other file)
+            String report_filename = FileFunction.GetFullPath(txtReportFile.Text);
             if (!FileFunction.Exists(report_filename))
             {
                 MsgWindow.AppendText("Report file template does not exist. Please check again.\n");
@@ -100,8 +100,7 @@ namespace ExcelReportApplication
             String ret_str = FileFunction.UsesrSelectFilename();
             if (ret_str != "")
             {
-                buglist_filename = ret_str;
-                txtBugFile.Text = buglist_filename;
+                txtBugFile.Text = ret_str;
             }
         }
 
@@ -110,8 +109,7 @@ namespace ExcelReportApplication
             String ret_str = FileFunction.UsesrSelectFilename();
             if (ret_str != "")
             {
-                tclist_filename = ret_str;
-                txtTCFile.Text = tclist_filename;
+                txtTCFile.Text = ret_str;
             }
         }
 
@@ -120,8 +118,7 @@ namespace ExcelReportApplication
             String ret_str = FileFunction.UsesrSelectFilename();
             if (ret_str != "")
             {
-                report_filename = ret_str;
-                txtReportFile.Text = report_filename;
+                txtReportFile.Text = ret_str;
             }
         }
     }
