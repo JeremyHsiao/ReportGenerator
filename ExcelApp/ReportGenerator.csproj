@@ -65,6 +65,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IssueList.cs" />
     <Compile Include="TestCase.cs" />
     <Compile Include="FileFunction.cs" />
     <Compile Include="ExcelAction.cs" />

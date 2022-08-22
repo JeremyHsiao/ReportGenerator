@@ -32,7 +32,7 @@ namespace ExcelReportApplication
             this.txtReportFile.Text = sAll["workbook_Report"];
             
             // config for issue 
-            ReportWorker.SetBugKeyPrefix(sAll["Issue_Key_Prefix"]);
+            IssueList.BUG_KEY = sAll["Issue_Key_Prefix"];
 
             // config for test-case
             TestCase.KeyPrefix = sAll["TC_Key_Prefix"];
