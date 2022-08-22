@@ -18,17 +18,22 @@ namespace ExcelReportApplication
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        public void LoadConfigAll()
         {
             // Read all the keys from the config file
             NameValueCollection sAll;
             sAll = ConfigurationManager.AppSettings;
 
-            txtBugFile.Text = sAll["workbook_BUG_Jira"];
-            txtTCFile.Text = sAll["workbook_TC_Jira"];
-            txtReportFile.Text = sAll["workbook_Report"];
+            this.txtBugFile.Text = sAll["workbook_BUG_Jira"];
+            this.txtTCFile.Text = sAll["workbook_TC_Jira"];
+            this.txtReportFile.Text = sAll["workbook_Report"];
             ReportWorker.SetBugKeyPrefix(sAll["Issue_Key_Prefix"]);
             ReportWorker.SetTCKeyPrefix(sAll["TC_Key_Prefix"]);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            LoadConfigAll();
 
             if ((FileFunction.GetFullPath(txtBugFile.Text) == "") ||
                 (FileFunction.GetFullPath(txtTCFile.Text) == "") ||
