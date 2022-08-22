@@ -6,6 +6,8 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Configuration;
+using System.Collections.Specialized;
 
 namespace ExcelReportApplication
 {
@@ -18,9 +20,14 @@ namespace ExcelReportApplication
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            txtBugFile.Text = workbook_BUG_Jira;
-            txtTCFile.Text = workbook_TC_Jira;
-            txtReportFile.Text = workbook_Report;
+            // Read all the keys from the config file
+            NameValueCollection sAll;
+            sAll = ConfigurationManager.AppSettings;
+
+            txtBugFile.Text = sAll["workbook_BUG_Jira"];
+            txtTCFile.Text = sAll["workbook_TC_Jira"];
+            txtReportFile.Text = sAll["workbook_Report"];
+
             if ((FileFunction.GetFullPath(txtBugFile.Text) == "") ||
                 (FileFunction.GetFullPath(txtTCFile.Text) == "") ||
                 (FileFunction.GetFullPath(txtReportFile.Text) == ""))
@@ -28,12 +35,6 @@ namespace ExcelReportApplication
                 MsgWindow.AppendText("WARNING: one or more sample files do not exist.\n");
             }
         }
-
-        // constant strings for workbook used in this application.
-        //const string workbook_test_buglist = "SE27205_0803.xlsx";
-        const string workbook_BUG_Jira = @".\SampleData\Jira 2022-08-12T15_20_08+0800.xls";
-        const string workbook_TC_Jira = @".\SampleData\TC_Jira 2022-08-12T15_16_38+0800.xls";
-        const string workbook_Report = @".\SampleData\Report_Template.xlsx";
 
         private void button1_Click(object sender, EventArgs e)
         {
