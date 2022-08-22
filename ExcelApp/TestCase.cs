@@ -153,7 +153,8 @@ namespace ExcelReportApplication
                         cell_value2 = rng.Value2;
                         if (cell_value2 != null)
                         {
-                            List<StyleString> str_list = ReportWorker.ExtendIssueDescription(group_note_issue[key], ReportWorker.global_bug_list);
+                            List<StyleString> str_list = ReportWorker.ExtendIssueDescription(group_note_issue[key], 
+                                                                            ReportWorker.global_issue_description_list);
 
                             ReportWorker.WriteSytleString(ref rng, str_list);
                         }

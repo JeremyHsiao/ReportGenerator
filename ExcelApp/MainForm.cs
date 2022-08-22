@@ -88,7 +88,8 @@ namespace ExcelReportApplication
             else
             {
                 MsgWindow.AppendText("Processing bug_list:" + buglist_filename + ".\n");
-                ReportWorker.global_bug_list = ReportWorker.ProcessBugList(buglist_filename);
+                ReportWorker.global_issue_list = IssueList.GenerateIssueList(buglist_filename);
+                ReportWorker.global_issue_description_list = IssueList.CreateFullIssueDescription(ReportWorker.global_issue_list);
                 MsgWindow.AppendText("bug_list finished!\n");
             }
 

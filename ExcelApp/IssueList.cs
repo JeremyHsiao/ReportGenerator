@@ -10,6 +10,49 @@ namespace ExcelReportApplication
 {
     class IssueList
     {
+        private String key;
+        private String summary;
+        private String severity;
+        private String comment;
+
+        public String Key   // property
+        {
+            get { return key; }   // get method
+            set { key = value; }  // set method
+        }
+
+        public String Summary   // property
+        {
+            get { return summary; }   // get method
+            set { summary = value; }  // set method
+        }
+
+        public String Severity   // property
+        {
+            get { return severity; }   // get method
+            set { severity = value; }  // set method
+        }
+
+        public String Comment   // property
+        {
+            get { return comment; }   // get method
+            set { comment = value; }  // set method
+        }
+
+        public const string col_Key = "Key";
+        public const string col_Summary = "Summary";
+        public const string col_Severity = "Severity";
+        public const string col_RD_Comment = "Steps To Reproduce"; // To be updated 
+        // public const string col_RD_Comment = "Additional Information"; // To be updated
+        public IssueList()
+        {
+        }
+
+        public IssueList(String key, String summary, String severity, String comment)
+        {
+            this.key = key; this.summary = summary; this.severity = severity; this.comment = comment;
+        }
+
         // constant strings for worksheet used in this application.
         static public string SheetName = "general_report";
         static public int NameDefinitionRow = 4;
@@ -17,75 +60,78 @@ namespace ExcelReportApplication
          // Key value
         static public string KeyPrefix = "BENSE";
 
-        static public Dictionary<string, List<StyleString>> CreateBugListFromBugJiraFile(Worksheet bug_worksheet)
+        static public Dictionary<string, List<StyleString>> issue_description_list = new Dictionary<string, List<StyleString>>();
+
+        static public List<IssueList> GenerateIssueList(string buglist_filename)
         {
-            const string col_Key = "Key";
-            const string col_Summary = "Summary";
-            const string col_Severity = "Severity";
-            const string col_RD_Comment = "Steps To Reproduce"; // To be updated 
-            // const string col_RD_Comment = "Additional Information"; // To be updated
-            Dictionary<string, List<StyleString>> bug_list = new Dictionary<string, List<StyleString>>();
+            List<IssueList> ret_issue_list = new List<IssueList>();
 
-            Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(bug_worksheet, NameDefinitionRow);
-
-            // Get the last (row,col) of excel
-            Range rngLast = bug_worksheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
-
-            for (int row_index = DataBeginRow; row_index <= rngLast.Row; row_index++)
+            // Open excel (read-only & corrupt-load)
+            Excel.Application myIssueExcel = ExcelAction.OpenPreviousExcel(buglist_filename);
+            //Excel.Application myIssueExcel = OpenOridnaryExcel(buglist_filename);
+            if (myIssueExcel != null)
             {
-                List<StyleString> add_style_str = new List<StyleString>();
-                string add_str, key_str, summary_str, severity_str, rd_commment_str;
-                Object cell_value2;
-
-                // Get Key string
-                cell_value2 = bug_worksheet.Cells[row_index, col_name_list[col_Key]].Value2;
-                if (cell_value2 == null) { continue; }
-                key_str = cell_value2.ToString();
-                if (key_str.Contains(KeyPrefix) == false) { continue; }
-
-                // Get Summary string
-                cell_value2 = bug_worksheet.Cells[row_index, col_name_list[col_Summary]].Value2;
-                if (cell_value2 == null) { summary_str = ""; }
-                else
+                Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myIssueExcel, SheetName);
+                if (WorkingSheet != null)
                 {
-                    summary_str = cell_value2.ToString();
-                    if (!summary_str.Substring(summary_str.Length - 1, 1).Equals(".")) { summary_str += "."; }  // make sure '.' at the end
-                }
+                    Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(WorkingSheet, NameDefinitionRow);
 
-                // Get Severity string
-                cell_value2 = bug_worksheet.Cells[row_index, col_name_list[col_Severity]].Value2;
-                if (cell_value2 == null) { severity_str = ""; }
-                else { severity_str = cell_value2.ToString(); }
+                    // Get the last (row,col) of excel
+                    Range rngLast = WorkingSheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
 
-                // Get Description string
-                cell_value2 = bug_worksheet.Cells[row_index, col_name_list[col_RD_Comment]].Value2;
-                if (cell_value2 == null) { rd_commment_str = ""; }
-                else
-                {
-                    rd_commment_str = cell_value2.ToString();
-                    // Remove strings after 1st '\n'
-                    int new_line_pos = rd_commment_str.IndexOf('\n');
-                    if (new_line_pos > 0)
+                    // Visit all rows and add content of TestCase
+                    for (int index = DataBeginRow; index <= rngLast.Row; index++)
                     {
-                        rd_commment_str = rd_commment_str.Substring(0, new_line_pos);
+                        Object cell_value2;
+                        String key, summary, severity, comment;
+
+                        cell_value2 = WorkingSheet.Cells[index, col_name_list[IssueList.col_Key]].Value2;
+                        key = (cell_value2 == null) ? "" : cell_value2.ToString();
+
+                        cell_value2 = WorkingSheet.Cells[index, col_name_list[IssueList.col_Summary]].Value2;
+                        summary = (cell_value2 == null) ? "" : cell_value2.ToString();
+
+                        cell_value2 = WorkingSheet.Cells[index, col_name_list[IssueList.col_Severity]].Value2;
+                        severity = (cell_value2 == null) ? "" : cell_value2.ToString();
+
+                        cell_value2 = WorkingSheet.Cells[index, col_name_list[IssueList.col_RD_Comment]].Value2;
+                        comment = (cell_value2 == null) ? "" : cell_value2.ToString();
+
+                        ret_issue_list.Add(new IssueList(key, summary, severity, comment));
                     }
                 }
-
-                // setup id/string pair
-                StyleString str;
-
-                add_str = key_str + summary_str + "(" + severity_str + ")";
-                str = new StyleString(add_str, Color.Red);
-                add_style_str.Add(str);
-                if (rd_commment_str.CompareTo("") != 0)
-                {
-                    add_str = " --> " + rd_commment_str;
-                    str = new StyleString(add_str, Color.Blue);
-                    add_style_str.Add(str);
-                }
-                bug_list.Add(key_str, add_style_str);
+                ExcelAction.CloseExcelWithoutSaveChanges(myIssueExcel);
+                myIssueExcel = null;
             }
-            return bug_list;
+            return ret_issue_list;
+        }
+
+        static public Color descrption_color_issue = Color.Red;
+        static public Color descrption_color_comment = Color.Blue;
+        static public Dictionary<string, List<StyleString>> CreateFullIssueDescription(List<IssueList> issuelist)
+        {
+            Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
+
+            foreach (IssueList issue in issuelist)
+            {
+                List<StyleString> value_style_str = new List<StyleString>();
+                String key = issue.Key, rd_commment_str = issue.comment;
+
+                if (key != "")
+                {
+                    String str = key + issue.Summary + "(" + issue.Severity + ")";
+                    StyleString style_str = new StyleString(str, descrption_color_issue);
+                    value_style_str.Add(style_str);
+                    if (rd_commment_str != "")
+                    {
+                        str = " --> " + rd_commment_str;
+                        style_str = new StyleString(str, descrption_color_comment);
+                        value_style_str.Add(style_str);
+                    }
+                    ret_list.Add(key, value_style_str);
+                }
+            }
+            return ret_list;
         }
     }
 }

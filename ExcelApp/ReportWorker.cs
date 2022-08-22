@@ -153,32 +153,12 @@ Returns or sets the type of underline applied to the font.
         }
     }
 
+
     static class ReportWorker
     {
-        static public Dictionary<string, List<StyleString>> global_bug_list = new Dictionary<string, List<StyleString>>();
+        static public List<IssueList> global_issue_list = new List<IssueList>();
+        static public Dictionary<string, List<StyleString>> global_issue_description_list = new Dictionary<string, List<StyleString>>();
         static public List<TestCase> global_testcase_list = new List<TestCase> ();
-
-        static public Dictionary<string, List<StyleString>> ProcessBugList(string buglist_filename)
-        {
-            Dictionary<string, List<StyleString>> myBug_list = new Dictionary<string, List<StyleString>>();
-
-            // Open excel (read-only & corrupt-load)
-            Excel.Application myBugExcel = ExcelAction.OpenPreviousExcel(buglist_filename);
-            if (myBugExcel != null)
-            {
-                // Find bug worksheet and generate list of bug description string
-                Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myBugExcel, IssueList.SheetName);
-                if (WorkingSheet != null)
-                {
-                    myBug_list = IssueList.CreateBugListFromBugJiraFile(WorkingSheet);
-                }
-
-                ExcelAction.CloseExcelWithoutSaveChanges(myBugExcel);
-                WorkingSheet = null;
-                myBugExcel = null;
-            }
-            return myBug_list;
-        }
 
         static public List<StyleString> ExtendIssueDescription(string links_str, Dictionary<string, List<StyleString>> bug_list)
         {
@@ -309,7 +289,7 @@ Returns or sets the type of underline applied to the font.
                             rng = result_worksheet.Cells[index, col_result];
                             rng.Value2 = "Fail";
                             // Fill "Note" 
-                            str_list = ExtendIssueDescription(note, global_bug_list);
+                            str_list = ExtendIssueDescription(note, global_issue_description_list);
                             rng = result_worksheet.Cells[index, col_issue];
                             WriteSytleString(ref rng, str_list);
                         }
