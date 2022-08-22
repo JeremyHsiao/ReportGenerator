@@ -28,7 +28,7 @@ namespace ExcelReportApplication
             this.txtTCFile.Text = sAll["workbook_TC_Jira"];
             this.txtReportFile.Text = sAll["workbook_Report"];
             ReportWorker.SetBugKeyPrefix(sAll["Issue_Key_Prefix"]);
-            ReportWorker.SetTCKeyPrefix(sAll["TC_Key_Prefix"]);
+            TestCase.KeyPrefix = sAll["TC_Key_Prefix"];
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -70,18 +70,18 @@ namespace ExcelReportApplication
             else
             {
                 MsgWindow.AppendText("Processing tc_list:" + tclist_filename + ".\n");
-                ReportWorker.global_testcase_list = ReportWorker.GenerateTestCaseList(tclist_filename);
+                ReportWorker.global_testcase_list = TestCase.GenerateTestCaseList(tclist_filename);
                 MsgWindow.AppendText("tc_list finished!\n");
             }
 
-            /*
+            
             // Write extended string back to tc-file
             if (FileFunction.Exists(tclist_filename))
             {
-                ReportWorker.WriteBacktoTCJiraExcel(tclist_filename);
+                TestCase.WriteBacktoTCJiraExcel(tclist_filename);
                 MsgWindow.AppendText("Writeback sample to tc_list finished!\n");
             }
-            */
+            
 
             // Write extended string to report-file (fill template and save as other file)
             String report_filename = FileFunction.GetFullPath(txtReportFile.Text);

@@ -85,5 +85,22 @@ namespace ExcelReportApplication
             }
             return ret;
         }
+
+        static public Dictionary<string, int> CreateTableColumnIndex(Worksheet bug_worksheet, int naming_row)
+        {
+            // Get the last (row,col) of excel
+            Range rngLast = bug_worksheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
+            Dictionary<string, int> col_name_list = new Dictionary<string, int>();
+
+            for (int col_index = 1; col_index <= rngLast.Column; col_index++)
+            {
+                Object cell_value2 = bug_worksheet.Cells[naming_row, col_index].Value2;
+                if (cell_value2 == null) { continue; }
+                col_name_list.Add(cell_value2.ToString(), col_index);
+            }
+
+            return col_name_list;
+        }
+
     }
 }

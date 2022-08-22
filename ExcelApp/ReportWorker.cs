@@ -158,33 +158,14 @@ Returns or sets the type of underline applied to the font.
 
         // constant strings for worksheet used in this application.
         const string sheet_BUG_General_Result = "general_report";
-        const string sheet_TC_Jira = "general_report";
         const string sheet_Report_Result = "Result";
 
         // Key value
         private static string BUG_KEY = "BENSE";
-        private static string TC_KEY = "TCBEN" ;
         static public void SetBugKeyPrefix(String str) { BUG_KEY = str; }
-        static public void SetTCKeyPrefix(String str) { TC_KEY = str; }
 
         static public Dictionary<string, List<StyleString>> global_bug_list = new Dictionary<string, List<StyleString>>();
         static public List<TestCase> global_testcase_list = new List<TestCase> ();
-
-        static public Dictionary<string, int> CreateTableColumnIndex(Worksheet bug_worksheet, int naming_row)
-        {
-            // Get the last (row,col) of excel
-            Range rngLast = bug_worksheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
-            Dictionary<string, int> col_name_list = new Dictionary<string, int>();
-
-            for (int col_index = 1; col_index <= rngLast.Column; col_index++)
-            {
-                Object cell_value2 = bug_worksheet.Cells[naming_row, col_index].Value2;
-                if (cell_value2 == null) { continue; }
-                col_name_list.Add(cell_value2.ToString(), col_index);
-            }
-
-            return col_name_list;
-        }
 
         static public Dictionary<string, List<StyleString>> CreateBugListFromBugJiraFile(Worksheet bug_worksheet)
         {
@@ -198,7 +179,7 @@ Returns or sets the type of underline applied to the font.
 
             // Obtain column name listed on row 4 & its column index
             const int tc_column_naming_row = 4;
-            Dictionary<string, int> col_name_list = CreateTableColumnIndex(bug_worksheet, tc_column_naming_row);
+            Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(bug_worksheet, tc_column_naming_row);
 
             // Get the last (row,col) of excel
             Range rngLast = bug_worksheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
@@ -352,122 +333,6 @@ Returns or sets the type of underline applied to the font.
             }
         }
 
-        const int tc_column_naming_row = 4;
-        const int tc_starting_row = 5;
-
-        static public List<TestCase> GenerateTestCaseList(string tclist_filename)
-        {
-            List<TestCase> ret_tc_list = new List<TestCase>();
-
-            // Open excel (read-only & corrupt-load)
-            Excel.Application myTCExcel = ExcelAction.OpenPreviousExcel(tclist_filename);
-            //Excel.Application myTCExcel = OpenOridnaryExcel(tclist_filename);
-            if (myTCExcel != null)
-            {
-                Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myTCExcel, sheet_TC_Jira);
-                if (WorkingSheet != null)
-                {
-                    Dictionary<string, int> col_name_list = CreateTableColumnIndex(WorkingSheet, tc_column_naming_row);
-
-                    // Get the last (row,col) of excel
-                    Range rngLast = WorkingSheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
-
-                    // Visit all rows and add content of TestCase
-                    for (int index = tc_starting_row; index <= rngLast.Row; index++)
-                    {
-                        Object cell_value2;
-                        String key, group, summary, status, links;
-
-                        cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Key]].Value2;
-                        key = (cell_value2==null)?"":cell_value2.ToString();
-
-                        cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Group]].Value2;
-                        group = (cell_value2==null)?"":cell_value2.ToString();
-
-                        cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Summary]].Value2;
-                        summary = (cell_value2==null)?"":cell_value2.ToString();
-
-                        cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Status]].Value2;
-                        status = (cell_value2==null)?"":cell_value2.ToString();
-
-                        cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Links]].Value2;
-                        links = (cell_value2==null)?"":cell_value2.ToString();
-
-                        ret_tc_list.Add(new TestCase(key, group, summary, status, links));
-                    }
-                }
-                ExcelAction.CloseExcelWithoutSaveChanges(myTCExcel);
-                myTCExcel = null;
-            }
-            return ret_tc_list;
-        }
-        //WriteBacktoTCJiraExcel
-        static public void WriteBacktoTCJiraExcel(String tclist_filename)
-        {
-            // Re-arrange test-case list into dictionary of key/links pair
-            Dictionary<String, String> group_note_issue = new Dictionary<String, String>();
-            foreach (TestCase tc in global_testcase_list)
-            {
-                String key = tc.Key;
-                if (key != "")
-                {
-                    group_note_issue.Add(key, tc.Links);
-                }
-            }
-
-           // Open original excel (read-only & corrupt-load) and write to another filename when closed
-            Excel.Application myTCExcel = ExcelAction.OpenPreviousExcel(tclist_filename);
-            if (myTCExcel != null)
-            {
-                Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myTCExcel, sheet_TC_Jira);
-                if (WorkingSheet != null)
-                {
-                    Dictionary<string, int> col_name_list = CreateTableColumnIndex(WorkingSheet, tc_column_naming_row);
-
-                    // Get the last (row,col) of excel
-                    Range rngLast = WorkingSheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
-
-                    // Visit all rows and replace Bug-ID with long description of Bug.
-                    for (int index = tc_starting_row; index <= rngLast.Row; index++)
-                    {
-                        Object cell_value2;
-
-                        // Make sure Key of TC is not empty
-                        cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Key]].Value2;
-                        if (cell_value2 == null) { break; }
-                        String key = cell_value2.ToString();
-                        if (key.Contains(TC_KEY) == false) { break; }
-
-                        // If Links is not empty, extend bug key into long string with font settings
-                        Range rng = WorkingSheet.Cells[index, col_name_list[TestCase.col_Links]];
-                        cell_value2 = rng.Value2;
-                        if (cell_value2 != null)
-                        {
-                            List<StyleString> str_list = ExtendIssueDescription(group_note_issue[key], global_bug_list);
-
-                            WriteSytleString(ref rng, str_list);
-                        }
-                    }
-                        // auto-fit-height of column links
-                    WorkingSheet.Columns[col_name_list[TestCase.col_Links]].AutoFit();
-
-                    // Write to another filename with datetime
-                    string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename);
-                    ExcelAction.SaveChangesAndCloseExcel(myTCExcel, dest_filename);
-                }
-                else
-                {
-                    // worksheet not found, close immediately
-                    ExcelAction.CloseExcelWithoutSaveChanges(myTCExcel);
-                }
-                WorkingSheet = null;
-                myTCExcel = null;
-            }
-        }
-
-        //
-        // To Be tested
-        //
         static public void SaveToReportTemplate(string report_filename)
         {
             // Re-arrange test-case list into dictionary of summary/links pair
