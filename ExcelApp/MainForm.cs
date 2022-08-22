@@ -36,7 +36,7 @@ namespace ExcelReportApplication
         const string workbook_TC_Jira = @".\SampleData\TC_Jira 2022-08-12T15_16_38+0800.xls";
         const string workbook_Report = @".\SampleData\Report_Template.xlsx";
 
-        private string buglist_filename, tclist_filename, report_filename, args_str;
+        private string buglist_filename, tclist_filename, report_filename;
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -67,14 +67,14 @@ namespace ExcelReportApplication
                 MsgWindow.AppendText("tc_list finished!\n");
             }
 
-            ///*
+            /*
             // Write extended string back to tc-file
             if (FileFunction.CheckFileExist(tclist_filename))
             {
                 ReportWorker.WriteBacktoTCJiraExcel(tclist_filename);
                 MsgWindow.AppendText("Writeback sample to tc_list finished!\n");
             }
-            //*/
+            */
 
             // Write extended string to report-file (fill template and save as other file)
             if (!FileFunction.CheckFileExist(report_filename))
