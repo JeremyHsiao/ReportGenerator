@@ -248,8 +248,8 @@ Returns or sets the type of underline applied to the font.
             Dictionary<string, List<StyleString>> bug_list = new Dictionary<string, List<StyleString>>();
 
             // Obtain column name listed on row 4 & its column index
-            const int row_column_naming = 4;
-            Dictionary<string, int> col_name_list = CreateTableColumnIndex(bug_worksheet, row_column_naming);
+            const int tc_column_naming_row = 4;
+            Dictionary<string, int> col_name_list = CreateTableColumnIndex(bug_worksheet, tc_column_naming_row);
 
             // Get the last (row,col) of excel
             Range rngLast = bug_worksheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
@@ -403,6 +403,9 @@ Returns or sets the type of underline applied to the font.
             }
         }
 
+        const int tc_column_naming_row = 4;
+        const int tc_starting_row = 5;
+
         static public List<TestCase> GenerateTestCaseList(string tclist_filename)
         {
             List<TestCase> ret_tc_list = new List<TestCase>();
@@ -415,15 +418,13 @@ Returns or sets the type of underline applied to the font.
                 Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myTCExcel, sheet_TC_Jira);
                 if (WorkingSheet != null)
                 {
-                    const int row_column_naming = 4;
-                    Dictionary<string, int> col_name_list = CreateTableColumnIndex(WorkingSheet, row_column_naming);
+                    Dictionary<string, int> col_name_list = CreateTableColumnIndex(WorkingSheet, tc_column_naming_row);
 
                     // Get the last (row,col) of excel
                     Range rngLast = WorkingSheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
 
                     // Visit all rows and add content of TestCase
-                    const int row_tc_starting = 5;
-                    for (int index = row_tc_starting; index <= rngLast.Row; index++)
+                    for (int index = tc_starting_row; index <= rngLast.Row; index++)
                     {
                         Object cell_value2;
                         String key, group, summary, status, links;
@@ -479,15 +480,13 @@ Returns or sets the type of underline applied to the font.
                 Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myTCExcel, sheet_TC_Jira);
                 if (WorkingSheet != null)
                 {
-                    const int row_column_naming = 1;
-                    Dictionary<string, int> col_name_list = CreateTableColumnIndex(WorkingSheet, row_column_naming);
+                    Dictionary<string, int> col_name_list = CreateTableColumnIndex(WorkingSheet, tc_column_naming_row);
 
                     // Get the last (row,col) of excel
                     Range rngLast = WorkingSheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
 
                     // Visit all rows and replace Bug-ID with long description of Bug.
-                    const int row_tc_starting = 2;
-                    for (int index = row_tc_starting; index <= rngLast.Row; index++)
+                    for (int index = tc_starting_row; index <= rngLast.Row; index++)
                     {
                         Object cell_value2;
 
@@ -545,10 +544,10 @@ Returns or sets the type of underline applied to the font.
                 Worksheet result_worksheet = ExcelAction.Find_Worksheet(myReportExcel, sheet_Report_Result);
                 if (result_worksheet != null)
                 {
-                    //const int result_row_column_naming = 5;
+                    //const int result_tc_column_naming_row = 5;
                     //const string col_Key = "TEST   ITEM";
                     //const string col_Links = "Links";
-                    //Dictionary<string, int> result_col_name_list = CreateTableColumnIndex(result_worksheet, result_row_column_naming);
+                    //Dictionary<string, int> result_col_name_list = CreateTableColumnIndex(result_worksheet, result_tc_column_naming_row);
 
                     // Get the last (row,col) of excel
                     Range rngLast = result_worksheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
