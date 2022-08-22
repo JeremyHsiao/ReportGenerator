@@ -21,9 +21,9 @@ namespace ExcelReportApplication
             txtBugFile.Text = workbook_BUG_Jira;
             txtTCFile.Text = workbook_TC_Jira;
             txtReportFile.Text = workbook_Report;
-            buglist_filename = FileFunction.GetFullFilePath(workbook_BUG_Jira);
-            tclist_filename = FileFunction.GetFullFilePath(workbook_TC_Jira);
-            report_filename = FileFunction.GetFullFilePath(workbook_Report);
+            buglist_filename = FileFunction.GetFullPath(workbook_BUG_Jira);
+            tclist_filename = FileFunction.GetFullPath(workbook_TC_Jira);
+            report_filename = FileFunction.GetFullPath(workbook_Report);
             if ((buglist_filename == "") || (tclist_filename == "") || (report_filename == ""))
             {
                 MsgWindow.AppendText("WARNING: some sample data do not exist.\n");
@@ -42,7 +42,7 @@ namespace ExcelReportApplication
         {
             // Create global bug list
             // BUG_Jira
-            if (!FileFunction.CheckFileExist(buglist_filename))
+            if (!FileFunction.Exists(buglist_filename))
             {
                 MsgWindow.AppendText(buglist_filename + " does not exist. Please check again.\n");
                 return;
@@ -55,7 +55,7 @@ namespace ExcelReportApplication
             }
 
             // Create global TestCase list
-            if (!FileFunction.CheckFileExist(tclist_filename))
+            if (!FileFunction.Exists(tclist_filename))
             {
                 MsgWindow.AppendText(tclist_filename + " does not exist. Please check again.\n");
                 return;
@@ -69,7 +69,7 @@ namespace ExcelReportApplication
 
             /*
             // Write extended string back to tc-file
-            if (FileFunction.CheckFileExist(tclist_filename))
+            if (FileFunction.Exists(tclist_filename))
             {
                 ReportWorker.WriteBacktoTCJiraExcel(tclist_filename);
                 MsgWindow.AppendText("Writeback sample to tc_list finished!\n");
@@ -77,7 +77,7 @@ namespace ExcelReportApplication
             */
 
             // Write extended string to report-file (fill template and save as other file)
-            if (!FileFunction.CheckFileExist(report_filename))
+            if (!FileFunction.Exists(report_filename))
             {
                 MsgWindow.AppendText("Report file template does not exist. Please check again.\n");
                 return;

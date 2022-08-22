@@ -466,14 +466,7 @@ Returns or sets the type of underline applied to the font.
                 }
             }
 
-            // 1. generate a filename
-            string dest_filename, ext_str = Path.GetExtension(tclist_filename);
-            int file_wo_ext_len = tclist_filename.Length - ext_str.Length;
-            dest_filename = tclist_filename.Substring(0, file_wo_ext_len);
-            dest_filename += "_" + DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
-            dest_filename += ext_str;
-
-            // Open excel (read-only & corrupt-load)
+           // Open original excel (read-only & corrupt-load) and write to another filename when closed
             Excel.Application myTCExcel = ExcelAction.OpenPreviousExcel(tclist_filename);
             if (myTCExcel != null)
             {
@@ -509,6 +502,8 @@ Returns or sets the type of underline applied to the font.
                         // auto-fit-height of column links
                     WorkingSheet.Columns[col_name_list[TestCase.col_Links]].AutoFit();
 
+                    // Write to another filename with datetime
+                    string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename);
                     ExcelAction.SaveChangesAndCloseExcel(myTCExcel, dest_filename);
                 }
                 else
@@ -601,12 +596,8 @@ Returns or sets the type of underline applied to the font.
                         rng.Rows.AutoFit();
                      }
 
-                    // Save as another file //yyyyMMddHHmmss
-                    string dest_filename, ext_str = Path.GetExtension(report_filename);
-                    int file_wo_ext_len = report_filename.Length - ext_str.Length;
-                    dest_filename = report_filename.Substring(0, file_wo_ext_len);
-                    dest_filename += "_" + DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
-                    dest_filename += ext_str;
+                    // Save as another file with yyyyMMddHHmmss
+                    string dest_filename = FileFunction.GenerateFilenameWithDateTime(report_filename);
                     ExcelAction.SaveChangesAndCloseExcel(myReportExcel, dest_filename);
                 }
                 else
