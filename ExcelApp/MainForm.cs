@@ -21,6 +21,7 @@ namespace ExcelReportApplication
         public void LoadConfigAll()
         {
             int int_value;
+            bool bool_value;
 
             // Read all the keys from the config file
             NameValueCollection sAll;
@@ -30,7 +31,11 @@ namespace ExcelReportApplication
             this.txtBugFile.Text = sAll["workbook_BUG_Jira"];
             this.txtTCFile.Text = sAll["workbook_TC_Jira"];
             this.txtReportFile.Text = sAll["workbook_Report"];
-            
+            if (Boolean.TryParse(sAll["Excel_Visible"], out bool_value))
+            {
+                ExcelAction.ExcelVisible = bool_value;
+            }
+
             // config for issue list
             IssueList.KeyPrefix = sAll["Issue_Key_Prefix"];
             IssueList.SheetName = sAll["Issue_SheetName"];

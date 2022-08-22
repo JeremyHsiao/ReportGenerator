@@ -10,13 +10,15 @@ namespace ExcelReportApplication
 {
     static class ExcelAction
     {
+        static public bool ExcelVisible = true;
+
         // Open existing excel
         static public Excel.Application OpenOridnaryExcel(string filename)
         {
             // Open excel (read-only)
             Excel.Application myBugExcel = new Excel.Application();
             Workbook working_book = myBugExcel.Workbooks.Open(filename, ReadOnly: true);
-            myBugExcel.Visible = true;
+            myBugExcel.Visible = ExcelVisible;
             return myBugExcel;
         }
 
@@ -27,7 +29,7 @@ namespace ExcelReportApplication
             //Workbook working_book = myBugExcel.Workbooks.Open(filename)
             //Workbook working_book = myBugExcel.Workbooks.Open(filename, ReadOnly: true, CorruptLoad: XlCorruptLoad.xlExtractData);
             myBugExcel.Workbooks.Open(filename, ReadOnly: true, CorruptLoad: XlCorruptLoad.xlExtractData);
-            myBugExcel.Visible = true;
+            myBugExcel.Visible = ExcelVisible;
             return myBugExcel;
         }
 
