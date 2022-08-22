@@ -27,6 +27,8 @@ namespace ExcelReportApplication
             txtBugFile.Text = sAll["workbook_BUG_Jira"];
             txtTCFile.Text = sAll["workbook_TC_Jira"];
             txtReportFile.Text = sAll["workbook_Report"];
+            ReportWorker.SetBugKeyPrefix(sAll["Issue_Key_Prefix"]);
+            ReportWorker.SetTCKeyPrefix(sAll["TC_Key_Prefix"]);
 
             if ((FileFunction.GetFullPath(txtBugFile.Text) == "") ||
                 (FileFunction.GetFullPath(txtTCFile.Text) == "") ||

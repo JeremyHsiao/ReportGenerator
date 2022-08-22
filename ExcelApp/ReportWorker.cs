@@ -215,8 +215,10 @@ Returns or sets the type of underline applied to the font.
         const string sheet_Report_Result = "Result";
 
         // Key value
-        const string BUG_KEY = "BENSE";
-        const string TC_KEY = "TCBEN";
+        private static string BUG_KEY = "BENSE";
+        private static string TC_KEY = "TCBEN" ;
+        static public void SetBugKeyPrefix(String str) { BUG_KEY = str; }
+        static public void SetTCKeyPrefix(String str) { TC_KEY = str; }
 
         static public Dictionary<string, List<StyleString>> global_bug_list = new Dictionary<string, List<StyleString>>();
         static public List<TestCase> global_testcase_list = new List<TestCase> ();
