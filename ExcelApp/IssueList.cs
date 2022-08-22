@@ -24,19 +24,14 @@ namespace ExcelReportApplication
             const string col_Severity = "Severity";
             const string col_RD_Comment = "Steps To Reproduce"; // To be updated 
             // const string col_RD_Comment = "Additional Information"; // To be updated
-            //const int max_issue_no = 100000;
             Dictionary<string, List<StyleString>> bug_list = new Dictionary<string, List<StyleString>>();
 
-            // Obtain column name listed on row 4 & its column index
-            const int NameDefinitionRow = 4;
             Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(bug_worksheet, NameDefinitionRow);
 
             // Get the last (row,col) of excel
             Range rngLast = bug_worksheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
 
-            // Collect bug info from row 5
-            const int row_starting_key_index = 5;
-            for (int row_index = row_starting_key_index; row_index <= rngLast.Row; row_index++)
+            for (int row_index = DataBeginRow; row_index <= rngLast.Row; row_index++)
             {
                 List<StyleString> add_style_str = new List<StyleString>();
                 string add_str, key_str, summary_str, severity_str, rd_commment_str;
