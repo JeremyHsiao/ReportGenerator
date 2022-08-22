@@ -20,15 +20,33 @@ namespace ExcelReportApplication
 
         public void LoadConfigAll()
         {
+            int int_value;
+
             // Read all the keys from the config file
             NameValueCollection sAll;
             sAll = ConfigurationManager.AppSettings;
 
+            // config for default filename at MainForm
             this.txtBugFile.Text = sAll["workbook_BUG_Jira"];
             this.txtTCFile.Text = sAll["workbook_TC_Jira"];
             this.txtReportFile.Text = sAll["workbook_Report"];
+            
+            // config for issue 
             ReportWorker.SetBugKeyPrefix(sAll["Issue_Key_Prefix"]);
+
+            // config for test-case
             TestCase.KeyPrefix = sAll["TC_Key_Prefix"];
+            TestCase.SheetName = sAll["TC_SheetName"];
+            if (Int32.TryParse(sAll["TC_Row_NameDefine"], out int_value))
+            {
+                TestCase.NameDefinitionRow = int_value;
+            }
+            if (Int32.TryParse(sAll["TC_Row_DataBegin"], out int_value))
+            {
+                TestCase.DataBeginRow = int_value;
+            }
+
+            // config for report template
         }
 
         private void Form1_Load(object sender, EventArgs e)

@@ -178,8 +178,8 @@ Returns or sets the type of underline applied to the font.
             Dictionary<string, List<StyleString>> bug_list = new Dictionary<string, List<StyleString>>();
 
             // Obtain column name listed on row 4 & its column index
-            const int tc_column_naming_row = 4;
-            Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(bug_worksheet, tc_column_naming_row);
+            const int NameDefinitionRow = 4;
+            Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(bug_worksheet, NameDefinitionRow);
 
             // Get the last (row,col) of excel
             Range rngLast = bug_worksheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
@@ -353,10 +353,10 @@ Returns or sets the type of underline applied to the font.
                 Worksheet result_worksheet = ExcelAction.Find_Worksheet(myReportExcel, sheet_Report_Result);
                 if (result_worksheet != null)
                 {
-                    //const int result_tc_column_naming_row = 5;
+                    //const int result_NameDefinitionRow = 5;
                     //const string col_Key = "TEST   ITEM";
                     //const string col_Links = "Links";
-                    //Dictionary<string, int> result_col_name_list = CreateTableColumnIndex(result_worksheet, result_tc_column_naming_row);
+                    //Dictionary<string, int> result_col_name_list = CreateTableColumnIndex(result_worksheet, result_NameDefinitionRow);
 
                     // Get the last (row,col) of excel
                     Range rngLast = result_worksheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);

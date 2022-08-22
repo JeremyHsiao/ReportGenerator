@@ -59,9 +59,9 @@ namespace ExcelReportApplication
             this.key = key; this.group = group; this.summary = summary; this.status = status; this.links = links;
         }
 
-        static private int tc_column_naming_row = 4;
-        static private int tc_starting_row = 5;
-        static private string sheet_TC_Jira = "general_report";
+        static public int NameDefinitionRow = 4;
+        static public int DataBeginRow = 5;
+        static public string SheetName = "general_report";
         static public string KeyPrefix = "TCBEN";
 
         static public List<TestCase> GenerateTestCaseList(string tclist_filename)
@@ -73,16 +73,16 @@ namespace ExcelReportApplication
             //Excel.Application myTCExcel = OpenOridnaryExcel(tclist_filename);
             if (myTCExcel != null)
             {
-                Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myTCExcel, sheet_TC_Jira);
+                Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myTCExcel, SheetName);
                 if (WorkingSheet != null)
                 {
-                    Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(WorkingSheet, tc_column_naming_row);
+                    Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(WorkingSheet, NameDefinitionRow);
 
                     // Get the last (row,col) of excel
                     Range rngLast = WorkingSheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
 
                     // Visit all rows and add content of TestCase
-                    for (int index = tc_starting_row; index <= rngLast.Row; index++)
+                    for (int index = DataBeginRow; index <= rngLast.Row; index++)
                     {
                         Object cell_value2;
                         String key, group, summary, status, links;
@@ -129,16 +129,16 @@ namespace ExcelReportApplication
             Excel.Application myTCExcel = ExcelAction.OpenPreviousExcel(tclist_filename);
             if (myTCExcel != null)
             {
-                Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myTCExcel, TestCase.sheet_TC_Jira);
+                Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myTCExcel, TestCase.SheetName);
                 if (WorkingSheet != null)
                 {
-                    Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(WorkingSheet, tc_column_naming_row);
+                    Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(WorkingSheet, NameDefinitionRow);
 
                     // Get the last (row,col) of excel
                     Range rngLast = WorkingSheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
 
                     // Visit all rows and replace Bug-ID with long description of Bug.
-                    for (int index = tc_starting_row; index <= rngLast.Row; index++)
+                    for (int index = DataBeginRow; index <= rngLast.Row; index++)
                     {
                         Object cell_value2;
 
