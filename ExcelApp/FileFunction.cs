@@ -102,11 +102,13 @@ namespace ExcelReportApplication
                 dt = DateTime.Now.ToString("yyyyMMddHHmmss");       // ex: 20220801160000
                 ext = Path.GetExtension(Filename);                  // extension with '.' 
                 ret = path + @"\" + name + "_" + dt + ext;
+
+                // Filename ==  path + @"\" + name            + ext
+                // ret      ==  path + @"\" + name + "_" + dt + ext;
             }
             catch
             {
-                // intput filename will be returned if exceptions
-                ret = Filename;
+                // "" will be returned if exceptions
             }
             return ret;
         }
