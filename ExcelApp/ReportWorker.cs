@@ -167,7 +167,7 @@ Returns or sets the type of underline applied to the font.
             if (myBugExcel != null)
             {
                 // Find bug worksheet and generate list of bug description string
-                Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myBugExcel, IssueList.sheet_BUG_General_Result);
+                Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myBugExcel, IssueList.SheetName);
                 if (WorkingSheet != null)
                 {
                     myBug_list = IssueList.CreateBugListFromBugJiraFile(WorkingSheet);
@@ -248,6 +248,7 @@ Returns or sets the type of underline applied to the font.
             }
         }
 
+        static public string sheet_Report_Result = "Result";
         static public void SaveToReportTemplate(string report_filename)
         {
             // Re-arrange test-case list into dictionary of summary/links pair
@@ -265,7 +266,7 @@ Returns or sets the type of underline applied to the font.
             Excel.Application myReportExcel = ExcelAction.OpenOridnaryExcel(report_filename);
             if (myReportExcel != null)
             {
-                Worksheet result_worksheet = ExcelAction.Find_Worksheet(myReportExcel, IssueList.sheet_Report_Result);
+                Worksheet result_worksheet = ExcelAction.Find_Worksheet(myReportExcel, sheet_Report_Result);
                 if (result_worksheet != null)
                 {
                     //const int result_NameDefinitionRow = 5;

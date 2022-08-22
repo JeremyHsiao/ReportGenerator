@@ -11,11 +11,11 @@ namespace ExcelReportApplication
     class IssueList
     {
         // constant strings for worksheet used in this application.
-        static public string sheet_BUG_General_Result = "general_report";
-        static public string sheet_Report_Result = "Result";
-
-        // Key value
-        static public string BUG_KEY = "BENSE";
+        static public string SheetName = "general_report";
+        static public int NameDefinitionRow = 4;
+        static public int DataBeginRow = 5;
+         // Key value
+        static public string KeyPrefix = "BENSE";
 
         static public Dictionary<string, List<StyleString>> CreateBugListFromBugJiraFile(Worksheet bug_worksheet)
         {
@@ -46,7 +46,7 @@ namespace ExcelReportApplication
                 cell_value2 = bug_worksheet.Cells[row_index, col_name_list[col_Key]].Value2;
                 if (cell_value2 == null) { continue; }
                 key_str = cell_value2.ToString();
-                if (key_str.Contains(BUG_KEY) == false) { continue; }
+                if (key_str.Contains(KeyPrefix) == false) { continue; }
 
                 // Get Summary string
                 cell_value2 = bug_worksheet.Cells[row_index, col_name_list[col_Summary]].Value2;

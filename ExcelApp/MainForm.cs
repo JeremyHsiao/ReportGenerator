@@ -31,8 +31,17 @@ namespace ExcelReportApplication
             this.txtTCFile.Text = sAll["workbook_TC_Jira"];
             this.txtReportFile.Text = sAll["workbook_Report"];
             
-            // config for issue 
-            IssueList.BUG_KEY = sAll["Issue_Key_Prefix"];
+            // config for issue list
+            IssueList.KeyPrefix = sAll["Issue_Key_Prefix"];
+            IssueList.SheetName = sAll["Issue_SheetName"];
+            if (Int32.TryParse(sAll["Issue_Row_NameDefine"], out int_value))
+            {
+                IssueList.NameDefinitionRow = int_value;
+            }
+            if (Int32.TryParse(sAll["Issue_Row_DataBegin"], out int_value))
+            {
+                IssueList.DataBeginRow = int_value;
+            }
 
             // config for test-case
             TestCase.KeyPrefix = sAll["TC_Key_Prefix"];
