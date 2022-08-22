@@ -8,7 +8,7 @@
     <ProjectGuid>{36BE799F-8269-4FB4-A4BB-EB0421A6A3F4}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ReportGenerator</RootNamespace>
+    <RootNamespace>ExcelReportApplication</RootNamespace>
     <AssemblyName>ReportGenerator</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
