@@ -23,39 +23,35 @@ namespace ExcelReportApplication
             int int_value;
             bool bool_value;
 
-            // Read all the keys from the config file
-            NameValueCollection sAll;
-            sAll = ConfigurationManager.AppSettings;
-
             // config for default filename at MainForm
-            this.txtBugFile.Text = sAll["workbook_BUG_Jira"];
-            this.txtTCFile.Text = sAll["workbook_TC_Jira"];
-            this.txtReportFile.Text = sAll["workbook_Report"];
-            if (Boolean.TryParse(sAll["Excel_Visible"], out bool_value))
+            this.txtBugFile.Text = XMLConfig.ReadAppSetting("workbook_BUG_Jira");
+            this.txtTCFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Jira");
+            this.txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_Report");
+            if (Boolean.TryParse(XMLConfig.ReadAppSetting("Excel_Visible"), out bool_value))
             {
                 ExcelAction.ExcelVisible = bool_value;
             }
 
             // config for issue list
-            IssueList.KeyPrefix = sAll["Issue_Key_Prefix"];
-            IssueList.SheetName = sAll["Issue_SheetName"];
-            if (Int32.TryParse(sAll["Issue_Row_NameDefine"], out int_value))
+            IssueList.KeyPrefix = XMLConfig.ReadAppSetting("Issue_Key_Prefix");
+            IssueList.SheetName = XMLConfig.ReadAppSetting("Issue_SheetName");
+            if (Int32.TryParse(XMLConfig.ReadAppSetting("Issue_Row_NameDefine"), out int_value))
             {
                 IssueList.NameDefinitionRow = int_value;
             }
-            if (Int32.TryParse(sAll["Issue_Row_DataBegin"], out int_value))
+            if (Int32.TryParse(XMLConfig.ReadAppSetting("Issue_Row_DataBegin"), out int_value))
             {
                 IssueList.DataBeginRow = int_value;
             }
 
             // config for test-case
-            TestCase.KeyPrefix = sAll["TC_Key_Prefix"];
-            TestCase.SheetName = sAll["TC_SheetName"];
-            if (Int32.TryParse(sAll["TC_Row_NameDefine"], out int_value))
+            TestCase.KeyPrefix = XMLConfig.ReadAppSetting("TC_Key_Prefix");
+            TestCase.SheetName = XMLConfig.ReadAppSetting("TC_SheetName");
+            if (Int32.TryParse(XMLConfig.ReadAppSetting("TC_Row_NameDefine"), out int_value))
             {
                 TestCase.NameDefinitionRow = int_value;
             }
-            if (Int32.TryParse(sAll["TC_Row_DataBegin"], out int_value))
+            if (Int32.TryParse(XMLConfig.ReadAppSetting("TC_Row_DataBegin"), out int_value))
             {
                 TestCase.DataBeginRow = int_value;
             }
