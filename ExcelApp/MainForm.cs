@@ -75,7 +75,7 @@ namespace ExcelReportApplication
         private bool ReadGlobalIssueListTask(String filename)
         {
             String buglist_filename = FileFunction.GetFullPath(filename);
-            if (!FileFunction.Exists(buglist_filename))
+            if (!FileFunction.FileExists(buglist_filename))
             {
                 MsgWindow.AppendText(buglist_filename + " does not exist. Please check again.\n");
                 return false;
@@ -92,7 +92,7 @@ namespace ExcelReportApplication
         private bool ReadGlobalTCListTask(String filename)
         {
             String tclist_filename = FileFunction.GetFullPath(filename);
-            if (!FileFunction.Exists(tclist_filename))
+            if (!FileFunction.FileExists(tclist_filename))
             {
                 MsgWindow.AppendText(tclist_filename + " does not exist. Please check again.\n");
                 return false;
@@ -122,13 +122,13 @@ namespace ExcelReportApplication
 
             // Write extended string back to tc-file
             String tclist_filename = FileFunction.GetFullPath(txtTCFile.Text);
-            if (!FileFunction.Exists(tclist_filename))
+            if (!FileFunction.FileExists(tclist_filename))
             {
                 return false;
             }
 
             String report_filename = FileFunction.GetFullPath(txtReportFile.Text);
-            if (!FileFunction.Exists(report_filename))
+            if (!FileFunction.FileExists(report_filename))
             {
                 MsgWindow.AppendText("Report file template does not exist. Please check again.\n");
                 return false;

@@ -33,10 +33,24 @@ namespace ExcelReportApplication
             return ret_str;
         }
 
-        static public bool Exists(String Filename)
+        static public bool FileExists(String Filename)
         {
             bool ret;
             if (!File.Exists(Filename))
+            {
+                ret = false;
+            }
+            else
+            {
+                ret = true;
+            }
+            return ret;
+        }
+
+        static public bool DirectoryExists(String dir)
+        {
+            bool ret;
+            if (!Directory.Exists(dir))
             {
                 ret = false;
             }
