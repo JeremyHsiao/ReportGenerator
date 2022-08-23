@@ -38,6 +38,7 @@ namespace ExcelReportApplication
             myExcel.ActiveWorkbook.Close(SaveChanges: false);
             myExcel.Quit();
             System.Runtime.InteropServices.Marshal.ReleaseComObject(myExcel);
+            GC.Collect();
         }
 
         static public void SaveChangesAndCloseExcel(Excel.Application myExcel)
@@ -45,6 +46,7 @@ namespace ExcelReportApplication
             myExcel.ActiveWorkbook.Close(SaveChanges: true);
             myExcel.Quit();
             System.Runtime.InteropServices.Marshal.ReleaseComObject(myExcel);
+            GC.Collect();
         }
 
         static public void SaveChangesAndCloseExcel(Excel.Application myExcel, String filename)
@@ -52,6 +54,7 @@ namespace ExcelReportApplication
             myExcel.ActiveWorkbook.Close(SaveChanges: true, Filename: filename);
             myExcel.Quit();
             System.Runtime.InteropServices.Marshal.ReleaseComObject(myExcel);
+            GC.Collect();
         }
 
         // List all worksheets within excel
