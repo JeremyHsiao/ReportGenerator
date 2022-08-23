@@ -27,6 +27,7 @@ namespace ExcelReportApplication
             this.txtBugFile.Text = XMLConfig.ReadAppSetting("workbook_BUG_Jira");
             this.txtTCFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Jira");
             this.txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_Report");
+            this.txtExcelTestFile.Text = XMLConfig.ReadAppSetting("workbook_ExcelTest");
             if (Boolean.TryParse(XMLConfig.ReadAppSetting("Excel_Visible"), out bool_value))
             {
                 ExcelAction.ExcelVisible = bool_value;
@@ -192,6 +193,15 @@ namespace ExcelReportApplication
             }
         }
 
+        private void btnSelectExcelTestFile_Click(object sender, EventArgs e)
+        {
+            String ret_str = FileFunction.UsesrSelectFilename();
+            if (ret_str != "")
+            {
+                txtExcelTestFile.Text = ret_str;
+            }
+        }
+
         private void btnSelectReportFile_Click(object sender, EventArgs e)
         {
             String ret_str = FileFunction.UsesrSelectFilename();
@@ -223,6 +233,11 @@ namespace ExcelReportApplication
             bool bRet;
             bRet = SaveReportDemoTask(txtTCFile.Text, txtReportFile.Text);
         }
-    }
 
+        private void btnTestExcel_Click(object sender, EventArgs e)
+        {
+            bool bRet;
+            bRet = ExcelTest.ExcelTestMainTask(txtExcelTestFile.Text);
+        }
+    }
 }

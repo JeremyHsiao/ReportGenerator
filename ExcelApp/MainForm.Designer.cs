@@ -43,6 +43,10 @@
             this.btnCreateReport = new System.Windows.Forms.Button();
             this.btnGetTCList = new System.Windows.Forms.Button();
             this.btnGetBugList = new System.Windows.Forms.Button();
+            this.btnTestExcel = new System.Windows.Forms.Button();
+            this.btnSelectExcelTestFile = new System.Windows.Forms.Button();
+            this.txtExcelTestFile = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnDemo
@@ -200,11 +204,56 @@
             this.btnGetBugList.UseVisualStyleBackColor = true;
             this.btnGetBugList.Click += new System.EventHandler(this.btnGetBugList_Click);
             // 
+            // btnTestExcel
+            // 
+            this.btnTestExcel.Font = new System.Drawing.Font("Arial", 9F);
+            this.btnTestExcel.Location = new System.Drawing.Point(479, 91);
+            this.btnTestExcel.Name = "btnTestExcel";
+            this.btnTestExcel.Size = new System.Drawing.Size(54, 23);
+            this.btnTestExcel.TabIndex = 18;
+            this.btnTestExcel.Text = "Test";
+            this.btnTestExcel.UseVisualStyleBackColor = true;
+            this.btnTestExcel.Click += new System.EventHandler(this.btnTestExcel_Click);
+            // 
+            // btnSelectExcelTestFile
+            // 
+            this.btnSelectExcelTestFile.Font = new System.Drawing.Font("Arial", 9F);
+            this.btnSelectExcelTestFile.Location = new System.Drawing.Point(419, 91);
+            this.btnSelectExcelTestFile.Name = "btnSelectExcelTestFile";
+            this.btnSelectExcelTestFile.Size = new System.Drawing.Size(54, 23);
+            this.btnSelectExcelTestFile.TabIndex = 17;
+            this.btnSelectExcelTestFile.Text = "Select";
+            this.btnSelectExcelTestFile.UseVisualStyleBackColor = true;
+            this.btnSelectExcelTestFile.Click += new System.EventHandler(this.btnSelectExcelTestFile_Click);
+            // 
+            // txtExcelTestFile
+            // 
+            this.txtExcelTestFile.Font = new System.Drawing.Font("Arial Narrow", 9F);
+            this.txtExcelTestFile.Location = new System.Drawing.Point(111, 93);
+            this.txtExcelTestFile.Name = "txtExcelTestFile";
+            this.txtExcelTestFile.ReadOnly = true;
+            this.txtExcelTestFile.Size = new System.Drawing.Size(302, 21);
+            this.txtExcelTestFile.TabIndex = 16;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Arial", 9F);
+            this.label5.Location = new System.Drawing.Point(10, 98);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(85, 15);
+            this.label5.TabIndex = 15;
+            this.label5.Text = "Excel Test File";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(544, 381);
+            this.Controls.Add(this.btnTestExcel);
+            this.Controls.Add(this.btnSelectExcelTestFile);
+            this.Controls.Add(this.txtExcelTestFile);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.btnCreateReport);
             this.Controls.Add(this.btnGetTCList);
             this.Controls.Add(this.btnGetBugList);
@@ -245,6 +294,10 @@
         private System.Windows.Forms.Button btnCreateReport;
         private System.Windows.Forms.Button btnGetTCList;
         private System.Windows.Forms.Button btnGetBugList;
+        private System.Windows.Forms.Button btnTestExcel;
+        private System.Windows.Forms.Button btnSelectExcelTestFile;
+        private System.Windows.Forms.TextBox txtExcelTestFile;
+        private System.Windows.Forms.Label label5;
     }
 }
 
