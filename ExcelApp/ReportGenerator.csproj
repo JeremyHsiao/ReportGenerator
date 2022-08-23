@@ -68,6 +68,7 @@
     <Compile Include="ExcelTest.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="IssueList.cs" />
+    <Compile Include="StyleString.cs" />
     <Compile Include="TestCase.cs" />
     <Compile Include="FileFunction.cs" />
     <Compile Include="ExcelAction.cs" />
