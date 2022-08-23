@@ -75,61 +75,103 @@ namespace ExcelReportApplication
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private bool ReadGlobalIssueListTask(String filename)
         {
-            // Create global bug list
-            // BUG_Jira
-            String buglist_filename = FileFunction.GetFullPath(txtBugFile.Text);
+            String buglist_filename = FileFunction.GetFullPath(filename);
             if (!FileFunction.Exists(buglist_filename))
             {
                 MsgWindow.AppendText(buglist_filename + " does not exist. Please check again.\n");
-                return;
+                return false;
             }
             else
             {
                 MsgWindow.AppendText("Processing bug_list:" + buglist_filename + ".\n");
                 ReportWorker.global_issue_list = IssueList.GenerateIssueList(buglist_filename);
-                ReportWorker.global_issue_description_list = IssueList.CreateFullIssueDescription(ReportWorker.global_issue_list);
                 MsgWindow.AppendText("bug_list finished!\n");
+                return true;
             }
+        }
 
-            // Create global TestCase list
-            String tclist_filename = FileFunction.GetFullPath(txtTCFile.Text);
+        private bool ReadGlobalTCListTask(String filename)
+        {
+            String tclist_filename = FileFunction.GetFullPath(filename);
             if (!FileFunction.Exists(tclist_filename))
             {
                 MsgWindow.AppendText(tclist_filename + " does not exist. Please check again.\n");
-                return;
+                return false;
             }
             else
             {
                 MsgWindow.AppendText("Processing tc_list:" + tclist_filename + ".\n");
                 ReportWorker.global_testcase_list = TestCase.GenerateTestCaseList(tclist_filename);
                 MsgWindow.AppendText("tc_list finished!\n");
+                return true;
             }
+        }
 
-            
-            // Write extended string back to tc-file
-            if (FileFunction.Exists(tclist_filename))
+        private bool SaveReportDemoTask(String tc_file, String report_file)
+        {
+            if (ReportWorker.global_issue_list.Count == 0)
             {
-                TestCase.WriteBacktoTCJiraExcel(tclist_filename);
-                MsgWindow.AppendText("Writeback sample to tc_list finished!\n");
+                MsgWindow.AppendText("Issue List is not available. Please read Issue list file.\n");
+                return false;
             }
-            
 
-            // Write extended string to report-file (fill template and save as other file)
+            if (ReportWorker.global_testcase_list.Count == 0)
+            {
+                MsgWindow.AppendText("Test Case List is not available. Please read TC file.\n");
+                return false;
+            }
+
+            // Write extended string back to tc-file
+            String tclist_filename = FileFunction.GetFullPath(txtTCFile.Text);
+            if (!FileFunction.Exists(tclist_filename))
+            {
+                return false;
+            }
+
             String report_filename = FileFunction.GetFullPath(txtReportFile.Text);
             if (!FileFunction.Exists(report_filename))
             {
                 MsgWindow.AppendText("Report file template does not exist. Please check again.\n");
-                return;
-            }
-            else
-            {
-                ReportWorker.SaveToReportTemplate(report_filename);
-                MsgWindow.AppendText("report finished!\n");
+                return false;
             }
 
-            GC.Collect();
+            // This full issue description is needfed for demo purpose
+            ReportWorker.global_issue_description_list = IssueList.CreateFullIssueDescription(ReportWorker.global_issue_list);
+
+            // Demo 1
+            TestCase.WriteBacktoTCJiraExcel(tclist_filename);
+            MsgWindow.AppendText("Writeback sample to tc_list finished!\n");
+
+            // Demo 2
+            ReportWorker.SaveToReportTemplate(report_filename);
+            MsgWindow.AppendText("report finished!\n");
+
+            return true;
+        }
+
+        private void btnDemo_Click(object sender, EventArgs e)
+        {
+            bool bRet;
+
+            bRet = ReadGlobalIssueListTask(txtBugFile.Text);
+            if (!bRet)
+            {
+                return;
+            }
+
+            bRet = ReadGlobalTCListTask(txtTCFile.Text);
+            if (!bRet)
+            {
+                return;
+            }
+
+            bRet = SaveReportDemoTask(txtTCFile.Text, txtReportFile.Text);
+            if (!bRet)
+            {
+                return;
+            }
         }
 
         // Because TextBox is set to Read-only, filename can be only changed via File Dialog
@@ -161,6 +203,29 @@ namespace ExcelReportApplication
             {
                 txtReportFile.Text = ret_str;
             }
+        }
+
+        private void btnGetBugList_Click(object sender, EventArgs e)
+        {
+            bool bRet;
+            bRet = ReadGlobalIssueListTask(txtBugFile.Text);
+            if (bRet)
+            {
+                // This full issue description is for demo purpose
+                ReportWorker.global_issue_description_list = IssueList.CreateFullIssueDescription(ReportWorker.global_issue_list);
+            }
+        }
+
+        private void btnGetTCList_Click(object sender, EventArgs e)
+        {
+            bool bRet;
+            bRet = ReadGlobalTCListTask(txtTCFile.Text);
+        }
+
+        private void btnCreateReport_Click(object sender, EventArgs e)
+        {
+            bool bRet;
+            bRet = SaveReportDemoTask(txtTCFile.Text, txtReportFile.Text);
         }
     }
 
