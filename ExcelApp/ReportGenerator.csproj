@@ -65,6 +65,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestPlan.cs" />
     <Compile Include="ExcelTest.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="IssueList.cs" />
@@ -170,8 +171,8 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>xcopy/s/y/f/i $(ProjectDir)SampleData  $(ProjectDir)$(OutDir)SampleData
-xcopy/s/y/f/i $(ProjectDir)SampleData  $(ProjectDir)$(OutDir)..\Debug\SampleData</PostBuildEvent>
+    <PostBuildEvent>xcopy/s/y/f/i $(ProjectDir)SampleData\*.*  $(ProjectDir)$(OutDir)SampleData
+xcopy/s/y/f/i $(ProjectDir)SampleData\*.*  $(ProjectDir)$(OutDir)..\Debug\SampleData</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
