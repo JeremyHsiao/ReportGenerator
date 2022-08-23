@@ -237,7 +237,9 @@ namespace ExcelReportApplication
         private void btnTestExcel_Click(object sender, EventArgs e)
         {
             bool bRet;
+            MsgWindow.AppendText("Start Testing Excel\n");
             bRet = ExcelTest.ExcelTestMainTask(txtExcelTestFile.Text);
+            MsgWindow.AppendText("Testing Excel finished!\n");
         }
     }
 }
