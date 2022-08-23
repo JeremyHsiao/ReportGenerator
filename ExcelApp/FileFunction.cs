@@ -15,7 +15,7 @@ namespace ExcelReportApplication
             String ret_str = "";
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Title = "Select file";
-            dialog.InitialDirectory = Directory.GetCurrentDirectory();
+            dialog.InitialDirectory = Directory.GetCurrentDirectory()+@"SampleData";
             dialog.Filter = "Excel files (*.xls/xlsx)|*.xls;*.xlsx";
             if (dialog.ShowDialog() == DialogResult.OK)
             {
