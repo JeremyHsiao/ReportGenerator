@@ -106,26 +106,78 @@ namespace ExcelReportApplication
 
         static public Color descrption_color_issue = Color.Red;
         static public Color descrption_color_comment = Color.Blue;
-        static public Dictionary<string, List<StyleString>> CreateFullIssueDescription(List<IssueList> issuelist)
+        static public Dictionary<string, List<StyleString>> GenerateFullIssueDescription(List<IssueList> issuelist)
         {
             Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
 
             foreach (IssueList issue in issuelist)
             {
                 List<StyleString> value_style_str = new List<StyleString>();
-                String key = issue.Key, rd_commment_str = issue.comment;
+                String key = issue.Key, rd_comment_str = issue.comment;
 
                 if (key != "")
                 {
                     String str = key + issue.Summary + "(" + issue.Severity + ")";
                     StyleString style_str = new StyleString(str, descrption_color_issue);
                     value_style_str.Add(style_str);
-                    if (rd_commment_str != "")
+
+                    // Keep portion of string before first "\n"; if no "\n", keep whole string otherwise.
+                    String short_comment = "";
+                    if (rd_comment_str.Contains("\n"))
                     {
-                        str = " --> " + rd_commment_str;
+                        short_comment = rd_comment_str.Substring(0, rd_comment_str.IndexOf("\n"));
+                    }
+                    else
+                    {
+                        short_comment = rd_comment_str;
+                    }
+                    if (short_comment != "")
+                    {
+                        str = " --> " + short_comment;
                         style_str = new StyleString(str, descrption_color_comment);
                         value_style_str.Add(style_str);
                     }
+
+                    // Add whole string into return_list
+                    ret_list.Add(key, value_style_str);
+                }
+            }
+            return ret_list;
+        }
+
+        static public Dictionary<string, List<StyleString>> GenerateIssueSummary(List<IssueList> issuelist)
+        {
+            Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
+
+            foreach (IssueList issue in issuelist)
+            {
+                List<StyleString> value_style_str = new List<StyleString>();
+                String key = issue.Key, rd_comment_str = issue.comment;
+
+                if (key != "")
+                {
+                    String str = key + issue.Summary + "(" + issue.Severity + ")";
+                    StyleString style_str = new StyleString(str, descrption_color_issue);
+                    value_style_str.Add(style_str);
+
+                    // Keep portion of string before first "\n"; if no "\n", keep whole string otherwise.
+                    String short_comment = "";
+                    if (rd_comment_str.Contains("\n"))
+                    {
+                        short_comment = rd_comment_str.Substring(0, rd_comment_str.IndexOf("\n"));
+                    }
+                    else
+                    {
+                        short_comment = rd_comment_str;
+                    }
+                    if (short_comment != "")
+                    {
+                        str = " --> " + short_comment;
+                        style_str = new StyleString(str, descrption_color_comment);
+                        value_style_str.Add(style_str);
+                    }
+
+                    // Add whole string into return_list
                     ret_list.Add(key, value_style_str);
                 }
             }

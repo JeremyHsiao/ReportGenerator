@@ -135,7 +135,7 @@ namespace ExcelReportApplication
             }
 
             // This full issue description is needfed for demo purpose
-            ReportDemo.global_issue_description_list = IssueList.CreateFullIssueDescription(ReportDemo.global_issue_list);
+            ReportDemo.global_issue_description_list = IssueList.GenerateFullIssueDescription(ReportDemo.global_issue_list);
 
             // Demo 1
             ReportDemo.WriteBacktoTCJiraExcel(tclist_filename);
@@ -218,7 +218,7 @@ namespace ExcelReportApplication
             if (bRet)
             {
                 // This full issue description is for demo purpose
-                ReportDemo.global_issue_description_list = IssueList.CreateFullIssueDescription(ReportDemo.global_issue_list);
+                ReportDemo.global_issue_description_list = IssueList.GenerateFullIssueDescription(ReportDemo.global_issue_list);
             }
         }
 
