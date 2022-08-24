@@ -27,7 +27,7 @@ namespace ExcelReportApplication
             this.txtBugFile.Text = XMLConfig.ReadAppSetting("workbook_BUG_Jira");
             this.txtTCFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Jira");
             this.txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_Report");
-            this.txtExcelTestFile.Text = XMLConfig.ReadAppSetting("workbook_ExcelTest");
+
             if (Boolean.TryParse(XMLConfig.ReadAppSetting("Excel_Visible"), out bool_value))
             {
                 ExcelAction.ExcelVisible = bool_value;
@@ -110,65 +110,43 @@ namespace ExcelReportApplication
         {
             if (ReportDemo.global_issue_list.Count == 0)
             {
-                MsgWindow.AppendText("Issue List is not available. Please read Issue list file.\n");
-                return false;
+                bool bRet = ReadGlobalIssueListTask(txtBugFile.Text);
+                if (!bRet)
+                {
+                    MsgWindow.AppendText("Issue List not available. Please check Issue list file.\n");
+                    return false;
+                }
             }
 
             if (ReportDemo.global_testcase_list.Count == 0)
             {
-                MsgWindow.AppendText("Test Case List is not available. Please read TC file.\n");
-                return false;
-            }
-
-            // Write extended string back to tc-file
-            String tclist_filename = FileFunction.GetFullPath(txtTCFile.Text);
-            if (!FileFunction.FileExists(tclist_filename))
-            {
-                return false;
+                bool bRet = ReadGlobalTCListTask(txtTCFile.Text);
+                if (!bRet)
+                {
+                    MsgWindow.AppendText("Test Case List is not available. Please check TC file.\n");
+                    return false;
+                }
             }
 
             String report_filename = FileFunction.GetFullPath(txtReportFile.Text);
             if (!FileFunction.FileExists(report_filename))
             {
-                MsgWindow.AppendText("Report file template does not exist. Please check again.\n");
+                MsgWindow.AppendText("Report file does not exist. Please check again.\n");
                 return false;
             }
 
             // This full issue description is needfed for demo purpose
-            ReportDemo.global_issue_description_list = IssueList.GenerateFullIssueDescription(ReportDemo.global_issue_list);
+            ReportDemo.global_issue_description_list = IssueList.GenerateIssueSummary(ReportDemo.global_issue_list);
 
             // Demo 1
-            ReportDemo.WriteBacktoTCJiraExcel(tclist_filename);
-            MsgWindow.AppendText("Writeback sample to tc_list finished!\n");
+            //ReportDemo.WriteBacktoTCJiraExcel(tclist_filename);
+            //MsgWindow.AppendText("Writeback sample to tc_list finished!\n");
 
             // Demo 2
             ReportDemo.SaveToReportTemplate(report_filename);
             MsgWindow.AppendText("report finished!\n");
 
             return true;
-        }
-
-        private void btnDemo_Click(object sender, EventArgs e)
-        {
-            bool bRet;
-
-            bRet = ReadGlobalIssueListTask(txtBugFile.Text);
-            if (!bRet)
-            {
-                return;
-            }
-
-            bRet = ReadGlobalTCListTask(txtTCFile.Text);
-            if (!bRet)
-            {
-                return;
-            }
-
-            bRet = SaveReportDemoTask(txtTCFile.Text, txtReportFile.Text);
-            if (!bRet)
-            {
-                return;
-            }
         }
 
         // Because TextBox is set to Read-only, filename can be only changed via File Dialog
@@ -193,15 +171,6 @@ namespace ExcelReportApplication
             }
         }
 
-        private void btnSelectExcelTestFile_Click(object sender, EventArgs e)
-        {
-            String ret_str = FileFunction.UsesrSelectFilename();
-            if (ret_str != "")
-            {
-                txtExcelTestFile.Text = ret_str;
-            }
-        }
-
         private void btnSelectReportFile_Click(object sender, EventArgs e)
         {
             String ret_str = FileFunction.UsesrSelectFilename();
@@ -211,35 +180,11 @@ namespace ExcelReportApplication
             }
         }
 
-        private void btnGetBugList_Click(object sender, EventArgs e)
-        {
-            bool bRet;
-            bRet = ReadGlobalIssueListTask(txtBugFile.Text);
-            if (bRet)
-            {
-                // This full issue description is for demo purpose
-                ReportDemo.global_issue_description_list = IssueList.GenerateFullIssueDescription(ReportDemo.global_issue_list);
-            }
-        }
-
-        private void btnGetTCList_Click(object sender, EventArgs e)
-        {
-            bool bRet;
-            bRet = ReadGlobalTCListTask(txtTCFile.Text);
-        }
-
         private void btnCreateReport_Click(object sender, EventArgs e)
         {
             bool bRet;
             bRet = SaveReportDemoTask(txtTCFile.Text, txtReportFile.Text);
         }
 
-        private void btnTestExcel_Click(object sender, EventArgs e)
-        {
-            bool bRet;
-            MsgWindow.AppendText("Start Testing Excel\n");
-            bRet = ExcelTest.ExcelTestMainTask(txtExcelTestFile.Text);
-            MsgWindow.AppendText("Testing Excel finished!\n");
-        }
     }
 }
