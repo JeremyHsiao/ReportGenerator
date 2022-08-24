@@ -116,7 +116,7 @@ namespace ExcelReportApplication
         {
             // Re-arrange test-case list into dictionary of key/links pair
             Dictionary<String, String> group_note_issue = new Dictionary<String, String>();
-            foreach (TestCase tc in ReportWorker.global_testcase_list)
+            foreach (TestCase tc in ReportDemo.global_testcase_list)
             {
                 String key = tc.Key;
                 if (key != "")
@@ -153,10 +153,10 @@ namespace ExcelReportApplication
                         cell_value2 = rng.Value2;
                         if (cell_value2 != null)
                         {
-                            List<StyleString> str_list = ReportWorker.ExtendIssueDescription(group_note_issue[key], 
-                                                                            ReportWorker.global_issue_description_list);
+                            List<StyleString> str_list = ReportDemo.ExtendIssueDescription(group_note_issue[key], 
+                                                                            ReportDemo.global_issue_description_list);
 
-                            ReportWorker.WriteSytleString(ref rng, str_list);
+                            ReportDemo.WriteSytleString(ref rng, str_list);
                         }
                     }
                     // auto-fit-height of column links

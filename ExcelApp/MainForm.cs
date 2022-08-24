@@ -83,7 +83,7 @@ namespace ExcelReportApplication
             else
             {
                 MsgWindow.AppendText("Processing bug_list:" + buglist_filename + ".\n");
-                ReportWorker.global_issue_list = IssueList.GenerateIssueList(buglist_filename);
+                ReportDemo.global_issue_list = IssueList.GenerateIssueList(buglist_filename);
                 MsgWindow.AppendText("bug_list finished!\n");
                 return true;
             }
@@ -100,7 +100,7 @@ namespace ExcelReportApplication
             else
             {
                 MsgWindow.AppendText("Processing tc_list:" + tclist_filename + ".\n");
-                ReportWorker.global_testcase_list = TestCase.GenerateTestCaseList(tclist_filename);
+                ReportDemo.global_testcase_list = TestCase.GenerateTestCaseList(tclist_filename);
                 MsgWindow.AppendText("tc_list finished!\n");
                 return true;
             }
@@ -108,13 +108,13 @@ namespace ExcelReportApplication
 
         private bool SaveReportDemoTask(String tc_file, String report_file)
         {
-            if (ReportWorker.global_issue_list.Count == 0)
+            if (ReportDemo.global_issue_list.Count == 0)
             {
                 MsgWindow.AppendText("Issue List is not available. Please read Issue list file.\n");
                 return false;
             }
 
-            if (ReportWorker.global_testcase_list.Count == 0)
+            if (ReportDemo.global_testcase_list.Count == 0)
             {
                 MsgWindow.AppendText("Test Case List is not available. Please read TC file.\n");
                 return false;
@@ -135,14 +135,14 @@ namespace ExcelReportApplication
             }
 
             // This full issue description is needfed for demo purpose
-            ReportWorker.global_issue_description_list = IssueList.CreateFullIssueDescription(ReportWorker.global_issue_list);
+            ReportDemo.global_issue_description_list = IssueList.CreateFullIssueDescription(ReportDemo.global_issue_list);
 
             // Demo 1
             TestCase.WriteBacktoTCJiraExcel(tclist_filename);
             MsgWindow.AppendText("Writeback sample to tc_list finished!\n");
 
             // Demo 2
-            ReportWorker.SaveToReportTemplate(report_filename);
+            ReportDemo.SaveToReportTemplate(report_filename);
             MsgWindow.AppendText("report finished!\n");
 
             return true;
@@ -218,7 +218,7 @@ namespace ExcelReportApplication
             if (bRet)
             {
                 // This full issue description is for demo purpose
-                ReportWorker.global_issue_description_list = IssueList.CreateFullIssueDescription(ReportWorker.global_issue_list);
+                ReportDemo.global_issue_description_list = IssueList.CreateFullIssueDescription(ReportDemo.global_issue_list);
             }
         }
 

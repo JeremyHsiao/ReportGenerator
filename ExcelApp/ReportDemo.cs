@@ -10,7 +10,7 @@ using System.IO;
 
 namespace ExcelReportApplication
 {
-    static class ReportWorker
+    static class ReportDemo
     {
         static public List<IssueList> global_issue_list = new List<IssueList>();
         static public Dictionary<string, List<StyleString>> global_issue_description_list = new Dictionary<string, List<StyleString>>();
