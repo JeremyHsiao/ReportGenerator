@@ -182,7 +182,7 @@
             this.Controls.Add(this.btnSelectBugFile);
             this.Controls.Add(this.MsgWindow);
             this.Name = "MainForm";
-            this.Text = "ReportGenerator";
+            this.Text = "KeywordIssueGenerator";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
