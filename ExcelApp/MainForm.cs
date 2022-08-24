@@ -138,7 +138,7 @@ namespace ExcelReportApplication
             ReportDemo.global_issue_description_list = IssueList.CreateFullIssueDescription(ReportDemo.global_issue_list);
 
             // Demo 1
-            TestCase.WriteBacktoTCJiraExcel(tclist_filename);
+            ReportDemo.WriteBacktoTCJiraExcel(tclist_filename);
             MsgWindow.AppendText("Writeback sample to tc_list finished!\n");
 
             // Demo 2
