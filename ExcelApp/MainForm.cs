@@ -106,14 +106,14 @@ namespace ExcelReportApplication
             }
         }
 
-        private bool SaveReportDemoTask(String tc_file, String report_file)
+        private bool SaveKeywordIssueTask(String tc_file, String report_file)
         {
             if (KeywordIssue.global_issue_list.Count == 0)
             {
                 bool bRet = ReadGlobalIssueListTask(txtBugFile.Text);
                 if (!bRet)
                 {
-                    MsgWindow.AppendText("Issue List not available. Please check Issue list file.\n");
+                    //MsgWindow.AppendText("Issue List not available. Please check Issue list file.\n");
                     return false;
                 }
             }
@@ -123,7 +123,7 @@ namespace ExcelReportApplication
                 bool bRet = ReadGlobalTCListTask(txtTCFile.Text);
                 if (!bRet)
                 {
-                    MsgWindow.AppendText("Test Case List is not available. Please check TC file.\n");
+                    //MsgWindow.AppendText("Test Case List is not available. Please check TC file.\n");
                     return false;
                 }
             }
@@ -135,15 +135,19 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            // This full issue description is needfed for demo purpose
+            // This full issue description is needfed for keyword issue list
             KeywordIssue.global_issue_description_list = IssueList.GenerateIssueSummary(KeywordIssue.global_issue_list);
 
-            // Demo 1
-            //ReportDemo.WriteBacktoTCJiraExcel(tclist_filename);
-            //MsgWindow.AppendText("Writeback sample to tc_list finished!\n");
+            // Read report file for keyword & its row and store into keyword/row dictionary
+            Dictionary<String, int> keyword_row = new Dictionary<String, int>();
 
-            // Demo 2
-            KeywordIssue.SaveToReportTemplate(report_filename);
+            // Generate keyword issue list and store into keyword/issue_summary_list_style_string dictionary
+            Dictionary<String, List<StyleString>> keyword_issue = new Dictionary<String, List<StyleString>>();
+
+            // Write keyword issue list back to report file and Save.
+            KeywordIssue.SaveToReportTemplate(report_filename); // to be updated
+
+            //
             MsgWindow.AppendText("report finished!\n");
 
             return true;
@@ -183,7 +187,7 @@ namespace ExcelReportApplication
         private void btnCreateReport_Click(object sender, EventArgs e)
         {
             bool bRet;
-            bRet = SaveReportDemoTask(txtTCFile.Text, txtReportFile.Text);
+            bRet = SaveKeywordIssueTask(txtTCFile.Text, txtReportFile.Text);
         }
 
     }
