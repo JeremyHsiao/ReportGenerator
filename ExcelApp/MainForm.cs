@@ -106,51 +106,31 @@ namespace ExcelReportApplication
             }
         }
 
-        private bool SaveKeywordIssueTask(String tc_file, String report_file)
+        private bool SaveKeywordIssueTask(String issue_file, String report_file)
         {
+            bool bRet;
+
             if (KeywordIssue.global_issue_list.Count == 0)
             {
-                bool bRet = ReadGlobalIssueListTask(txtBugFile.Text);
+                bRet = ReadGlobalIssueListTask(issue_file);
                 if (!bRet)
                 {
                     //MsgWindow.AppendText("Issue List not available. Please check Issue list file.\n");
                     return false;
                 }
             }
-
-            if (KeywordIssue.global_testcase_list.Count == 0)
-            {
-                bool bRet = ReadGlobalTCListTask(txtTCFile.Text);
-                if (!bRet)
-                {
-                    //MsgWindow.AppendText("Test Case List is not available. Please check TC file.\n");
-                    return false;
-                }
-            }
-
-            String report_filename = FileFunction.GetFullPath(txtReportFile.Text);
+            String report_filename = FileFunction.GetFullPath(report_file);
             if (!FileFunction.FileExists(report_filename))
             {
                 MsgWindow.AppendText("Report file does not exist. Please check again.\n");
                 return false;
             }
 
-            // This full issue description is needfed for keyword issue list
-            KeywordIssue.global_issue_description_list = IssueList.GenerateIssueSummary(KeywordIssue.global_issue_list);
-
-            // Read report file for keyword & its row and store into keyword/row dictionary
-            Dictionary<String, int> keyword_row = new Dictionary<String, int>();
-
-            // Generate keyword issue list and store into keyword/issue_summary_list_style_string dictionary
-            Dictionary<String, List<StyleString>> keyword_issue = new Dictionary<String, List<StyleString>>();
-
-            // Write keyword issue list back to report file and Save.
-            KeywordIssue.SaveToReportTemplate(report_filename); // to be updated
-
-            //
+            MsgWindow.AppendText("report Preparing!\n");
+            bRet = KeywordIssue.KeywordIssueGenerationTask(txtReportFile.Text);
             MsgWindow.AppendText("report finished!\n");
 
-            return true;
+            return bRet;
         }
 
         // Because TextBox is set to Read-only, filename can be only changed via File Dialog
@@ -187,7 +167,8 @@ namespace ExcelReportApplication
         private void btnCreateReport_Click(object sender, EventArgs e)
         {
             bool bRet;
-            bRet = SaveKeywordIssueTask(txtTCFile.Text, txtReportFile.Text);
+            //bRet = KeywordIssue.KeywordIssueGenerationTask(txtReportFile.Text);
+            bRet = SaveKeywordIssueTask(txtBugFile.Text, txtReportFile.Text);
         }
 
     }

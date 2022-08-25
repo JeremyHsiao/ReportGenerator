@@ -83,7 +83,7 @@ namespace ExcelReportApplication
                 chr_index += len;
             }
         }
-
+        /*
         //WriteBacktoTCJiraExcel
         static public void WriteBacktoTCJiraExcel(String tclist_filename)
         {
@@ -147,8 +147,9 @@ namespace ExcelReportApplication
                 WorkingSheet = null;
                 myTCExcel = null;
             }
-        }
-
+        } 
+        */
+        /*
         static public string sheet_Report_Result = "Result";
         static public void SaveToReportTemplate(string report_filename)
         {
@@ -237,6 +238,144 @@ namespace ExcelReportApplication
                     ExcelAction.CloseExcelWithoutSaveChanges(myReportExcel);
                 }
             }
+        }
+        */
+        static public void ConsoleWarning(String function, int row)
+        {
+            Console.WriteLine("Warning: please excel " + function+" at line " + row.ToString());
+        }
+
+        static public void ConsoleWarning(String function)
+        {
+            Console.WriteLine("Warning: please check " + function);
+        }
+
+        static int col_indentifier = 2;
+        static int col_keyword = 3;
+        static public bool KeywordIssueGenerationTask(string report_filename)
+        {
+            //
+            // 1. Open Excel and find the sheet
+            //
+
+            String full_filename = FileFunction.GetFullPath(report_filename);
+            String short_filename = Path.GetFileName(full_filename);
+            String sheet_name = short_filename.Substring(0, short_filename.IndexOf("_"));
+
+            if (!FileFunction.FileExists(full_filename))
+            {
+                KeywordIssue.ConsoleWarning("FileExists in KeywordIssueGenerationTask");
+                return false;
+            }
+
+            Excel.Application myReportExcel = ExcelAction.OpenOridnaryExcel(full_filename, ReadOnly:false);
+            if (myReportExcel == null)
+            {
+                KeywordIssue.ConsoleWarning("OpenOridnaryExcel in KeywordIssueGenerationTask");
+                return false;
+            }
+
+            Worksheet result_worksheet = ExcelAction.Find_Worksheet(myReportExcel, sheet_name);
+            if (result_worksheet == null)
+            {
+                KeywordIssue.ConsoleWarning("Find_Worksheet in KeywordIssueGenerationTask");
+                return false;
+            }
+
+            //
+            // 2. Find out Printable Area
+            //
+
+            String PrintArea = result_worksheet.PageSetup.PrintArea;
+            Range rngPrintable = result_worksheet.Range[PrintArea];
+            int row_print_area, column_print_area;
+            // Assumption: printable area always starting at "$A$1"
+            row_print_area = rngPrintable.Rows.Count;
+            column_print_area = rngPrintable.Columns.Count;
+
+            //
+            // 3. Find out all keywords and create LUT (keyword,row_index)
+            //    output:  LUT (keyword,row_index)
+            //
+            const int row_test_detail_start = 27;
+            const String identifier_str = "Test Item";
+            // Read report file for keyword & its row and store into keyword/row dictionary
+            // Search keyword within printable area
+            Dictionary<String, int> KeywordAtRow = new Dictionary<String, int>();
+            for (int row_index = row_test_detail_start; row_index <= row_print_area; row_index++)
+            {
+                Object cell_obj = result_worksheet.Cells[row_index, col_indentifier].Value2;
+                if(cell_obj==null) continue;
+                String cell_text = cell_obj.ToString().Trim();
+                if ((cell_text.Length>identifier_str.Length) &&
+                    String.Equals(cell_text.Substring(0,identifier_str.Length), identifier_str, StringComparison.OrdinalIgnoreCase))
+                {
+                    cell_obj = result_worksheet.Cells[row_index, col_keyword].Value2;
+                    if(cell_obj==null) { KeywordIssue.ConsoleWarning("Empty Keyword", row_index); continue;}
+                    cell_text = cell_obj.ToString().Trim();
+                    if (cell_text == "") { KeywordIssue.ConsoleWarning("Empty Keyword", row_index); continue; }
+                    if(KeywordAtRow.ContainsKey(cell_text))
+                    { KeywordIssue.ConsoleWarning("Duplicated Keyword", row_index); continue; }
+                    KeywordAtRow.Add(cell_text, row_index);
+                }
+            }
+
+            //
+            // 4. Use keyword to find out all issues that contains keyword. 
+            //    put issue_id into a string contains many id separated by a comma ','
+            //    then store this issue_id into LUT (keyword,ids)
+            //    output: LUT (keyword,id_list)
+            //
+            Dictionary<String, String> KeywordIssueIDList = new Dictionary<String, String>();
+            foreach (String keyword in KeywordAtRow.Keys)
+            {
+                String id_list = "";
+                foreach (IssueList issue in global_issue_list)
+                {
+                    if (issue.Summary.Contains(keyword))
+                    {
+                        id_list += issue.Key + ",";
+                    }
+                }
+                KeywordIssueIDList.Add(keyword, id_list);
+            }
+
+            //
+            // 5. input:  LUT (keyword,id_list) + LUT (id,color_desription) (from GenerateIssueDescription())
+            //    output: LUT (keyword,color_desription_list)
+            //         
+            //    using: id_list -> ExtendIssueDescription() -> color_description_list
+            // This issue description list is needfed for keyword issue list
+            global_issue_description_list = IssueList.GenerateIssueDescription(KeywordIssue.global_issue_list);
+
+            // Go throught each keyword and turn id_list into color_description
+            Dictionary<String, List<StyleString>> KeyWordIssueDescription = new Dictionary<String, List<StyleString>>();
+            foreach (String keyword in KeywordAtRow.Keys)
+            {
+                String id_list = KeywordIssueIDList[keyword];
+                List<StyleString> issue_description = ExtendIssueDescription(id_list, global_issue_description_list);
+                KeyWordIssueDescription.Add(keyword, issue_description);
+            }
+
+            //
+            // 6. input:  LUT (keyword,color_description_list) + LUT (id,row_index)
+            //    output: write color_description_list at Excel(row_index,new_inserted_col outside printable area
+            //         
+            // Insert extra column just outside printable area.
+            int insert_col = column_print_area + 1;
+            result_worksheet.Columns[insert_col].Insert();
+
+            foreach (String keyword in KeywordAtRow.Keys)
+            {
+                List<StyleString> issue_description = KeyWordIssueDescription[keyword];
+                Range rng = result_worksheet.Cells[KeywordAtRow[keyword], insert_col];
+                WriteSytleString(ref rng, issue_description);
+            }
+
+            ExcelAction.SaveChangesAndCloseExcel(myReportExcel,full_filename);
+            //ExcelAction.CloseExcelWithoutSaveChanges(myReportExcel);
+
+            return true;
         }
     }
 }
