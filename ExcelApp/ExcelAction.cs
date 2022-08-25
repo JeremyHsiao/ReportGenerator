@@ -13,22 +13,22 @@ namespace ExcelReportApplication
         static public bool ExcelVisible = true;
 
         // Open existing excel
-        static public Excel.Application OpenOridnaryExcel(string filename)
+        static public Excel.Application OpenOridnaryExcel(string filename, bool ReadOnly = true)
         {
             // Open excel (read-only)
             Excel.Application myBugExcel = new Excel.Application();
-            Workbook working_book = myBugExcel.Workbooks.Open(filename, ReadOnly: true);
+            Workbook working_book = myBugExcel.Workbooks.Open(filename, ReadOnly: ReadOnly);
             myBugExcel.Visible = ExcelVisible;
             return myBugExcel;
         }
 
-        static public Excel.Application OpenPreviousExcel(string filename)
+        static public Excel.Application OpenPreviousExcel(string filename, bool ReadOnly = true)
         {
             // Open excel (read-only & corrupt-load)
             Excel.Application myBugExcel = new Excel.Application();
             //Workbook working_book = myBugExcel.Workbooks.Open(filename)
             //Workbook working_book = myBugExcel.Workbooks.Open(filename, ReadOnly: true, CorruptLoad: XlCorruptLoad.xlExtractData);
-            myBugExcel.Workbooks.Open(filename, ReadOnly: true, CorruptLoad: XlCorruptLoad.xlExtractData);
+            myBugExcel.Workbooks.Open(filename, ReadOnly: ReadOnly, CorruptLoad: XlCorruptLoad.xlExtractData);
             myBugExcel.Visible = ExcelVisible;
             return myBugExcel;
         }
@@ -43,6 +43,7 @@ namespace ExcelReportApplication
 
         static public void SaveChangesAndCloseExcel(Excel.Application myExcel)
         {
+            myExcel.DisplayAlerts = false;
             myExcel.ActiveWorkbook.Close(SaveChanges: true);
             myExcel.Quit();
             System.Runtime.InteropServices.Marshal.ReleaseComObject(myExcel);
