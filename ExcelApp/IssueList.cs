@@ -106,6 +106,7 @@ namespace ExcelReportApplication
 
         static public Color descrption_color_issue = Color.Red;
         static public Color descrption_color_comment = Color.Blue;
+        /*
         static public Dictionary<string, List<StyleString>> GenerateFullIssueDescription(List<IssueList> issuelist)
         {
             Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
@@ -144,8 +145,9 @@ namespace ExcelReportApplication
             }
             return ret_list;
         }
-
-        static public Dictionary<string, List<StyleString>> GenerateIssueSummary(List<IssueList> issuelist)
+        */
+        // create key/rich-text-issue-description pair.
+        static public Dictionary<string, List<StyleString>> GenerateIssueDescription(List<IssueList> issuelist)
         {
             Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
 
@@ -159,7 +161,7 @@ namespace ExcelReportApplication
                     String str = key + issue.Summary + "(" + issue.Severity + ")";
                     StyleString style_str = new StyleString(str, descrption_color_issue);
                     value_style_str.Add(style_str);
-
+                    /*
                     // Keep portion of string before first "\n"; if no "\n", keep whole string otherwise.
                     String short_comment = "";
                     if (rd_comment_str.Contains("\n"))
@@ -176,7 +178,7 @@ namespace ExcelReportApplication
                         style_str = new StyleString(str, descrption_color_comment);
                         value_style_str.Add(style_str);
                     }
-
+                    */
                     // Add whole string into return_list
                     ret_list.Add(key, value_style_str);
                 }
