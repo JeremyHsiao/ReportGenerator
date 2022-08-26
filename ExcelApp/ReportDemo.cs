@@ -16,80 +16,12 @@ namespace ExcelReportApplication
         static public Dictionary<string, List<StyleString>> global_issue_description_list = new Dictionary<string, List<StyleString>>();
         static public List<TestCase> global_testcase_list = new List<TestCase> ();
 
-        static public List<StyleString> ExtendIssueDescription(string links_str, Dictionary<string, List<StyleString>> bug_list)
-        {
-            List<StyleString> extended_str = new List<StyleString>();
-
-            // protection
-            if ((links_str == null) || (bug_list == null)) return null;
-
-            // Separate keys
-            string[] separators = { "," };
-            string[] issues = links_str.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-
-            // replace key with full description and combine into one string
-            foreach (string key in issues)
-            {
-                string trimmed_key = key.Trim();
-                StyleString new_line_str = new StyleString("\n");
-                if (bug_list.ContainsKey(trimmed_key))
-                {
-                    List<StyleString> bug_str = bug_list[trimmed_key]; 
-
-                    foreach (StyleString style_str in bug_str)
-                    {
-
-                        extended_str.Add(style_str);
-                    }
-                }
-                else
-                {
-                    StyleString def_str = new StyleString(trimmed_key);
-                    extended_str.Add(def_str);
-                }
-                extended_str.Add(new_line_str);
-            }
-            if (extended_str.Count > 0) { extended_str.RemoveAt(extended_str.Count - 1); } // remove last '\n'
- 
-            return extended_str;
-        }
-
-        static public void WriteSytleString(ref Range input_range, List<StyleString> sytle_string_list)
-        {
-            // Fill the text into excel cell with default font settings.
-            string txt_str = "";
-            foreach (StyleString style_str in sytle_string_list)
-            {
-                txt_str += style_str.Text;
-            }
-            input_range.Value2 = txt_str;
-            input_range.Characters.Font.Name = StyleString.default_font;
-            input_range.Characters.Font.Size = StyleString.default_size;
-            input_range.Characters.Font.Color = StyleString.default_color;
-            input_range.Characters.Font.FontStyle = StyleString.default_fontstyle;
-
-            // Change font settings when required for the string portion
-            int chr_index = 1;
-            foreach (StyleString style_str in sytle_string_list)
-            {
-                int len = style_str.Text.Length;
-                if (style_str.FontPropertyChanged == true)
-                {
-                    input_range.get_Characters(chr_index, len).Font.Name = style_str.Font;
-                    input_range.get_Characters(chr_index, len).Font.Color = style_str.Color;
-                    input_range.get_Characters(chr_index, len).Font.Size = style_str.Size;
-                    input_range.get_Characters(chr_index, len).Font.FontStyle = style_str.FontStyle;
-                }
-                chr_index += len;
-            }
-        }
-
         //WriteBacktoTCJiraExcel
         static public void WriteBacktoTCJiraExcel(String tclist_filename)
         {
             // Re-arrange test-case list into dictionary of key/links pair
             Dictionary<String, String> group_note_issue = new Dictionary<String, String>();
-            foreach (TestCase tc in ReportDemo.global_testcase_list)
+            foreach (TestCase tc in global_testcase_list)
             {
                 String key = tc.Key;
                 if (key != "")
@@ -126,10 +58,10 @@ namespace ExcelReportApplication
                         cell_value2 = rng.Value2;
                         if (cell_value2 != null)
                         {
-                            List<StyleString> str_list = ReportDemo.ExtendIssueDescription(group_note_issue[key],
-                                                                            ReportDemo.global_issue_description_list);
+                            List<StyleString> str_list = StyleString.ExtendIssueDescription(group_note_issue[key],
+                                                                            global_issue_description_list);
 
-                            ReportDemo.WriteSytleString(ref rng, str_list);
+                            StyleString.WriteSytleString(ref rng, str_list);
                         }
                     }
                     // auto-fit-height of column links
@@ -147,8 +79,9 @@ namespace ExcelReportApplication
                 WorkingSheet = null;
                 myTCExcel = null;
             }
-        }
+        } 
 
+        
         static public string sheet_Report_Result = "Result";
         static public void SaveToReportTemplate(string report_filename)
         {
@@ -210,9 +143,9 @@ namespace ExcelReportApplication
                             rng = result_worksheet.Cells[index, col_result];
                             rng.Value2 = "Fail";
                             // Fill "Note" 
-                            str_list = ExtendIssueDescription(note, global_issue_description_list);
+                            str_list = StyleString.ExtendIssueDescription(note, global_issue_description_list);
                             rng = result_worksheet.Cells[index, col_issue];
-                            WriteSytleString(ref rng, str_list);
+                            StyleString.WriteSytleString(ref rng, str_list);
                         }
                         else
                         {
@@ -237,6 +170,145 @@ namespace ExcelReportApplication
                     ExcelAction.CloseExcelWithoutSaveChanges(myReportExcel);
                 }
             }
+        }
+
+        static public void ConsoleWarning(String function, int row)
+        {
+            Console.WriteLine("Warning: please excel " + function+" at line " + row.ToString());
+        }
+
+        static public void ConsoleWarning(String function)
+        {
+            Console.WriteLine("Warning: please check " + function);
+        }
+
+        static int col_indentifier = 2;
+        static int col_keyword = 3;
+        static public bool KeywordIssueGenerationTask(string report_filename)
+        {
+            //
+            // 1. Open Excel and find the sheet
+            //
+
+            String full_filename = FileFunction.GetFullPath(report_filename);
+            String short_filename = Path.GetFileName(full_filename);
+            String sheet_name = short_filename.Substring(0, short_filename.IndexOf("_"));
+
+            if (!FileFunction.FileExists(full_filename))
+            {
+                ConsoleWarning("FileExists in KeywordIssueGenerationTask");
+                return false;
+            }
+
+            Excel.Application myReportExcel = ExcelAction.OpenOridnaryExcel(full_filename, ReadOnly:false);
+            if (myReportExcel == null)
+            {
+                ConsoleWarning("OpenOridnaryExcel in KeywordIssueGenerationTask");
+                return false;
+            }
+
+            Worksheet result_worksheet = ExcelAction.Find_Worksheet(myReportExcel, sheet_name);
+            if (result_worksheet == null)
+            {
+                ConsoleWarning("Find_Worksheet in KeywordIssueGenerationTask");
+                return false;
+            }
+
+            //
+            // 2. Find out Printable Area
+            //
+
+            String PrintArea = result_worksheet.PageSetup.PrintArea;
+            Range rngPrintable = result_worksheet.Range[PrintArea];
+            int row_print_area, column_print_area;
+            // Assumption: printable area always starting at "$A$1"
+            row_print_area = rngPrintable.Rows.Count;
+            column_print_area = rngPrintable.Columns.Count;
+
+            //
+            // 3. Find out all keywords and create LUT (keyword,row_index)
+            //    output:  LUT (keyword,row_index)
+            //
+            const int row_test_detail_start = 27;
+            const String identifier_str = "Test Item";
+            // Read report file for keyword & its row and store into keyword/row dictionary
+            // Search keyword within printable area
+            Dictionary<String, int> KeywordAtRow = new Dictionary<String, int>();
+            for (int row_index = row_test_detail_start; row_index <= row_print_area; row_index++)
+            {
+                Object cell_obj = result_worksheet.Cells[row_index, col_indentifier].Value2;
+                if(cell_obj==null) continue;
+                String cell_text = cell_obj.ToString().Trim();
+                if ((cell_text.Length>identifier_str.Length) &&
+                    String.Equals(cell_text.Substring(0,identifier_str.Length), identifier_str, StringComparison.OrdinalIgnoreCase))
+                {
+                    cell_obj = result_worksheet.Cells[row_index, col_keyword].Value2;
+                    if(cell_obj==null) { ConsoleWarning("Empty Keyword", row_index); continue;}
+                    cell_text = cell_obj.ToString().Trim();
+                    if (cell_text == "") { ConsoleWarning("Empty Keyword", row_index); continue; }
+                    if(KeywordAtRow.ContainsKey(cell_text))
+                    { ConsoleWarning("Duplicated Keyword", row_index); continue; }
+                    KeywordAtRow.Add(cell_text, row_index);
+                }
+            }
+
+            //
+            // 4. Use keyword to find out all issues that contains keyword. 
+            //    put issue_id into a string contains many id separated by a comma ','
+            //    then store this issue_id into LUT (keyword,ids)
+            //    output: LUT (keyword,id_list)
+            //
+            Dictionary<String, String> KeywordIssueIDList = new Dictionary<String, String>();
+            foreach (String keyword in KeywordAtRow.Keys)
+            {
+                String id_list = "";
+                foreach (IssueList issue in global_issue_list)
+                {
+                    if (issue.Summary.Contains(keyword))
+                    {
+                        id_list += issue.Key + ",";
+                    }
+                }
+                KeywordIssueIDList.Add(keyword, id_list);
+            }
+
+            //
+            // 5. input:  LUT (keyword,id_list) + LUT (id,color_desription) (from GenerateIssueDescription())
+            //    output: LUT (keyword,color_desription_list)
+            //         
+            //    using: id_list -> ExtendIssueDescription() -> color_description_list
+            // This issue description list is needfed for keyword issue list
+            global_issue_description_list = IssueList.GenerateIssueDescription(global_issue_list);
+
+            // Go throught each keyword and turn id_list into color_description
+            Dictionary<String, List<StyleString>> KeyWordIssueDescription = new Dictionary<String, List<StyleString>>();
+            foreach (String keyword in KeywordAtRow.Keys)
+            {
+                String id_list = KeywordIssueIDList[keyword];
+                List<StyleString> issue_description = StyleString.ExtendIssueDescription(id_list, global_issue_description_list);
+                KeyWordIssueDescription.Add(keyword, issue_description);
+            }
+
+            //
+            // 6. input:  LUT (keyword,color_description_list) + LUT (id,row_index)
+            //    output: write color_description_list at Excel(row_index,new_inserted_col outside printable area
+            //         
+            // Insert extra column just outside printable area.
+            int insert_col = column_print_area + 1;
+            result_worksheet.Columns[insert_col].Insert();
+
+            foreach (String keyword in KeywordAtRow.Keys)
+            {
+                List<StyleString> issue_description = KeyWordIssueDescription[keyword];
+                Range rng = result_worksheet.Cells[KeywordAtRow[keyword], insert_col];
+                StyleString.WriteSytleString(ref rng, issue_description);
+            }
+
+            // Save as another file with yyyyMMddHHmmss
+            string dest_filename = FileFunction.GenerateFilenameWithDateTime(full_filename);
+            ExcelAction.SaveChangesAndCloseExcel(myReportExcel, dest_filename);
+
+            return true;
         }
     }
 }
