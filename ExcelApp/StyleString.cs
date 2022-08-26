@@ -171,10 +171,45 @@ Returns or sets the type of underline applied to the font.
             string[] issues = links_str.Split(separators, StringSplitOptions.RemoveEmptyEntries);
 
             // replace key with full description and combine into one string
+            StyleString new_line_str = new StyleString("\n");
             foreach (string key in issues)
             {
                 string trimmed_key = key.Trim();
-                StyleString new_line_str = new StyleString("\n");
+                if (bug_list.ContainsKey(trimmed_key))
+                {
+                    List<StyleString> bug_str = bug_list[trimmed_key];
+
+                    foreach (StyleString style_str in bug_str)
+                    {
+
+                        extended_str.Add(style_str);
+                    }
+                }
+                else
+                {
+                    StyleString def_str = new StyleString(trimmed_key);
+                    extended_str.Add(def_str);
+                }
+                extended_str.Add(new_line_str);
+            }
+            if (extended_str.Count > 0) { extended_str.RemoveAt(extended_str.Count - 1); } // remove last '\n'
+
+            return extended_str;
+        }
+
+        //
+        // input: bug_id List
+        // output: bug descriptions (one bug each line)
+        //
+        static public List<StyleString> ExtendIssueDescription(List<String> bug_id, Dictionary<string, List<StyleString>> bug_list)
+        {
+            List<StyleString> extended_str = new List<StyleString>();
+
+            // replace each bug_id with full description seperated by newline and combine into one string
+            StyleString new_line_str = new StyleString("\n");
+            foreach (string key in bug_id)
+            {
+                string trimmed_key = key.Trim();
                 if (bug_list.ContainsKey(trimmed_key))
                 {
                     List<StyleString> bug_str = bug_list[trimmed_key];
