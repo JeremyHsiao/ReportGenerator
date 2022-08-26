@@ -258,15 +258,15 @@ namespace ExcelReportApplication
             //    then store this issue_id into LUT (keyword,ids)
             //    output: LUT (keyword,id_list)
             //
-            Dictionary<String, String> KeywordIssueIDList = new Dictionary<String, String>();
+            Dictionary<String, List<String>> KeywordIssueIDList = new Dictionary<String, List<String>>();
             foreach (String keyword in KeywordAtRow.Keys)
             {
-                String id_list = "";
+                List<String> id_list = new List<String>();
                 foreach (IssueList issue in global_issue_list)
                 {
                     if (issue.Summary.Contains(keyword))
                     {
-                        id_list += issue.Key + ",";
+                        id_list.Add(issue.Key);
                     }
                 }
                 KeywordIssueIDList.Add(keyword, id_list);
@@ -284,7 +284,7 @@ namespace ExcelReportApplication
             Dictionary<String, List<StyleString>> KeyWordIssueDescription = new Dictionary<String, List<StyleString>>();
             foreach (String keyword in KeywordAtRow.Keys)
             {
-                String id_list = KeywordIssueIDList[keyword];
+                List<String> id_list = KeywordIssueIDList[keyword];
                 List<StyleString> issue_description = StyleString.ExtendIssueDescription(id_list, global_issue_description_list);
                 KeyWordIssueDescription.Add(keyword, issue_description);
             }
