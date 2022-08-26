@@ -66,7 +66,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestPlan.cs" />
-    <Compile Include="ExcelTest.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="IssueList.cs" />
     <Compile Include="StyleString.cs" />
@@ -104,10 +103,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="SampleData\ExcelTestFile.xlsx" />
-    <None Include="SampleData\Jira 2022-08-12T15_20_08+0800.xls" />
-    <None Include="SampleData\Report_Template.xlsx" />
-    <None Include="SampleData\TC_Jira 2022-08-12T15_16_38+0800.xls" />
+    <None Include="SampleData\A.1.1_OSD _All.xlsx" />
+    <None Include="SampleData\TC_Jira 2022-08-19T22_12_39+0800.xls" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft.Office.Core">
