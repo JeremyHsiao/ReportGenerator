@@ -86,6 +86,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
+            this.label2.Enabled = false;
             this.label2.Font = new System.Drawing.Font("Arial", 9F);
             this.label2.Location = new System.Drawing.Point(10, 43);
             this.label2.Name = "label2";
@@ -95,6 +96,7 @@
             // 
             // txtTCFile
             // 
+            this.txtTCFile.Enabled = false;
             this.txtTCFile.Font = new System.Drawing.Font("Arial Narrow", 9F);
             this.txtTCFile.Location = new System.Drawing.Point(111, 37);
             this.txtTCFile.Name = "txtTCFile";
@@ -104,6 +106,7 @@
             // 
             // btnSelectTCFile
             // 
+            this.btnSelectTCFile.Enabled = false;
             this.btnSelectTCFile.Font = new System.Drawing.Font("Arial", 9F);
             this.btnSelectTCFile.Location = new System.Drawing.Point(478, 35);
             this.btnSelectTCFile.Name = "btnSelectTCFile";
