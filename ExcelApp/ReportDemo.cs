@@ -221,7 +221,8 @@ namespace ExcelReportApplication
             String PrintArea = result_worksheet.PageSetup.PrintArea;
             Range rngPrintable = result_worksheet.Range[PrintArea];
             int row_print_area, column_print_area;
-            // Assumption: printable area always starting at "$A$1"
+            // Data processing starting at "$A$1"
+            // ending at Printable aread
             row_print_area = rngPrintable.Rows.Count;
             column_print_area = rngPrintable.Columns.Count;
 
