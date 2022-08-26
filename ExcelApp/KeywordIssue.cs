@@ -16,73 +16,6 @@ namespace ExcelReportApplication
         static public Dictionary<string, List<StyleString>> global_issue_description_list = new Dictionary<string, List<StyleString>>();
         static public List<TestCase> global_testcase_list = new List<TestCase> ();
 
-        static public List<StyleString> ExtendIssueDescription(string links_str, Dictionary<string, List<StyleString>> bug_list)
-        {
-            List<StyleString> extended_str = new List<StyleString>();
-
-            // protection
-            if ((links_str == null) || (bug_list == null)) return null;
-
-            // Separate keys
-            string[] separators = { "," };
-            string[] issues = links_str.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-
-            // replace key with full description and combine into one string
-            foreach (string key in issues)
-            {
-                string trimmed_key = key.Trim();
-                StyleString new_line_str = new StyleString("\n");
-                if (bug_list.ContainsKey(trimmed_key))
-                {
-                    List<StyleString> bug_str = bug_list[trimmed_key]; 
-
-                    foreach (StyleString style_str in bug_str)
-                    {
-
-                        extended_str.Add(style_str);
-                    }
-                }
-                else
-                {
-                    StyleString def_str = new StyleString(trimmed_key);
-                    extended_str.Add(def_str);
-                }
-                extended_str.Add(new_line_str);
-            }
-            if (extended_str.Count > 0) { extended_str.RemoveAt(extended_str.Count - 1); } // remove last '\n'
- 
-            return extended_str;
-        }
-
-        static public void WriteSytleString(ref Range input_range, List<StyleString> sytle_string_list)
-        {
-            // Fill the text into excel cell with default font settings.
-            string txt_str = "";
-            foreach (StyleString style_str in sytle_string_list)
-            {
-                txt_str += style_str.Text;
-            }
-            input_range.Value2 = txt_str;
-            input_range.Characters.Font.Name = StyleString.default_font;
-            input_range.Characters.Font.Size = StyleString.default_size;
-            input_range.Characters.Font.Color = StyleString.default_color;
-            input_range.Characters.Font.FontStyle = StyleString.default_fontstyle;
-
-            // Change font settings when required for the string portion
-            int chr_index = 1;
-            foreach (StyleString style_str in sytle_string_list)
-            {
-                int len = style_str.Text.Length;
-                if (style_str.FontPropertyChanged == true)
-                {
-                    input_range.get_Characters(chr_index, len).Font.Name = style_str.Font;
-                    input_range.get_Characters(chr_index, len).Font.Color = style_str.Color;
-                    input_range.get_Characters(chr_index, len).Font.Size = style_str.Size;
-                    input_range.get_Characters(chr_index, len).Font.FontStyle = style_str.FontStyle;
-                }
-                chr_index += len;
-            }
-        }
         /*
         //WriteBacktoTCJiraExcel
         static public void WriteBacktoTCJiraExcel(String tclist_filename)
@@ -353,7 +286,7 @@ namespace ExcelReportApplication
             foreach (String keyword in KeywordAtRow.Keys)
             {
                 String id_list = KeywordIssueIDList[keyword];
-                List<StyleString> issue_description = ExtendIssueDescription(id_list, global_issue_description_list);
+                List<StyleString> issue_description = StyleString.ExtendIssueDescription(id_list, global_issue_description_list);
                 KeyWordIssueDescription.Add(keyword, issue_description);
             }
 
@@ -369,7 +302,7 @@ namespace ExcelReportApplication
             {
                 List<StyleString> issue_description = KeyWordIssueDescription[keyword];
                 Range rng = result_worksheet.Cells[KeywordAtRow[keyword], insert_col];
-                WriteSytleString(ref rng, issue_description);
+                StyleString.WriteSytleString(ref rng, issue_description);
             }
 
             // Save as another file with yyyyMMddHHmmss
