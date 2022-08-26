@@ -372,8 +372,9 @@ namespace ExcelReportApplication
                 WriteSytleString(ref rng, issue_description);
             }
 
-            ExcelAction.SaveChangesAndCloseExcel(myReportExcel,full_filename);
-            //ExcelAction.CloseExcelWithoutSaveChanges(myReportExcel);
+            // Save as another file with yyyyMMddHHmmss
+            string dest_filename = FileFunction.GenerateFilenameWithDateTime(full_filename);
+            ExcelAction.SaveChangesAndCloseExcel(myReportExcel, dest_filename);
 
             return true;
         }
