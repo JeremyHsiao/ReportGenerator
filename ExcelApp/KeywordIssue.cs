@@ -10,7 +10,7 @@ using System.IO;
 
 namespace ExcelReportApplication
 {
-    static class KeywordIssue
+     static class KeywordIssueGenerator
     {
         static public List<IssueList> global_issue_list = new List<IssueList>();
         static public Dictionary<string, List<StyleString>> global_issue_description_list = new Dictionary<string, List<StyleString>>();
@@ -197,21 +197,21 @@ namespace ExcelReportApplication
 
             if (!FileFunction.FileExists(full_filename))
             {
-                KeywordIssue.ConsoleWarning("FileExists in KeywordIssueGenerationTask");
+                ConsoleWarning("FileExists in KeywordIssueGenerationTask");
                 return false;
             }
 
             Excel.Application myReportExcel = ExcelAction.OpenOridnaryExcel(full_filename, ReadOnly:false);
             if (myReportExcel == null)
             {
-                KeywordIssue.ConsoleWarning("OpenOridnaryExcel in KeywordIssueGenerationTask");
+                ConsoleWarning("OpenOridnaryExcel in KeywordIssueGenerationTask");
                 return false;
             }
 
             Worksheet result_worksheet = ExcelAction.Find_Worksheet(myReportExcel, sheet_name);
             if (result_worksheet == null)
             {
-                KeywordIssue.ConsoleWarning("Find_Worksheet in KeywordIssueGenerationTask");
+                ConsoleWarning("Find_Worksheet in KeywordIssueGenerationTask");
                 return false;
             }
 
@@ -245,11 +245,11 @@ namespace ExcelReportApplication
                     String.Equals(cell_text.Substring(0,identifier_str.Length), identifier_str, StringComparison.OrdinalIgnoreCase))
                 {
                     cell_obj = result_worksheet.Cells[row_index, col_keyword].Value2;
-                    if(cell_obj==null) { KeywordIssue.ConsoleWarning("Empty Keyword", row_index); continue;}
+                    if(cell_obj==null) { ConsoleWarning("Empty Keyword", row_index); continue;}
                     cell_text = cell_obj.ToString().Trim();
-                    if (cell_text == "") { KeywordIssue.ConsoleWarning("Empty Keyword", row_index); continue; }
+                    if (cell_text == "") { ConsoleWarning("Empty Keyword", row_index); continue; }
                     if(KeywordAtRow.ContainsKey(cell_text))
-                    { KeywordIssue.ConsoleWarning("Duplicated Keyword", row_index); continue; }
+                    { ConsoleWarning("Duplicated Keyword", row_index); continue; }
                     KeywordAtRow.Add(cell_text, row_index);
                 }
             }
@@ -280,7 +280,7 @@ namespace ExcelReportApplication
             //         
             //    using: id_list -> ExtendIssueDescription() -> color_description_list
             // This issue description list is needfed for keyword issue list
-            global_issue_description_list = IssueList.GenerateIssueDescription(KeywordIssue.global_issue_list);
+            global_issue_description_list = IssueList.GenerateIssueDescription(global_issue_list);
 
             // Go throught each keyword and turn id_list into color_description
             Dictionary<String, List<StyleString>> KeyWordIssueDescription = new Dictionary<String, List<StyleString>>();

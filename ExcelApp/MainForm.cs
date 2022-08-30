@@ -83,7 +83,7 @@ namespace ExcelReportApplication
             else
             {
                 MsgWindow.AppendText("Processing bug_list:" + buglist_filename + ".\n");
-                KeywordIssue.global_issue_list = IssueList.GenerateIssueList(buglist_filename);
+                KeywordIssueGenerator.global_issue_list = IssueList.GenerateIssueList(buglist_filename);
                 MsgWindow.AppendText("bug_list finished!\n");
                 return true;
             }
@@ -100,7 +100,7 @@ namespace ExcelReportApplication
             else
             {
                 MsgWindow.AppendText("Processing tc_list:" + tclist_filename + ".\n");
-                KeywordIssue.global_testcase_list = TestCase.GenerateTestCaseList(tclist_filename);
+                KeywordIssueGenerator.global_testcase_list = TestCase.GenerateTestCaseList(tclist_filename);
                 MsgWindow.AppendText("tc_list finished!\n");
                 return true;
             }
@@ -110,7 +110,7 @@ namespace ExcelReportApplication
         {
             bool bRet;
 
-            if (KeywordIssue.global_issue_list.Count == 0)
+            if (KeywordIssueGenerator.global_issue_list.Count == 0)
             {
                 bRet = ReadGlobalIssueListTask(issue_file);
                 if (!bRet)
@@ -127,7 +127,7 @@ namespace ExcelReportApplication
             }
 
             MsgWindow.AppendText("report Preparing!\n");
-            bRet = KeywordIssue.KeywordIssueGenerationTask(txtReportFile.Text);
+            bRet = KeywordIssueGenerator.KeywordIssueGenerationTask(txtReportFile.Text);
             MsgWindow.AppendText("report finished!\n");
 
             return bRet;
