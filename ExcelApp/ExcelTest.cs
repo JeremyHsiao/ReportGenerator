@@ -25,7 +25,8 @@ namespace ExcelReportApplication
 
         static List<TestPlan> global_tp = new List<TestPlan>();
         static public string SheetName_TestPlan = "Test Plan";
-        public static void GenerateTestReportStructure(String report_filename)
+
+        public static List<TestPlan> ReadTestPlan(String report_filename)
         {
             List<TestPlan> ret_testplan = new List<TestPlan>();
 
@@ -34,7 +35,7 @@ namespace ExcelReportApplication
             if (myReportExcel == null)
             {
                 Console.WriteLine("OpenOridnaryExcel failed in GenerateTestReportStructure()");
-                return;
+                return ret_testplan;
             }
 
             // Select and read Test Plan sheet
@@ -42,14 +43,23 @@ namespace ExcelReportApplication
             if (testplan_ws == null)
             {
                 Console.WriteLine("Find_Worksheet (TestPlan) failed in GenerateTestReportStructure()");
-                return;
+                return ret_testplan;
             }
-            global_tp = TestPlan.LoadTestPlanSheet(testplan_ws);
+            ret_testplan = TestPlan.LoadTestPlanSheet(testplan_ws);
+            return ret_testplan;
+        }
+
+        public static void GenerateTestReportStructure(String report_filename)
+        {
+            List<TestPlan> read_testplan = new List<TestPlan>();
+
+            read_testplan = ReadTestPlan(report_filename);
+            if (read_testplan == null) { return; }
 
             // Create a list of folder to be created and files to be copied (from/to)
             // filtered by Do or Not
             List<String> folder = new List<String>(), from = new List<String>(), to = new List<String>();
-            foreach (TestPlan tp in global_tp)
+            foreach (TestPlan tp in read_testplan)
             {
                 String group = tp.Group, summary = tp.Summary, do_or_not = tp.DoOrNot, subpart = tp.Subpart;
                 if (do_or_not == "V")
