@@ -177,7 +177,8 @@ namespace ExcelReportApplication
         // (3) no user input --> no relative filepath --> no need to update fileanem from relative path to full path.
         private void btnSelectBugFile_Click(object sender, EventArgs e)
         {
-            String ret_str = FileFunction.UsesrSelectFilename();
+            String init_dir = FileFunction.GetFullPath(txtBugFile.Text);
+            String ret_str = FileFunction.UsesrSelectFilename(init_dir: init_dir);
             if (ret_str != "")
             {
                 txtBugFile.Text = ret_str;
@@ -186,7 +187,8 @@ namespace ExcelReportApplication
 
         private void btnSelectTCFile_Click(object sender, EventArgs e)
         {
-            String ret_str = FileFunction.UsesrSelectFilename();
+            String init_dir = FileFunction.GetFullPath(txtTCFile.Text);
+            String ret_str = FileFunction.UsesrSelectFilename(init_dir);
             if (ret_str != "")
             {
                 txtTCFile.Text = ret_str;
@@ -195,7 +197,8 @@ namespace ExcelReportApplication
 
         private void btnSelectExcelTestFile_Click(object sender, EventArgs e)
         {
-            String ret_str = FileFunction.UsesrSelectFilename();
+            String init_dir = FileFunction.GetFullPath(txtExcelTestFile.Text);
+            String ret_str = FileFunction.UsesrSelectFilename(init_dir: init_dir);
             if (ret_str != "")
             {
                 txtExcelTestFile.Text = ret_str;
@@ -204,7 +207,8 @@ namespace ExcelReportApplication
 
         private void btnSelectReportFile_Click(object sender, EventArgs e)
         {
-            String ret_str = FileFunction.UsesrSelectFilename();
+            String init_dir = FileFunction.GetFullPath(txtReportFile.Text);
+            String ret_str = FileFunction.UsesrSelectFilename(init_dir: init_dir);
             if (ret_str != "")
             {
                 txtReportFile.Text = ret_str;
