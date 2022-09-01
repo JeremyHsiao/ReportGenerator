@@ -12,7 +12,7 @@ namespace ExcelReportApplication
     class FileFunction
     {
         // Possible multiple-directories selection, so return String[]
-        static public String[] UsersSelectDirectory(String title = "Select Folder(s)", String init_dir =@".\", bool multiple = true)
+        static public String[] UsersSelectDirectory(String init_dir =@".\", bool multiple = true, String title = "Select Folder(s)")
         {
             var openFolder = new CommonOpenFileDialog();
             openFolder.AllowNonFileSystemItems = true;
@@ -48,11 +48,16 @@ namespace ExcelReportApplication
         // Sigle-directory selection, so return just String
         static public String UsersSelectDirectory()
         {
-            return UsersSelectDirectory(title: "Select a folder", init_dir:GetCurrentDirectory(), multiple: false)[0];
+            return UsersSelectDirectory(init_dir:GetCurrentDirectory());
+        }
+        static public String UsersSelectDirectory(String init_dir)
+        {
+            return UsersSelectDirectory(title: "Select a folder", init_dir: init_dir, multiple: false)[0];
         }
 
+
         // Possible multiple-file selection, so return String[]
-        static public String[] UsesrSelectFilename(String title = "Select File(s)", String init_dir = @".\", bool multiple = true)
+        static public String[] UsesrSelectFilename(String init_dir = @".\", bool multiple = true, String title = "Select File(s)")
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Multiselect = multiple;
@@ -85,7 +90,11 @@ namespace ExcelReportApplication
         // Sigle-file selection, so return just String
         static public String UsesrSelectFilename()
         {
-            return UsesrSelectFilename(title: "Select a file", init_dir: GetCurrentDirectory(), multiple: false)[0];
+            return UsesrSelectFilename(init_dir: GetCurrentDirectory());
+        }
+        static public String UsesrSelectFilename(String init_dir)
+        {
+            return UsesrSelectFilename(title: "Select a file", init_dir: init_dir, multiple: false)[0];
         }
 
         static public bool FileExists(String Filename)
