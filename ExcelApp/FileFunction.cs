@@ -61,6 +61,20 @@ namespace ExcelReportApplication
             return ret;
         }
 
+        static public String GetDirectoryName(String Filename)
+        {
+            String ret = "";
+            try
+            {
+                ret = Path.GetDirectoryName(Filename);
+            }
+            catch
+            {
+                // "" will be returned if exceptions
+            }
+            return ret;
+        }
+
         static public String GetFullPath(String Filename)
         {
             String ret ="";
@@ -103,6 +117,22 @@ namespace ExcelReportApplication
             return ret;
         }
 
+        static public String GetCurrentDirectory()
+        {
+            String ret = "";
+            try
+            {
+                ret = Directory.GetCurrentDirectory();
+            }
+            catch
+            {
+                // "" will be returned if exceptions
+            }
+            return ret;
+        }
+
+        // ();
+
         static public String GenerateFilenameWithDateTime(String Filename)
         {
             String ret = "";
@@ -119,6 +149,28 @@ namespace ExcelReportApplication
 
                 // Filename ==  path + @"\" + name            + ext
                 // ret      ==  path + @"\" + name + "_" + dt + ext;
+            }
+            catch
+            {
+                // "" will be returned if exceptions
+            }
+            return ret;
+        }
+
+        static public String GenerateDirectoryNameWithDateTime(String dir)
+        {
+            String ret = "";
+            try
+            {
+                // directory name adding "_yyyyMMddHHmmss"
+                string path, dt;
+
+                path = Path.GetDirectoryName(dir);                  // path without '\'
+                dt = DateTime.Now.ToString("yyyyMMddHHmmss");       // ex: 20220801160000
+                ret = path + "_" + dt;
+
+                // dir  ==  path + @"\"(?)
+                // ret  ==  path + "_" + dt;
             }
             catch
             {
