@@ -5,32 +5,100 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Globalization;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace ExcelReportApplication
 {
     class FileFunction
     {
-        static public String UsesrSelectFilename()
+        // Possible multiple-directories selection, so return String[]
+        static public String[] UsersSelectDirectory(String title, String init_dir, bool multiple = true)
         {
-            String ret_str = "";
+            var openFolder = new CommonOpenFileDialog();
+            openFolder.AllowNonFileSystemItems = true;
+            openFolder.Multiselect = multiple;                 
+            openFolder.IsFolderPicker = true;
+            if (title != "")
+            {
+                openFolder.Title = title;
+            }
+            else
+            {
+                openFolder.Title = "Select Folder(s)";
+            }
+
+            openFolder.InitialDirectory = GetCurrentDirectory();
+            if (init_dir != "")
+            {
+                String default_dir = GetDirectoryName(init_dir);
+                if(DirectoryExists(default_dir))
+                {
+                    openFolder.InitialDirectory = default_dir;
+                }
+            }
+
+            if (openFolder.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                // get all the directories in selected dirctory
+                var dirs = openFolder.FileNames.ToArray();
+                return dirs;
+            }
+            else
+            {
+                String[] ret_empty = new String[1];
+                ret_empty[0] = "";
+                return ret_empty;
+            }
+
+        }
+
+        // Sigle-directory selection, so return just String
+        static public String UsersSelectDirectory()
+        {
+            return UsersSelectDirectory(title: "Select a folder", init_dir:GetCurrentDirectory(), multiple: false)[0];
+        }
+
+        // Possible multiple-file selection, so return String[]
+        static public String[] UsesrSelectFilename(String title, String init_dir, bool multiple = true)
+        {
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Title = "Select file";
-            dialog.InitialDirectory = Directory.GetCurrentDirectory()+@"SampleData";
+            if (title != "")
+            {
+                dialog.Title = title;
+            }
+            else
+            {
+                dialog.Title = "Select File(s)";
+            }
+
+            dialog.InitialDirectory = GetCurrentDirectory();
+            if (init_dir != "")
+            {
+                String default_dir = GetDirectoryName(init_dir);
+                if (DirectoryExists(default_dir))
+                {
+                    dialog.InitialDirectory = default_dir;
+                }
+            }
             dialog.Filter = "Excel files (*.xls/xlsx)|*.xls;*.xlsx";
+            dialog.Multiselect = multiple;
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                ret_str = dialog.FileName;
-                // It seems that File-existing check is done after "Select" button is pressed
-                // So no need to check here.
-                /*
-                if (!Exists(ret_str))
-                {
-                    MessageBox.Show("Selected file does not exist so filename remains unchanged.\n");
-                    ret_str = "";
-                }
-                */
+                var files = dialog.FileNames.ToArray();
+                return files;
             }
-            return ret_str;
+            else
+            {
+                String[] ret_empty = new String[1];
+                ret_empty[0] = "";
+                return ret_empty;
+            }
+        }
+
+        // Sigle-file selection, so return just String
+        static public String UsesrSelectFilename()
+        {
+            return UsesrSelectFilename(title: "Select a file", init_dir: GetCurrentDirectory(), multiple: false)[0];
         }
 
         static public bool FileExists(String Filename)
