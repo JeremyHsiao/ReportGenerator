@@ -12,29 +12,22 @@ namespace ExcelReportApplication
     class FileFunction
     {
         // Possible multiple-directories selection, so return String[]
-        static public String[] UsersSelectDirectory(String title, String init_dir, bool multiple = true)
+        static public String[] UsersSelectDirectory(String title = "Select Folder(s)", String init_dir =@".\", bool multiple = true)
         {
             var openFolder = new CommonOpenFileDialog();
             openFolder.AllowNonFileSystemItems = true;
             openFolder.Multiselect = multiple;                 
             openFolder.IsFolderPicker = true;
-            if (title != "")
+            openFolder.Title = title;
+
+            String default_dir = GetDirectoryName(GetFullPath(init_dir));
+            if (DirectoryExists(default_dir))
             {
-                openFolder.Title = title;
+                openFolder.InitialDirectory = default_dir;
             }
             else
             {
-                openFolder.Title = "Select Folder(s)";
-            }
-
-            openFolder.InitialDirectory = GetCurrentDirectory();
-            if (init_dir != "")
-            {
-                String default_dir = GetDirectoryName(init_dir);
-                if(DirectoryExists(default_dir))
-                {
-                    openFolder.InitialDirectory = default_dir;
-                }
+                openFolder.InitialDirectory = GetCurrentDirectory();
             }
 
             if (openFolder.ShowDialog() == CommonFileDialogResult.Ok)
@@ -59,29 +52,23 @@ namespace ExcelReportApplication
         }
 
         // Possible multiple-file selection, so return String[]
-        static public String[] UsesrSelectFilename(String title, String init_dir, bool multiple = true)
+        static public String[] UsesrSelectFilename(String title = "Select File(s)", String init_dir = @".\", bool multiple = true)
         {
             OpenFileDialog dialog = new OpenFileDialog();
-            if (title != "")
+            dialog.Multiselect = multiple;
+            dialog.Title = title;
+
+            String default_dir = GetDirectoryName(GetFullPath(init_dir));
+            if (DirectoryExists(default_dir))
             {
-                dialog.Title = title;
+                dialog.InitialDirectory = default_dir;
             }
             else
             {
-                dialog.Title = "Select File(s)";
+                dialog.InitialDirectory = GetCurrentDirectory();
             }
 
-            dialog.InitialDirectory = GetCurrentDirectory();
-            if (init_dir != "")
-            {
-                String default_dir = GetDirectoryName(init_dir);
-                if (DirectoryExists(default_dir))
-                {
-                    dialog.InitialDirectory = default_dir;
-                }
-            }
             dialog.Filter = "Excel files (*.xls/xlsx)|*.xls;*.xlsx";
-            dialog.Multiselect = multiple;
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 var files = dialog.FileNames.ToArray();
