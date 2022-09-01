@@ -119,8 +119,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="SampleData\A.1.1_OSD _All.xlsx" />
-    <None Include="SampleData\TC_Jira 2022-08-19T22_12_39+0800.xls" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft.Office.Core">
