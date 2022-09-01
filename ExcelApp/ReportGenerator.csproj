@@ -65,6 +65,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="StandardTestReport.cs" />
     <Compile Include="TestPlan.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="IssueList.cs" />
