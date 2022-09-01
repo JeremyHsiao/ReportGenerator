@@ -36,12 +36,14 @@ namespace ExcelReportApplication
             return ret_testplan;
         }
 
-        public static void GenerateTestReportStructure(String report_filename)
+        public static void GenerateTestReportStructure(List<TestPlan> read_testplan, String report_src_dir, String report_dest_dir)
         {
-            List<TestPlan> read_testplan = new List<TestPlan>();
-
-            read_testplan = ReadTestPlanFromStandardTestReport(report_filename);
+            // if testplan is not read yet, return
             if (read_testplan == null) { return; }
+            // if src not exist, return
+            if (!FileFunction.DirectoryExists(report_src_dir)) { return; }
+            // dest_dir must be inexist
+            if (FileFunction.DirectoryExists(report_dest_dir)) { return; }
 
             // Create a list of folder to be created and files to be copied (from/to)
             // filtered by Do or Not
@@ -52,25 +54,22 @@ namespace ExcelReportApplication
                 if (do_or_not == "V")
                 {
                     if (!folder.Contains(group)) { folder.Add(group); }
-                    from.Add(@"Database Backup\" + summary.Substring(0, summary.IndexOf('_')) + ".xlsx");
+                    from.Add(summary.Substring(0, summary.IndexOf('_')) + ".xlsx");
                     to.Add(group + @"\" + summary + "_" + subpart + ".xlsx");
                 }
             }
 
-            // Create folder
-            String input_report_dir = Path.GetDirectoryName(report_filename);
-            String output_report_dir = input_report_dir + @"\TestReport_" + DateTime.Now.ToString("yyyyMMddHHmmss");
-            Directory.CreateDirectory(output_report_dir);
+            Directory.CreateDirectory(report_dest_dir);
             foreach (String folder_name in folder)
             {
-                Directory.CreateDirectory(output_report_dir + @"\" + folder_name);
+                Directory.CreateDirectory(report_dest_dir + @"\" + folder_name);
             }
 
             // Copy files
             for (int index = 0; index < from.Count; index++)
             {
-                String src = input_report_dir + @"\" + from[index];
-                String dest = output_report_dir + @"\" + to[index];
+                String src = report_src_dir + @"\" + from[index];
+                String dest = report_dest_dir + @"\" + to[index];
                 File.Copy(src, dest);
             }
         }
