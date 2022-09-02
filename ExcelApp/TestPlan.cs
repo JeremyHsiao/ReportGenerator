@@ -66,7 +66,7 @@ namespace ExcelReportApplication
             this.subpart = members[(int)TestPlanMemberIndex.SUBPART];
         }
 
-        enum TestPlanMemberIndex
+        public enum TestPlanMemberIndex
         {
             GROUP = 0,
             SUMMARY,
@@ -76,8 +76,15 @@ namespace ExcelReportApplication
             SUBPART,
             MAX_NO
         }
+
+        public const string col_Group = "Test Group";
+        public const string col_Summary = "Summary";
+        public const string col_Assignee = "Assignee";
+        public const string col_DoOrNot = "Do or Not";
+        public const string col_Category = "Test Case Category";
+        public const string col_Subpart = "Subpart";
         // The sequence of this String[] must be aligned with enum TestPlanMemberIndex
-        static String[] TestPlanMemberColumnName = { "Test Group", "Summary", "Assginee", "Do or Not", "Test Case Category", "Subpart" };
+        static public String[] TestPlanMemberColumnName = { col_Group, col_Summary, col_Assignee, col_DoOrNot, col_Category, col_Subpart };
 
         static public int NameDefinitionRow_TestPlan = 2;
         static public int DataBeginRow_TestPlan = 3;
