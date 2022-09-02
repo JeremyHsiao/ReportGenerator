@@ -59,6 +59,33 @@ namespace ExcelReportApplication
             this.key = key; this.group = group; this.summary = summary; this.status = status; this.links = links;
         }
 
+        static private String[] separators = { "," };
+        static public List<String> Convert_LinksString_To_ListOfString(String links)
+        {
+            // protection
+            if ((links == null)||(links =="")) return new List<String>();   // return empty new object
+            // Separate keys into string[]
+            String[] issues = links.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            if (issues == null) return null;
+            // string[] to List<String> and return
+            return issues.ToList();
+        }
+
+        static public String Convert_ListOfString_To_LinkString(List<String> list)
+        {
+            // protection
+            if (list == null) return "";
+            if (list.Count == 0) return "";
+            String ret = "";
+            foreach (String str in list)
+            {
+                ret += " " + str + ",";
+            }
+            ret.Remove(ret.Length - 1); // remove last ","
+            ret.Trim(); // remove " " at beginning.
+            return ret;
+        }
+
         static public int NameDefinitionRow = 4;
         static public int DataBeginRow = 5;
         static public string SheetName = "general_report";
