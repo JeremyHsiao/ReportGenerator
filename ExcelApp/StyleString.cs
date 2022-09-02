@@ -166,14 +166,8 @@ Returns or sets the type of underline applied to the font.
             // protection
             if ((links_str == null) || (bug_list == null)) return null;
 
-            // Separate keys into string[]
-            string[] separators = { "," };
-            string[] issues = links_str.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-            if (issues == null) return null;
-
-            // string[] to List<String> and execute ExtendIssueDescription()
-            List<String> id_list = issues.ToList();
-            extended_str = ExtendIssueDescription(issues.ToList(), bug_list);
+            List<String> id_list = TestCase.Convert_LinksString_To_ListOfString(links_str);
+            extended_str = ExtendIssueDescription(id_list, bug_list);
             return extended_str;
         }
 
