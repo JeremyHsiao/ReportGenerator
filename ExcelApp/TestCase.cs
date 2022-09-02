@@ -62,27 +62,32 @@ namespace ExcelReportApplication
         static private String[] separators = { "," };
         static public List<String> Convert_LinksString_To_ListOfString(String links)
         {
+            List<String> ret_list = new List<String> ();
             // protection
-            if ((links == null)||(links =="")) return new List<String>();   // return empty new object
+            if ((links == null)||(links =="")) return ret_list;   // return empty new object
             // Separate keys into string[]
             String[] issues = links.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-            if (issues == null) return null;
-            // string[] to List<String> and return
-            return issues.ToList();
+            if (issues == null) return ret_list;
+            // string[] to List<String> (trimmed) and return
+            foreach(String str in issues)
+            {
+                ret_list.Add(str.Trim());
+            }
+            return ret_list;
         }
 
         static public String Convert_ListOfString_To_LinkString(List<String> list)
         {
-            // protection
-            if (list == null) return "";
-            if (list.Count == 0) return "";
             String ret = "";
+            // protection
+            if (list == null) return ret;
+            if (list.Count == 0) return ret;
             foreach (String str in list)
             {
-                ret += " " + str + ",";
+                ret += str + ", ";
             }
-            ret.Remove(ret.Length - 1); // remove last ","
-            ret.Trim(); // remove " " at beginning.
+            ret.Trim(); // remove " " at beginning & end
+            if (ret[ret.Length-1] == ',') { ret.Remove(ret.Length - 1); }// remove last "," 
             return ret;
         }
 
