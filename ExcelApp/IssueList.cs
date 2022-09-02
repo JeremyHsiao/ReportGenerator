@@ -14,6 +14,11 @@ namespace ExcelReportApplication
         private String summary;
         private String severity;
         private String comment;
+        private String status;
+        private String reporter;
+        private String assignee;
+        private String duedate;
+        private String testcaseid;
 
         public String Key   // property
         {
@@ -39,19 +44,98 @@ namespace ExcelReportApplication
             set { comment = value; }  // set method
         }
 
+        public String Status   // property
+        {
+            get { return status; }   // get method
+            set { status = value; }  // set method
+        }
+
+        public String Reporter   // property
+        {
+            get { return reporter; }   // get method
+            set { reporter = value; }  // set method
+        }
+
+        public String Assignee   // property
+        {
+            get { return assignee; }   // get method
+            set { assignee = value; }  // set method
+        }
+
+        public String DueDate   // property
+        {
+            get { return duedate; }   // get method
+            set { duedate = value; }  // set method
+        }
+
+        public String TestCaseID   // property
+        {
+            get { return testcaseid; }   // get method
+            set { testcaseid = value; }  // set method
+        }
+
         public const string col_Key = "Key";
         public const string col_Summary = "Summary";
         public const string col_Severity = "Severity";
         public const string col_RD_Comment = "Steps To Reproduce"; // To be updated 
         // public const string col_RD_Comment = "Additional Information"; // To be updated
+        public const string col_Status = "Status"; 
+        public const string col_Reporter = "Reporter"; 
+        public const string col_Assignee = "Assignee";
+        public const string col_DueDate = "Due Date";
+        public const string col_TestCaseID = "Test Case ID"; 
+
         public IssueList()
         {
         }
 
-        public IssueList(String key, String summary, String severity, String comment)
+        public IssueList(String key, String summary, String severity, String comment
+            , String status, String reporter, String assignee, String due, String tcid)
         {
             this.key = key; this.summary = summary; this.severity = severity; this.comment = comment;
+            this.status = status; this.reporter = reporter; this.assignee = assignee; this.duedate = due; this.testcaseid = tcid;
         }
+
+        public IssueList(List<String> members)
+        {
+            this.key = members[(int)IssueListMemberIndex.KEY];
+            this.summary = members[(int)IssueListMemberIndex.SUMMARY];
+            this.severity = members[(int)IssueListMemberIndex.SEVERITY];
+            this.comment = members[(int)IssueListMemberIndex.COMMENT];
+            this.status = members[(int)IssueListMemberIndex.STATUS];
+            this.reporter = members[(int)IssueListMemberIndex.REPORTER];
+            this.assignee = members[(int)IssueListMemberIndex.ASSIGNEE];
+            this.duedate = members[(int)IssueListMemberIndex.DUEDATE];
+            this.testcaseid = members[(int)IssueListMemberIndex.TESTCASEID];
+        }
+
+        public enum IssueListMemberIndex
+        {
+            KEY = 0,
+            SUMMARY,
+            SEVERITY,
+            COMMENT,
+            STATUS,
+            REPORTER,
+            ASSIGNEE,
+            DUEDATE,
+            TESTCASEID,
+            MAX_NO
+        }
+
+       // The sequence of this String[] must be aligned with enum IssueListMemberIndex (except no need to have string for MAX_NO)
+        static String[] IssueListMemberColumnName = 
+        { 
+            col_Key,
+            col_Summary,
+            col_Severity,
+            col_RD_Comment,
+            col_Status,
+            col_Reporter,
+            col_Assignee,
+            col_DueDate,
+            col_TestCaseID
+        };
 
         // constant strings for worksheet used in this application.
         static public string SheetName = "general_report";
@@ -69,33 +153,29 @@ namespace ExcelReportApplication
             //Excel.Application myIssueExcel = OpenOridnaryExcel(buglist_filename);
             if (myIssueExcel != null)
             {
-                Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myIssueExcel, SheetName);
-                if (WorkingSheet != null)
+                Worksheet ws_testcase = ExcelAction.Find_Worksheet(myIssueExcel, SheetName);
+                if (ws_testcase != null)
                 {
-                    Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(WorkingSheet, NameDefinitionRow);
+                    Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(ws_testcase, NameDefinitionRow);
 
                     // Get the last (row,col) of excel
-                    Range rngLast = WorkingSheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
+                    Range rngLast = ws_testcase.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
 
                     // Visit all rows and add content of TestCase
                     for (int index = DataBeginRow; index <= rngLast.Row; index++)
                     {
-                        Object cell_value2;
-                        String key, summary, severity, comment;
-
-                        cell_value2 = WorkingSheet.Cells[index, col_name_list[IssueList.col_Key]].Value2;
-                        key = (cell_value2 == null) ? "" : cell_value2.ToString();
-
-                        cell_value2 = WorkingSheet.Cells[index, col_name_list[IssueList.col_Summary]].Value2;
-                        summary = (cell_value2 == null) ? "" : cell_value2.ToString();
-
-                        cell_value2 = WorkingSheet.Cells[index, col_name_list[IssueList.col_Severity]].Value2;
-                        severity = (cell_value2 == null) ? "" : cell_value2.ToString();
-
-                        cell_value2 = WorkingSheet.Cells[index, col_name_list[IssueList.col_RD_Comment]].Value2;
-                        comment = (cell_value2 == null) ? "" : cell_value2.ToString();
-
-                        ret_issue_list.Add(new IssueList(key, summary, severity, comment));
+                        List<String> members = new List<String>();
+                        for (int member_index = 0; member_index < (int)IssueListMemberIndex.MAX_NO; member_index++)
+                        {
+                            Object cell_value2 = ws_testcase.Cells[index, col_name_list[IssueListMemberColumnName[member_index]]].Value2;
+                            String str = (cell_value2 == null) ? "" : cell_value2.ToString();
+                            members.Add(str);
+                        }
+                        // Add issue only if key contains KeyPrefix (very likely a valid key value)
+                        if (members[(int)IssueListMemberIndex.KEY].Contains(KeyPrefix))
+                        {
+                            ret_issue_list.Add(new IssueList(members));
+                        }
                     }
                 }
                 ExcelAction.CloseExcelWithoutSaveChanges(myIssueExcel);
