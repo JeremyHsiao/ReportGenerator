@@ -175,7 +175,7 @@ namespace ExcelReportApplication
         */
         static public void ConsoleWarning(String function, int row)
         {
-            Console.WriteLine("Warning: please excel " + function+" at line " + row.ToString());
+            Console.WriteLine("Warning: please check " + function + " at line " + row.ToString());
         }
 
         static public void ConsoleWarning(String function)
