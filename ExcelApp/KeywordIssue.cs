@@ -32,54 +32,43 @@ namespace ExcelReportApplication
             }
 
             // Open original excel (read-only & corrupt-load) and write to another filename when closed
-            Excel.Application myTCExcel = ExcelAction.OpenPreviousExcel(tclist_filename);
-            if (myTCExcel != null)
+            ExcelAction.ExcelStatus status = ExcelAction.OpenTestCaseExcel(tclist_filename);
+
+            if (status == ExcelAction.ExcelStatus.OK)
             {
-                Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myTCExcel, TestCase.SheetName);
-                if (WorkingSheet != null)
+                Dictionary<string, int> col_name_list = ExcelAction.CreateTestCaseColumnIndex();
+
+                int key_col = col_name_list[TestCase.col_Key];
+                int links_col = col_name_list[TestCase.col_LinkedIssue];
+                // Visit all rows and replace Bug-ID with long description of Bug.
+                for (int index = TestCase.DataBeginRow; index <= ExcelAction.GetTestCaseAllRange().Row; index++)
                 {
-                    Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(WorkingSheet, TestCase.NameDefinitionRow);
+                    Object cell_value2;
 
-                    // Get the last (row,col) of excel
-                    Range rngLast = WorkingSheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
+                    // Make sure Key of TC is not empty
+                    cell_value2 = ExcelAction.GetTestCaseCell(index, key_col);
+                    if (cell_value2 == null) { break; }
+                    String key = cell_value2.ToString();
+                    if (key.Contains(TestCase.KeyPrefix) == false) { break; }
 
-                    // Visit all rows and replace Bug-ID with long description of Bug.
-                    for (int index = TestCase.DataBeginRow; index <= rngLast.Row; index++)
+                    // If Links is not empty, extend bug key into long string with font settings
+                    cell_value2 = ExcelAction.GetTestCaseCell(index, links_col);
+                    if (cell_value2 != null)
                     {
-                        Object cell_value2;
-
-                        // Make sure Key of TC is not empty
-                        cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Key]].Value2;
-                        if (cell_value2 == null) { break; }
-                        String key = cell_value2.ToString();
-                        if (key.Contains(TestCase.KeyPrefix) == false) { break; }
-
-                        // If Links is not empty, extend bug key into long string with font settings
-                        Range rng = WorkingSheet.Cells[index, col_name_list[TestCase.col_LinkedIssue]];
-                        cell_value2 = rng.Value2;
-                        if (cell_value2 != null)
-                        {
-                            List<StyleString> str_list = KeywordIssue.ExtendIssueDescription(group_note_issue[key],
-                                                                            KeywordIssue.global_issue_description_list);
-
-                            KeywordIssue.WriteSytleString(ref rng, str_list);
-                        }
+                        List<StyleString> str_list = StyleString.ExtendIssueDescription(group_note_issue[key],
+                                                                        global_issue_description_list);
+                        ExcelAction.TestCase_WriteStyleString(index, links_col, str_list);
                     }
-                    // auto-fit-height of column links
-                    WorkingSheet.Columns[col_name_list[TestCase.col_LinkedIssue]].AutoFit();
+                }
+                // auto-fit-height of column links
+                ExcelAction.TestCase_AutoFit_Column(links_col);
 
-                    // Write to another filename with datetime
-                    string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename);
-                    ExcelAction.SaveChangesAndCloseExcel(myTCExcel, dest_filename);
-                }
-                else
-                {
-                    // worksheet not found, close immediately
-                    ExcelAction.CloseExcelWithoutSaveChanges(myTCExcel);
-                }
-                WorkingSheet = null;
-                myTCExcel = null;
+                // Write to another filename with datetime
+                string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename);
+                ExcelAction.SaveChangesAndCloseExcel(dest_filename);
             }
+            // Always try to close at the end even there may be some error during operation
+            ExcelAction.CloseTestCaseExcel();
         } 
         */
         /*
@@ -146,7 +135,7 @@ namespace ExcelReportApplication
                             // Fill "Note" 
                             str_list = ExtendIssueDescription(note, global_issue_description_list);
                             rng = result_worksheet.Cells[index, col_issue];
-                            WriteSytleString(ref rng, str_list);
+                            StyleString.WriteStyleString(ref rng, str_list);
                         }
                         else
                         {
@@ -303,7 +292,7 @@ namespace ExcelReportApplication
             {
                 List<StyleString> issue_description = KeyWordIssueDescription[keyword];
                 Range rng = result_worksheet.Cells[KeywordAtRow[keyword], insert_col];
-                StyleString.WriteSytleString(ref rng, issue_description);
+                StyleString.WriteStyleString(ref rng, issue_description);
             }
 
             // Save as another file with yyyyMMddHHmmss
