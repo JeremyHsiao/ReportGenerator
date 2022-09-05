@@ -92,15 +92,19 @@ namespace ExcelReportApplication
             return ret;
         }
 
-        static public Dictionary<string, int> CreateTableColumnIndex(Worksheet bug_worksheet, int naming_row)
+        static public Range GetWorksheetAllRange(Worksheet ws)
         {
-            // Get the last (row,col) of excel
-            Range rngLast = bug_worksheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
+            return ws.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
+        }
+
+
+        static public Dictionary<string, int> CreateTableColumnIndex(Worksheet ws, int naming_row)
+        {
             Dictionary<string, int> col_name_list = new Dictionary<string, int>();
 
-            for (int col_index = 1; col_index <= rngLast.Column; col_index++)
+            for (int col_index = 1; col_index <= GetWorksheetAllRange(ws).Column; col_index++)
             {
-                Object cell_value2 = bug_worksheet.Cells[naming_row, col_index].Value2;
+                Object cell_value2 = ws.Cells[naming_row, col_index].Value2;
                 if (cell_value2 == null) { continue; }
                 col_name_list.Add(cell_value2.ToString(), col_index);
             }
@@ -115,6 +119,7 @@ namespace ExcelReportApplication
             ERR_OpenPreviousExcel,
             ERR_Find_Worksheet,
             ERR_CloseExcelWithoutSaveChanges,
+            ERR_CloseTestCaseExcel_close_null,
             ERR_NOT_DEFINED,
             EX_OpenTestCaseWorksheet,
             EX_CloseTestCaseWorksheet,
@@ -139,7 +144,12 @@ namespace ExcelReportApplication
             return ws_testcase.Cells[row, col].Value2;
         }
 
-        static public ExcelStatus OpenTestCaseWorksheet(String tclist_filename)
+        static public Dictionary<string, int> CreateTestCaseColumnIndex()
+        {
+            return CreateTableColumnIndex(ws_testcase, TestCase.NameDefinitionRow);
+        }
+
+        static public ExcelStatus OpenTestCaseExcel(String tclist_filename)
         {
             try
             {
@@ -172,11 +182,16 @@ namespace ExcelReportApplication
             //return ExcelStatus.ERR_NOT_DEFINED;
         }
 
-        static public ExcelStatus CloseTestCaseWorksheet()
+        static public ExcelStatus CloseTestCaseExcel()
         {
             try
             {
+                if (TestCaseExcel == null)
+                {
+                    return ExcelStatus.ERR_CloseTestCaseExcel_close_null;
+                }
                 ExcelAction.CloseExcelWithoutSaveChanges(TestCaseExcel);
+                TestCaseExcel = null;
                 return ExcelStatus.OK;
             }
             catch
