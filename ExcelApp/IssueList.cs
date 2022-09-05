@@ -191,6 +191,15 @@ namespace ExcelReportApplication
             col_AdditionalInfo
         };
 
+        static public String STR_CLOSE              = @"Close (0)";
+        static public String STR_WAIVE              = @"Waive (0.1)";
+        static public String STR_CONFIRM            = @"Confirm (1)";
+        static public String STR_WFC                = @"WFC (2)";
+        static public String STR_RD_ANALYSIS        = @"Analyzing and solving (3)";
+        static public String STR_VENDOR_ANALYSIS    = @"Vendor analyzing (3.6)";
+        static public String STR_MORE_INFO          = @"More Info. (3.9)";
+        static public String STR_NEW                = @"New (4)";
+
         // constant strings for worksheet used in this application.
         static public string SheetName = "general_report";
         static public int NameDefinitionRow = 4;
