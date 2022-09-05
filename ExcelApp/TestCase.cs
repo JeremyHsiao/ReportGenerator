@@ -199,6 +199,14 @@ namespace ExcelReportApplication
             col_StepsToReproduce
         };
 
+        static public String STR_PASS = @"Pass";
+        static public String STR_FAIL = @"Fail";
+
+        static public int NameDefinitionRow = 4;
+        static public int DataBeginRow = 5;
+        static public string SheetName = "general_report";
+        static public string KeyPrefix = "TCBEN";
+
         static private String[] separators = { "," };
         static public List<String> Convert_LinksString_To_ListOfString(String links)
         {
@@ -230,11 +238,6 @@ namespace ExcelReportApplication
             if (ret[ret.Length-1] == ',') { ret.Remove(ret.Length - 1); }// remove last "," 
             return ret;
         }
-
-        static public int NameDefinitionRow = 4;
-        static public int DataBeginRow = 5;
-        static public string SheetName = "general_report";
-        static public string KeyPrefix = "TCBEN";
 
         static public List<TestCase> GenerateTestCaseList(string tclist_filename)
         {
