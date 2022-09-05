@@ -207,13 +207,13 @@ namespace ExcelReportApplication
             //Excel.Application myIssueExcel = OpenOridnaryExcel(buglist_filename);
             if (myIssueExcel != null)
             {
-                Worksheet ws_testcase = ExcelAction.Find_Worksheet(myIssueExcel, SheetName);
-                if (ws_testcase != null)
+                Worksheet ws_issuelist = ExcelAction.Find_Worksheet(myIssueExcel, SheetName);
+                if (ws_issuelist != null)
                 {
-                    Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(ws_testcase, NameDefinitionRow);
+                    Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(ws_issuelist, NameDefinitionRow);
 
                     // Get the last (row,col) of excel
-                    Range rngLast = ws_testcase.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
+                    Range rngLast = ws_issuelist.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
 
                     // Visit all rows and add content of TestCase
                     for (int index = DataBeginRow; index <= rngLast.Row; index++)
@@ -221,7 +221,7 @@ namespace ExcelReportApplication
                         List<String> members = new List<String>();
                         for (int member_index = 0; member_index < (int)IssueListMemberIndex.MAX_NO; member_index++)
                         {
-                            Object cell_value2 = ws_testcase.Cells[index, col_name_list[IssueListMemberColumnName[member_index]]].Value2;
+                            Object cell_value2 = ws_issuelist.Cells[index, col_name_list[IssueListMemberColumnName[member_index]]].Value2;
                             String str = (cell_value2 == null) ? "" : cell_value2.ToString();
                             members.Add(str);
                         }
