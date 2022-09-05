@@ -14,6 +14,16 @@ namespace ExcelReportApplication
         private String summary;
         private String status;
         private String links;
+        private String severity;
+        private String bugtype;
+        private String swversion;
+        private String hwversion;
+        private String reporter;
+        private String assignee;
+        private String duedate;
+        private String additionalinfo;
+        private String testcaseid;          
+        private String stepstoreproduce ;
 
         public String Key   // property
         {
@@ -45,19 +55,149 @@ namespace ExcelReportApplication
             set { links = value; }  // set method
         }
 
+        public String Severity   // property
+        {
+            get { return severity; }   // get method
+            set { severity = value; }  // set method
+        }
+
+        public String BugType  // property
+        {
+            get { return bugtype; }   // get method
+            set { bugtype = value; }  // set method
+        }
+
+        public String SWVersion   // property
+        {
+            get { return swversion; }   // get method
+            set { swversion = value; }  // set method
+        }
+
+        public String HWVersion   // property
+        {
+            get { return hwversion; }   // get method
+            set { hwversion = value; }  // set method
+        }
+       
+        public String Reporter   // property
+        {
+            get { return reporter; }   // get method
+            set { reporter = value; }  // set method
+        }
+
+        public String Assignee   // property
+        {
+            get { return assignee; }   // get method
+            set { assignee = value; }  // set method
+        }
+
+        public String DueDate   // property
+        {
+            get { return duedate; }   // get method
+            set { duedate = value; }  // set method
+        }
+
+        public String AdditionalInfo   // property
+        {
+            get { return additionalinfo; }   // get method
+            set { additionalinfo = value; }  // set method
+        }
+
+        public String TestCaseID   // property
+        {
+            get { return testcaseid; }   // get method
+            set { testcaseid = value; }  // set method
+        }
+
+        public String StepsToReproduce   // property
+        {
+            get { return stepstoreproduce; }   // get method
+            set { stepstoreproduce = value; }  // set method
+        }
+
         public const string col_Key = "Key";
         public const string col_Group = "Test Group";
         public const string col_Summary = "Summary";
         public const string col_Status = "Status";
-        public const string col_Links = "Linked Issues";
+        public const string col_LinkedIssue = "Linked Issues";
+        public const string col_Severity = "Severity";
+        public const string col_BugType = "Bug Type";
+        public const string col_SWVersion = "SW version";
+        public const string col_HWVersion = "HW version";
+        public const string col_Reporter = "Reporter";
+        public const string col_Assignee = "Assignee";
+        public const string col_DueDate = "Due Date";
+        public const string col_AdditionalInfo = "Additional Information";
+        public const string col_TestCaseID = "Test Case ID";
+        public const string col_StepsToReproduce = "Steps To Reproduce"; 
+
         public TestCase()
         {
         }
-
+/*
         public TestCase(String key, String group, String summary, String status, String links)
         {
             this.key = key; this.group = group; this.summary = summary; this.status = status; this.links = links;
         }
+*/
+        public TestCase(List<String> members)
+        {
+            this.key = members[(int)TestCaseMemberIndex.KEY];
+            this.group = members[(int)TestCaseMemberIndex.GROUP];
+            this.summary = members[(int)TestCaseMemberIndex.SUMMARY];
+            this.status = members[(int)TestCaseMemberIndex.STATUS];
+            this.links = members[(int)TestCaseMemberIndex.LINKEDISSUE];
+            this.severity = members[(int)TestCaseMemberIndex.SEVERITY];
+            this.bugtype = members[(int)TestCaseMemberIndex.BUGTYPE];
+            this.swversion = members[(int)TestCaseMemberIndex.SWVERSION];
+            this.hwversion = members[(int)TestCaseMemberIndex.HWVERSION];
+            this.reporter = members[(int)TestCaseMemberIndex.REPORTER];
+            this.assignee = members[(int)TestCaseMemberIndex.ASSIGNEE];
+            this.duedate = members[(int)TestCaseMemberIndex.DUEDATE];
+            this.additionalinfo = members[(int)TestCaseMemberIndex.ADDITIONALINFO];
+            this.testcaseid = members[(int)TestCaseMemberIndex.TESTCASEID];
+            this.stepstoreproduce = members[(int)TestCaseMemberIndex.STEPSTOREPRODUCE];
+        }
+
+        public enum TestCaseMemberIndex
+        {
+            KEY = 0,
+            GROUP,
+            SUMMARY,
+            STATUS,
+            LINKEDISSUE,
+            SEVERITY,
+            BUGTYPE,
+            SWVERSION,
+            HWVERSION,
+            REPORTER,
+            ASSIGNEE,
+            DUEDATE,
+            ADDITIONALINFO,
+            TESTCASEID,
+            STEPSTOREPRODUCE,
+            MAX_NO
+        }
+
+       // The sequence of this String[] must be aligned with enum TestCaseMemberIndex (except no need to have string for MAX_NO)
+        static String[] TestCaseMemberColumnName = 
+        { 
+            col_Key,
+            col_Group,
+            col_Summary,
+            col_Status,
+            col_LinkedIssue,
+            col_Severity,
+            col_BugType,
+            col_SWVersion,
+            col_HWVersion,
+            col_Reporter,
+            col_Assignee,
+            col_DueDate,
+            col_AdditionalInfo,
+            col_TestCaseID,
+            col_StepsToReproduce
+        };
 
         static private String[] separators = { "," };
         static public List<String> Convert_LinksString_To_ListOfString(String links)
@@ -105,36 +245,29 @@ namespace ExcelReportApplication
             //Excel.Application myTCExcel = OpenOridnaryExcel(tclist_filename);
             if (myTCExcel != null)
             {
-                Worksheet WorkingSheet = ExcelAction.Find_Worksheet(myTCExcel, SheetName);
-                if (WorkingSheet != null)
+                Worksheet ws_tclist = ExcelAction.Find_Worksheet(myTCExcel, SheetName);
+                if (ws_tclist != null)
                 {
-                    Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(WorkingSheet, NameDefinitionRow);
+                    Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(ws_tclist, NameDefinitionRow);
 
                     // Get the last (row,col) of excel
-                    Range rngLast = WorkingSheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
+                    Range rngLast = ws_tclist.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
 
                     // Visit all rows and add content of TestCase
                     for (int index = DataBeginRow; index <= rngLast.Row; index++)
                     {
-                        Object cell_value2;
-                        String key, group, summary, status, links;
-
-                        cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Key]].Value2;
-                        key = (cell_value2 == null) ? "" : cell_value2.ToString();
-
-                        cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Group]].Value2;
-                        group = (cell_value2 == null) ? "" : cell_value2.ToString();
-
-                        cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Summary]].Value2;
-                        summary = (cell_value2 == null) ? "" : cell_value2.ToString();
-
-                        cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Status]].Value2;
-                        status = (cell_value2 == null) ? "" : cell_value2.ToString();
-
-                        cell_value2 = WorkingSheet.Cells[index, col_name_list[TestCase.col_Links]].Value2;
-                        links = (cell_value2 == null) ? "" : cell_value2.ToString();
-
-                        ret_tc_list.Add(new TestCase(key, group, summary, status, links));
+                        List<String> members = new List<String>();
+                        for (int member_index = 0; member_index < (int)TestCaseMemberIndex.MAX_NO; member_index++)
+                        {
+                            Object cell_value2 = ws_tclist.Cells[index, col_name_list[TestCaseMemberColumnName[member_index]]].Value2;
+                            String str = (cell_value2 == null) ? "" : cell_value2.ToString();
+                            members.Add(str);
+                        }
+                        // Add issue only if key contains KeyPrefix (very likely a valid key value)
+                        if (members[(int)TestCaseMemberIndex.KEY].Contains(KeyPrefix))
+                        {
+                            ret_tc_list.Add(new TestCase(members));
+                        }
                     }
                 }
                 ExcelAction.CloseExcelWithoutSaveChanges(myTCExcel);
