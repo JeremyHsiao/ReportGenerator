@@ -97,6 +97,11 @@ namespace ExcelReportApplication
             return ws.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
         }
 
+        static public void AutoFit_Column(Worksheet ws, int col)
+        {
+            ws.Columns[col].AutoFit();
+        }
+
 
         static public Dictionary<string, int> CreateTableColumnIndex(Worksheet ws, int naming_row)
         {
@@ -120,6 +125,7 @@ namespace ExcelReportApplication
             ERR_Find_Worksheet,
             ERR_CloseExcelWithoutSaveChanges,
             ERR_CloseTestCaseExcel_close_null,
+            ERR_SaveChangesAndCloseExcel_close_null,
             ERR_NOT_DEFINED,
             EX_OpenTestCaseWorksheet,
             EX_CloseTestCaseWorksheet,
@@ -142,6 +148,16 @@ namespace ExcelReportApplication
         static public Object GetTestCaseCell(int row, int col)
         {
             return ws_testcase.Cells[row, col].Value2;
+        }
+
+        static public void TestCase_AutoFit_Column(int col)
+        {
+            AutoFit_Column(ws_testcase, col);
+        }
+
+        static public void TestCase_WriteStyleString(int row, int col, List<StyleString> sytle_string_list)
+        {
+            StyleString.WriteStyleString(ws_testcase, row, col, sytle_string_list);
         }
 
         static public Dictionary<string, int> CreateTestCaseColumnIndex()
@@ -200,5 +216,22 @@ namespace ExcelReportApplication
             }
         }
 
+        static public ExcelStatus SaveChangesAndCloseExcel(String dest_filename)
+        {
+            try
+            {
+                if (TestCaseExcel == null)
+                {
+                    return ExcelStatus.ERR_SaveChangesAndCloseExcel_close_null;
+                }
+                ExcelAction.SaveChangesAndCloseExcel(TestCaseExcel, dest_filename);
+                TestCaseExcel = null;
+                return ExcelStatus.OK;
+            }
+            catch
+            {
+                return ExcelStatus.EX_CloseTestCaseWorksheet;
+            }
+        }
     }
 }
