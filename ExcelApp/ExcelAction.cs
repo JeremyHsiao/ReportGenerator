@@ -129,7 +129,7 @@ namespace ExcelReportApplication
             return ws_testcase;
         }
 
-        static public object GetTestCaseAllRange()
+        static public Range GetTestCaseAllRange()
         {
             return ws_testcase.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
         }
