@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Office.Interop.Excel;
-using Excel = Microsoft.Office.Interop.Excel;
 
 namespace ExcelReportApplication
 {
@@ -244,39 +242,39 @@ namespace ExcelReportApplication
         {
             List<TestCase> ret_tc_list = new List<TestCase>();
 
-            // Open excel (read-only & corrupt-load)
-            Excel.Application myTCExcel = ExcelAction.OpenPreviousExcel(tclist_filename);
-            //Excel.Application myTCExcel = OpenOridnaryExcel(tclist_filename);
-            if (myTCExcel != null)
+            ExcelAction.ExcelStatus status = ExcelAction.OpenTestCaseExcel(tclist_filename);
+
+            if (status == ExcelAction.ExcelStatus.OK)
             {
-                Worksheet ws_tclist = ExcelAction.Find_Worksheet(myTCExcel, SheetName);
-                if (ws_tclist != null)
+                Dictionary<string, int> col_name_list = ExcelAction.CreateTestCaseColumnIndex();
+
+                // Visit all rows and add content of TestCase
+                for (int index = DataBeginRow; index <= ExcelAction.GetTestCaseAllRange().Row; index++)
                 {
-                    Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(ws_tclist, NameDefinitionRow);
-
-                    // Get the last (row,col) of excel
-                    Range rngLast = ws_tclist.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
-
-                    // Visit all rows and add content of TestCase
-                    for (int index = DataBeginRow; index <= rngLast.Row; index++)
+                    List<String> members = new List<String>();
+                    for (int member_index = 0; member_index < (int)TestCaseMemberIndex.MAX_NO; member_index++)
                     {
-                        List<String> members = new List<String>();
-                        for (int member_index = 0; member_index < (int)TestCaseMemberIndex.MAX_NO; member_index++)
-                        {
-                            Object cell_value2 = ws_tclist.Cells[index, col_name_list[TestCaseMemberColumnName[member_index]]].Value2;
-                            String str = (cell_value2 == null) ? "" : cell_value2.ToString();
-                            members.Add(str);
-                        }
-                        // Add issue only if key contains KeyPrefix (very likely a valid key value)
-                        if (members[(int)TestCaseMemberIndex.KEY].Contains(KeyPrefix))
-                        {
-                            ret_tc_list.Add(new TestCase(members));
-                        }
+                        Object cell_value2 = ExcelAction.GetTestCaseCell(index, col_name_list[TestCaseMemberColumnName[member_index]]);
+                        String str = (cell_value2 == null) ? "" : cell_value2.ToString();
+                        members.Add(str);
+                    }
+                    // Add issue only if key contains KeyPrefix (very likely a valid key value)
+                    if (members[(int)TestCaseMemberIndex.KEY].Contains(KeyPrefix))
+                    {
+                        ret_tc_list.Add(new TestCase(members));
                     }
                 }
-                ExcelAction.CloseExcelWithoutSaveChanges(myTCExcel);
-                myTCExcel = null;
+                ExcelAction.CloseTestCaseExcel();
             }
+            else
+            {
+                if (status == ExcelAction.ExcelStatus.ERR_Find_Worksheet)
+                {
+                    // Worksheet not found -- data corruption -- need to check excel
+                    ExcelAction.CloseTestCaseExcel();
+                }
+            }
+
             return ret_tc_list;
         }
     }
