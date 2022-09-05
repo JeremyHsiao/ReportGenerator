@@ -54,7 +54,7 @@ namespace ExcelReportApplication
                         if (key.Contains(TestCase.KeyPrefix) == false) { break; }
 
                         // If Links is not empty, extend bug key into long string with font settings
-                        Range rng = WorkingSheet.Cells[index, col_name_list[TestCase.col_Links]];
+                        Range rng = WorkingSheet.Cells[index, col_name_list[TestCase.col_LinkedIssue]];
                         cell_value2 = rng.Value2;
                         if (cell_value2 != null)
                         {
@@ -65,7 +65,7 @@ namespace ExcelReportApplication
                         }
                     }
                     // auto-fit-height of column links
-                    WorkingSheet.Columns[col_name_list[TestCase.col_Links]].AutoFit();
+                    WorkingSheet.Columns[col_name_list[TestCase.col_LinkedIssue]].AutoFit();
 
                     // Write to another filename with datetime
                     string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename);
