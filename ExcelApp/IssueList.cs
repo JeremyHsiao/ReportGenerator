@@ -19,6 +19,11 @@ namespace ExcelReportApplication
         private String assignee;
         private String duedate;
         private String testcaseid;
+        private String bugtype;
+        private String swversion;
+        private String hwversion;
+        private String linkedissue;
+        private String additionalinfo;
 
         public String Key   // property
         {
@@ -74,16 +79,50 @@ namespace ExcelReportApplication
             set { testcaseid = value; }  // set method
         }
 
+        public String BugType  // property
+        {
+            get { return bugtype; }   // get method
+            set { bugtype = value; }  // set method
+        }
+
+        public String SWVersion   // property
+        {
+            get { return swversion; }   // get method
+            set { swversion = value; }  // set method
+        }
+
+        public String HWVersion   // property
+        {
+            get { return hwversion; }   // get method
+            set { hwversion = value; }  // set method
+        }
+
+        public String LinkedIssue   // property
+        {
+            get { return linkedissue; }   // get method
+            set { linkedissue = value; }  // set method
+        }
+
+        public String AdditionalInfo   // property
+        {
+            get { return additionalinfo; }   // get method
+            set { additionalinfo = value; }  // set method
+        }
+
         public const string col_Key = "Key";
         public const string col_Summary = "Summary";
         public const string col_Severity = "Severity";
-        public const string col_RD_Comment = "Steps To Reproduce"; // To be updated 
-        // public const string col_RD_Comment = "Additional Information"; // To be updated
+        public const string col_RD_Comment = "Steps To Reproduce"; // used as comment currently 
         public const string col_Status = "Status"; 
         public const string col_Reporter = "Reporter"; 
         public const string col_Assignee = "Assignee";
         public const string col_DueDate = "Due Date";
-        public const string col_TestCaseID = "Test Case ID"; 
+        public const string col_TestCaseID = "Test Case ID";
+        public const string col_BugType = "Bug Type";
+        public const string col_SWVersion = "SW version";
+        public const string col_HWVersion = "HW version";
+        public const string col_LinkedIssue = "Linked Issues";
+        public const string col_AdditionalInfo = "Additional Information"; 
 
         public IssueList()
         {
@@ -107,6 +146,11 @@ namespace ExcelReportApplication
             this.assignee = members[(int)IssueListMemberIndex.ASSIGNEE];
             this.duedate = members[(int)IssueListMemberIndex.DUEDATE];
             this.testcaseid = members[(int)IssueListMemberIndex.TESTCASEID];
+            this.bugtype = members[(int)IssueListMemberIndex.BUGTYPE];
+            this.swversion = members[(int)IssueListMemberIndex.SWVERSION];
+            this.hwversion = members[(int)IssueListMemberIndex.HWVERSION];
+            this.linkedissue = members[(int)IssueListMemberIndex.LINKEDISSUE];
+            this.additionalinfo = members[(int)IssueListMemberIndex.ADDITIONALINFO];
         }
 
         public enum IssueListMemberIndex
@@ -120,6 +164,11 @@ namespace ExcelReportApplication
             ASSIGNEE,
             DUEDATE,
             TESTCASEID,
+            BUGTYPE,
+            SWVERSION,
+            HWVERSION,
+            LINKEDISSUE,
+            ADDITIONALINFO,
             MAX_NO
         }
 
@@ -134,7 +183,12 @@ namespace ExcelReportApplication
             col_Reporter,
             col_Assignee,
             col_DueDate,
-            col_TestCaseID
+            col_TestCaseID,
+            col_BugType,
+            col_SWVersion,
+            col_HWVersion,
+            col_LinkedIssue,
+            col_AdditionalInfo
         };
 
         // constant strings for worksheet used in this application.
