@@ -209,7 +209,7 @@ Returns or sets the type of underline applied to the font.
             return extended_str;
         }
 
-        static public void WriteSytleString(ref Range input_range, List<StyleString> sytle_string_list)
+        static public void WriteStyleString(ref Range input_range, List<StyleString> sytle_string_list)
         {
             // Fill the text into excel cell with default font settings.
             string txt_str = "";
@@ -237,6 +237,12 @@ Returns or sets the type of underline applied to the font.
                 }
                 chr_index += len;
             }
+        }
+
+        static public void WriteStyleString(Worksheet ws, int row, int col, List<StyleString> sytle_string_list)
+        {
+            Range input_range = ws.Cells[row,col];
+            WriteStyleString(ref input_range, sytle_string_list);
         }
 
     }
