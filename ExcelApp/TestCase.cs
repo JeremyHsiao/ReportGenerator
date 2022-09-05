@@ -201,6 +201,7 @@ namespace ExcelReportApplication
 
         static public String STR_PASS = @"Pass";
         static public String STR_FAIL = @"Fail";
+        static public String STR_NONE = @"None";
 
         static public int NameDefinitionRow = 4;
         static public int DataBeginRow = 5;
