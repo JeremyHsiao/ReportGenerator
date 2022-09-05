@@ -107,6 +107,83 @@ namespace ExcelReportApplication
 
             return col_name_list;
         }
+        
+        public enum ExcelStatus  
+        {
+            OK = 0,
+            INIT_STATE,
+            ERR_OpenPreviousExcel,
+            ERR_Find_Worksheet,
+            ERR_CloseExcelWithoutSaveChanges,
+            ERR_NOT_DEFINED,
+            EX_OpenTestCaseWorksheet,
+            EX_CloseTestCaseWorksheet,
+            MAX_NO
+        };
+
+        static private Excel.Application TestCaseExcel;
+        static private Worksheet ws_testcase;
+
+        static public Worksheet GetTestCaseWorksheet()
+        {
+            return ws_testcase;
+        }
+
+        static public object GetTestCaseAllRange()
+        {
+            return ws_testcase.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
+        }
+
+        static public Range GetTestCaseCellObject(int row, int col)
+        {
+            return ws_testcase.Cells[row, col].Value2;
+        }
+
+        static public ExcelStatus OpenTestCaseWorksheet(String tclist_filename)
+        {
+            try
+            {
+                // Open excel (read-only & corrupt-load)
+                Excel.Application myTCExcel = ExcelAction.OpenPreviousExcel(tclist_filename);
+
+                if (myTCExcel == null)
+                {
+                    return ExcelStatus.ERR_OpenPreviousExcel;
+                }
+
+                Worksheet ws_tclist = ExcelAction.Find_Worksheet(myTCExcel, TestCase.SheetName);
+                if (ws_tclist == null)
+                {
+                    return ExcelStatus.ERR_Find_Worksheet;
+                }
+                else
+                {
+                    TestCaseExcel = myTCExcel;
+                    ws_testcase = ws_tclist;
+                    return ExcelStatus.OK;
+                }
+            }
+            catch 
+            {
+                return ExcelStatus.EX_OpenTestCaseWorksheet;
+            }
+
+            // Not needed because never reaching here
+            //return ExcelStatus.ERR_NOT_DEFINED;
+        }
+
+        static public ExcelStatus CloseTestCaseWorksheet()
+        {
+            try
+            {
+                ExcelAction.CloseExcelWithoutSaveChanges(TestCaseExcel);
+                return ExcelStatus.OK;
+            }
+            catch
+            {
+                return ExcelStatus.EX_CloseTestCaseWorksheet;
+            }
+        }
 
     }
 }
