@@ -134,7 +134,7 @@ namespace ExcelReportApplication
             return ws_testcase.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
         }
 
-        static public Range GetTestCaseCellObject(int row, int col)
+        static public Object GetTestCaseCell(int row, int col)
         {
             return ws_testcase.Cells[row, col].Value2;
         }
