@@ -97,6 +97,13 @@ namespace ExcelReportApplication
             return ws.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
         }
 
+        static public Range GetWorksheetPrintableRange(Worksheet ws)
+        {
+            String PrintArea = ws.PageSetup.PrintArea;
+            Range rngPrintable = ws.Range[PrintArea];
+            return rngPrintable;
+        }
+
         static public void AutoFit_Column(Worksheet ws, int col)
         {
             ws.Columns[col].AutoFit();
@@ -157,7 +164,7 @@ namespace ExcelReportApplication
 
         static public Range GetIssueListAllRange()
         {
-            return ws_issuelist.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
+            return GetWorksheetAllRange(ws_issuelist);
         }
 
         static public Object GetIssueListCell(int row, int col)
@@ -196,7 +203,7 @@ namespace ExcelReportApplication
 
         static public Range GetTestCaseAllRange()
         {
-            return ws_testcase.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
+            return GetWorksheetAllRange(ws_testcase);
         }
 
         static public Object GetTestCaseCell(int row, int col)
