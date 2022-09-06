@@ -17,7 +17,9 @@ namespace ExcelReportApplication
         static public List<TestCase> global_testcase_list = new List<TestCase> ();
 
         /*
-        //WriteBacktoTCJiraExcel
+        // 
+        // This demo open Test Case Excel and replace Issue ID on Linked Issue column with ID+Summary+Severity+RD_Comment
+        //
         static public void WriteBacktoTCJiraExcel(String tclist_filename)
         {
             // Open original excel (read-only & corrupt-load) and write to another filename when closed
@@ -55,6 +57,10 @@ namespace ExcelReportApplication
             ExcelAction.CloseTestCaseExcel();
         } 
         */
+
+        // 
+        // This demo open Summary Report Excel and write to Notes with all issues beloging to this test group (issue written in ID+Summary+Severity+RD_Comment)
+        //
         /*
         static public string sheet_Report_Result = "Result";
         static public void SaveToReportTemplate(string report_filename)
@@ -146,16 +152,19 @@ namespace ExcelReportApplication
             }
         }
         */
+
         static public void ConsoleWarning(String function, int row)
         {
             Console.WriteLine("Warning: please check " + function + " at line " + row.ToString());
         }
-
         static public void ConsoleWarning(String function)
         {
             Console.WriteLine("Warning: please check " + function);
         }
 
+        //
+        // This Demo Identify Keyword on the excel and insert a column to list all issues containing that keyword
+        //
         static int col_indentifier = 2;
         static int col_keyword = 3;
         static public bool KeywordIssueGenerationTask(string report_filename)
