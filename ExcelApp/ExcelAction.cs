@@ -223,7 +223,7 @@ namespace ExcelReportApplication
             }
         }
 
-        static public ExcelStatus SaveChangesAndCloseExcel(String dest_filename)
+        static public ExcelStatus SaveChangesAndCloseTestCaseExcel(String dest_filename)
         {
             try
             {
