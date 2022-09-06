@@ -174,8 +174,9 @@ namespace ExcelReportApplication
             ADDITIONALINFO,
             TESTCASEID,
             STEPSTOREPRODUCE,
-            MAX_NO
         }
+
+        public static int TestCaseMemberCount = Enum.GetNames(typeof(TestCaseMemberIndex)).Length;
 
        // The sequence of this String[] must be aligned with enum TestCaseMemberIndex (except no need to have string for MAX_NO)
         static String[] TestCaseMemberColumnName = 
@@ -248,14 +249,14 @@ namespace ExcelReportApplication
             {
                 Dictionary<string, int> col_name_list = ExcelAction.CreateTestCaseColumnIndex();
 
-                // Visit all rows and add content of TestCase
-                for (int index = DataBeginRow; index <= ExcelAction.GetTestCaseAllRange().Row; index++)
+                // Visit all rows and add content of TestCased
+                int ExcelLastRow = ExcelAction.GetTestCaseAllRange().Row;
+                for (int index = DataBeginRow; index <= ExcelLastRow; index++)
                 {
                     List<String> members = new List<String>();
-                    for (int member_index = 0; member_index < (int)TestCaseMemberIndex.MAX_NO; member_index++)
+                    for (int member_index = 0; member_index < TestCaseMemberCount; member_index++)
                     {
-                        Object cell_value2 = ExcelAction.GetTestCaseCell(index, col_name_list[TestCaseMemberColumnName[member_index]]);
-                        String str = (cell_value2 == null) ? "" : cell_value2.ToString();
+                        String str = ExcelAction.GetTestCaseCellTrimmedString(index, col_name_list[TestCaseMemberColumnName[member_index]]);
                         members.Add(str);
                     }
                     // Add issue only if key contains KeyPrefix (very likely a valid key value)
@@ -272,6 +273,10 @@ namespace ExcelReportApplication
                 {
                     // Worksheet not found -- data corruption -- need to check excel
                     ExcelAction.CloseTestCaseExcel();
+                }
+                else
+                {
+                    // other error -- to be checked 
                 }
             }
 
