@@ -268,7 +268,7 @@ namespace ExcelReportApplication
             }
             else
             {
-                if (status == ExcelAction.ExcelStatus.ERR_Find_Worksheet)
+                if (status == ExcelAction.ExcelStatus.ERR_OpenTestCaseExcel_Find_Worksheet)
                 {
                     // Worksheet not found -- data corruption -- need to check excel
                     ExcelAction.CloseTestCaseExcel();
