@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Office.Interop.Excel;
-using Excel = Microsoft.Office.Interop.Excel;
 using System.Drawing;
 
 namespace ExcelReportApplication
@@ -169,10 +167,11 @@ namespace ExcelReportApplication
             HWVERSION,
             LINKEDISSUE,
             ADDITIONALINFO,
-            MAX_NO
         }
 
-       // The sequence of this String[] must be aligned with enum IssueListMemberIndex (except no need to have string for MAX_NO)
+        public static int IssueListMemberCount = Enum.GetNames(typeof(IssueListMemberIndex)).Length;
+
+        // The sequence of this String[] must be aligned with enum IssueListMemberIndex (except no need to have string for MAX_NO)
         static String[] IssueListMemberColumnName = 
         { 
             col_Key,
@@ -211,39 +210,43 @@ namespace ExcelReportApplication
         {
             List<IssueList> ret_issue_list = new List<IssueList>();
 
-            // Open excel (read-only & corrupt-load)
-            Excel.Application myIssueExcel = ExcelAction.OpenPreviousExcel(buglist_filename);
-            //Excel.Application myIssueExcel = OpenOridnaryExcel(buglist_filename);
-            if (myIssueExcel != null)
+            ExcelAction.ExcelStatus status = ExcelAction.OpenIssueListExcel(buglist_filename);
+
+            if (status == ExcelAction.ExcelStatus.OK)
             {
-                Worksheet ws_issuelist = ExcelAction.Find_Worksheet(myIssueExcel, SheetName);
-                if (ws_issuelist != null)
+                Dictionary<string, int> col_name_list = ExcelAction.CreateIssueListColumnIndex();
+
+                // Visit all rows and add content of IssueList
+                int ExcelLastRow = ExcelAction.GetIssueListAllRange().Row;
+                for (int index = DataBeginRow; index <= ExcelAction.GetIssueListAllRange().Row; index++)
                 {
-                    Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(ws_issuelist, NameDefinitionRow);
-
-                    // Get the last (row,col) of excel
-                    Range rngLast = ws_issuelist.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
-
-                    // Visit all rows and add content of TestCase
-                    for (int index = DataBeginRow; index <= rngLast.Row; index++)
+                    List<String> members = new List<String>();
+                    for (int member_index = 0; member_index < IssueListMemberCount; member_index++)
                     {
-                        List<String> members = new List<String>();
-                        for (int member_index = 0; member_index < (int)IssueListMemberIndex.MAX_NO; member_index++)
-                        {
-                            Object cell_value2 = ws_issuelist.Cells[index, col_name_list[IssueListMemberColumnName[member_index]]].Value2;
-                            String str = (cell_value2 == null) ? "" : cell_value2.ToString();
-                            members.Add(str);
-                        }
-                        // Add issue only if key contains KeyPrefix (very likely a valid key value)
-                        if (members[(int)IssueListMemberIndex.KEY].Contains(KeyPrefix))
-                        {
-                            ret_issue_list.Add(new IssueList(members));
-                        }
+                        String str = ExcelAction.GetIssueListCellTrimmedString(index, col_name_list[IssueListMemberColumnName[member_index]]);
+                        members.Add(str);
+                    }
+                    // Add issue only if key contains KeyPrefix (very likely a valid key value)
+                    if (members[(int)IssueListMemberIndex.KEY].Contains(KeyPrefix))
+                    {
+                        ret_issue_list.Add(new IssueList(members));
                     }
                 }
-                ExcelAction.CloseExcelWithoutSaveChanges(myIssueExcel);
-                myIssueExcel = null;
+                ExcelAction.CloseIssueListExcel();
             }
+            else
+            {
+                if (status == ExcelAction.ExcelStatus.ERR_OpenIssueListExcel_Find_Worksheet)
+                {
+                    // Worksheet not found -- data corruption -- need to check excel
+                    ExcelAction.CloseIssueListExcel();
+                }
+                else
+                {
+                    // other error -- to be checked 
+                }
+            }
+
             return ret_issue_list;
         }
 
