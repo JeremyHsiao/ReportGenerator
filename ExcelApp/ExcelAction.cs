@@ -109,6 +109,12 @@ namespace ExcelReportApplication
             ws.Columns[col].AutoFit();
         }
 
+        static public void Hide_Row(Worksheet ws, int row, int count = 1)
+        {
+            Range hiddenRange = ws.Range[ws.Cells[row, 1], ws.Cells[row + count - 1, GetWorksheetAllRange(ws).Column]];
+            //     var hiddenRange = yourWorksheet.Range[yourWorksheet.Cells[firstRowToHide, firstColToHide], yourWorksheet.Cells[lastRowToHide, lastColToHide]];
+            hiddenRange.EntireRow.Hidden = true;
+        }
 
         static public Dictionary<string, int> CreateTableColumnIndex(Worksheet ws, int naming_row)
         {
@@ -221,6 +227,11 @@ namespace ExcelReportApplication
         static public void TestCase_AutoFit_Column(int col)
         {
             AutoFit_Column(ws_testcase, col);
+        }
+
+        static public void TestCase_Hide_Row(int row, int count = 1)
+        {
+            Hide_Row(ws_testcase, row, count);
         }
 
         static public void TestCase_WriteStyleString(int row, int col, List<StyleString> sytle_string_list)
