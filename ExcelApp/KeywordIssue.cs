@@ -49,7 +49,7 @@ namespace ExcelReportApplication
 
                 // Write to another filename with datetime
                 string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename);
-                ExcelAction.SaveChangesAndCloseExcel(dest_filename);
+                ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename);
             }
             // Always try to close at the end even there may be some error during operation
             ExcelAction.CloseTestCaseExcel();
