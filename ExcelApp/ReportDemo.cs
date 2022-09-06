@@ -291,5 +291,103 @@ namespace ExcelReportApplication
 
             return true;
         }
+
+        //
+        // This demo finds out Test-case whose status is fail but all linked issues are closed (other issues are hidden)
+        //
+        static String[] CloseStatusString = { IssueList.STR_CLOSE };
+        static public void FindFailTCLinkedIssueAllClosed(String tclist_filename)
+        {
+            // protection-check
+            if (global_issue_list.Count == 0)
+            {
+                ConsoleWarning("Bug list is empty");  return;
+            }
+            if (global_testcase_list.Count == 0)
+            {
+                ConsoleWarning("Test-case list is empty"); return;
+            }
+
+            // Prepare a list of key whose status is closed (waived treated as non-closed at the moment)
+            List<String> ClosedIssueKey = new List<String>();
+            foreach(IssueList issue in global_issue_list)
+            {
+                foreach (String str in CloseStatusString)
+                {
+                    if (issue.Status == str)
+                    {
+                        // if status is "close" or alike, add key into list and leave this loop
+                        ClosedIssueKey.Add(issue.Key);
+                        break;
+                    }
+                }
+            }
+
+            // Prepare several lists to separate TC into different groups
+            List<String> tc_pass = new List<String>();                      // TC Status is Pass
+            List<String> tc_none = new List<String>();                      // TC Status is None
+            List<String> tc_fail_empty_link_issue = new List<String>();     // TC Status is Fail AND Links are empty
+            List<String> tc_fail_some_nonclosed = new List<String>();       // TC Status is Fail AND Links have at least one non-closed issue
+            List<String> tc_fail_all_closed = new List<String>();           // TC Status is Fail AND Links are all closed
+            // looping all TC where links are not empty
+            foreach (TestCase tc in global_testcase_list) // looping
+            {
+                if (tc.Status == TestCase.STR_PASS)
+                {
+                    tc_pass.Add(tc.Key);
+                }
+                else if (tc.Status == TestCase.STR_NONE)
+                {
+                    tc_none.Add(tc.Key);
+                }
+                else if (tc.Links.Trim() == "") // fail but empty linked issue
+                {
+                    tc_fail_empty_link_issue.Add(tc.Key);
+                }
+                else 
+                {
+                    List<String> LinkedIssueKey = TestCase.Convert_LinksString_To_ListOfString(tc.Links);
+                    IEnumerable<String> LinkIssue_CloseIssue_intersect = ClosedIssueKey.Intersect(LinkedIssueKey);
+                    if (LinkIssue_CloseIssue_intersect.Count() != LinkedIssueKey.Count())
+                    {
+                        // One ore more linked issue are not close (or close-alike), add into this list
+                        tc_fail_some_nonclosed.Add(tc.Key);
+                    }
+                    else
+                    {
+                        tc_fail_all_closed.Add(tc.Key);
+                    }
+                }
+            }
+
+            // Start to hide rows unless this row belongs to tc_fail_all_closed
+
+            // Open original excel (read-only & corrupt-load) and write to another filename when closed
+            ExcelAction.ExcelStatus status = ExcelAction.OpenTestCaseExcel(tclist_filename);
+
+            if (status == ExcelAction.ExcelStatus.OK)
+            {
+                Dictionary<string, int> col_name_list = ExcelAction.CreateTestCaseColumnIndex();
+                int key_col = col_name_list[TestCase.col_Key];
+                // Visit all rows to check if key belongs to tc_fail_all_closed
+
+                for (int index = TestCase.DataBeginRow; index <= ExcelAction.GetTestCaseAllRange().Row; index++)
+                {
+                    // Make sure Key of TC contains KeyPrefix
+                    String key = ExcelAction.GetTestCaseCellTrimmedString(index, key_col);
+                    if (key.Contains(TestCase.KeyPrefix) == false) { break; } // If not a TC key in this row, go to next row
+
+                    if (tc_fail_all_closed.Count == 0) { ExcelAction.TestCase_Hide_Row(index); }
+                    else if (tc_fail_all_closed.IndexOf(key) < 0) { ExcelAction.TestCase_Hide_Row(index); }
+                }
+
+                // Write to another filename with datetime
+                string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename);
+                ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename);
+            }
+            // Always try to close at the end even there may be some error during operation
+            ExcelAction.CloseTestCaseExcel();
+        }
+
     }
 }
