@@ -121,9 +121,9 @@ namespace ExcelReportApplication
         {
             OK = 0,
             INIT_STATE,
-            ERR_OpenPreviousExcel,
-            ERR_Find_Worksheet,
-            ERR_CloseExcelWithoutSaveChanges,
+            ERR_OpenTestCaseExcel_OpenPreviousExcel,
+            ERR_OpenTestCaseExcel_Find_Worksheet,
+            ERR_OpenTestCaseExcel_CloseExcelWithoutSaveChanges,
             ERR_CloseTestCaseExcel_close_null,
             ERR_SaveChangesAndCloseExcel_close_null,
             ERR_NOT_DEFINED,
@@ -181,13 +181,13 @@ namespace ExcelReportApplication
 
                 if (myTCExcel == null)
                 {
-                    return ExcelStatus.ERR_OpenPreviousExcel;
+                    return ExcelStatus.ERR_OpenTestCaseExcel_OpenPreviousExcel;
                 }
 
                 Worksheet ws_tclist = ExcelAction.Find_Worksheet(myTCExcel, TestCase.SheetName);
                 if (ws_tclist == null)
                 {
-                    return ExcelStatus.ERR_Find_Worksheet;
+                    return ExcelStatus.ERR_OpenTestCaseExcel_Find_Worksheet;
                 }
                 else
                 {
