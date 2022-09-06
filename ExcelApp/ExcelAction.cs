@@ -150,6 +150,13 @@ namespace ExcelReportApplication
             return ws_testcase.Cells[row, col].Value2;
         }
 
+        static public String GetTestCaseCellTrimmedString(int row, int col)
+        {
+            Object cell_value2 = GetTestCaseCell(row, col);
+            if (cell_value2 == null) { return ""; }
+            return cell_value2.ToString();
+        }
+
         static public void TestCase_AutoFit_Column(int col)
         {
             AutoFit_Column(ws_testcase, col);
