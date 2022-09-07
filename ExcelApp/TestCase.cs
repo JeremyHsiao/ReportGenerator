@@ -21,7 +21,8 @@ namespace ExcelReportApplication
         private String duedate;
         private String additionalinfo;
         private String testcaseid;          
-        private String stepstoreproduce ;
+        private String stepstoreproduce;
+        private String created;
 
         public String Key   // property
         {
@@ -113,6 +114,12 @@ namespace ExcelReportApplication
             set { stepstoreproduce = value; }  // set method
         }
 
+        public String Created   // property
+        {
+            get { return created; }   // get method
+            set { created = value; }  // set method
+        }
+
         public const string col_Key = "Key";
         public const string col_Group = "Test Group";
         public const string col_Summary = "Summary";
@@ -127,7 +134,8 @@ namespace ExcelReportApplication
         public const string col_DueDate = "Due Date";
         public const string col_AdditionalInfo = "Additional Information";
         public const string col_TestCaseID = "Test Case ID";
-        public const string col_StepsToReproduce = "Steps To Reproduce"; 
+        public const string col_StepsToReproduce = "Steps To Reproduce";
+        public const string col_Created = "Created";
 
         public TestCase()
         {
@@ -152,6 +160,7 @@ namespace ExcelReportApplication
             this.reporter = members[(int)TestCaseMemberIndex.REPORTER];
             this.assignee = members[(int)TestCaseMemberIndex.ASSIGNEE];
             this.duedate = members[(int)TestCaseMemberIndex.DUEDATE];
+            this.created = members[(int)TestCaseMemberIndex.CREATED];
             this.additionalinfo = members[(int)TestCaseMemberIndex.ADDITIONALINFO];
             this.testcaseid = members[(int)TestCaseMemberIndex.TESTCASEID];
             this.stepstoreproduce = members[(int)TestCaseMemberIndex.STEPSTOREPRODUCE];
@@ -162,17 +171,18 @@ namespace ExcelReportApplication
             KEY = 0,
             GROUP,
             SUMMARY,
-            STATUS,
-            LINKEDISSUE,
             SEVERITY,
             BUGTYPE,
             SWVERSION,
             HWVERSION,
+            STATUS,
             REPORTER,
             ASSIGNEE,
             DUEDATE,
+            CREATED,
             ADDITIONALINFO,
             TESTCASEID,
+            LINKEDISSUE,
             STEPSTOREPRODUCE,
         }
 
@@ -184,17 +194,18 @@ namespace ExcelReportApplication
             col_Key,
             col_Group,
             col_Summary,
-            col_Status,
-            col_LinkedIssue,
             col_Severity,
             col_BugType,
             col_SWVersion,
             col_HWVersion,
+            col_Status,
             col_Reporter,
             col_Assignee,
             col_DueDate,
+            col_Created,
             col_AdditionalInfo,
             col_TestCaseID,
+            col_LinkedIssue,
             col_StepsToReproduce
         };
 
