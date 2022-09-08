@@ -157,9 +157,14 @@ namespace ExcelReportApplication
         };
 
         static private Excel.Application IssueListExcel;
+        static private Workbook book_issuelist;
         static private Worksheet ws_issuelist;
         static private Excel.Application TestCaseExcel;
+        static private Workbook book_testcase;
         static private Worksheet ws_testcase;
+        static private Excel.Application TestCaseTemplateExcel;
+        static private Workbook book_tc_template;
+        static private Worksheet ws_tc_template;
 
         // Excel accessing function for Issue List Excel
 
@@ -355,11 +360,14 @@ namespace ExcelReportApplication
                     return ExcelStatus.ERR_CloseIssueListExcel_close_null;
                 }
                 ExcelAction.CloseExcelWithoutSaveChanges(IssueListExcel);
+                ws_issuelist = null;
                 IssueListExcel = null;
                 return ExcelStatus.OK;
             }
             catch
             {
+                ws_issuelist = null;
+                IssueListExcel = null;
                 return ExcelStatus.EX_CloseIssueListWorksheet;
             }
         }
@@ -373,22 +381,33 @@ namespace ExcelReportApplication
                     return ExcelStatus.ERR_SaveChangesAndCloseIssueListExcel_close_null;
                 }
                 ExcelAction.SaveChangesAndCloseExcel(IssueListExcel, dest_filename);
+                ws_issuelist = null;
                 IssueListExcel = null;
                 return ExcelStatus.OK;
             }
             catch
             {
+                ws_issuelist = null;
+                IssueListExcel = null;
                 return ExcelStatus.EX_SaveChangesAndCloseIssueListExcel;
             }
         }
 
         // Excel Open/Close/Save for Test Case Excel
-        static public ExcelStatus OpenTestCaseExcel(String tclist_filename)
+        static public ExcelStatus OpenTestCaseExcel(String tclist_filename, bool IsTemplate = false)
         {
             try
             {
-                // Open excel (read-only & corrupt-load)
-                Excel.Application myTCExcel = ExcelAction.OpenPreviousExcel(tclist_filename);
+                Excel.Application myTCExcel;
+                if (IsTemplate == false)
+                {
+                    // Open excel (read-only & corrupt-load)
+                    myTCExcel = ExcelAction.OpenPreviousExcel(tclist_filename);
+                }
+                else
+                {
+                    myTCExcel = ExcelAction.OpenOridnaryExcel(tclist_filename);
+                }
 
                 if (myTCExcel == null)
                 {
@@ -402,8 +421,16 @@ namespace ExcelReportApplication
                 }
                 else
                 {
-                    TestCaseExcel = myTCExcel;
-                    ws_testcase = ws_tclist;
+                    if (IsTemplate == false)
+                    {
+                        TestCaseExcel = myTCExcel;
+                        ws_testcase = ws_tclist;
+                    }
+                    else
+                    {
+                        TestCaseTemplateExcel = myTCExcel;
+                        ws_tc_template = ws_tclist;
+                    }
                     return ExcelStatus.OK;
                 }
             }
@@ -416,16 +443,30 @@ namespace ExcelReportApplication
             //return ExcelStatus.ERR_NOT_DEFINED;
         }
 
-        static public ExcelStatus CloseTestCaseExcel()
+        static public ExcelStatus CloseTestCaseExcel(bool IsTemplate = false)
         {
             try
             {
-                if (TestCaseExcel == null)
+                if (IsTemplate == false)
                 {
-                    return ExcelStatus.ERR_CloseTestCaseExcel_close_null;
+                    if (TestCaseExcel == null)
+                    {
+                        return ExcelStatus.ERR_CloseTestCaseExcel_close_null;
+                    }
+                    ExcelAction.CloseExcelWithoutSaveChanges(TestCaseExcel);
+                    ws_testcase = null;
+                    TestCaseExcel = null;
                 }
-                ExcelAction.CloseExcelWithoutSaveChanges(TestCaseExcel);
-                TestCaseExcel = null;
+                else
+                {
+                    if (TestCaseTemplateExcel == null)
+                    {
+                        return ExcelStatus.ERR_CloseTestCaseExcel_close_null;
+                    }
+                    ExcelAction.CloseExcelWithoutSaveChanges(TestCaseTemplateExcel);
+                    ws_tc_template = null;
+                    TestCaseTemplateExcel = null;
+                }
                 return ExcelStatus.OK;
             }
             catch
@@ -434,16 +475,30 @@ namespace ExcelReportApplication
             }
         }
 
-        static public ExcelStatus SaveChangesAndCloseTestCaseExcel(String dest_filename)
+        static public ExcelStatus SaveChangesAndCloseTestCaseExcel(String dest_filename, bool IsTemplate = false)
         {
             try
             {
-                if (TestCaseExcel == null)
+                if (IsTemplate == false)
                 {
-                    return ExcelStatus.ERR_SaveChangesAndCloseTestCaseExcel_close_null;
+                    if (TestCaseExcel == null)
+                    {
+                        return ExcelStatus.ERR_SaveChangesAndCloseTestCaseExcel_close_null;
+                    }
+                    ExcelAction.SaveChangesAndCloseExcel(TestCaseExcel, dest_filename);
+                    ws_testcase = null;
+                    TestCaseExcel = null;
                 }
-                ExcelAction.SaveChangesAndCloseExcel(TestCaseExcel, dest_filename);
-                TestCaseExcel = null;
+                else
+                {
+                    if (TestCaseTemplateExcel == null)
+                    {
+                        return ExcelStatus.ERR_SaveChangesAndCloseTestCaseExcel_close_null;
+                    }
+                    ExcelAction.SaveChangesAndCloseExcel(TestCaseTemplateExcel, dest_filename);
+                    ws_tc_template = null;
+                    TestCaseTemplateExcel = null;
+                }
                 return ExcelStatus.OK;
             }
             catch
@@ -452,7 +507,60 @@ namespace ExcelReportApplication
             }
         }
 
+        static public bool CopyTestCaseIntoTemplate()
+        {
+            // Protection
+            if (ws_testcase == null) { return false; }
+            if (ws_tc_template == null) { return false; }
 
-    
+            Range Src = GetWorksheetAllRange(ws_testcase);
+            Range Dst = GetWorksheetAllRange(ws_tc_template);
+            int Src_last_row = Src.Row, Src_last_col = Src.Column;
+            int Dst_last_row = Dst.Row, Dst_last_col = Dst.Column;
+
+            // Make template (destination) row count == TestCase (source) row count
+            if (Src_last_row > Dst_last_row)
+            {
+                // Insert row into template file
+                int rows_to_insert = Src_last_row - Dst_last_row;
+                do
+                {
+                    ws_tc_template.Rows[TestCase.DataBeginRow + 1].Insert();
+                }
+                while (--rows_to_insert > 0);
+            }
+            else if (Src_last_row < Dst_last_row)
+            {
+                // Delete row from template file
+                int rows_to_delete = Dst_last_row - Src_last_row;
+                do
+                {
+                    ws_tc_template.Rows[TestCase.DataBeginRow].Delete();
+                }
+                while (--rows_to_delete > 0);
+            }
+
+            // Copy [3,1] from tc to template
+            Src = ws_testcase.Cells[3, 1];
+            Dst = ws_tc_template.Cells[3, 1];
+            Dst.Value2 = Src.Value2;
+
+            // Copy row 4 (Column Name) from tc to template
+            Src = ws_testcase.Range[ws_testcase.Cells[TestCase.NameDefinitionRow, 1], ws_testcase.Cells[TestCase.NameDefinitionRow, Src_last_col]];
+            Dst = ws_tc_template.Range[ws_tc_template.Cells[TestCase.NameDefinitionRow, 1], ws_tc_template.Cells[TestCase.NameDefinitionRow, Src_last_col]];
+            Dst.Value2 = Src.Value2;
+
+            // Copy [Src_last_row,1] from tc to template
+            Src = ws_testcase.Cells[Src_last_row, 1];
+            Dst = ws_tc_template.Cells[Src_last_row, 1];
+            Dst.Value2 = Src.Value2;
+
+            // Copy the rest of data
+            Src = ws_testcase.Range[ws_testcase.Cells[TestCase.DataBeginRow, 1], ws_testcase.Cells[Src_last_row - 1, Src_last_col]];
+            Dst = ws_tc_template.Range[ws_tc_template.Cells[TestCase.DataBeginRow, 1], ws_tc_template.Cells[Src_last_row - 1, Src_last_col]];
+            Dst.Value2 = Src.Value2;
+
+            return true;
+        }
     }
 }
