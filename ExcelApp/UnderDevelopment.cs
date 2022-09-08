@@ -6,7 +6,7 @@ using System.IO;
 
 namespace ExcelReportApplication
 {
-    static class ExcelTest
+    static class UnderDevelopment
     {
         // Assumed folder structure:
         // exection file dir: ./ 
