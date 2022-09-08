@@ -202,46 +202,113 @@ namespace ExcelReportApplication
 
         // Excel accessing function for Test Case Excel
 
-        static public Worksheet GetTestCaseWorksheet()
+        static public Worksheet GetTestCaseWorksheet(bool IsTemplate = false)
         {
-            return ws_testcase;
+            return ((IsTemplate) ? ws_tc_template : ws_testcase);
         }
 
-        static public Range GetTestCaseAllRange()
+        static public Range GetTestCaseAllRange(bool IsTemplate = false)
         {
-            return GetWorksheetAllRange(ws_testcase);
+            return GetWorksheetAllRange(((IsTemplate) ? ws_tc_template : ws_testcase));
         }
 
-        static public Object GetTestCaseCell(int row, int col)
+        static public Object GetTestCaseCell(int row, int col, bool IsTemplate = false)
         {
-            return ws_testcase.Cells[row, col].Value2;
+            Worksheet ws = ((IsTemplate) ? ws_tc_template : ws_testcase);
+            return ws.Cells[row, col].Value2;
         }
 
-        static public String GetTestCaseCellTrimmedString(int row, int col)
+        static public String GetTestCaseCellTrimmedString(int row, int col, bool IsTemplate = false)
         {
-            Object cell_value2 = GetTestCaseCell(row, col);
+            Object cell_value2 = GetTestCaseCell(row, col, IsTemplate: IsTemplate);
             if (cell_value2 == null) { return ""; }
             return cell_value2.ToString();
         }
 
-        static public void TestCase_AutoFit_Column(int col)
+        static public void TestCase_AutoFit_Column(int col, bool IsTemplate = false)
         {
-            AutoFit_Column(ws_testcase, col);
+            Worksheet ws = ((IsTemplate) ? ws_tc_template : ws_testcase);
+            AutoFit_Column(ws, col);
         }
 
-        static public void TestCase_Hide_Row(int row, int count = 1)
+        static public void TestCase_Hide_Row(int row, int count = 1, bool IsTemplate = false)
         {
-            Hide_Row(ws_testcase, row, count);
+            Worksheet ws = ((IsTemplate) ? ws_tc_template : ws_testcase);
+            Hide_Row(ws, row, count);
         }
 
-        static public void TestCase_WriteStyleString(int row, int col, List<StyleString> sytle_string_list)
+        static public void TestCase_WriteStyleString(int row, int col, List<StyleString> sytle_string_list, bool IsTemplate = false)
         {
-            StyleString.WriteStyleString(ws_testcase, row, col, sytle_string_list);
+            Worksheet ws = ((IsTemplate) ? ws_tc_template : ws_testcase);
+            StyleString.WriteStyleString(ws, row, col, sytle_string_list);
         }
 
-        static public Dictionary<string, int> CreateTestCaseColumnIndex()
+        /*
+                static public void CopyTestCaseIntoTemplate(String template_filename)
+                {
+                    ExcelAction.ExcelStatus status = ExcelAction.OpenTestCaseExcel(template_filename, IsTemplate: true);
+                    if (status == ExcelAction.ExcelStatus.OK)
+                    {
+                        Range Src = GetWorksheetAllRange(ws_testcase);
+                        Range Dst = GetWorksheetAllRange(ws_tc_template);
+                        int Src_last_row = Src.Row, Src_last_col = Src.Column;
+                        int Dst_last_row = Dst.Row, Dst_last_col = Dst.Column;
+
+                        // Make template row count == TestCase row count
+                        if (Src_last_row > Dst_last_row)
+                        {
+                            // Insert row into template file
+                            int rows_to_insert = Src_last_row - Dst_last_row;
+                            do
+                            {
+                                ws_tc_template.Rows[TestCase.DataBeginRow].Insert();
+                            }
+                            while (--rows_to_insert > 0);
+                        }
+                        else if (Src_last_row < Dst_last_row)
+                        {
+                            // Delete row from template file
+                            int rows_to_delete = Dst_last_row - Src_last_row;
+                            do
+                            {
+                                ws_tc_template.Rows[TestCase.DataBeginRow].Delete();
+                            }
+                            while (--rows_to_delete > 0);
+                        }
+
+                        // Copy Value from row (TestCase.DataBeginRow) to last-1 
+                        Src = ws_testcase.Range[ws_testcase.Cells[TestCase.DataBeginRow, 1], ws_testcase.Cells[Src_last_row - 1, Src_last_col]];
+                        Dst = ws_tc_template.Range[ws_tc_template.Cells[TestCase.DataBeginRow, 1], ws_tc_template.Cells[Src_last_row - 1, Src_last_col]];
+                        Src.Copy(Type.Missing);
+                        Dst.PasteSpecial(Excel.XlPasteType.xlPasteValues, Excel.XlPasteSpecialOperation.xlPasteSpecialOperationNone, false, false);
+
+         -`-               // Format row 1-4 (TestCase.DataBeginRow-1)
+                        //Src = ws_tc_template.Range[ws_tc_template.Cells[1, 1], ws_tc_template.Cells[TestCase.DataBeginRow - 1, Src_last_col]];
+                        //Dst = ws_testcase.Range[ws_testcase.Cells[1, 1], ws_testcase.Cells[TestCase.DataBeginRow-1, Dst_last_col]];
+                        //Src.Copy(Type.Missing);
+                        //Dst.PasteSpecial(Excel.XlPasteType.xlPasteFormats, Excel.XlPasteSpecialOperation.xlPasteSpecialOperationNone, false, false);
+
+                        // Format 5 (TestCase.DataBeginRow) to last-1 
+                        //Src = ws_tc_template.Range[ws_tc_template.Cells[TestCase.DataBeginRow, 1], ws_tc_template.Cells[TestCase.DataBeginRow, Src_last_col]];
+                        //Dst = ws_testcase.Range[ws_testcase.Cells[TestCase.DataBeginRow, 1], ws_testcase.Cells[TestCase.DataBeginRow, Dst_last_col]];
+                        //Src.Copy(Type.Missing);
+                        //Dst.PasteSpecial(Excel.XlPasteType.xlPasteFormats, Excel.XlPasteSpecialOperation.xlPasteSpecialOperationNone, false, false);
+
+                        // Format last
+                        //Src = ws_tc_template.Range[ws_tc_template.Cells[Src_last_row, 1], ws_tc_template.Cells[Src_last_row, Src_last_col]];
+                        //Dst = ws_testcase.Range[ws_testcase.Cells[Dst_last_row, 1], ws_testcase.Cells[Dst_last_row - 1, Dst_last_col]];
+                        //Src.Copy(Type.Missing);
+                        //Dst.PasteSpecial(Excel.XlPasteType.xlPasteFormats, Excel.XlPasteSpecialOperation.xlPasteSpecialOperationNone, false, false);
+                
+
+                        ExcelAction.CloseTestCaseExcel(IsTemplate: true);
+                    }
+                }
+        */
+
+        static public Dictionary<string, int> CreateTestCaseColumnIndex(bool IsTemplate = false)
         {
-            return CreateTableColumnIndex(ws_testcase, TestCase.NameDefinitionRow);
+            return CreateTableColumnIndex(((IsTemplate)?ws_tc_template:ws_testcase), TestCase.NameDefinitionRow);
         }
 
         // Excel Open/Close/Save for Issue List Excel
