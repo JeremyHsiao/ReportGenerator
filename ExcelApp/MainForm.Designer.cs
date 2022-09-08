@@ -32,13 +32,13 @@
             this.MsgWindow = new System.Windows.Forms.TextBox();
             this.btnSelectBugFile = new System.Windows.Forms.Button();
             this.txtBugFile = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.label_issue = new System.Windows.Forms.Label();
+            this.label_tc = new System.Windows.Forms.Label();
             this.txtTCFile = new System.Windows.Forms.TextBox();
             this.btnSelectTCFile = new System.Windows.Forms.Button();
             this.btnSelectReportFile = new System.Windows.Forms.Button();
             this.txtReportFile = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
+            this.label_1st = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.btnCreateReport = new System.Windows.Forms.Button();
             this.btnGetTCList = new System.Windows.Forms.Button();
@@ -46,7 +46,8 @@
             this.btnTestExcel = new System.Windows.Forms.Button();
             this.btnSelectExcelTestFile = new System.Windows.Forms.Button();
             this.txtExcelTestFile = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
+            this.label_2nd = new System.Windows.Forms.Label();
+            this.comboBoxReportSelect = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // btnDemo
@@ -63,12 +64,12 @@
             // MsgWindow
             // 
             this.MsgWindow.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MsgWindow.Location = new System.Drawing.Point(12, 152);
+            this.MsgWindow.Location = new System.Drawing.Point(12, 154);
             this.MsgWindow.Multiline = true;
             this.MsgWindow.Name = "MsgWindow";
             this.MsgWindow.ReadOnly = true;
             this.MsgWindow.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.MsgWindow.Size = new System.Drawing.Size(520, 217);
+            this.MsgWindow.Size = new System.Drawing.Size(520, 215);
             this.MsgWindow.TabIndex = 1;
             // 
             // btnSelectBugFile
@@ -91,25 +92,25 @@
             this.txtBugFile.Size = new System.Drawing.Size(302, 21);
             this.txtBugFile.TabIndex = 3;
             // 
-            // label1
+            // label_issue
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(10, 14);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(61, 15);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "Issue File";
+            this.label_issue.AutoSize = true;
+            this.label_issue.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_issue.Location = new System.Drawing.Point(10, 14);
+            this.label_issue.Name = "label_issue";
+            this.label_issue.Size = new System.Drawing.Size(61, 15);
+            this.label_issue.TabIndex = 4;
+            this.label_issue.Text = "Issue File";
             // 
-            // label2
+            // label_tc
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Arial", 9F);
-            this.label2.Location = new System.Drawing.Point(10, 43);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(86, 15);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "Test Case File";
+            this.label_tc.AutoSize = true;
+            this.label_tc.Font = new System.Drawing.Font("Arial", 9F);
+            this.label_tc.Location = new System.Drawing.Point(10, 43);
+            this.label_tc.Name = "label_tc";
+            this.label_tc.Size = new System.Drawing.Size(86, 15);
+            this.label_tc.TabIndex = 5;
+            this.label_tc.Text = "Test Case File";
             // 
             // txtTCFile
             // 
@@ -151,15 +152,15 @@
             this.txtReportFile.Size = new System.Drawing.Size(302, 21);
             this.txtReportFile.TabIndex = 9;
             // 
-            // label3
+            // label_1st
             // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Arial", 9F);
-            this.label3.Location = new System.Drawing.Point(10, 71);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(98, 15);
-            this.label3.TabIndex = 8;
-            this.label3.Text = "Report Template";
+            this.label_1st.AutoSize = true;
+            this.label_1st.Font = new System.Drawing.Font("Arial", 9F);
+            this.label_1st.Location = new System.Drawing.Point(10, 71);
+            this.label_1st.Name = "label_1st";
+            this.label_1st.Size = new System.Drawing.Size(98, 15);
+            this.label_1st.TabIndex = 8;
+            this.label_1st.Text = "Report Template";
             // 
             // label4
             // 
@@ -235,36 +236,48 @@
             this.txtExcelTestFile.Size = new System.Drawing.Size(302, 21);
             this.txtExcelTestFile.TabIndex = 16;
             // 
-            // label5
+            // label_2nd
             // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Arial", 9F);
-            this.label5.Location = new System.Drawing.Point(10, 98);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(85, 15);
-            this.label5.TabIndex = 15;
-            this.label5.Text = "Excel Test File";
+            this.label_2nd.AutoSize = true;
+            this.label_2nd.Font = new System.Drawing.Font("Arial", 9F);
+            this.label_2nd.Location = new System.Drawing.Point(10, 98);
+            this.label_2nd.Name = "label_2nd";
+            this.label_2nd.Size = new System.Drawing.Size(85, 15);
+            this.label_2nd.TabIndex = 15;
+            this.label_2nd.Text = "Excel Test File";
+            // 
+            // comboBoxReportSelect
+            // 
+            this.comboBoxReportSelect.BackColor = System.Drawing.SystemColors.Control;
+            this.comboBoxReportSelect.Font = new System.Drawing.Font("Arial Narrow", 9F);
+            this.comboBoxReportSelect.FormattingEnabled = true;
+            this.comboBoxReportSelect.Location = new System.Drawing.Point(111, 123);
+            this.comboBoxReportSelect.Name = "comboBoxReportSelect";
+            this.comboBoxReportSelect.Size = new System.Drawing.Size(302, 24);
+            this.comboBoxReportSelect.TabIndex = 20;
+            this.comboBoxReportSelect.SelectedIndexChanged += new System.EventHandler(this.comboBoxReportSelect_SelectedIndexChanged);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(544, 381);
+            this.Controls.Add(this.comboBoxReportSelect);
             this.Controls.Add(this.btnTestExcel);
             this.Controls.Add(this.btnSelectExcelTestFile);
             this.Controls.Add(this.txtExcelTestFile);
-            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label_2nd);
             this.Controls.Add(this.btnCreateReport);
             this.Controls.Add(this.btnGetTCList);
             this.Controls.Add(this.btnGetBugList);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.btnSelectReportFile);
             this.Controls.Add(this.txtReportFile);
-            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label_1st);
             this.Controls.Add(this.btnSelectTCFile);
             this.Controls.Add(this.txtTCFile);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.label_tc);
+            this.Controls.Add(this.label_issue);
             this.Controls.Add(this.txtBugFile);
             this.Controls.Add(this.btnSelectBugFile);
             this.Controls.Add(this.MsgWindow);
@@ -283,13 +296,13 @@
         private System.Windows.Forms.TextBox MsgWindow;
         private System.Windows.Forms.Button btnSelectBugFile;
         private System.Windows.Forms.TextBox txtBugFile;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label_issue;
+        private System.Windows.Forms.Label label_tc;
         private System.Windows.Forms.TextBox txtTCFile;
         private System.Windows.Forms.Button btnSelectTCFile;
         private System.Windows.Forms.Button btnSelectReportFile;
         private System.Windows.Forms.TextBox txtReportFile;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label_1st;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnCreateReport;
         private System.Windows.Forms.Button btnGetTCList;
@@ -297,7 +310,8 @@
         private System.Windows.Forms.Button btnTestExcel;
         private System.Windows.Forms.Button btnSelectExcelTestFile;
         private System.Windows.Forms.TextBox txtExcelTestFile;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label_2nd;
+        private System.Windows.Forms.ComboBox comboBoxReportSelect;
     }
 }
 

@@ -60,6 +60,16 @@ namespace ExcelReportApplication
             // config for report template
         }
 
+        private void InitializeReportFunctionListBox()
+        {
+            comboBoxReportSelect.Items.Add("1.Issue Description for TC");
+            comboBoxReportSelect.Items.Add("2.Issue Description for Summary");
+            comboBoxReportSelect.Items.Add("3.Standard Report Creator");
+            comboBoxReportSelect.Items.Add("4.Keyword Issue to Report");
+            comboBoxReportSelect.Items.Add("5.TC likely Pass");
+            comboBoxReportSelect.SelectedIndex = 0;
+        }
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             LoadConfigAll();
@@ -70,6 +80,7 @@ namespace ExcelReportApplication
             {
                 MsgWindow.AppendText("WARNING: one or more sample files do not exist.\n");
             }
+            InitializeReportFunctionListBox();
         }
 
         private bool ReadGlobalIssueListTask(String filename)
@@ -106,7 +117,7 @@ namespace ExcelReportApplication
             }
         }
 
-        private bool SaveReportDemoTask(String tc_file, String report_file)
+        private bool Execute_WriteIssueDescriptionToTC(String tc_file, String report_file)
         {
             if (ReportGenerator.global_issue_list.Count == 0)
             {
@@ -139,7 +150,41 @@ namespace ExcelReportApplication
 
             // Demo 1
             ReportGenerator.WriteBacktoTCJiraExcel(tclist_filename);
-            MsgWindow.AppendText("Writeback sample to tc_list finished!\n");
+            MsgWindow.AppendText("Writeback to tc_list finished!\n");
+
+            return true;
+        }
+
+        private bool Execute_WriteIssueDescriptionToSummary(String tc_file, String report_file)
+        {
+            if (ReportGenerator.global_issue_list.Count == 0)
+            {
+                MsgWindow.AppendText("Issue List is not available. Please read Issue list file.\n");
+                return false;
+            }
+
+            if (ReportGenerator.global_testcase_list.Count == 0)
+            {
+                MsgWindow.AppendText("Test Case List is not available. Please read TC file.\n");
+                return false;
+            }
+
+            // Write extended string back to tc-file
+            String tclist_filename = FileFunction.GetFullPath(txtTCFile.Text);
+            if (!FileFunction.FileExists(tclist_filename))
+            {
+                return false;
+            }
+
+            String report_filename = FileFunction.GetFullPath(txtReportFile.Text);
+            if (!FileFunction.FileExists(report_filename))
+            {
+                MsgWindow.AppendText("Report file template does not exist. Please check again.\n");
+                return false;
+            }
+
+            // This full issue description is needfed for demo purpose
+            ReportGenerator.global_issue_description_list = IssueList.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
 
             // Demo 2
             ReportGenerator.SaveToReportTemplate(report_filename);
@@ -164,7 +209,13 @@ namespace ExcelReportApplication
                 return;
             }
 
-            bRet = SaveReportDemoTask(txtTCFile.Text, txtReportFile.Text);
+            bRet = Execute_WriteIssueDescriptionToTC(txtTCFile.Text, txtReportFile.Text);
+            if (!bRet)
+            {
+                return;
+            }
+
+            bRet = Execute_WriteIssueDescriptionToSummary(txtTCFile.Text, txtReportFile.Text);
             if (!bRet)
             {
                 return;
@@ -235,7 +286,31 @@ namespace ExcelReportApplication
         private void btnCreateReport_Click(object sender, EventArgs e)
         {
             bool bRet;
-            bRet = SaveReportDemoTask(txtTCFile.Text, txtReportFile.Text);
+            switch (comboBoxReportSelect.SelectedIndex)
+            {
+                //comboBoxReportSelect.Items.Add("2.Issue Description for Summary");
+                //comboBoxReportSelect.Items.Add("3.Standard Report Creator");
+                //comboBoxReportSelect.Items.Add("4.Keyword Issue to Report");
+                //comboBoxReportSelect.Items.Add("5.TC likely Pass");
+                case 0: // "1.Issue Description for TC"
+                    //btnCreateReport.Enabled = false;
+                    MsgWindow.AppendText("Executing: 1.Issue Description for TC.\n");
+                    bRet = Execute_WriteIssueDescriptionToTC(txtTCFile.Text, txtReportFile.Text);
+                    //btnCreateReport.Enabled = true;
+                    break;
+                case 1:
+                    MsgWindow.AppendText("2.Issue Description for Summary.\n");
+                    bRet = Execute_WriteIssueDescriptionToSummary(txtTCFile.Text, txtReportFile.Text);
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void btnTestExcel_Click(object sender, EventArgs e)
@@ -245,5 +320,38 @@ namespace ExcelReportApplication
             bRet = UnderDevelopment.ExcelTestMainTask(txtExcelTestFile.Text);
             MsgWindow.AppendText("Testing Excel finished!\n");
         }
+
+        private void comboBoxReportSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (comboBoxReportSelect.SelectedIndex)
+            {
+            //comboBoxReportSelect.Items.Add();
+            //comboBoxReportSelect.Items.Add("2.Issue Description for Summary");
+            //comboBoxReportSelect.Items.Add("3.Standard Report Creator");
+            //comboBoxReportSelect.Items.Add("4.Keyword Issue to Report");
+            //comboBoxReportSelect.Items.Add("5.TC likely Pass");
+                case 0: // "1.Issue Description for TC"
+                    txtBugFile.Enabled = true;
+                    txtTCFile.Enabled = true;
+                    btnSelectTCFile.Enabled = true;
+                    btnGetTCList.Enabled = true;
+                    txtReportFile.Enabled = true;
+                    txtExcelTestFile.Enabled = false;
+                    btnSelectExcelTestFile.Enabled = false;
+                    btnTestExcel.Enabled = false;
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                default:
+                    break;
+            }
+        }
+
     }
 }
