@@ -308,27 +308,6 @@ namespace ExcelReportApplication
             UpdateTextBoxPathToFull(ref txtTCFile);
             UpdateTextBoxPathToFull(ref txtReportFile);
             UpdateTextBoxPathToFull(ref txtExcelTestFile);
-            String name = FileFunction.GetFullPath(txtBugFile.Text);
-            if (!FileFunction.FileExists(name))
-            {
-                return;
-            }
-            txtBugFile.Text = name;
-
-            name = FileFunction.GetFullPath(txtTCFile.Text);
-            if (!FileFunction.FileExists(name))
-            {
-                return;
-            }
-            txtTCFile.Text = name;
-
-            name = FileFunction.GetFullPath(txtReportFile.Text);
-            if (!FileFunction.FileExists(name))
-            {
-                MsgWindow.AppendText("Report file does not exist. Please check again.\n");
-                return;
-            }
-            txtReportFile.Text = name;
 
             switch (comboBoxReportSelect.SelectedIndex)
             {
@@ -346,6 +325,7 @@ namespace ExcelReportApplication
                     TestReport.CreateStandardTestReportTask(txtReportFile.Text);
                     break;
                 case 3:
+                    ReportGenerator.KeywordIssueGenerationTask(txtReportFile.Text);
                     break;
                 case 4:
                     ReportGenerator.FindFailTCLinkedIssueAllClosed(txtTCFile.Text, txtReportFile.Text);
