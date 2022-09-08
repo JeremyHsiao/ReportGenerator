@@ -296,8 +296,9 @@ namespace ExcelReportApplication
         // This demo finds out Test-case whose status is fail but all linked issues are closed (other issues are hidden)
         //
         static String[] CloseStatusString = { IssueList.STR_CLOSE };
-        static public void FindFailTCLinkedIssueAllClosed(String tclist_filename)
+        static public void FindFailTCLinkedIssueAllClosed(String tclist_filename, String template_filename)
         {
+ 
             // protection-check
             if (global_issue_list.Count == 0)
             {
@@ -322,13 +323,14 @@ namespace ExcelReportApplication
                     }
                 }
             }
-
+ 
             // Prepare several lists to separate TC into different groups
             List<String> tc_pass = new List<String>();                      // TC Status is Pass
             List<String> tc_none = new List<String>();                      // TC Status is None
             List<String> tc_fail_empty_link_issue = new List<String>();     // TC Status is Fail AND Links are empty
             List<String> tc_fail_some_nonclosed = new List<String>();       // TC Status is Fail AND Links have at least one non-closed issue
             List<String> tc_fail_all_closed = new List<String>();           // TC Status is Fail AND Links are all closed
+ 
             // looping all TC where links are not empty
             foreach (TestCase tc in global_testcase_list) // looping
             {
@@ -359,34 +361,78 @@ namespace ExcelReportApplication
                     }
                 }
             }
-
+ 
             // Start to hide rows unless this row belongs to tc_fail_all_closed
 
-            // Open original excel (read-only & corrupt-load) and write to another filename when closed
+            // Open original excel (read-only & corrupt-load) and write to template file with another filename when closed
+
+            // 1. open test case (as report source)
             ExcelAction.ExcelStatus status = ExcelAction.OpenTestCaseExcel(tclist_filename);
-
-            if (status == ExcelAction.ExcelStatus.OK)
+            if (status != ExcelAction.ExcelStatus.OK)
             {
-                Dictionary<string, int> col_name_list = ExcelAction.CreateTestCaseColumnIndex();
-                int key_col = col_name_list[TestCase.col_Key];
-                // Visit all rows to check if key belongs to tc_fail_all_closed
-
-                for (int index = TestCase.DataBeginRow; index <= ExcelAction.GetTestCaseAllRange().Row; index++)
-                {
-                    // Make sure Key of TC contains KeyPrefix
-                    String key = ExcelAction.GetTestCaseCellTrimmedString(index, key_col);
-                    if (key.Contains(TestCase.KeyPrefix) == false) { break; } // If not a TC key in this row, go to next row
-
-                    if (tc_fail_all_closed.Count == 0) { ExcelAction.TestCase_Hide_Row(index); }
-                    else if (tc_fail_all_closed.IndexOf(key) < 0) { ExcelAction.TestCase_Hide_Row(index); }
-                }
-
-                // Write to another filename with datetime
-                string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename);
-                ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename);
+                // TBD: what to do if cannot open template file
+                ExcelAction.CloseTestCaseExcel();
             }
-            // Always try to close at the end even there may be some error during operation
-            ExcelAction.CloseTestCaseExcel();
+            else
+            {
+
+                // 2. open test case template
+                status = ExcelAction.OpenTestCaseExcel(template_filename, IsTemplate: true);
+                if (status != ExcelAction.ExcelStatus.OK)
+                {
+                    // TBD: what to do if cannot open template file
+                    ExcelAction.CloseTestCaseExcel(IsTemplate: true);
+                    ExcelAction.CloseTestCaseExcel();
+                }
+                else
+                {
+                    // 3. Copy test case data into template excel -- both will have the same row/col and (almost) same data
+                    ExcelAction.CopyTestCaseIntoTemplate();
+                    ExcelAction.CloseTestCaseExcel();
+
+                    // 4. Excel processing on template excel
+                    Dictionary<string, int> col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate:true);
+                    int DataEndRow = ExcelAction.GetTestCaseAllRange(IsTemplate: true).Row;
+                    int key_col = col_name_list[TestCase.col_Key];
+
+                    // Visit all rows to check if key belongs to tc_fail_all_closed
+                    int hide_row_start = 0, hide_row_count = 0;
+                    for (int index = TestCase.DataBeginRow; index <= DataEndRow; index++)
+                    {
+                        // Make sure Key of TC contains KeyPrefix
+                        String key = ExcelAction.GetTestCaseCellTrimmedString(index, key_col, IsTemplate: true);
+                        if (key.Contains(TestCase.KeyPrefix) == false) { break; } // If not a TC key in this row, go to next row
+
+                        bool blToHide = false;
+                        if (tc_fail_all_closed.Count == 0) { blToHide = true; }
+                        else if (tc_fail_all_closed.IndexOf(key) < 0) { blToHide = true; }
+                        if (blToHide)
+                        {
+                            if (hide_row_start <= 0)
+                            {
+                                hide_row_start = index;
+                            }
+                            hide_row_count++;
+                        }
+                        else
+                        {
+                            // This row not to be hidden --> so hide all previous to-be-hidden rows
+                            ExcelAction.TestCase_Hide_Row(hide_row_start, hide_row_count, IsTemplate:true);
+                            hide_row_start = hide_row_count = 0;
+                        }
+                    }
+                    // Hide allnot-hidden-yet rows
+                    if ((hide_row_start > 0) && (hide_row_count > 0))
+                    {
+                        ExcelAction.TestCase_Hide_Row(hide_row_start, hide_row_count, IsTemplate: true);
+                        hide_row_start = hide_row_count = 0;
+                    }
+
+                    // Save Template file as another filename (testcase filename with datetime)
+                    string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename);
+                    ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
+                }
+            }
         }
 
     }
