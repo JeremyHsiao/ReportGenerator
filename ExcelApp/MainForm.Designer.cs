@@ -158,9 +158,9 @@
             this.label_1st.Font = new System.Drawing.Font("Arial", 9F);
             this.label_1st.Location = new System.Drawing.Point(10, 71);
             this.label_1st.Name = "label_1st";
-            this.label_1st.Size = new System.Drawing.Size(98, 15);
+            this.label_1st.Size = new System.Drawing.Size(44, 15);
             this.label_1st.TabIndex = 8;
-            this.label_1st.Text = "Report Template";
+            this.label_1st.Text = "Report";
             // 
             // label4
             // 
@@ -242,9 +242,9 @@
             this.label_2nd.Font = new System.Drawing.Font("Arial", 9F);
             this.label_2nd.Location = new System.Drawing.Point(10, 98);
             this.label_2nd.Name = "label_2nd";
-            this.label_2nd.Size = new System.Drawing.Size(85, 15);
+            this.label_2nd.Size = new System.Drawing.Size(74, 15);
             this.label_2nd.TabIndex = 15;
-            this.label_2nd.Text = "Excel Test File";
+            this.label_2nd.Text = "Extra Report";
             // 
             // comboBoxReportSelect
             // 
