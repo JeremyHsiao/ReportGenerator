@@ -83,7 +83,7 @@ namespace ExcelReportApplication
             else
             {
                 MsgWindow.AppendText("Processing bug_list:" + buglist_filename + ".\n");
-                KeywordIssueGenerator.global_issue_list = IssueList.GenerateIssueList(buglist_filename);
+                ReportGenerator.global_issue_list = IssueList.GenerateIssueList(buglist_filename);
                 MsgWindow.AppendText("bug_list finished!\n");
                 return true;
             }
@@ -100,7 +100,7 @@ namespace ExcelReportApplication
             else
             {
                 MsgWindow.AppendText("Processing tc_list:" + tclist_filename + ".\n");
-                KeywordIssueGenerator.global_testcase_list = TestCase.GenerateTestCaseList(tclist_filename);
+                ReportGenerator.global_testcase_list = TestCase.GenerateTestCaseList(tclist_filename);
                 MsgWindow.AppendText("tc_list finished!\n");
                 return true;
             }
@@ -109,16 +109,16 @@ namespace ExcelReportApplication
         private bool SaveKeywordIssueTask(String issue_file, String report_file)
         {
             bool bRet;
-
-            if (KeywordIssueGenerator.global_issue_list.Count == 0)
+            if (ReportGenerator.global_issue_list.Count == 0)
             {
-                bRet = ReadGlobalIssueListTask(issue_file);
-                if (!bRet)
+                ReadGlobalIssueListTask(issue_file);
+                if (ReportGenerator.global_issue_list.Count == 0)
                 {
-                    //MsgWindow.AppendText("Issue List not available. Please check Issue list file.\n");
+                    MsgWindow.AppendText("Issue List is not available. Please read Issue list file.\n");
                     return false;
                 }
             }
+
             String report_filename = FileFunction.GetFullPath(report_file);
             if (!FileFunction.FileExists(report_filename))
             {
@@ -127,7 +127,8 @@ namespace ExcelReportApplication
             }
 
             MsgWindow.AppendText("report Preparing!\n");
-            bRet = KeywordIssueGenerator.KeywordIssueGenerationTask(txtReportFile.Text);
+            bRet = ReportGenerator.KeywordIssueGenerationTask(txtReportFile.Text);
+
             MsgWindow.AppendText("report finished!\n");
 
             return bRet;
@@ -167,6 +168,17 @@ namespace ExcelReportApplication
             }
         }
 
+        private void btnGetBugList_Click(object sender, EventArgs e)
+        {
+            bool bRet;
+            bRet = ReadGlobalIssueListTask(txtBugFile.Text);
+            if (bRet)
+            {
+                // This full issue description is for demo purpose
+                ReportGenerator.global_issue_description_list = IssueList.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
+            }
+        }
+
         private void btnCreateReport_Click(object sender, EventArgs e)
         {
             bool bRet;
@@ -174,5 +186,13 @@ namespace ExcelReportApplication
             bRet = SaveKeywordIssueTask(txtBugFile.Text, txtReportFile.Text);
         }
 
+       private void btnTestExcel_Click(object sender, EventArgs e)
+        {
+            bool bRet;
+            MsgWindow.AppendText("Start Testing Excel\n");
+// Temporarily commented -- it will be updated later
+//            bRet = UnderDevelopment.ExcelTestMainTask(txtExcelTestFile.Text);
+            MsgWindow.AppendText("Testing Excel finished!\n");
+        }
     }
 }

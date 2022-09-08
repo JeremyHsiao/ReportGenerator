@@ -252,7 +252,7 @@ namespace ExcelReportApplication
 
         static public Color descrption_color_issue = Color.Red;
         static public Color descrption_color_comment = Color.Blue;
-        /*
+
         static public Dictionary<string, List<StyleString>> GenerateFullIssueDescription(List<IssueList> issuelist)
         {
             Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
@@ -291,7 +291,7 @@ namespace ExcelReportApplication
             }
             return ret_list;
         }
-        */
+
         // create key/rich-text-issue-description pair.
         static public Dictionary<string, List<StyleString>> GenerateIssueDescription(List<IssueList> issuelist)
         {
