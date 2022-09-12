@@ -120,7 +120,8 @@ namespace ExcelReportApplication
         {
             Dictionary<string, int> col_name_list = new Dictionary<string, int>();
 
-            for (int col_index = 1; col_index <= GetWorksheetAllRange(ws).Column; col_index++)
+            int col_end = GetWorksheetAllRange(ws).Column;
+            for (int col_index = 1; col_index <= col_end; col_index++)
             {
                 Object cell_value2 = ws.Cells[naming_row, col_index].Value2;
                 if (cell_value2 == null) { continue; }
