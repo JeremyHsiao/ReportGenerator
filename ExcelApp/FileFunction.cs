@@ -197,7 +197,7 @@ namespace ExcelReportApplication
 
         // ();
 
-        static public String GenerateFilenameWithDateTime(String Filename)
+        static public String GenerateFilenameWithDateTime(String Filename, String new_ext = "")
         {
             String ret = "";
             try
@@ -208,7 +208,14 @@ namespace ExcelReportApplication
                 path = Path.GetDirectoryName(Filename);             // path without '\'
                 name = Path.GetFileNameWithoutExtension(Filename);  // filename only without path
                 dt = DateTime.Now.ToString("yyyyMMddHHmmss");       // ex: 20220801160000
-                ext = Path.GetExtension(Filename);                  // extension with '.' 
+                if (new_ext == "")
+                {
+                    ext = Path.GetExtension(Filename);                  // extension with '.' 
+                }
+                else
+                {
+                    ext = new_ext;
+                }
                 ret = path + @"\" + name + "_" + dt + ext;
 
                 // Filename ==  path + @"\" + name            + ext
