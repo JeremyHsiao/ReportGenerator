@@ -368,18 +368,24 @@ namespace ExcelReportApplication
 
         private void comboBoxReportSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
-            switch ((ReportGenerator.ReportType)comboBoxReportSelect.SelectedIndex)
+            UpdateUI(comboBoxReportSelect.SelectedIndex);
+        }
+
+        private void UpdateUI(int ReportIndex)
+        {
+            txtReportInfo.Text = ReportGenerator.GetReportDescription(ReportIndex);
+            switch (ReportGenerator.ReportTypeFromInt(ReportIndex))
             {
-            //comboBoxReportSelect.Items.Add("3.Standard Test Report Creator");
-            //comboBoxReportSelect.Items.Add("4.Keyword Issue to Report");
-            //comboBoxReportSelect.Items.Add("5.TC likely Pass");
+                //comboBoxReportSelect.Items.Add("3.Standard Test Report Creator");
+                //comboBoxReportSelect.Items.Add("4.Keyword Issue to Report");
+                //comboBoxReportSelect.Items.Add("5.TC likely Pass");
                 case ReportGenerator.ReportType.FullIssueDescription_TC: // "1.Issue Description for TC"
                 case ReportGenerator.ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(true);
                     SetEnable_Report(true);
                     SetEnable_AdditionalFile(false);
-                   break;
+                    break;
                 case ReportGenerator.ReportType.StandardTestReportCreation:
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(true);
@@ -393,10 +399,6 @@ namespace ExcelReportApplication
                 default:
                     break;
             }
-        }
-
-        private void UpdateReportInfoTextBox(int ReportIndex)
-        {
         }
     }
 }

@@ -24,11 +24,21 @@ namespace ExcelReportApplication
             TC_Likely_Passed
         }
 
+        public static int ReportTypeToInt(ReportType type)
+        {
+            return (int)type; 
+        }
+
+        public static ReportType ReportTypeFromInt(int int_type)
+        {
+            return (ReportType)int_type;
+        }
+
         public static int ReportTypeCount = Enum.GetNames(typeof(ReportType)).Length;
 
         public static String GetReportName(ReportType type)
         {
-            return GetReportName((int)type);
+            return GetReportName(ReportTypeToInt(type));
         }
 
         public static String GetReportName(int type_index)
@@ -49,6 +59,56 @@ namespace ExcelReportApplication
             "4.Keyword Issue to Report",
             "5.TC likely Pass"
         };
+
+        private static String[][] ReportDescription = new String[][] 
+        {
+            new String[] 
+            {
+                "Issue Description for TC Report", 
+                "Input:",  "  Issue List + Test Case + Template (for Test case output)",
+                "Output:", "  Test Case in the format of template file with linked issue in full description",
+            },
+            new String[] 
+            {
+                "Issue Description for Summary Report", 
+                "Input:",  "  Issue List + Test Case + Template (for Summary Report)",
+                "Output:", "  Summary in the format of template file with linked issue in full description",
+            },
+            new String[] 
+            {
+                "Create file structure of Standard Test Report according to user's selection (Do or Not)", 
+                "Input:",  "  Main Test Report File",
+                "Output:", "  Directory structure and report files under directories",
+            },
+            new String[] 
+            {
+                "Keyword Issue to Report", 
+                "Input:",  "  Test Plan/Report with Keyword",
+                "Output:", "  Test Plan/Report with keyword issue list inserted on O-column",
+            },
+            new String[] 
+            {
+                "Test case status is Fail but its linked issues are closed", 
+                "Input:",  "  Issue List + Test Case + Template (for Test case output)",
+                "Output:", "  Test Case whose linked issues are closed (other TC are hidden)",
+            },
+        };
+
+        public static String GetReportDescription(int type_index)
+        {
+            String ret_str = "";
+            foreach (String str in ReportDescription[type_index])
+            {
+                ret_str += str + "\r\n";
+            }
+            return ret_str;
+        }
+
+        public static String GetReportDescription(ReportType type)
+        {
+            return GetReportDescription(ReportTypeToInt(type));
+        }
+
 
         // 
         // This demo open Test Case Excel and replace Issue ID on Linked Issue column with ID+Summary+Severity+RD_Comment
