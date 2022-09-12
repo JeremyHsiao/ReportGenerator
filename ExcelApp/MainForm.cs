@@ -26,8 +26,8 @@ namespace ExcelReportApplication
             // config for default filename at MainForm
             this.txtBugFile.Text = XMLConfig.ReadAppSetting("workbook_BUG_Jira");
             this.txtTCFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Jira");
-            this.txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_Report");
-            this.txtStandardTestReport.Text = XMLConfig.ReadAppSetting("workbook_ExcelTest");
+            this.txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Template");
+            this.txtStandardTestReport.Text = XMLConfig.ReadAppSetting("workbook_StandardTestReport");
             if (Boolean.TryParse(XMLConfig.ReadAppSetting("Excel_Visible"), out bool_value))
             {
                 ExcelAction.ExcelVisible = bool_value;
@@ -76,7 +76,8 @@ namespace ExcelReportApplication
 
             if ((FileFunction.GetFullPath(txtBugFile.Text) == "") ||
                 (FileFunction.GetFullPath(txtTCFile.Text) == "") ||
-                (FileFunction.GetFullPath(txtReportFile.Text) == ""))
+                (FileFunction.GetFullPath(txtReportFile.Text) == "") ||
+                (FileFunction.GetFullPath(txtStandardTestReport.Text) == ""))
             {
                 MsgWindow.AppendText("WARNING: one or more sample files do not exist.\n");
             }
@@ -150,8 +151,8 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            // This full issue description is needfed for report purpose
-            ReportGenerator.global_issue_description_list = IssueList.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
+            // This full issue description is needed for report purpose
+            ReportGenerator.global_full_issue_description_list = IssueList.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
 
             ReportGenerator.WriteBacktoTCJiraExcel(tc_file);
             return true;
@@ -166,11 +167,26 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            // This full issue description is needfed for report purpose
-            ReportGenerator.global_issue_description_list = IssueList.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
+            // This full issue description is needed for report purpose
+            ReportGenerator.global_full_issue_description_list = IssueList.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
 
-            ReportGenerator.SaveToReportTemplate(template_file);
+            ReportGenerator.SaveIssueToSummaryReport(template_file);
 
+            return true;
+        }
+
+        private bool Execute_KeywordIssueGenerationTask(String template_file)
+        {
+            if ((ReportGenerator.global_issue_list.Count == 0) || (!FileFunction.FileExists(template_file)))
+            {
+                // protection check
+                return false;
+            }
+
+            // This issue description is needed for report purpose
+            ReportGenerator.global_issue_description_list = IssueList.GenerateIssueDescription(ReportGenerator.global_issue_list);
+
+            ReportGenerator.KeywordIssueGenerationTask(template_file);
             return true;
         }
 
@@ -183,8 +199,8 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            // This full issue description is needfed for report purpose
-            ReportGenerator.global_issue_description_list = IssueList.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
+            // This issue description is needed for report purpose
+            ReportGenerator.global_issue_description_list = IssueList.GenerateIssueDescription(ReportGenerator.global_issue_list);
 
             ReportGenerator.FindFailTCLinkedIssueAllClosed(tc_file, template_file);
             return true;
@@ -361,12 +377,18 @@ namespace ExcelReportApplication
             switch (ReportGenerator.ReportTypeFromInt(ReportIndex))
             {
                 case ReportGenerator.ReportType.FullIssueDescription_TC: // "1.Issue Description for TC"
-                case ReportGenerator.ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
-                case ReportGenerator.ReportType.TC_Likely_Passed:
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(true);
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
+                    this.txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Template");
+                    break;
+                case ReportGenerator.ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
+                    SetEnable_IssueFile(true);
+                    SetEnable_TCFile(true);
+                    SetEnable_OutputFile(true);
+                    SetEnable_StandardReport(false);
+                    this.txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_Summary");
                     break;
                 case ReportGenerator.ReportType.StandardTestReportCreation:
                     SetEnable_IssueFile(false);
@@ -379,6 +401,14 @@ namespace ExcelReportApplication
                     SetEnable_TCFile(false);
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
+                    this.txtReportFile.Text = @".\SampleData\A.1.1_OSD _All.xlsx" ;
+                    break;
+                case ReportGenerator.ReportType.TC_Likely_Passed:
+                    SetEnable_IssueFile(true);
+                    SetEnable_TCFile(true);
+                    SetEnable_OutputFile(true);
+                    SetEnable_StandardReport(false);
+                    txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Template");
                     break;
                 default:
                     break;

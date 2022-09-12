@@ -13,8 +13,9 @@ namespace ExcelReportApplication
     static class ReportGenerator
     {
         static public List<IssueList> global_issue_list = new List<IssueList>();
+        static public Dictionary<string, List<StyleString>> global_full_issue_description_list = new Dictionary<string, List<StyleString>>();
         static public Dictionary<string, List<StyleString>> global_issue_description_list = new Dictionary<string, List<StyleString>>();
-        static public List<TestCase> global_testcase_list = new List<TestCase> ();
+        static public List<TestCase> global_testcase_list = new List<TestCase>();
 
         public enum ReportType {
             FullIssueDescription_TC = 0,
@@ -135,7 +136,7 @@ namespace ExcelReportApplication
                     String links = ExcelAction.GetTestCaseCellTrimmedString(index, links_col);
                     if (links != "")
                     {
-                        List<StyleString> str_list = StyleString.ExtendIssueDescription(links,global_issue_description_list);
+                        List<StyleString> str_list = StyleString.ExtendIssueDescription(links, global_full_issue_description_list);
                         ExcelAction.TestCase_WriteStyleString(index, links_col, str_list);
                     }
                 }
@@ -155,7 +156,7 @@ namespace ExcelReportApplication
         // This demo open Summary Report Excel and write to Notes with all issues beloging to this test group (issue written in ID+Summary+Severity+RD_Comment)
         //
         static public string sheet_Report_Result = "Result";
-        static public void SaveToReportTemplate(string report_filename)
+        static public void SaveIssueToSummaryReport(string report_filename)
         {
             // Re-arrange test-case list into dictionary of summary/links pair
             Dictionary<String, String> group_note_issue = new Dictionary<String, String>();
@@ -215,7 +216,7 @@ namespace ExcelReportApplication
                             rng = result_worksheet.Cells[index, col_result];
                             rng.Value2 = "Fail";
                             // Fill "Note" 
-                            str_list = StyleString.ExtendIssueDescription(note, global_issue_description_list);
+                            str_list = StyleString.ExtendIssueDescription(note, global_full_issue_description_list);
                             rng = result_worksheet.Cells[index, col_issue];
                             StyleString.WriteStyleString(ref rng, str_list);
                         }
@@ -268,11 +269,7 @@ namespace ExcelReportApplication
             String short_filename = Path.GetFileName(full_filename);
             String sheet_name = short_filename.Substring(0, short_filename.IndexOf("_"));
 
-            if (!FileFunction.FileExists(full_filename))
-            {
-                ConsoleWarning("FileExists in KeywordIssueGenerationTask");
-                return false;
-            }
+            // File exist check is done outside
 
             Excel.Application myReportExcel = ExcelAction.OpenOridnaryExcel(full_filename, ReadOnly:false);
             if (myReportExcel == null)
@@ -352,7 +349,7 @@ namespace ExcelReportApplication
             //    output: LUT (keyword,color_desription_list)
             //         
             //    using: id_list -> ExtendIssueDescription() -> color_description_list
-            // This issue description list is needfed for keyword issue list
+            // This issue description list is needed for keyword issue list
             global_issue_description_list = IssueList.GenerateIssueDescription(global_issue_list);
 
             // Go throught each keyword and turn id_list into color_description
