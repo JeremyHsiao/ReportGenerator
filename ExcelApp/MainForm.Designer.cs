@@ -48,9 +48,11 @@
             this.MsgWindow = new System.Windows.Forms.TextBox();
             this.tabInfomation = new System.Windows.Forms.TabControl();
             this.tabReportInfo = new System.Windows.Forms.TabPage();
+            this.txtReportInfo = new System.Windows.Forms.TextBox();
             this.tabExecutionLog = new System.Windows.Forms.TabPage();
             this.btnTestExcel = new System.Windows.Forms.Button();
             this.tabInfomation.SuspendLayout();
+            this.tabReportInfo.SuspendLayout();
             this.tabExecutionLog.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -242,7 +244,7 @@
             this.MsgWindow.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.MsgWindow.Size = new System.Drawing.Size(516, 196);
             this.MsgWindow.TabIndex = 1;
-            this.MsgWindow.TextChanged += new System.EventHandler(this.MsgWindow_TextChanged);
+            this.MsgWindow.TabStop = false;
             // 
             // tabInfomation
             // 
@@ -253,11 +255,12 @@
             this.tabInfomation.Name = "tabInfomation";
             this.tabInfomation.SelectedIndex = 0;
             this.tabInfomation.Size = new System.Drawing.Size(521, 220);
-            this.tabInfomation.TabIndex = 21;
+            this.tabInfomation.TabIndex = 22;
             // 
             // tabReportInfo
             // 
             this.tabReportInfo.BackColor = System.Drawing.SystemColors.Control;
+            this.tabReportInfo.Controls.Add(this.txtReportInfo);
             this.tabReportInfo.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabReportInfo.Location = new System.Drawing.Point(4, 24);
             this.tabReportInfo.Name = "tabReportInfo";
@@ -265,6 +268,17 @@
             this.tabReportInfo.Size = new System.Drawing.Size(513, 192);
             this.tabReportInfo.TabIndex = 0;
             this.tabReportInfo.Text = "Info";
+            // 
+            // txtReportInfo
+            // 
+            this.txtReportInfo.BackColor = System.Drawing.SystemColors.Control;
+            this.txtReportInfo.Location = new System.Drawing.Point(-4, 0);
+            this.txtReportInfo.Multiline = true;
+            this.txtReportInfo.Name = "txtReportInfo";
+            this.txtReportInfo.ReadOnly = true;
+            this.txtReportInfo.Size = new System.Drawing.Size(520, 192);
+            this.txtReportInfo.TabIndex = 2;
+            this.txtReportInfo.TabStop = false;
             // 
             // tabExecutionLog
             // 
@@ -316,6 +330,8 @@
             this.Text = "ReportGenerator";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.tabInfomation.ResumeLayout(false);
+            this.tabReportInfo.ResumeLayout(false);
+            this.tabReportInfo.PerformLayout();
             this.tabExecutionLog.ResumeLayout(false);
             this.tabExecutionLog.PerformLayout();
             this.ResumeLayout(false);
@@ -347,6 +363,7 @@
         private System.Windows.Forms.TabPage tabReportInfo;
         private System.Windows.Forms.TabPage tabExecutionLog;
         private System.Windows.Forms.Button btnTestExcel;
+        private System.Windows.Forms.TextBox txtReportInfo;
     }
 }
 

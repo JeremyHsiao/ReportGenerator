@@ -16,6 +16,40 @@ namespace ExcelReportApplication
         static public Dictionary<string, List<StyleString>> global_issue_description_list = new Dictionary<string, List<StyleString>>();
         static public List<TestCase> global_testcase_list = new List<TestCase> ();
 
+        public enum ReportType {
+            FullIssueDescription_TC = 0,
+            FullIssueDescription_Summary,
+            StandardTestReportCreation,
+            KeywordIssue_Report,
+            TC_Likely_Passed
+        }
+
+        public static int ReportTypeCount = Enum.GetNames(typeof(ReportType)).Length;
+
+        public static String GetReportName(ReportType type)
+        {
+            return GetReportName((int)type);
+        }
+
+        public static String GetReportName(int type_index)
+        {
+            return ReportName[type_index];
+        }
+
+        public static List<String> ReportNameToList()
+        {
+            return ReportName.ToList();
+        }
+
+        private static String[] ReportName = new String[] 
+        {
+            "1.Issue Description for TC",
+            "2.Issue Description for Summary",
+            "3.Standard Test Report Creator",
+            "4.Keyword Issue to Report",
+            "5.TC likely Pass"
+        };
+
         // 
         // This demo open Test Case Excel and replace Issue ID on Linked Issue column with ID+Summary+Severity+RD_Comment
         //

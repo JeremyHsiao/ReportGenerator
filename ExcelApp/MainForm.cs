@@ -60,22 +60,14 @@ namespace ExcelReportApplication
             // config for report template
         }
 
-        String [] ReportName = new String[] 
-        {
-            "1.Issue Description for TC",
-            "2.Issue Description for Summary",
-            "3.Standard Test Report Creator",
-            "4.Keyword Issue to Report",
-            "5.TC likely Pass"
-        };
-
         private void InitializeReportFunctionListBox()
         {
-            foreach (String name in ReportName)
+
+            foreach (String name in ReportGenerator.ReportNameToList())
             {
                 comboBoxReportSelect.Items.Add(name);
             }
-            comboBoxReportSelect.SelectedIndex = 0;
+            comboBoxReportSelect.SelectedIndex = 0; // (int)ReportGenerator.ReportType.FullIssueDescription_Summary; // current default
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -302,9 +294,9 @@ namespace ExcelReportApplication
                 return;
             }
 
-            if(report_index<ReportName.Count())
+            if (report_index < ReportGenerator.ReportTypeCount)
             {
-                MsgWindow.AppendText("Executing: " + ReportName[report_index] + ".\n");
+                MsgWindow.AppendText("Executing: " + ReportGenerator.GetReportName(report_index) + ".\n");
             }
 
             UpdateTextBoxPathToFull(ref txtBugFile);
@@ -312,25 +304,25 @@ namespace ExcelReportApplication
             UpdateTextBoxPathToFull(ref txtReportFile);
             UpdateTextBoxPathToFull(ref txtExcelTestFile);
 
-            switch (comboBoxReportSelect.SelectedIndex)
+            switch ((ReportGenerator.ReportType)comboBoxReportSelect.SelectedIndex)
             {
                  //comboBoxReportSelect.Items.Add("4.Keyword Issue to Report");
                 //comboBoxReportSelect.Items.Add("5.TC likely Pass");
-                case 0: 
+                case ReportGenerator.ReportType.FullIssueDescription_TC: 
                     //btnCreateReport.Enabled = false;
                     bRet = Execute_WriteIssueDescriptionToTC(txtTCFile.Text, txtReportFile.Text);
                     //btnCreateReport.Enabled = true;
                     break;
-                case 1:
+                case ReportGenerator.ReportType.FullIssueDescription_Summary: 
                     bRet = Execute_WriteIssueDescriptionToSummary(txtTCFile.Text, txtReportFile.Text);
                     break;
-                case 2:
+                case ReportGenerator.ReportType.StandardTestReportCreation:
                     TestReport.CreateStandardTestReportTask(txtReportFile.Text);
                     break;
-                case 3:
+                case ReportGenerator.ReportType.KeywordIssue_Report:
                     ReportGenerator.KeywordIssueGenerationTask(txtReportFile.Text);
                     break;
-                case 4:
+                case ReportGenerator.ReportType.TC_Likely_Passed:
                     ReportGenerator.FindFailTCLinkedIssueAllClosed(txtTCFile.Text, txtReportFile.Text);
                     break;
                 default:
@@ -376,39 +368,35 @@ namespace ExcelReportApplication
 
         private void comboBoxReportSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
-            switch (comboBoxReportSelect.SelectedIndex)
+            switch ((ReportGenerator.ReportType)comboBoxReportSelect.SelectedIndex)
             {
             //comboBoxReportSelect.Items.Add("3.Standard Test Report Creator");
             //comboBoxReportSelect.Items.Add("4.Keyword Issue to Report");
             //comboBoxReportSelect.Items.Add("5.TC likely Pass");
-                case 0: // "1.Issue Description for TC"
-                case 1: // "2.Issue Description for Summary"
+                case ReportGenerator.ReportType.FullIssueDescription_TC: // "1.Issue Description for TC"
+                case ReportGenerator.ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(true);
                     SetEnable_Report(true);
                     SetEnable_AdditionalFile(false);
                    break;
-                case 2:
+                case ReportGenerator.ReportType.StandardTestReportCreation:
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(true);
                     SetEnable_Report(true);
                     SetEnable_AdditionalFile(false);
                     break;
-                case 3:
+                case ReportGenerator.ReportType.KeywordIssue_Report:
                     break;
-                case 4:
+                case ReportGenerator.ReportType.TC_Likely_Passed:
                     break;
                 default:
                     break;
             }
         }
 
-        private void MsgWindow_TextChanged(object sender, EventArgs e)
+        private void UpdateReportInfoTextBox(int ReportIndex)
         {
-
         }
-
-        // Update UI for difference selection.
-
     }
 }
