@@ -175,6 +175,17 @@ namespace ExcelReportApplication
             return true;
         }
 
+        private bool Execute_CreateStandardTestReportTask(String main_file)
+        {
+            if (!FileFunction.FileExists(main_file))
+            {
+                // protection check
+                return false;
+            }
+
+            return TestReport.CreateStandardTestReportTask(main_file);
+        }
+
         private bool Execute_KeywordIssueGenerationTask(String template_file)
         {
             if ((ReportGenerator.global_issue_list.Count == 0) || (!FileFunction.FileExists(template_file)))
@@ -271,7 +282,6 @@ namespace ExcelReportApplication
         // Only enabled textbox will be updated.
         private void UpdateTextBoxPathToFullAndCheckExist(ref TextBox box)
         {
-            if (box.Enabled == false) return; // return if disabled
             String name = FileFunction.GetFullPath(box.Text);
             if (!FileFunction.FileExists(name))
             {
@@ -293,7 +303,7 @@ namespace ExcelReportApplication
                 return;
             }
 
-            btnCreateReport.Enabled = false;
+            UpdateUIDuringExecution ( report_index: report_index, executing: true);
 
             MsgWindow.AppendText("Executing: " + ReportGenerator.GetReportName(report_index) + ".\n");
                         
@@ -317,13 +327,13 @@ namespace ExcelReportApplication
                     break;
                 case ReportGenerator.ReportType.StandardTestReportCreation:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
-                    TestReport.CreateStandardTestReportTask(txtStandardTestReport.Text);
+                    bRet = Execute_CreateStandardTestReportTask(txtStandardTestReport.Text);
                     break;
                 case ReportGenerator.ReportType.KeywordIssue_Report:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                     if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                    ReportGenerator.KeywordIssueGenerationTask(txtReportFile.Text);
+                    bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text);
                     break;
                 case ReportGenerator.ReportType.TC_Likely_Passed:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
@@ -339,7 +349,7 @@ namespace ExcelReportApplication
             }
 
             MsgWindow.AppendText("Finished.\n");
-            btnCreateReport.Enabled = true;
+            UpdateUIDuringExecution(report_index: report_index, executing: false);
         }
 
         private void SetEnable_IssueFile(bool value)
@@ -368,12 +378,28 @@ namespace ExcelReportApplication
 
         private void comboBoxReportSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
-            UpdateUI(comboBoxReportSelect.SelectedIndex);
+            UpdateUIAfterReportTypeChanged(comboBoxReportSelect.SelectedIndex);
         }
 
-        private void UpdateUI(int ReportIndex)
+        private void UpdateUIDuringExecution(int report_index, bool executing)
         {
-            txtReportInfo.Text = ReportGenerator.GetReportDescription(ReportIndex);
+            if (!executing)
+            {
+                UpdateFilenameBoxUIForReportType(report_index);
+                btnCreateReport.Enabled = true;
+            }
+            else
+            {
+                SetEnable_IssueFile(false);
+                SetEnable_TCFile(false);
+                SetEnable_OutputFile(false);
+                SetEnable_StandardReport(false);
+                btnCreateReport.Enabled = false;
+            }
+        }
+
+        private void UpdateFilenameBoxUIForReportType(int ReportIndex)
+        {
             switch (ReportGenerator.ReportTypeFromInt(ReportIndex))
             {
                 case ReportGenerator.ReportType.FullIssueDescription_TC: // "1.Issue Description for TC"
@@ -381,14 +407,12 @@ namespace ExcelReportApplication
                     SetEnable_TCFile(true);
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
-                    this.txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Template");
-                    break;
+                     break;
                 case ReportGenerator.ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(true);
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
-                    this.txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_Summary");
                     break;
                 case ReportGenerator.ReportType.StandardTestReportCreation:
                     SetEnable_IssueFile(false);
@@ -401,13 +425,37 @@ namespace ExcelReportApplication
                     SetEnable_TCFile(false);
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
-                    this.txtReportFile.Text = @".\SampleData\A.1.1_OSD _All.xlsx" ;
                     break;
                 case ReportGenerator.ReportType.TC_Likely_Passed:
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(true);
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
+                    break;
+                default:
+                    // Shouldn't be here
+                    break;
+            }
+        }
+
+        private void UpdateUIAfterReportTypeChanged(int ReportIndex)
+        {
+            txtReportInfo.Text = ReportGenerator.GetReportDescription(ReportIndex);
+            UpdateFilenameBoxUIForReportType(ReportIndex);
+            switch (ReportGenerator.ReportTypeFromInt(ReportIndex))
+            {
+                case ReportGenerator.ReportType.FullIssueDescription_TC: // "1.Issue Description for TC"
+                    txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Template");
+                    break;
+                case ReportGenerator.ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
+                    txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_Summary");
+                    break;
+                case ReportGenerator.ReportType.StandardTestReportCreation:
+                    break;
+                case ReportGenerator.ReportType.KeywordIssue_Report:
+                    this.txtReportFile.Text = @".\SampleData\A.1.1_OSD _All.xlsx" ;
+                    break;
+                case ReportGenerator.ReportType.TC_Likely_Passed:
                     txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Template");
                     break;
                 default:
