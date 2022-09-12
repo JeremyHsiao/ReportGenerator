@@ -75,6 +75,7 @@ namespace ExcelReportApplication
             {
                 comboBoxReportSelect.Items.Add(name);
             }
+            comboBoxReportSelect.SelectedIndex = 0;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -185,7 +186,7 @@ namespace ExcelReportApplication
 
             return true;
         }
-
+        /*
         private void btnDemo_Click(object sender, EventArgs e)
         {
             bool bRet;
@@ -214,7 +215,7 @@ namespace ExcelReportApplication
                 return;
             }
         }
-
+        */
         // Because TextBox is set to Read-only, filename can be only changed via File Dialog
         // (1) no need to handle event of TestBox Text changed.
         // (2) filename (full path) is set only after File Dialog OK
@@ -276,6 +277,8 @@ namespace ExcelReportApplication
             bRet = ReadGlobalTCListTask(txtTCFile.Text);
         }
 
+        // Update file path to full path (for excel operation)
+        // Only enabled textbox will be updated.
         private void UpdateTextBoxPathToFull(ref TextBox box)
         {
             if (box.Enabled == false) return; // return if disabled
@@ -399,6 +402,13 @@ namespace ExcelReportApplication
                     break;
             }
         }
+
+        private void MsgWindow_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        // Update UI for difference selection.
 
     }
 }
