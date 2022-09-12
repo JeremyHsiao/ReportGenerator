@@ -150,21 +150,24 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            // This full issue description is needfed for demo purpose
+            // This full issue description is needfed for report purpose
             ReportGenerator.global_issue_description_list = IssueList.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
 
             ReportGenerator.WriteBacktoTCJiraExcel(tc_file);
             return true;
         }
 
-        private bool Execute_WriteIssueDescriptionToSummary(String tc_file, String template_file)
+        private bool Execute_WriteIssueDescriptionToSummary(String template_file)
         {
             if ((ReportGenerator.global_issue_list.Count == 0)||(ReportGenerator.global_testcase_list.Count == 0)||
-                (!FileFunction.FileExists(tc_file))||(!FileFunction.FileExists(template_file)))
+                (!FileFunction.FileExists(template_file)))
             {
                 // protection check
                 return false;
             }
+
+            // This full issue description is needfed for report purpose
+            ReportGenerator.global_issue_description_list = IssueList.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
 
             ReportGenerator.SaveToReportTemplate(template_file);
 
@@ -278,7 +281,7 @@ namespace ExcelReportApplication
                     UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                     if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                     if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                    bRet = Execute_WriteIssueDescriptionToSummary(txtTCFile.Text, txtReportFile.Text);
+                    bRet = Execute_WriteIssueDescriptionToSummary(txtReportFile.Text);
                     break;
                 case ReportGenerator.ReportType.StandardTestReportCreation:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
