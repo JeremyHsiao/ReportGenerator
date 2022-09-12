@@ -76,33 +76,31 @@ namespace ExcelReportApplication
 
 
         // Assumed folder structure:
-        // exection file dir: ./ 
-        // report_file dir:   report file selected by user
-        // test report src    ./SampleData/TestFileFolder/Database Backup
-        // test report dest   ./SampleData/TestFileFolder/
+        // report_file_path:  report_root/0.0_DQA Test Report/FILENAME.xlsx
+        // file_dir:          report_root/0.0_DQA Test Report
+        // report_root_dir:   report_root/
+        // input_report_dir:  report_root_dir/Database Backup
+        // output_report_dir: report_root_dir_DATETIME
 
-        const string src = @"\SampleData\TestFileFolder\Database Backup";
-        const string dest = @"\SampleData\TestFileFolder\";
+        const string src_dir = @"\Database Backup";
         public static bool CreateStandardTestReportTask(String filename)
         {
-            // Check conditions before executing task
+            // Full file name exist checked before executing task
+
+            String file_dir = FileFunction.GetDirectoryName(filename);
+            String report_root_dir = FileFunction.GetDirectoryName(file_dir);
+            String input_report_dir = report_root_dir + src_dir;
+            String output_report_dir = FileFunction.GenerateDirectoryNameWithDateTime(report_root_dir);
 
             // test_plan (sample) dir must exist
-            String input_report_dir = FileFunction.GetCurrentDirectory() + src;
-            if (!FileFunction.DirectoryExists(input_report_dir)) { return false; }
-            // @"Database Backup\"
+            if (!FileFunction.DirectoryExists(input_report_dir)) { return false; }  // should exist
 
             // output test plan root_dir must be inexist so that no overwritten
-            String output_report_dir = FileFunction.GenerateDirectoryNameWithDateTime(FileFunction.GetCurrentDirectory() + dest);
-            if (FileFunction.DirectoryExists(output_report_dir)) { return false; }
-
-            // main report_file must exist so that test-plan can be read
-            String full_filename = FileFunction.GetFullPath(filename);
-            if (!FileFunction.FileExists(full_filename)) { return false; }
+            if (FileFunction.DirectoryExists(output_report_dir)) { return false; } // shouln't exist
 
             // read test-plan sheet NG and return if NG
             List<TestPlan> testplan = new List<TestPlan>();
-            testplan = TestReport.ReadTestPlanFromStandardTestReport(full_filename);
+            testplan = TestReport.ReadTestPlanFromStandardTestReport(filename);
             if (testplan == null) { return false; }
 
             // all input parameters has been checked successfully, so generate

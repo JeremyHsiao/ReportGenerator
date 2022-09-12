@@ -99,14 +99,15 @@ namespace ExcelReportApplication
             // Get the last (row,col) of excel
             Range rngLast = testplan_ws.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
 
+            int row_end = rngLast.Row;
             // Visit all rows and add content 
-            for (int index = DataBeginRow_TestPlan; index <= rngLast.Row; index++)
+            for (int index = DataBeginRow_TestPlan; index <= row_end; index++)
             {
                 List<String> members = new List<String>();
                 for (int member_index = 0; member_index < (int)TestPlanMemberIndex.MAX_NO; member_index++)
                 {
-                    Object cell_value2 = testplan_ws.Cells[index, col_name_list[TestPlanMemberColumnName[member_index]]].Value2;
-                    String str = (cell_value2 == null) ? "" : cell_value2.ToString();
+                    int col_index = col_name_list[TestPlanMemberColumnName[member_index]];
+                    String str = ExcelAction.GetCellTrimmedString(testplan_ws, index, col_index);
                     if (str == "")
                     {
                         break; // cannot be empty value; skip to next row

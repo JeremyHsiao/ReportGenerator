@@ -236,7 +236,11 @@ namespace ExcelReportApplication
                 // directory name adding "_yyyyMMddHHmmss"
                 string path, dt;
 
-                path = Path.GetDirectoryName(dir);                  // path without '\'
+                if (dir[dir.Length - 1] == '\\')
+                {
+                    dir.Substring(0, dir.Length - 1); // remove '\' at the end
+                }
+                path = dir;                     
                 dt = DateTime.Now.ToString("yyyyMMddHHmmss");       // ex: 20220801160000
                 ret = path + "_" + dt;
 

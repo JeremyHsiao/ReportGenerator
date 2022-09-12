@@ -166,6 +166,9 @@ namespace ExcelReportApplication
         static private Excel.Application TestCaseTemplateExcel;
         static private Workbook book_tc_template;
         static private Worksheet ws_tc_template;
+        static private Excel.Application TestPlanExcel;
+        static private Workbook book_tc_testplan;
+        static private Worksheet ws_testplan;
 
         // Excel accessing function for Issue List Excel
 
@@ -227,6 +230,18 @@ namespace ExcelReportApplication
         static public String GetTestCaseCellTrimmedString(int row, int col, bool IsTemplate = false)
         {
             Object cell_value2 = GetTestCaseCell(row, col, IsTemplate: IsTemplate);
+            if (cell_value2 == null) { return ""; }
+            return cell_value2.ToString();
+        }
+
+        static public Object GetCellValue(Worksheet ws, int row, int col)
+        {
+            return ws.Cells[row, col].Value2;
+        }
+
+        static public String GetCellTrimmedString(Worksheet ws, int row, int col)
+        {
+            Object cell_value2 = GetCellValue(ws, row, col);
             if (cell_value2 == null) { return ""; }
             return cell_value2.ToString();
         }
