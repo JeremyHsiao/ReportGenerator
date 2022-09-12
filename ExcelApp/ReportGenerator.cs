@@ -511,8 +511,8 @@ namespace ExcelReportApplication
                         hide_row_start = hide_row_count = 0;
                     }
 
-                    // Save Template file as another filename (testcase filename with datetime)
-                    string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename);
+                    // Save Template file as another filename (testcase filename with datetime & as .xlsx)
+                    string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename, ".xlsx");
                     ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
                 }
             }
