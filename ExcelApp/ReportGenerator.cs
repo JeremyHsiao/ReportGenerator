@@ -392,17 +392,6 @@ namespace ExcelReportApplication
         static String[] CloseStatusString = { IssueList.STR_CLOSE };
         static public void FindFailTCLinkedIssueAllClosed(String tclist_filename, String template_filename)
         {
- 
-            // protection-check
-            if (global_issue_list.Count == 0)
-            {
-                ConsoleWarning("Bug list is empty");  return;
-            }
-            if (global_testcase_list.Count == 0)
-            {
-                ConsoleWarning("Test-case list is empty"); return;
-            }
-
             // Prepare a list of key whose status is closed (waived treated as non-closed at the moment)
             List<String> ClosedIssueKey = new List<String>();
             foreach(IssueList issue in global_issue_list)

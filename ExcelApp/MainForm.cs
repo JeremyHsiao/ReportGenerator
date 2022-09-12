@@ -174,6 +174,22 @@ namespace ExcelReportApplication
             return true;
         }
 
+        private bool Execute_FindFailTCLinkedIssueAllClosed(String tc_file, String template_file)
+        {
+            if ((ReportGenerator.global_issue_list.Count == 0) || (ReportGenerator.global_testcase_list.Count == 0) ||
+                (!FileFunction.FileExists(tc_file)) || (!FileFunction.FileExists(template_file)))
+            {
+                // protection check
+                return false;
+            }
+
+            // This full issue description is needfed for report purpose
+            ReportGenerator.global_issue_description_list = IssueList.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
+
+            ReportGenerator.FindFailTCLinkedIssueAllClosed(tc_file, template_file);
+            return true;
+        }
+
         // Because TextBox is set to Read-only, filename can be only changed via File Dialog
         // (1) no need to handle event of TestBox Text changed.
         // (2) filename (full path) is set only after File Dialog OK
@@ -299,7 +315,7 @@ namespace ExcelReportApplication
                     UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                     if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                     if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                    ReportGenerator.FindFailTCLinkedIssueAllClosed(txtTCFile.Text, txtReportFile.Text);
+                    bRet = Execute_FindFailTCLinkedIssueAllClosed(txtTCFile.Text, txtReportFile.Text);
                     break;
                 default:
                     // shouldn't be here.
