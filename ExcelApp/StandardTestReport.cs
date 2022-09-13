@@ -18,21 +18,23 @@ namespace ExcelReportApplication
             List<TestPlan> ret_testplan = new List<TestPlan>();
 
             // open standard test report
-            Excel.Application myReportExcel = ExcelAction.OpenOridnaryExcel(report_filename);
-            if (myReportExcel == null)
+            Workbook wb_testplan = ExcelAction.OpenExcelWorkbook(report_filename);
+            if (wb_testplan == null)
             {
-                Console.WriteLine("OpenOridnaryExcel failed in GenerateTestReportStructure()");
+                Console.WriteLine("OpenExcelWorkbook failed in GenerateTestReportStructure()");
                 return ret_testplan;
             }
 
             // Select and read Test Plan sheet
-            Worksheet testplan_ws = ExcelAction.Find_Worksheet(myReportExcel, SheetName_TestPlan);
-            if (testplan_ws == null)
+            Worksheet result_ws = ExcelAction.Find_Worksheet(wb_testplan, SheetName_TestPlan);
+            if (result_ws == null)
             {
                 Console.WriteLine("Find_Worksheet (TestPlan) failed in GenerateTestReportStructure()");
                 return ret_testplan;
             }
-            ret_testplan = TestPlan.LoadTestPlanSheet(testplan_ws);
+            ret_testplan = TestPlan.LoadTestPlanSheet(result_ws);
+
+            ExcelAction.CloseExcelWorkbook(wb_testplan);
             return ret_testplan;
         }
 

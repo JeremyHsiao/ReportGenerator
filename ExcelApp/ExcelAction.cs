@@ -11,70 +11,17 @@ namespace ExcelReportApplication
     static class ExcelAction
     {
         static private Excel.Application excel_app;
-//        static private Excel.Application IssueListExcel;
         static private Workbook workbook_issuelist;
         static private Worksheet ws_issuelist;
-//        static private Excel.Application TestCaseExcel;
         static private Workbook workbook_testcase;
         static private Worksheet ws_testcase;
-//        static private Excel.Application TestCaseTemplateExcel;
         static private Workbook workbook_tc_template;
         static private Worksheet ws_tc_template;
-//        static private Excel.Application TestPlanExcel;
-        static private Workbook workbook_testplan;
-        static private Worksheet ws_testplan;
+        //static private Workbook workbook_testplan;
+        //static private Worksheet ws_testplan;
 
         static public bool ExcelVisible = true;
 
-        // Open existing excel
-        static public Excel.Application OpenOridnaryExcel(string filename, bool ReadOnly = true)
-        {
-            // Open excel (read-only)
-            Excel.Application myBugExcel = new Excel.Application();
-            Workbook working_book = myBugExcel.Workbooks.Open(filename, ReadOnly: ReadOnly);
-            myBugExcel.Visible = ExcelVisible;
-            return myBugExcel;
-        }
-
-        /*
-        static public Excel.Application OpenPreviousExcel(string filename, bool ReadOnly = true)
-        {
-            // Open excel (read-only & corrupt-load)
-            Excel.Application myBugExcel = new Excel.Application();
-            //Workbook working_book = myBugExcel.Workbooks.Open(filename)
-            //Workbook working_book = myBugExcel.Workbooks.Open(filename, ReadOnly: true, CorruptLoad: XlCorruptLoad.xlExtractData);
-            myBugExcel.Workbooks.Open(filename, ReadOnly: ReadOnly, CorruptLoad: XlCorruptLoad.xlExtractData);
-            myBugExcel.Visible = ExcelVisible;
-            return myBugExcel;
-        }
-        */
-
-        static public void CloseExcelWithoutSaveChanges(Excel.Application myExcel)
-        {
-            myExcel.ActiveWorkbook.Close(SaveChanges: false);
-            myExcel.Quit();
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(myExcel);
-            GC.Collect();
-        }
-
-        static public void SaveChangesAndCloseExcel(Excel.Application myExcel)
-        {
-            myExcel.DisplayAlerts = false;
-            myExcel.ActiveWorkbook.Close(SaveChanges: true);
-            myExcel.Quit();
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(myExcel);
-            GC.Collect();
-        }
-
-        static public void SaveChangesAndCloseExcel(Excel.Application myExcel, String filename)
-        {
-            myExcel.ActiveWorkbook.Close(SaveChanges: true, Filename: filename);
-            myExcel.Quit();
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(myExcel);
-            GC.Collect();
-        }
-
-        // 2nd version - not mix-use Application.Excel & Workbook.
         static public void OpenExcelApp()
         {
             if (excel_app != null) return;
@@ -127,8 +74,6 @@ namespace ExcelReportApplication
             GC.Collect();
             excel_app = null;
         }
-
-        //
 
         // List all worksheets within excel 
         static public List<String> ListSheetName(Excel.Application curExcel)
