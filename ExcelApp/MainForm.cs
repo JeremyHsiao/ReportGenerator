@@ -306,7 +306,9 @@ namespace ExcelReportApplication
             UpdateUIDuringExecution ( report_index: report_index, executing: true);
 
             MsgWindow.AppendText("Executing: " + ReportGenerator.GetReportName(report_index) + ".\n");
-                        
+
+            ExcelAction.OpenExcelApp();
+
             switch (ReportGenerator.ReportTypeFromInt(report_index))
             {
                 case ReportGenerator.ReportType.FullIssueDescription_TC:
@@ -347,6 +349,8 @@ namespace ExcelReportApplication
                     // shouldn't be here.
                     break;
             }
+
+            ExcelAction.CloseExcelApp();
 
             MsgWindow.AppendText("Finished.\n");
             UpdateUIDuringExecution(report_index: report_index, executing: false);
