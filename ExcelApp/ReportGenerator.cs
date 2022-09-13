@@ -262,14 +262,14 @@ namespace ExcelReportApplication
 
             // File exist check is done outside
 
-            Excel.Application myReportExcel = ExcelAction.OpenOridnaryExcel(full_filename, ReadOnly:false);
-            if (myReportExcel == null)
+            Workbook wb_keyword_issue = ExcelAction.OpenExcelWorkbook(full_filename, ReadOnly: false);
+            if (wb_keyword_issue == null)
             {
-                ConsoleWarning("OpenOridnaryExcel in KeywordIssueGenerationTask");
+                ConsoleWarning("OpenExcelWorkbook in KeywordIssueGenerationTask");
                 return false;
             }
 
-            Worksheet result_worksheet = ExcelAction.Find_Worksheet(myReportExcel, sheet_name);
+            Worksheet result_worksheet = ExcelAction.Find_Worksheet(wb_keyword_issue, sheet_name);
             if (result_worksheet == null)
             {
                 ConsoleWarning("Find_Worksheet in KeywordIssueGenerationTask");
@@ -280,11 +280,10 @@ namespace ExcelReportApplication
             // 2. Find out Printable Area
             //
 
-            String PrintArea = result_worksheet.PageSetup.PrintArea;
-            Range rngPrintable = result_worksheet.Range[PrintArea];
-            int row_print_area, column_print_area;
-            // Data processing starting at "$A$1"
-            // ending at Printable aread
+            int row_print_area, column_print_area; 
+            // Assummed that Printable area always starting at $A$1 (also data processing area)
+            // So excel data processing area ends at Printable area (row_count,col_count)
+            Range rngPrintable = ExcelAction.GetWorksheetPrintableRange(result_worksheet);
             row_print_area = rngPrintable.Rows.Count;
             column_print_area = rngPrintable.Columns.Count;
 
@@ -299,18 +298,14 @@ namespace ExcelReportApplication
             Dictionary<String, int> KeywordAtRow = new Dictionary<String, int>();
             for (int row_index = row_test_detail_start; row_index <= row_print_area; row_index++)
             {
-                Object cell_obj = result_worksheet.Cells[row_index, col_indentifier].Value2;
-                if(cell_obj==null) continue;
-                String cell_text = cell_obj.ToString().Trim();
+                String cell_text = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, col_indentifier);
+                if (cell_text == "" ) continue;
                 if ((cell_text.Length>identifier_str.Length) &&
                     String.Equals(cell_text.Substring(0,identifier_str.Length), identifier_str, StringComparison.OrdinalIgnoreCase))
                 {
-                    cell_obj = result_worksheet.Cells[row_index, col_keyword].Value2;
-                    if(cell_obj==null) { ConsoleWarning("Empty Keyword", row_index); continue;}
-                    cell_text = cell_obj.ToString().Trim();
-                    if (cell_text == "") { ConsoleWarning("Empty Keyword", row_index); continue; }
-                    if(KeywordAtRow.ContainsKey(cell_text))
-                    { ConsoleWarning("Duplicated Keyword", row_index); continue; }
+                    cell_text = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, col_keyword);
+                    if(cell_text=="") { ConsoleWarning("Empty Keyword", row_index); continue;}
+                    if(KeywordAtRow.ContainsKey(cell_text)) { ConsoleWarning("Duplicated Keyword", row_index); continue; }
                     KeywordAtRow.Add(cell_text, row_index);
                 }
             }
@@ -358,19 +353,17 @@ namespace ExcelReportApplication
             //         
             // Insert extra column just outside printable area.
             int insert_col = column_print_area + 1;
-            result_worksheet.Columns[insert_col].Insert();
+            ExcelAction.Insert_Column(result_worksheet,insert_col);
 
             foreach (String keyword in KeywordAtRow.Keys)
             {
                 List<StyleString> issue_description = KeyWordIssueDescription[keyword];
-                Range rng = result_worksheet.Cells[KeywordAtRow[keyword], insert_col];
-                StyleString.WriteStyleString(ref rng, issue_description);
+                StyleString.WriteStyleString(result_worksheet, KeywordAtRow[keyword], insert_col, issue_description);
             }
 
             // Save as another file with yyyyMMddHHmmss
             string dest_filename = FileFunction.GenerateFilenameWithDateTime(full_filename);
-            ExcelAction.SaveChangesAndCloseExcel(myReportExcel, dest_filename);
-
+            ExcelAction.CloseExcelWorkbook(wb_keyword_issue, SaveChanges: true, AsFilename: dest_filename);
             return true;
         }
 

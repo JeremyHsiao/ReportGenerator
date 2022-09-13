@@ -215,6 +215,11 @@ namespace ExcelReportApplication
             hiddenRange.EntireRow.Hidden = true;
         }
 
+        static public void Insert_Column(Worksheet ws, int at_col)
+        {
+            ws.Columns[at_col].Insert();
+        }
+
         static public Dictionary<string, int> CreateTableColumnIndex(Worksheet ws, int naming_row)
         {
             Dictionary<string, int> col_name_list = new Dictionary<string, int>();
