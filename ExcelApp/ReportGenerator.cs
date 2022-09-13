@@ -169,11 +169,10 @@ namespace ExcelReportApplication
                 }
             }
 
-            //Excel.Application myReportExcel = ExcelAction.OpenPreviousExcel(report_filename);
-            Excel.Application myReportExcel = ExcelAction.OpenOridnaryExcel(report_filename);
-            if (myReportExcel != null)
+            Workbook wb_summary = ExcelAction.OpenExcelWorkbook(report_filename);
+            if (wb_summary != null)
             {
-                Worksheet result_worksheet = ExcelAction.Find_Worksheet(myReportExcel, sheet_Report_Result);
+                Worksheet result_worksheet = ExcelAction.Find_Worksheet(wb_summary, sheet_Report_Result);
                 if (result_worksheet != null)
                 {
                     //const int result_NameDefinitionRow = 5;
@@ -182,27 +181,22 @@ namespace ExcelReportApplication
                     //Dictionary<string, int> result_col_name_list = CreateTableColumnIndex(result_worksheet, result_NameDefinitionRow);
 
                     // Get the last (row,col) of excel
-                    Range rngLast = result_worksheet.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
-
+                    Range rngLast = ExcelAction.GetWorksheetAllRange(result_worksheet);
                     const int col_group = 1, col_result = 2, col_issue = 3; // column "A" - "C"
                     const int row_result_starting = 6; // row starting from 6
 
-                    for (int index = row_result_starting; index <= rngLast.Row; index++)
+                    int end_row = rngLast.Row;
+                    for (int index = row_result_starting; index <= end_row; index++)
                     {
-                        Range rng;
-                        Object cell_value2; 
                         List<StyleString> str_list = new List<StyleString>();
                         String key, note;
 
                         // find out which test_group
-                        rng = result_worksheet.Cells[index, col_group];
-                        cell_value2 = rng.Value2;
-                        if (cell_value2 == null) { break; } // if no value in test_group-->end of report
-                        key = cell_value2.ToString();
+                        key = ExcelAction.GetCellTrimmedString(result_worksheet, index, col_group);
+                        if (key == "") break; // if no value in test_group-->end of report
 
                         // goes to next row if Result is N/A
-                        rng = result_worksheet.Cells[index, col_result];
-                        if (rng.Value2.ToString().Trim() == "N/A") { continue; } // goes to next row if N/A
+                        if (ExcelAction.GetCellTrimmedString(result_worksheet,index, col_result) == "N/A") continue;
  
                         // Get data to be filled into Note
                         // if key does not exist, Note will be empty string
@@ -213,34 +207,31 @@ namespace ExcelReportApplication
 
                         if (note!="")
                         {
-                            rng = result_worksheet.Cells[index, col_result];
-                            rng.Value2 = "Fail";
+                            // issue --> Fail
+                            ExcelAction.SetCellValue(result_worksheet, index, col_result, "Fail");
                             // Fill "Note" 
                             str_list = StyleString.ExtendIssueDescription(note, global_full_issue_description_list);
-                            rng = result_worksheet.Cells[index, col_issue];
-                            StyleString.WriteStyleString(ref rng, str_list);
+                            StyleString.WriteStyleString(result_worksheet, index, col_issue, str_list);
                         }
                         else
                         {
-                            // no issue --> pass
-                            rng = result_worksheet.Cells[index, col_result];
-                            rng.Value2 = "Pass";
-                            rng = result_worksheet.Cells[index, col_issue];
-                            rng.Value2 = "";
+                            // no issue --> Pass
+                            ExcelAction.SetCellValue(result_worksheet, index, col_result, "Pass");
+                            ExcelAction.SetCellValue(result_worksheet, index, col_issue, "");
                         }
 
                         // auto-fit-height of current row
-                        rng.Rows.AutoFit();
+                        ExcelAction.AutoFit_Row(result_worksheet, index);
                      }
 
                     // Save as another file with yyyyMMddHHmmss
-                    string dest_filename = FileFunction.GenerateFilenameWithDateTime(report_filename);
-                    ExcelAction.SaveChangesAndCloseExcel(myReportExcel, dest_filename);
+                    String dest_filename = FileFunction.GenerateFilenameWithDateTime(report_filename);
+                    ExcelAction.CloseExcelWorkbook(wb_summary, SaveChanges: true, AsFilename: dest_filename);
                 }
                 else
                 {
                     // worksheet not found, close immediately
-                    ExcelAction.CloseExcelWithoutSaveChanges(myReportExcel);
+                    ExcelAction.CloseExcelWorkbook(wb_summary, SaveChanges: false);
                 }
             }
         }

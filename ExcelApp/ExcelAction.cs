@@ -36,6 +36,7 @@ namespace ExcelReportApplication
             return myBugExcel;
         }
 
+        /*
         static public Excel.Application OpenPreviousExcel(string filename, bool ReadOnly = true)
         {
             // Open excel (read-only & corrupt-load)
@@ -46,6 +47,7 @@ namespace ExcelReportApplication
             myBugExcel.Visible = ExcelVisible;
             return myBugExcel;
         }
+        */
 
         static public void CloseExcelWithoutSaveChanges(Excel.Application myExcel)
         {
@@ -81,25 +83,27 @@ namespace ExcelReportApplication
             excel_app.Caption = "DQA Report Generator";
         }
 
-        static public Workbook OpenExcelWorkbook(String filename, bool ReadOnly = true, bool XLS = false)
+        static public Workbook OpenExcelWorkbook(String filename, bool ReadOnly = true, bool XLS = false, bool UpdateLinks = false)
         {
             Workbook ret_workbook;
             if (XLS)
             {
-                ret_workbook = excel_app.Workbooks.Open(filename, ReadOnly: ReadOnly, CorruptLoad: XlCorruptLoad.xlExtractData);
+                ret_workbook = excel_app.Workbooks.Open(filename, ReadOnly: ReadOnly, CorruptLoad: XlCorruptLoad.xlExtractData,
+                                                        UpdateLinks: UpdateLinks);
             }
             else
             {
-                ret_workbook = excel_app.Workbooks.Open(filename, ReadOnly: ReadOnly);
+                ret_workbook = excel_app.Workbooks.Open(filename, ReadOnly: ReadOnly, 
+                                                        UpdateLinks: UpdateLinks);
             }
             return ret_workbook;
         }
 
-        static public void CloseExcelWorkbook(Workbook workbook, bool SaveChanges, String AsFilename = "")
+        static public void CloseExcelWorkbook(Workbook workbook, bool SaveChanges = false, String AsFilename = "")
         {
+            excel_app.DisplayAlerts = false;
             if (SaveChanges)
             {
-                excel_app.DisplayAlerts = false;
                 if (AsFilename != "")
                 {
                     workbook.Close(SaveChanges: true, Filename: AsFilename);
@@ -149,6 +153,18 @@ namespace ExcelReportApplication
             return false;
         }
 
+        static public bool WorksheetExist(Workbook wb, string sheet_name)
+        {
+            foreach (Excel.Worksheet displayWorksheet in wb.Worksheets)
+            {
+                if (displayWorksheet.Name.CompareTo(sheet_name) == 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         // return worksheet with specified sheet_name; return null if not found
         static public Worksheet Find_Worksheet(Excel.Application curExcel, string sheet_name)
         {
@@ -156,6 +172,16 @@ namespace ExcelReportApplication
             if (WorksheetExist(curExcel, sheet_name))
             {
                 ret = curExcel.Sheets.Item[sheet_name];
+            }
+            return ret;
+        }
+
+        static public Worksheet Find_Worksheet(Workbook wb, string sheet_name)
+        {
+            Worksheet ret = null;
+            if (WorksheetExist(wb, sheet_name))
+            {
+                ret = wb.Worksheets[sheet_name];
             }
             return ret;
         }
@@ -175,6 +201,11 @@ namespace ExcelReportApplication
         static public void AutoFit_Column(Worksheet ws, int col)
         {
             ws.Columns[col].AutoFit();
+        }
+
+        static public void AutoFit_Row(Worksheet ws, int row)
+        {
+            ws.Rows[row].AutoFit();
         }
 
         static public void Hide_Row(Worksheet ws, int row, int count = 1)
@@ -293,6 +324,11 @@ namespace ExcelReportApplication
         static public Object GetCellValue(Worksheet ws, int row, int col)
         {
             return ws.Cells[row, col].Value2;
+        }
+
+        static public void SetCellValue(Worksheet ws, int row, int col, Object value)
+        {
+            ws.Cells[row, col].Value2 = value;
         }
 
         static public String GetCellTrimmedString(Worksheet ws, int row, int col)
