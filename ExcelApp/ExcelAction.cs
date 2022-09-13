@@ -186,20 +186,17 @@ namespace ExcelReportApplication
         {
             OK = 0,
             INIT_STATE,
-            ERR_OpenIssueListExcel_OpenPreviousExcel,
+            ERR_OpenIssueListExcel_OpenExcelWorkbook,
             ERR_OpenIssueListExcel_Find_Worksheet,
-            ERR_OpenIssueListExcel_CloseExcelWithoutSaveChanges,
-            ERR_OpenTestCaseExcel_OpenPreviousExcel,
-            ERR_OpenTestCaseExcel_Find_Worksheet,
-            ERR_OpenTestCaseExcel_CloseExcelWithoutSaveChanges,
             ERR_OpenTestCaseExcel_OpenExcelWorkbook,
-            ERR_CloseIssueListExcel_close_null,
-            ERR_CloseTestCaseExcel_close_null,
-            ERR_SaveChangesAndCloseIssueListExcel_close_null,
-            ERR_SaveChangesAndCloseTestCaseExcel_close_null,
+            ERR_OpenTestCaseExcel_Find_Worksheet,
+            ERR_CloseIssueListExcel_wb_null,
+            ERR_CloseTestCaseExcel_wb_null,
+            ERR_SaveChangesAndCloseIssueListExcel_wb_null,
+            ERR_SaveChangesAndCloseTestCaseExcel_wb_null,
             ERR_NOT_DEFINED,
             EX_OpenIssueListWorksheet,
-            EX_CloseIssueListWorksheet,
+            EX_CloseIssueListExcel,
             EX_SaveChangesAndCloseIssueListExcel,
             EX_OpenTestCaseWorksheet,
             EX_CloseTestCaseWorksheet,
@@ -375,82 +372,6 @@ namespace ExcelReportApplication
         }
 
         // Excel Open/Close/Save for Issue List Excel
-/*
-        static public ExcelStatus OpenIssueListExcel(String buglist_filename)
-        {
-            try
-            {
-                // Open excel (read-only & corrupt-load)
-                Excel.Application myIssueExcel = ExcelAction.OpenPreviousExcel(buglist_filename);
-
-                if (myIssueExcel == null)
-                {
-                    return ExcelStatus.ERR_OpenIssueListExcel_OpenPreviousExcel;
-                }
-
-                Worksheet ws_buglist = ExcelAction.Find_Worksheet(myIssueExcel, IssueList.SheetName);
-                if (ws_buglist == null)
-                {
-                    return ExcelStatus.ERR_OpenIssueListExcel_Find_Worksheet;
-                }
-                else
-                {
-                    IssueListExcel = myIssueExcel;
-                    ws_issuelist = ws_buglist;
-                    return ExcelStatus.OK;
-                }
-            }
-            catch 
-            {
-                return ExcelStatus.EX_OpenIssueListWorksheet;
-            }
-
-            // Not needed because never reaching here
-            //return ExcelStatus.ERR_NOT_DEFINED;
-        }
-
-        static public ExcelStatus CloseIssueListExcel()
-        {
-            try
-            {
-                if (IssueListExcel == null)
-                {
-                    return ExcelStatus.ERR_CloseIssueListExcel_close_null;
-                }
-                ExcelAction.CloseExcelWithoutSaveChanges(IssueListExcel);
-                ws_issuelist = null;
-                IssueListExcel = null;
-                return ExcelStatus.OK;
-            }
-            catch
-            {
-                ws_issuelist = null;
-                IssueListExcel = null;
-                return ExcelStatus.EX_CloseIssueListWorksheet;
-            }
-        }
-
-        static public ExcelStatus SaveChangesAndCloseIssueListExcel(String dest_filename)
-        {
-            try
-            {
-                if (IssueListExcel == null)
-                {
-                    return ExcelStatus.ERR_SaveChangesAndCloseIssueListExcel_close_null;
-                }
-                ExcelAction.SaveChangesAndCloseExcel(IssueListExcel, dest_filename);
-                ws_issuelist = null;
-                IssueListExcel = null;
-                return ExcelStatus.OK;
-            }
-            catch
-            {
-                ws_issuelist = null;
-                IssueListExcel = null;
-                return ExcelStatus.EX_SaveChangesAndCloseIssueListExcel;
-            }
-        }
-*/
 
         static public ExcelStatus OpenIssueListExcel(String buglist_filename)
         {
@@ -463,7 +384,7 @@ namespace ExcelReportApplication
 
                 if (wb_issuelist == null)
                 {
-                    return ExcelStatus.ERR_OpenIssueListExcel_OpenPreviousExcel;
+                    return ExcelStatus.ERR_OpenIssueListExcel_OpenExcelWorkbook;
                 }
 
                 Worksheet ws_buglist = ExcelAction.Find_Worksheet(excel_app, IssueList.SheetName);
@@ -493,7 +414,7 @@ namespace ExcelReportApplication
             {
                 if (workbook_issuelist == null)
                 {
-                    return ExcelStatus.ERR_CloseTestCaseExcel_close_null;
+                    return ExcelStatus.ERR_CloseIssueListExcel_wb_null;
                 }
                 ExcelAction.CloseExcelWorkbook(workbook_issuelist, SaveChanges: false);
                 ws_issuelist = null;
@@ -504,7 +425,7 @@ namespace ExcelReportApplication
             {
                 ws_issuelist = null;
                 workbook_issuelist = null;
-                return ExcelStatus.EX_CloseIssueListWorksheet;
+                return ExcelStatus.EX_CloseIssueListExcel;
             }
         }
 
@@ -514,7 +435,7 @@ namespace ExcelReportApplication
             {
                 if (workbook_issuelist == null)
                 {
-                    return ExcelStatus.ERR_SaveChangesAndCloseIssueListExcel_close_null;
+                    return ExcelStatus.ERR_SaveChangesAndCloseIssueListExcel_wb_null;
                 }
                 ExcelAction.CloseExcelWorkbook(workbook_issuelist, SaveChanges: true, AsFilename: dest_filename);
                 ws_issuelist = null;
@@ -529,124 +450,7 @@ namespace ExcelReportApplication
             }
         }
 
-
-        
         // Excel Open/Close/Save for Test Case Excel
-
-        /*
-        static public ExcelStatus OpenTestCaseExcel(String tclist_filename, bool IsTemplate = false)
-        {
-            try
-            {
-                Excel.Application myTCExcel;
-                if (IsTemplate == false)
-                {
-                    // Open excel (read-only & corrupt-load)
-                    myTCExcel = ExcelAction.OpenPreviousExcel(tclist_filename);
-                }
-                else
-                {
-                    myTCExcel = ExcelAction.OpenOridnaryExcel(tclist_filename);
-                }
-
-                if (myTCExcel == null)
-                {
-                    return ExcelStatus.ERR_OpenTestCaseExcel_OpenPreviousExcel;
-                }
-
-                Worksheet ws_tclist = ExcelAction.Find_Worksheet(myTCExcel, TestCase.SheetName);
-                if (ws_tclist == null)
-                {
-                    return ExcelStatus.ERR_OpenTestCaseExcel_Find_Worksheet;
-                }
-                else
-                {
-                    if (IsTemplate == false)
-                    {
-                        TestCaseExcel = myTCExcel;
-                        ws_testcase = ws_tclist;
-                    }
-                    else
-                    {
-                        TestCaseTemplateExcel = myTCExcel;
-                        ws_tc_template = ws_tclist;
-                    }
-                    return ExcelStatus.OK;
-                }
-            }
-            catch
-            {
-                return ExcelStatus.EX_OpenTestCaseWorksheet;
-            }
-
-            // Not needed because never reaching here
-            //return ExcelStatus.ERR_NOT_DEFINED;
-        }
-
-        static public ExcelStatus CloseTestCaseExcel(bool IsTemplate = false)
-        {
-            try
-            {
-                if (IsTemplate == false)
-                {
-                    if (TestCaseExcel == null)
-                    {
-                        return ExcelStatus.ERR_CloseTestCaseExcel_close_null;
-                    }
-                    ExcelAction.CloseExcelWithoutSaveChanges(TestCaseExcel);
-                    ws_testcase = null;
-                    TestCaseExcel = null;
-                }
-                else
-                {
-                    if (TestCaseTemplateExcel == null)
-                    {
-                        return ExcelStatus.ERR_CloseTestCaseExcel_close_null;
-                    }
-                    ExcelAction.CloseExcelWithoutSaveChanges(TestCaseTemplateExcel);
-                    ws_tc_template = null;
-                    TestCaseTemplateExcel = null;
-                }
-                return ExcelStatus.OK;
-            }
-            catch
-            {
-                return ExcelStatus.EX_CloseTestCaseWorksheet;
-            }
-        }
-
-        static public ExcelStatus SaveChangesAndCloseTestCaseExcel(String dest_filename, bool IsTemplate = false)
-        {
-            try
-            {
-                if (IsTemplate == false)
-                {
-                    if (TestCaseExcel == null)
-                    {
-                        return ExcelStatus.ERR_SaveChangesAndCloseTestCaseExcel_close_null;
-                    }
-                    ExcelAction.SaveChangesAndCloseExcel(TestCaseExcel, dest_filename);
-                    ws_testcase = null;
-                    TestCaseExcel = null;
-                }
-                else
-                {
-                    if (TestCaseTemplateExcel == null)
-                    {
-                        return ExcelStatus.ERR_SaveChangesAndCloseTestCaseExcel_close_null;
-                    }
-                    ExcelAction.SaveChangesAndCloseExcel(TestCaseTemplateExcel, dest_filename);
-                    ws_tc_template = null;
-                    TestCaseTemplateExcel = null;
-                }
-                return ExcelStatus.OK;
-            }
-            catch
-            {
-                return ExcelStatus.EX_SaveChangesAndCloseTestCaseExcel;
-            }
-        }
-        */
 
         static public ExcelStatus OpenTestCaseExcel(String tclist_filename, bool IsTemplate = false)
         {
@@ -705,7 +509,7 @@ namespace ExcelReportApplication
                 {
                     if (workbook_testcase == null)
                     {
-                        return ExcelStatus.ERR_CloseTestCaseExcel_close_null;
+                        return ExcelStatus.ERR_CloseTestCaseExcel_wb_null;
                     }
                     ExcelAction.CloseExcelWorkbook(workbook_testcase, SaveChanges: false);
                     ws_testcase = null;
@@ -715,7 +519,7 @@ namespace ExcelReportApplication
                 {
                     if (workbook_tc_template == null)
                     {
-                        return ExcelStatus.ERR_CloseTestCaseExcel_close_null;
+                        return ExcelStatus.ERR_CloseTestCaseExcel_wb_null;
                     }
                     ExcelAction.CloseExcelWorkbook(workbook_tc_template, SaveChanges: false);
                     ws_tc_template = null;
@@ -737,7 +541,7 @@ namespace ExcelReportApplication
                 {
                     if (workbook_testcase == null)
                     {
-                        return ExcelStatus.ERR_SaveChangesAndCloseTestCaseExcel_close_null;
+                        return ExcelStatus.ERR_SaveChangesAndCloseTestCaseExcel_wb_null;
                     }
                     ExcelAction.CloseExcelWorkbook(workbook_testcase, SaveChanges: true, AsFilename: dest_filename);
                     ws_testcase = null;
@@ -747,7 +551,7 @@ namespace ExcelReportApplication
                 {
                     if (workbook_tc_template == null)
                     {
-                        return ExcelStatus.ERR_SaveChangesAndCloseTestCaseExcel_close_null;
+                        return ExcelStatus.ERR_SaveChangesAndCloseTestCaseExcel_wb_null;
                     }
                     ExcelAction.CloseExcelWorkbook(workbook_tc_template, SaveChanges: true, AsFilename: dest_filename);
                     ws_tc_template = null;
