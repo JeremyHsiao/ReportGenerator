@@ -182,8 +182,8 @@ namespace ExcelReportApplication
             int col_end = GetWorksheetAllRange(ws).Column;
             for (int col_index = 1; col_index <= col_end; col_index++)
             {
-                Object cell_value2 = ws.Cells[naming_row, col_index].Value2;
-                if (cell_value2 == null) { continue; }
+                String cell_value2 = GetCellTrimmedString(ws, naming_row, col_index);
+                if (cell_value2 == "") { continue; }
                 col_name_list.Add(cell_value2.ToString(), col_index);
             }
 
