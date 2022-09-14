@@ -165,6 +165,16 @@ namespace ExcelReportApplication
             ws.Columns[at_col].Insert();
         }
 
+        static public void Insert_Row(Worksheet ws, int at_row)
+        {
+            ws.Rows[at_row].Insert();
+        }
+
+        static public void Delete_Row(Worksheet ws, int at_row)
+        {
+            ws.Rows[at_row].Delete();
+        }
+
         static public Dictionary<string, int> CreateTableColumnIndex(Worksheet ws, int naming_row)
         {
             Dictionary<string, int> col_name_list = new Dictionary<string, int>();
@@ -565,14 +575,36 @@ namespace ExcelReportApplication
             }
         }
 
+        // Copy Value2 of single cell or a range of cells
+
+        static private void CopyValue2(Worksheet src, Worksheet dst, int ul_row, int ul_col)
+        {
+            Range Src = src.Cells[ul_row, ul_col];
+            Range Dst = dst.Cells[ul_row, ul_col];
+            Dst.Value2 = Src.Value2;
+        }
+
+        static private void CopyValue2(Worksheet src, Worksheet dst, int ul_row, int ul_col, int br_row, int br_col)
+        {
+            Range Src = src.Range[src.Cells[ul_row, ul_col], src.Cells[br_row, br_col]];
+            Range Dst = dst.Range[dst.Cells[ul_row, ul_col], dst.Cells[br_row, br_col]];
+            Dst.Value2 = Src.Value2;
+        }
+
+        // Copy value2 of Test-Case Excel (tc_data) to Test-Case-Template Excel.
+        // Result: Test-Case Excel data shown in the format of Test-Case-Template
         static public bool CopyTestCaseIntoTemplate()
         {
-            // Protection
-            if (ws_testcase == null) { return false; }
-            if (ws_tc_template == null) { return false; }
+            Worksheet tc_data       = ws_testcase,
+                      tc_template = ws_tc_template;
 
-            Range Src = GetWorksheetAllRange(ws_testcase);
-            Range Dst = GetWorksheetAllRange(ws_tc_template);
+            // Protection
+            if (tc_data == null) { return false; }
+            if (tc_template == null) { return false; }
+
+            Worksheet ws_Src = tc_data, ws_Dst = tc_template;
+            Range Src = GetWorksheetAllRange(ws_Src);
+            Range Dst = GetWorksheetAllRange(ws_Dst);
             int Src_last_row = Src.Row, Src_last_col = Src.Column;
             int Dst_last_row = Dst.Row, Dst_last_col = Dst.Column;
 
@@ -583,7 +615,7 @@ namespace ExcelReportApplication
                 int rows_to_insert = Src_last_row - Dst_last_row;
                 do
                 {
-                    ws_tc_template.Rows[TestCase.DataBeginRow + 1].Insert();
+                    Insert_Row(ws_Dst, TestCase.DataBeginRow + 1);
                 }
                 while (--rows_to_insert > 0);
             }
@@ -593,30 +625,22 @@ namespace ExcelReportApplication
                 int rows_to_delete = Dst_last_row - Src_last_row;
                 do
                 {
-                    ws_tc_template.Rows[TestCase.DataBeginRow].Delete();
+                    Delete_Row(ws_Dst, TestCase.DataBeginRow);
                 }
                 while (--rows_to_delete > 0);
             }
 
             // Copy [3,1] from tc to template
-            Src = ws_testcase.Cells[3, 1];
-            Dst = ws_tc_template.Cells[3, 1];
-            Dst.Value2 = Src.Value2;
+            CopyValue2(ws_Src, ws_Dst, 3, 1);
 
             // Copy row 4 (Column Name) from tc to template
-            Src = ws_testcase.Range[ws_testcase.Cells[TestCase.NameDefinitionRow, 1], ws_testcase.Cells[TestCase.NameDefinitionRow, Src_last_col]];
-            Dst = ws_tc_template.Range[ws_tc_template.Cells[TestCase.NameDefinitionRow, 1], ws_tc_template.Cells[TestCase.NameDefinitionRow, Src_last_col]];
-            Dst.Value2 = Src.Value2;
+            CopyValue2(ws_Src, ws_Dst, TestCase.NameDefinitionRow, 1, TestCase.NameDefinitionRow, Src_last_col );
 
             // Copy [Src_last_row,1] from tc to template
-            Src = ws_testcase.Cells[Src_last_row, 1];
-            Dst = ws_tc_template.Cells[Src_last_row, 1];
-            Dst.Value2 = Src.Value2;
+            CopyValue2(ws_Src, ws_Dst, Src_last_row, 1);
 
             // Copy the rest of data
-            Src = ws_testcase.Range[ws_testcase.Cells[TestCase.DataBeginRow, 1], ws_testcase.Cells[Src_last_row - 1, Src_last_col]];
-            Dst = ws_tc_template.Range[ws_tc_template.Cells[TestCase.DataBeginRow, 1], ws_tc_template.Cells[Src_last_row - 1, Src_last_col]];
-            Dst.Value2 = Src.Value2;
+            CopyValue2(ws_Src, ws_Dst, TestCase.DataBeginRow, 1, Src_last_row - 1, Src_last_col);
 
             return true;
         }
