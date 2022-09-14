@@ -154,7 +154,8 @@ namespace ExcelReportApplication
             // This full issue description is needed for report purpose
             ReportGenerator.global_full_issue_description_list = IssueList.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
 
-            ReportGenerator.WriteBacktoTCJiraExcel(tc_file);
+//            ReportGenerator.WriteBacktoTCJiraExcel(tc_file);
+            ReportGenerator.WriteBacktoTCJiraExcelV2(tc_file, template_file);
             return true;
         }
 

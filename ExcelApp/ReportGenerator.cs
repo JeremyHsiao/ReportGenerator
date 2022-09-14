@@ -110,7 +110,6 @@ namespace ExcelReportApplication
             return GetReportDescription(ReportTypeToInt(type));
         }
 
-
         // 
         // This demo open Test Case Excel and replace Issue ID on Linked Issue column with ID+Summary+Severity+RD_Comment
         //
@@ -151,6 +150,62 @@ namespace ExcelReportApplication
             ExcelAction.CloseTestCaseExcel();
         }
 
+        // This version open Test Case Excel and copy content into template file and replace Issue ID on Linked Issue column with ID+Summary+Severity+RD_Comment
+        static public void WriteBacktoTCJiraExcelV2(String tclist_filename, String template_filename)
+        {
+            // Open original excel (read-only & corrupt-load) and write to another filename when closed
+            ExcelAction.ExcelStatus status;
+            
+            status = ExcelAction.OpenTestCaseExcel(tclist_filename);
+            if (status != ExcelAction.ExcelStatus.OK)
+            {
+                ExcelAction.CloseTestCaseExcel();
+                return; // to-be-checked if here
+            }
+
+            // 2. open test case template
+            status = ExcelAction.OpenTestCaseExcel(template_filename, IsTemplate: true);
+            if (status != ExcelAction.ExcelStatus.OK)
+            {
+                ExcelAction.CloseTestCaseExcel();
+                return; // to-be-checked if here
+            }
+
+            // 3. Copy test case data into template excel -- both will have the same row/col and (almost) same data
+            ExcelAction.CopyTestCaseIntoTemplate();
+
+            // 4. Prepare data on test case excel and write into test-case (template)
+            Dictionary<string, int> col_name_list = ExcelAction.CreateTestCaseColumnIndex();
+            int key_col = col_name_list[TestCase.col_Key];
+            int links_col = col_name_list[TestCase.col_LinkedIssue];
+            int last_row = ExcelAction.GetTestCaseAllRange().Row;
+            // Visit all rows and replace Bug-ID at Linked Issue with long description of Bug.
+            for (int index = TestCase.DataBeginRow; index <= last_row; index++)
+            {
+                // Make sure Key of TC contains KeyPrefix
+                String key = ExcelAction.GetTestCaseCellTrimmedString(index, key_col);
+                if (key.Contains(TestCase.KeyPrefix) == false) { break; } // If not a TC key in this row, go to next row
+
+                // If Links is not empty, extend bug key into long string with font settings
+                String links = ExcelAction.GetTestCaseCellTrimmedString(index, links_col);
+                if (links != "")
+                {
+                    List<StyleString> str_list = StyleString.ExtendIssueDescription(links, global_full_issue_description_list);
+                    // write into template excel
+                    ExcelAction.TestCase_WriteStyleString(index, links_col, str_list, IsTemplate: true);
+                }
+            }
+
+            // 5. auto-fit-height of column links
+            ExcelAction.TestCase_AutoFit_Column(links_col, IsTemplate: true);
+
+            // 6. Write to another filename with datetime
+            string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename, FileExt: ".xlsx");
+            ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
+            
+            // Close Test Case Excel
+            ExcelAction.CloseTestCaseExcel();
+        }
 
         // 
         // This demo open Summary Report Excel and write to Notes with all issues beloging to this test group (issue written in ID+Summary+Severity+RD_Comment)
@@ -330,9 +385,9 @@ namespace ExcelReportApplication
                 {
                     // 3. Copy test case data into template excel -- both will have the same row/col and (almost) same data
                     ExcelAction.CopyTestCaseIntoTemplate();
-                    ExcelAction.CloseTestCaseExcel();
+                    ExcelAction.CloseTestCaseExcel();           // original test case excel is to be closed.
 
-                    // 4. Excel processing on template excel
+                    // 4. Excel processing on template excel file
                     Dictionary<string, int> col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate:true);
                     int DataEndRow = ExcelAction.GetTestCaseAllRange(IsTemplate: true).Row;
                     int key_col = col_name_list[TestCase.col_Key];
@@ -371,7 +426,7 @@ namespace ExcelReportApplication
                     }
 
                     // Save Template file as another filename (testcase filename with datetime & as .xlsx)
-                    string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename, ".xlsx");
+                    string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename, FileExt: ".xlsx");
                     ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
                 }
             }
