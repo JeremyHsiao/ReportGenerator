@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Microsoft.Office.Interop.Excel;
 using Excel = Microsoft.Office.Interop.Excel;
-using System.IO;
 
 namespace ExcelReportApplication
 {
@@ -35,44 +34,40 @@ namespace ExcelReportApplication
             ret_testplan = TestPlan.LoadTestPlanSheet(result_ws);
 
             ExcelAction.CloseExcelWorkbook(wb_testplan);
+
+            // prepare addtional data (not part of Test Plan but required for accessing excel)
+            foreach (TestPlan tp in ret_testplan)
+            {
+                String group = tp.Group, summary = tp.Summary, do_or_not = tp.DoOrNot, subpart = tp.Subpart;
+                String sheet = summary.Substring(0, summary.IndexOf('_'));      // ex: A.1.1_OSD ==> A.1.1
+                String src = sheet + ".xlsx";                                   // ex: A.1.1 + .xlsx ==> A.1.1.xlsx
+                tp.BackupSource = src;
+                String dst = group + @"\" + summary + "_" + subpart + ".xlsx";  // A.1.1_OSD ==> group\A.1.1_OSD_All.xlsx
+                tp.ExcelFile = dst;
+                tp.ExcelSheet = sheet;
+            }
+ 
             return ret_testplan;
         }
 
-        public static void GenerateTestReportStructure(List<TestPlan> read_testplan, String report_src_dir, String report_dest_dir)
+        public static void GenerateTestReportStructure(List<TestPlan> do_plan, String in_root, String out_root)
         {
             // if testplan is not read yet, return
-            if (read_testplan == null) { return; }
-            // if src not exist, return
-            if (!FileFunction.DirectoryExists(report_src_dir)) { return; }
-            // dest_dir must be inexist
-            if (FileFunction.DirectoryExists(report_dest_dir)) { return; }
+            if (do_plan == null) { return; }
+            if (!FileFunction.DirectoryExists(out_root)) { return; }
 
-            // Create a list of folder to be created and files to be copied (from/to)
-            // filtered by Do or Not
-            List<String> folder = new List<String>(), from = new List<String>(), to = new List<String>();
-            foreach (TestPlan tp in read_testplan)
+            List<String> folder = new List<String> ();
+            foreach (TestPlan tp in do_plan)
             {
-                String group = tp.Group, summary = tp.Summary, do_or_not = tp.DoOrNot, subpart = tp.Subpart;
-                if (do_or_not == "V")
-                {
-                    if (!folder.Contains(group)) { folder.Add(group); }
-                    from.Add(summary.Substring(0, summary.IndexOf('_')) + ".xlsx");
-                    to.Add(group + @"\" + summary + "_" + subpart + ".xlsx");
+                String dst = out_root + @"\" + tp.ExcelFile;
+                String dst_dir = FileFunction.GetDirectoryName(dst);
+                if (!FileFunction.DirectoryExists(dst_dir)) 
+                { 
+                    FileFunction.CreateDirectory(dst_dir);
                 }
-            }
 
-            Directory.CreateDirectory(report_dest_dir);
-            foreach (String folder_name in folder)
-            {
-                Directory.CreateDirectory(report_dest_dir + @"\" + folder_name);
-            }
-
-            // Copy files
-            for (int index = 0; index < from.Count; index++)
-            {
-                String src = report_src_dir + @"\" + from[index];
-                String dest = report_dest_dir + @"\" + to[index];
-                File.Copy(src, dest);
+                String src = in_root + @"\" + tp.BackupSource;
+                FileFunction.Copy(src, dst);
             }
         }
 
@@ -101,12 +96,13 @@ namespace ExcelReportApplication
             if (FileFunction.DirectoryExists(output_report_dir)) { return false; } // shouln't exist
 
             // read test-plan sheet NG and return if NG
-            List<TestPlan> testplan = new List<TestPlan>();
-            testplan = TestReport.ReadTestPlanFromStandardTestReport(filename);
+            List<TestPlan> testplan = TestReport.ReadTestPlanFromStandardTestReport(filename);
             if (testplan == null) { return false; }
 
             // all input parameters has been checked successfully, so generate
-            TestReport.GenerateTestReportStructure(testplan, input_report_dir, output_report_dir);
+            List<TestPlan> do_plan = TestPlan.ListDoPlan(testplan);
+            FileFunction.CreateDirectory(output_report_dir); // create output root-dir
+            TestReport.GenerateTestReportStructure(do_plan, input_report_dir, output_report_dir);
             return true;
         }
 
@@ -123,7 +119,7 @@ namespace ExcelReportApplication
             //
 
             String full_filename = FileFunction.GetFullPath(report_filename);
-            String short_filename = Path.GetFileName(full_filename);
+            String short_filename = FileFunction.GetFileName(full_filename);
             String sheet_name = short_filename.Substring(0, short_filename.IndexOf("_"));
 
             // File exist check is done outside
@@ -145,13 +141,11 @@ namespace ExcelReportApplication
             //
             // 2. Find out Printable Area
             //
-
-            int row_print_area, column_print_area;
             // Assummed that Printable area always starting at $A$1 (also data processing area)
             // So excel data processing area ends at Printable area (row_count,col_count)
             Range rngPrintable = ExcelAction.GetWorksheetPrintableRange(result_worksheet);
-            row_print_area = rngPrintable.Rows.Count;
-            column_print_area = rngPrintable.Columns.Count;
+            int row_print_area = rngPrintable.Rows.Count;
+            int column_print_area = rngPrintable.Columns.Count;
 
             //
             // 3. Find out all keywords and create LUT (keyword,row_index)

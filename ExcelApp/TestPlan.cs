@@ -16,6 +16,11 @@ namespace ExcelReportApplication
         private String category;
         private String subpart;
 
+        // The following members will be used but not part of the test plan in Standard Test Report. (out-of-band data)
+        private String from;
+        private String path;
+        private String sheet;
+
         public String Group   // property
         {
             get { return group; }   // get method
@@ -52,6 +57,24 @@ namespace ExcelReportApplication
             set { subpart = value; }  // set method
         }
 
+        public String BackupSource   // property
+        {
+            get { return from; }   // get method
+            set { from = value; }  // set method
+        }
+
+        public String ExcelSheet   // property
+        {
+            get { return sheet; }   // get method
+            set { sheet = value; }  // set method
+        }
+
+        public String ExcelFile   // property
+        {
+            get { return path; }   // get method
+            set { path = value; }  // set method
+        }
+
         public TestPlan()
         {
         }
@@ -74,8 +97,9 @@ namespace ExcelReportApplication
             DO_OR_NOT,
             CATEGORY,
             SUBPART,
-            MAX_NO
         }
+
+        public static int TestPlanMemberCount = Enum.GetNames(typeof(TestPlanMemberIndex)).Length;
 
         public const string col_Group = "Test Group";
         public const string col_Summary = "Summary";
@@ -89,6 +113,19 @@ namespace ExcelReportApplication
         static public int NameDefinitionRow_TestPlan = 2;
         static public int DataBeginRow_TestPlan = 3;
 
+        public static List<TestPlan> ListDoPlan(List<TestPlan> testplan)
+        {
+            List<TestPlan> do_plan = new List<TestPlan>();
+            foreach (TestPlan tp in testplan)
+            {
+                if (tp.DoOrNot == "V")
+                {
+                    do_plan.Add(tp);
+                }
+            }
+            return do_plan;
+        }
+
         public static List<TestPlan> LoadTestPlanSheet(Worksheet testplan_ws)
         {
             List<TestPlan> ret_testplan = new List<TestPlan>();
@@ -97,14 +134,13 @@ namespace ExcelReportApplication
             Dictionary<string, int> col_name_list = ExcelAction.CreateTableColumnIndex(testplan_ws, NameDefinitionRow_TestPlan);
 
             // Get the last (row,col) of excel
-            Range rngLast = testplan_ws.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
-
+            Range rngLast = ExcelAction.GetWorksheetAllRange(testplan_ws);
             int row_end = rngLast.Row;
             // Visit all rows and add content 
             for (int index = DataBeginRow_TestPlan; index <= row_end; index++)
             {
                 List<String> members = new List<String>();
-                for (int member_index = 0; member_index < (int)TestPlanMemberIndex.MAX_NO; member_index++)
+                for (int member_index = 0; member_index < TestPlanMemberCount; member_index++)
                 {
                     int col_index = col_name_list[TestPlanMemberColumnName[member_index]];
                     String str = ExcelAction.GetCellTrimmedString(testplan_ws, index, col_index);
@@ -114,7 +150,7 @@ namespace ExcelReportApplication
                     }
                     members.Add(str);
                 }
-                if (members.Count == (int)TestPlanMemberIndex.MAX_NO)
+                if (members.Count == TestPlanMemberCount)
                 {
                     TestPlan tp = new TestPlan(members);
                     ret_testplan.Add(tp);
