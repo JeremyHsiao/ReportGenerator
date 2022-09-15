@@ -218,7 +218,7 @@ namespace ExcelReportApplication
 
                 // Visit all rows and add content of IssueList
                 int ExcelLastRow = ExcelAction.GetIssueListAllRange().Row;
-                for (int index = DataBeginRow; index <= ExcelAction.GetIssueListAllRange().Row; index++)
+                for (int index = DataBeginRow; index <= (ExcelLastRow-1); index++)  // Issue list until LastRow-1
                 {
                     List<String> members = new List<String>();
                     for (int member_index = 0; member_index < IssueListMemberCount; member_index++)
