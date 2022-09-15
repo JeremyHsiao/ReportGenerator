@@ -92,6 +92,7 @@ namespace ExcelReportApplication
         {
             return UsesrSelectFilename(init_dir: GetCurrentDirectory());
         }
+
         static public String UsesrSelectFilename(String init_dir)
         {
             return UsesrSelectFilename(title: "Select a file", init_dir: init_dir, multiple: false)[0];
@@ -111,6 +112,11 @@ namespace ExcelReportApplication
             return ret;
         }
 
+        static public void Copy (String src, String dst)
+        {   
+            File.Copy(src,dst);
+        }
+
         static public bool DirectoryExists(String dir)
         {
             bool ret;
@@ -123,6 +129,11 @@ namespace ExcelReportApplication
                 ret = true;
             }
             return ret;
+        }
+
+        static public DirectoryInfo CreateDirectory(String dir)
+        {
+            return Directory.CreateDirectory(dir);
         }
 
         static public String GetDirectoryName(String Filename)
@@ -145,6 +156,21 @@ namespace ExcelReportApplication
             try
             {
                 ret = Path.GetFullPath(Filename);
+            }
+            catch
+            {
+                // "" will be returned if exceptions
+            }
+            return ret;
+        }
+
+
+        static public String GetFileName(String Filename)
+        {
+            String ret = "";
+            try
+            {
+                ret = Path.GetFileName(Filename);
             }
             catch
             {
