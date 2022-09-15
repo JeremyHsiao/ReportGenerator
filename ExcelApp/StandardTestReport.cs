@@ -152,7 +152,7 @@ namespace ExcelReportApplication
             //    output:  LUT (keyword,row_index)
             //
             const int row_test_detail_start = 27;
-            const String identifier_str = "Test Item";
+            const String identifier_str = "Item";
             // Read report file for keyword & its row and store into keyword/row dictionary
             // Search keyword within printable area
             Dictionary<String, int> KeywordAtRow = new Dictionary<String, int>();
@@ -161,7 +161,7 @@ namespace ExcelReportApplication
                 String cell_text = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, col_indentifier);
                 if (cell_text == "") continue;
                 if ((cell_text.Length > identifier_str.Length) &&
-                    String.Equals(cell_text.Substring(0, identifier_str.Length), identifier_str, StringComparison.OrdinalIgnoreCase))
+                    (cell_text.ToLowerInvariant().Contains(identifier_str.ToLowerInvariant())))
                 {
                     cell_text = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, col_keyword);
                     if (cell_text == "") { ConsoleWarning("Empty Keyword", row_index); continue; }
