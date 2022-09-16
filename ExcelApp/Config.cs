@@ -10,12 +10,44 @@ namespace ExcelReportApplication
 
     class XMLConfig
     {
+        private static String[] DefaultKeyValuePairList =
+        {
+            @"workbook_BUG_Jira",              @".\SampleData\Jira 2022-09-03T10_48.xls", 
+            @"workbook_TC_Jira",               @".\SampleData\TC_Jira 2022-09-03T11_07.xls",
+            @"workbook_Summary",               @".\SampleData\Report_Template.xlsx",
+            @"workbook_StandardTestReport",    @".\SampleData\TestFileFolder\0.0_DQA Test Report\BenQ_Medical_Standard Test Report.xlsx",
+            @"Excel_Visible",                  @"true",
+            @"Issue_Key_Prefix",               @"-",
+            @"Issue_SheetName",                @"general_report",
+            @"Issue_Row_NameDefine",           @"4",
+            @"Issue_Row_DataBegin",            @"5",
+            @"TC_Key_Prefix",                  @"TC",
+            @"TC_SheetName",                   @"general_report",
+            @"TC_Row_NameDefine",              @"4",
+            @"TC_Row_DataBegin",               @"5",
+            @"workbook_TC_Template",           @".\SampleData\TC_Jira_Template.xlsx",
+        };
+
         public static String ReadAppSetting(string key)
         {
             try
             {
                 var appSettings = ConfigurationManager.AppSettings; 
-                String result = appSettings[key] ?? "";
+                String result  = appSettings[key];
+
+                // if key not found --> return default value for those listed on the DefaultKeyValuePairList
+                if (result == null)
+                {
+                    result = "";
+                    for (int index = 0; index < DefaultKeyValuePairList.Count(); index += 2)
+                    {
+                        if (DefaultKeyValuePairList[index] == key)
+                        {
+                            result = DefaultKeyValuePairList[index + 1];
+                            break;
+                        }
+                    }
+                }
                 return result;
             }
             catch (ConfigurationErrorsException)
