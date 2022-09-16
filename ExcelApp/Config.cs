@@ -28,7 +28,22 @@ namespace ExcelReportApplication
             @"workbook_TC_Template",           @".\SampleData\TC_Jira_Template.xlsx",
         };
 
-        public static String ReadAppSetting(string key)
+        public static String GetDefaultValue(String key)
+        {
+            String result = "";
+
+            for (int index = 0; index < DefaultKeyValuePairList.Count(); index += 2)
+            {
+                if (DefaultKeyValuePairList[index] == key)
+                {
+                    result = DefaultKeyValuePairList[index + 1];
+                    return result;
+                }
+            }
+            return result;
+        }
+
+        public static String ReadAppSetting(String key)
         {
             try
             {
@@ -36,23 +51,12 @@ namespace ExcelReportApplication
                 String result  = appSettings[key];
 
                 // if key not found --> return default value for those listed on the DefaultKeyValuePairList
-                if (result == null)
-                {
-                    result = "";
-                    for (int index = 0; index < DefaultKeyValuePairList.Count(); index += 2)
-                    {
-                        if (DefaultKeyValuePairList[index] == key)
-                        {
-                            result = DefaultKeyValuePairList[index + 1];
-                            break;
-                        }
-                    }
-                }
-                return result;
+                if (result == null) return GetDefaultValue(key);
+                else return result;
             }
             catch (ConfigurationErrorsException)
             {
-                return "";
+                return GetDefaultValue(key);
             }
         }
 
