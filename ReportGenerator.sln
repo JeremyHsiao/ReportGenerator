@@ -1,20 +1,31 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C# Express 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportGenerator", "ExcelApp\ReportGenerator.csproj", "{36BE799F-8269-4FB4-A4BB-EB0421A6A3F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{36BE799F-8269-4FB4-A4BB-EB0421A6A3F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36BE799F-8269-4FB4-A4BB-EB0421A6A3F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36BE799F-8269-4FB4-A4BB-EB0421A6A3F4}.Debug|x86.ActiveCfg = Debug|x86
 		{36BE799F-8269-4FB4-A4BB-EB0421A6A3F4}.Debug|x86.Build.0 = Debug|x86
+		{36BE799F-8269-4FB4-A4BB-EB0421A6A3F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36BE799F-8269-4FB4-A4BB-EB0421A6A3F4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{36BE799F-8269-4FB4-A4BB-EB0421A6A3F4}.Release|x86.ActiveCfg = Release|x86
 		{36BE799F-8269-4FB4-A4BB-EB0421A6A3F4}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E98E8BC5-5A05-4E12-A660-084620CED756}
 	EndGlobalSection
 EndGlobal
