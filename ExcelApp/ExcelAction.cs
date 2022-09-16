@@ -28,6 +28,7 @@ namespace ExcelReportApplication
             excel_app = new Excel.Application();
             excel_app.Visible = ExcelVisible;
             excel_app.Caption = "DQA Report Generator";
+            excel_app.DisplayAlerts = false;
         }
 
         static public Workbook OpenExcelWorkbook(String filename, bool ReadOnly = true, bool XLS = false, bool UpdateLinks = false)
