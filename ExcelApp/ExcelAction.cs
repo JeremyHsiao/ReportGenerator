@@ -398,7 +398,7 @@ namespace ExcelReportApplication
                     return ExcelStatus.ERR_OpenIssueListExcel_OpenExcelWorkbook;
                 }
 
-                Worksheet ws_buglist = ExcelAction.Find_Worksheet(excel_app, IssueList.SheetName);
+                Worksheet ws_buglist = ExcelAction.Find_Worksheet(wb_issuelist, IssueList.SheetName);
                 if (ws_buglist == null)
                 {
                     return ExcelStatus.ERR_OpenIssueListExcel_Find_Worksheet;
@@ -483,7 +483,7 @@ namespace ExcelReportApplication
                     return ExcelStatus.ERR_OpenTestCaseExcel_OpenExcelWorkbook;
                 }
 
-                Worksheet ws_tclist = ExcelAction.Find_Worksheet(excel_app, TestCase.SheetName);
+                Worksheet ws_tclist = ExcelAction.Find_Worksheet(wb_tc, TestCase.SheetName);
                 if (ws_tclist == null)
                 {
                     return ExcelStatus.ERR_OpenTestCaseExcel_Find_Worksheet;
