@@ -17,12 +17,14 @@ namespace ExcelReportApplication
         static public Dictionary<string, List<StyleString>> global_issue_description_list = new Dictionary<string, List<StyleString>>();
         static public List<TestCase> global_testcase_list = new List<TestCase>();
 
+        // Must be updated if new report type added #NewReportType
         public enum ReportType {
             FullIssueDescription_TC = 0,
             FullIssueDescription_Summary,
             StandardTestReportCreation,
             KeywordIssue_Report,
-            TC_Likely_Passed
+            TC_Likely_Passed,
+            FindAllKeywordInReport,
         }
 
         public static int ReportTypeToInt(ReportType type)
@@ -52,15 +54,18 @@ namespace ExcelReportApplication
             return ReportName.ToList();
         }
 
+        // Must be updated if new report type added #NewReportType
         private static String[] ReportName = new String[] 
         {
             "1.Issue Description for TC",
             "2.Issue Description for Summary",
             "3.Standard Test Report Creator",
             "4.Keyword Issue to Report",
-            "5.TC likely Pass"
+            "5.TC likely Pass",
+            "6.List Keywords of all detailed reports",
         };
 
+        // Must be updated if new report type added #NewReportType
         private static String[][] ReportDescription = new String[][] 
         {
             new String[] 
@@ -92,6 +97,12 @@ namespace ExcelReportApplication
                 "Test case status is Fail but its linked issues are closed", 
                 "Input:",  "  Issue List + Test Case + Template (for Test case output)",
                 "Output:", "  Test Case whose linked issues are closed (other TC are hidden)",
+            },
+            new String[] 
+            {
+                "Go Through all Do-plan to list down all keywords", 
+                "Input:",  "  Main Test Report File",
+                "Output:", "  All keywords listed on output log",
             },
         };
 
