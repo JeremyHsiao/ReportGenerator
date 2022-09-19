@@ -71,7 +71,6 @@ namespace ExcelReportApplication
             }
         }
 
-
         // Assumed folder structure:
         // report_file_path:  report_root/0.0_DQA Test Report/FILENAME.xlsx
         // file_dir:          report_root/0.0_DQA Test Report
@@ -227,6 +226,28 @@ namespace ExcelReportApplication
             return true;
         }
 
+
+
+        public static List<TestPlanKeyword> ListAllDetailedTestPlanKeywordTask(String filename, String report_root_dir)
+        {
+            // Full file name exist checked before executing task
+
+            List<TestPlanKeyword> keyword_list = new List<TestPlanKeyword>();
+
+            // read test-plan sheet NG and return if NG
+            List<TestPlan> testplan = TestReport.ReadTestPlanFromStandardTestReport(filename);
+            if (testplan == null) { return keyword_list; }
+
+            // all input parameters has been checked successfully, so generate
+            List<TestPlan> do_plan = TestPlan.ListDoPlan(testplan);
+            foreach(TestPlan plan in do_plan)
+            {
+                plan.ExcelFile = report_root_dir + @"\" + plan.ExcelFile ;
+            }
+            keyword_list = KeywordReport.ListAllKeyword(do_plan);
+
+            return keyword_list;
+        }
 
         static private void ConsoleWarning(String function, int row)
         {

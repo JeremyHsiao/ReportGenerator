@@ -218,6 +218,27 @@ namespace ExcelReportApplication
             return true;
         }
 
+        private bool Execute_ListAllDetailedTestPlanKeywordTask(String main_file, String report_root)
+        {
+            if (!FileFunction.FileExists(main_file)||!FileFunction.DirectoryExists(report_root))
+            {
+                // protection check
+                return false;
+            }
+
+            List<TestPlanKeyword> keyword_list = TestReport.ListAllDetailedTestPlanKeywordTask(main_file, report_root);
+
+            MsgWindow.AppendText("Keyword list:\n");
+            MsgWindow.AppendText("-------------\n");
+            foreach (TestPlanKeyword keyword in keyword_list)
+            {
+                MsgWindow.AppendText(keyword.Keyword + " @ " + keyword.Worksheet + "(" + keyword.AtRow + ")\n");
+            }
+            MsgWindow.AppendText("-------------\n");
+            return true;
+        }
+
+
         // Because TextBox is set to Read-only, filename can be only changed via File Dialog
         // (1) no need to handle event of TestBox Text changed.
         // (2) filename (full path) is set only after File Dialog OK
@@ -254,13 +275,37 @@ namespace ExcelReportApplication
 
         private void btnSelectReportFile_Click(object sender, EventArgs e)
         {
-            String init_dir = FileFunction.GetFullPath(txtReportFile.Text);
-            String ret_str = FileFunction.UsesrSelectFilename(init_dir: init_dir);
+            int report_index = comboBoxReportSelect.SelectedIndex;
+            bool sel_file = true;
+            switch (ReportGenerator.ReportTypeFromInt(report_index))
+            {
+                case ReportGenerator.ReportType.FindAllKeywordInReport:
+                    sel_file = false;
+                    break;
+            }
+
+            String init_dir = FileFunction.GetFullPath(btnSelectReportFile.Text);
+            String ret_str = SelectDirectoryOrFile(init_dir, sel_file);
             if (ret_str != "")
             {
                 txtReportFile.Text = ret_str;
             }
         }
+
+        private String SelectDirectoryOrFile(String init_text, bool sel_file = true)
+        {
+            String init_dir = FileFunction.GetFullPath(init_text), ret_str;
+            if (sel_file == true)
+            {
+                ret_str = FileFunction.UsesrSelectFilename(init_dir: init_dir);
+            }
+            else
+            {
+                ret_str = FileFunction.UsersSelectDirectory(init_dir: init_dir);
+            }
+            return ret_str;
+        }
+       
 /*
         private void btnGetBugList_Click(object sender, EventArgs e)
         {
@@ -287,6 +332,17 @@ namespace ExcelReportApplication
             if (!FileFunction.FileExists(name))
             {
                 MsgWindow.AppendText( box.Text + "can't be found. Please check again.\n");
+                return;
+            }
+            box.Text = name;
+        }
+
+        private void UpdateTextBoxDirToFullAndCheckExist(ref TextBox box)
+        {
+            String name = FileFunction.GetFullPath(box.Text);
+            if (!FileFunction.DirectoryExists(name))
+            {
+                MsgWindow.AppendText(box.Text + "can't be found. Please check again.\n");
                 return;
             }
             box.Text = name;
@@ -349,7 +405,8 @@ namespace ExcelReportApplication
                     break;
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
-                    //bRet = Execute_CreateStandardTestReportTask(txtStandardTestReport.Text);
+                    UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
+                    bRet = Execute_ListAllDetailedTestPlanKeywordTask(txtStandardTestReport.Text, txtReportFile.Text);
                     break;
                 default:
                     // shouldn't be here.
@@ -446,7 +503,7 @@ namespace ExcelReportApplication
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
                     SetEnable_IssueFile(false);
                     SetEnable_TCFile(false);
-                    SetEnable_OutputFile(false);
+                    SetEnable_OutputFile(true);
                     SetEnable_StandardReport(true);
                     break;
                 default:
@@ -477,6 +534,10 @@ namespace ExcelReportApplication
                     txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Template");
                     break;
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
+                    String filename = XMLConfig.ReadAppSetting("workbook_StandardTestReport");
+                    String file_dir = FileFunction.GetDirectoryName(filename);
+                    String report_root_dir = FileFunction.GetDirectoryName(file_dir);
+                    this.txtReportFile.Text = report_root_dir;
                     break;
                 default:
                     break;
