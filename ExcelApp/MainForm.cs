@@ -310,6 +310,7 @@ namespace ExcelReportApplication
 
             ExcelAction.OpenExcelApp();
 
+            // Must be updated if new report type added #NewReportType
             switch (ReportGenerator.ReportTypeFromInt(report_index))
             {
                 case ReportGenerator.ReportType.FullIssueDescription_TC:
@@ -345,6 +346,10 @@ namespace ExcelReportApplication
                     if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                     if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
                     bRet = Execute_FindFailTCLinkedIssueAllClosed(txtTCFile.Text, txtReportFile.Text);
+                    break;
+                case ReportGenerator.ReportType.FindAllKeywordInReport:
+                    UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
+                    //bRet = Execute_CreateStandardTestReportTask(txtStandardTestReport.Text);
                     break;
                 default:
                     // shouldn't be here.
@@ -405,6 +410,7 @@ namespace ExcelReportApplication
 
         private void UpdateFilenameBoxUIForReportType(int ReportIndex)
         {
+            // Must be updated if new report type added #NewReportType
             switch (ReportGenerator.ReportTypeFromInt(ReportIndex))
             {
                 case ReportGenerator.ReportType.FullIssueDescription_TC: // "1.Issue Description for TC"
@@ -437,6 +443,12 @@ namespace ExcelReportApplication
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
                     break;
+                case ReportGenerator.ReportType.FindAllKeywordInReport:
+                    SetEnable_IssueFile(false);
+                    SetEnable_TCFile(false);
+                    SetEnable_OutputFile(false);
+                    SetEnable_StandardReport(true);
+                    break;
                 default:
                     // Shouldn't be here
                     break;
@@ -447,6 +459,7 @@ namespace ExcelReportApplication
         {
             txtReportInfo.Text = ReportGenerator.GetReportDescription(ReportIndex);
             UpdateFilenameBoxUIForReportType(ReportIndex);
+            // Must be updated if new report type added #NewReportType
             switch (ReportGenerator.ReportTypeFromInt(ReportIndex))
             {
                 case ReportGenerator.ReportType.FullIssueDescription_TC: // "1.Issue Description for TC"
@@ -462,6 +475,8 @@ namespace ExcelReportApplication
                     break;
                 case ReportGenerator.ReportType.TC_Likely_Passed:
                     txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Template");
+                    break;
+                case ReportGenerator.ReportType.FindAllKeywordInReport:
                     break;
                 default:
                     break;
