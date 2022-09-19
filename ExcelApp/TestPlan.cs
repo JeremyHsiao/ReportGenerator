@@ -257,7 +257,7 @@ namespace ExcelReportApplication
         private const int row_test_detail_start = 27;
         private const String identifier_str = "Item";
 
-        public List<TestPlanKeyword>  ListKeyword()
+        public List<TestPlanKeyword> ListKeyword()
         {
             //
             // 2. Find out Printable Area
