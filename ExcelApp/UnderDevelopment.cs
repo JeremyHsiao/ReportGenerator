@@ -10,7 +10,7 @@ namespace ExcelReportApplication
     {
     }
 
-    class TestPlanKeyword
+    public class TestPlanKeyword
     {
         private String keyword;
         private String workbook;
@@ -74,7 +74,25 @@ namespace ExcelReportApplication
             get { return tc_list; }   // get method
             set { tc_list = value; }  // set method
         }
-
-
     }
+
+    public static class KeywordReport
+    {
+        static public List<TestPlanKeyword> ListAllKeyword(List<TestPlan> DoPlan)
+        {
+            List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
+            foreach (TestPlan plan in DoPlan)
+            {
+                plan.OpenDetailExcel();
+                List<TestPlanKeyword> plan_keyword = plan.ListKeyword();
+                plan.CloseIssueListExcel();
+                if (plan_keyword!=null)
+                {
+                    ret.AddRange(plan_keyword);
+                }
+            }
+            return ret;
+        }
+    }
+
 }
