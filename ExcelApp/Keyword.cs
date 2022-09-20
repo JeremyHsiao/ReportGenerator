@@ -109,7 +109,7 @@ namespace ExcelReportApplication
                 List<String> id_list = new List<String>();
                 foreach (IssueList issue in ReportGenerator.global_issue_list)
                 {
-                    if (issue.Summary.Contains(keyword))
+                    if (issue.ContainKeyword(keyword))
                     {
                         id_list.Add(issue.Key);
                     }
@@ -206,7 +206,7 @@ namespace ExcelReportApplication
                 String keyword_str = keyword.Keyword;
                 foreach (IssueList issue in ReportGenerator.global_issue_list)
                 {
-                    if (issue.Summary.Contains(keyword_str))
+                    if (issue.ContainKeyword(keyword_str))
                     {
                         id_list.Add(issue.Key);
                     }
@@ -264,5 +264,19 @@ namespace ExcelReportApplication
             return keyword_list;
         }
 
+        // 
+        // Input: Issue & keyword to check
+        // Output: true: if contains keyword; false: not contain keyword
+        // Note: Using this function so that it is easier to change the criteria of "Containing keyword"
+        //
+        static public bool IssueContainsKeyword(IssueList issue, String Keyword)
+        {
+            bool ret = false;
+            if (issue.Summary.Contains(Keyword))
+            {
+                ret = true;
+            }
+            return ret;
+        }
     }
 }

@@ -6,7 +6,7 @@ using System.Drawing;
 
 namespace ExcelReportApplication
 {
-    class IssueList
+    public class IssueList
     {
         private String key;
         private String summary;
@@ -330,6 +330,11 @@ namespace ExcelReportApplication
                 }
             }
             return ret_list;
+        }
+
+        public bool ContainKeyword(String Keyword)
+        {
+            return KeywordReport.IssueContainsKeyword(this, Keyword);
         }
     }
 }
