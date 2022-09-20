@@ -254,26 +254,26 @@ namespace ExcelReportApplication
             Workbook wb_keyword_issue = ExcelAction.OpenExcelWorkbook(full_filename);
             if (wb_keyword_issue == null)
             {
-                ConsoleWarning("OpenExcelWorkbook in KeywordIssueGenerationTask");
+                ConsoleWarning("OpenExcelWorkbook in KeywordIssueGenerationTaskV2");
                 return false;
             }
 
             Worksheet result_worksheet = ExcelAction.Find_Worksheet(wb_keyword_issue, sheet_name);
             if (result_worksheet == null)
             {
-                ConsoleWarning("Find_Worksheet in KeywordIssueGenerationTask");
+                ConsoleWarning("Find_Worksheet in KeywordIssueGenerationTaskV2");
                 return false;
             }
 
             //
-            // 3. Use keyword to find out all issues that contains keyword. 
-            //    put issue_id into a string contains many id separated by a comma ','
-            //    then store this issue_id into LUT (keyword,ids)
-            //    output: LUT (keyword,id_list)
+            // 3. Use keyword to find out all issues (ID) that contains keyword on id_list. 
+            //    Extend list of issue ID to list of issue description (with font style settings)
             //
+            ReportGenerator.global_issue_description_list = IssueList.GenerateIssueDescription(ReportGenerator.global_issue_list);
             Dictionary<String, List<String>> KeywordIssueIDList = new Dictionary<String, List<String>>();
             foreach (TestPlanKeyword keyword in keyword_list)
             {
+                List<StyleString> description_list;
                 List<String> id_list = new List<String>();
                 String keyword_str = keyword.Keyword;
                 foreach (IssueList issue in ReportGenerator.global_issue_list)
@@ -283,29 +283,13 @@ namespace ExcelReportApplication
                         id_list.Add(issue.Key);
                     }
                 }
-                KeywordIssueIDList.Add(keyword_str, id_list);
+                keyword.IssueList = id_list;
+                description_list = StyleString.ExtendIssueDescription(id_list, ReportGenerator.global_issue_description_list);
+                keyword.IssueDescriptionList = description_list;
             }
 
             //
-            // 4. input:  LUT (keyword,id_list) + LUT (id,color_desription) (from GenerateIssueDescription())
-            //    output: LUT (keyword,color_desription_list)
-            //         
-            //    using: id_list -> ExtendIssueDescription() -> color_description_list
-            // This issue description list is needed for keyword issue list
-            ReportGenerator.global_issue_description_list = IssueList.GenerateIssueDescription(ReportGenerator.global_issue_list);
-
-            // Go throught each keyword and turn id_list into color_description
-            Dictionary<String, List<StyleString>> KeyWordIssueDescription = new Dictionary<String, List<StyleString>>();
-            foreach (TestPlanKeyword keyword in keyword_list)
-            {
-                String keyword_str = keyword.Keyword;
-                List<String> id_list = KeywordIssueIDList[keyword_str];
-                List<StyleString> issue_description = StyleString.ExtendIssueDescription(id_list, ReportGenerator.global_issue_description_list);
-                KeyWordIssueDescription.Add(keyword_str, issue_description);
-            }
-
-            //
-            // 5. input:  LUT (keyword,color_description_list) + LUT (id,row_index)
+            // 4. input:  IssueDescriptionList of Keyword
             //    output: write color_description_list at Excel(row_index,new_inserted_col outside printable area
             //         
             // Insert extra column just outside printable area.
@@ -317,10 +301,8 @@ namespace ExcelReportApplication
 
             foreach (TestPlanKeyword keyword in keyword_list)
             {
-                String keyword_str = keyword.Keyword;
                 int at_row = keyword.AtRow;
-                List<StyleString> issue_description = KeyWordIssueDescription[keyword_str];
-                StyleString.WriteStyleString(result_worksheet, at_row, insert_col, issue_description);
+                StyleString.WriteStyleString(result_worksheet, at_row, insert_col, keyword.IssueDescriptionList);
             }
 
             // Save as another file with yyyyMMddHHmmss
