@@ -226,6 +226,109 @@ namespace ExcelReportApplication
             return true;
         }
 
+        static public bool KeywordIssueGenerationTaskV2(string report_filename)
+        {
+            //
+            // 1. Find keyword for user selected file
+            //
+            String full_filename = FileFunction.GetFullPath(report_filename);
+            String short_filename = FileFunction.GetFileName(full_filename);
+            String[] sp_str = short_filename.Split(new Char[]{'_'},StringSplitOptions.RemoveEmptyEntries);
+            String sheet_name = sp_str[0];
+            String subpart = sp_str[1];
+
+            // Create a temporary test plan -- DoOrNot must be "V" & ExcelFile/ExcelSheet must be correct
+            List<String> tp_str = new List<String>();
+            tp_str.AddRange(new String[] { "N/A", short_filename, "N/A", "V", "N/A", subpart });
+            TestPlan tp = new TestPlan(tp_str);
+            tp.ExcelFile = full_filename;
+            tp.ExcelSheet = sheet_name;
+            List<TestPlan> do_plan = new List<TestPlan>();
+            do_plan.Add(tp);
+
+            // List all keyword within this temprary test plan
+            List<TestPlanKeyword> keyword_list = KeywordReport.ListAllKeyword(do_plan);
+
+            // 2. Open Excel and find the sheet
+            // File exist check is done outside
+            Workbook wb_keyword_issue = ExcelAction.OpenExcelWorkbook(full_filename);
+            if (wb_keyword_issue == null)
+            {
+                ConsoleWarning("OpenExcelWorkbook in KeywordIssueGenerationTask");
+                return false;
+            }
+
+            Worksheet result_worksheet = ExcelAction.Find_Worksheet(wb_keyword_issue, sheet_name);
+            if (result_worksheet == null)
+            {
+                ConsoleWarning("Find_Worksheet in KeywordIssueGenerationTask");
+                return false;
+            }
+
+            //
+            // 3. Use keyword to find out all issues that contains keyword. 
+            //    put issue_id into a string contains many id separated by a comma ','
+            //    then store this issue_id into LUT (keyword,ids)
+            //    output: LUT (keyword,id_list)
+            //
+            Dictionary<String, List<String>> KeywordIssueIDList = new Dictionary<String, List<String>>();
+            foreach (TestPlanKeyword keyword in keyword_list)
+            {
+                List<String> id_list = new List<String>();
+                String keyword_str = keyword.Keyword;
+                foreach (IssueList issue in ReportGenerator.global_issue_list)
+                {
+                    if (issue.Summary.Contains(keyword_str))
+                    {
+                        id_list.Add(issue.Key);
+                    }
+                }
+                KeywordIssueIDList.Add(keyword_str, id_list);
+            }
+
+            //
+            // 4. input:  LUT (keyword,id_list) + LUT (id,color_desription) (from GenerateIssueDescription())
+            //    output: LUT (keyword,color_desription_list)
+            //         
+            //    using: id_list -> ExtendIssueDescription() -> color_description_list
+            // This issue description list is needed for keyword issue list
+            ReportGenerator.global_issue_description_list = IssueList.GenerateIssueDescription(ReportGenerator.global_issue_list);
+
+            // Go throught each keyword and turn id_list into color_description
+            Dictionary<String, List<StyleString>> KeyWordIssueDescription = new Dictionary<String, List<StyleString>>();
+            foreach (TestPlanKeyword keyword in keyword_list)
+            {
+                String keyword_str = keyword.Keyword;
+                List<String> id_list = KeywordIssueIDList[keyword_str];
+                List<StyleString> issue_description = StyleString.ExtendIssueDescription(id_list, ReportGenerator.global_issue_description_list);
+                KeyWordIssueDescription.Add(keyword_str, issue_description);
+            }
+
+            //
+            // 5. input:  LUT (keyword,color_description_list) + LUT (id,row_index)
+            //    output: write color_description_list at Excel(row_index,new_inserted_col outside printable area
+            //         
+            // Insert extra column just outside printable area.
+            // Assummed that Printable area always starting at $A$1 (also data processing area)
+            // So excel data processing area ends at Printable area (row_count,col_count)
+            int column_print_area = ExcelAction.GetWorksheetPrintableRange(result_worksheet).Columns.Count;
+            int insert_col = column_print_area + 1;
+            ExcelAction.Insert_Column(result_worksheet, insert_col);
+
+            foreach (TestPlanKeyword keyword in keyword_list)
+            {
+                String keyword_str = keyword.Keyword;
+                int at_row = keyword.AtRow;
+                List<StyleString> issue_description = KeyWordIssueDescription[keyword_str];
+                StyleString.WriteStyleString(result_worksheet, at_row, insert_col, issue_description);
+            }
+
+            // Save as another file with yyyyMMddHHmmss
+            string dest_filename = FileFunction.GenerateFilenameWithDateTime(full_filename);
+            ExcelAction.CloseExcelWorkbook(wb_keyword_issue, SaveChanges: true, AsFilename: dest_filename);
+            return true;
+        }
+
 
 
         public static List<TestPlanKeyword> ListAllDetailedTestPlanKeywordTask(String filename, String report_root_dir)
