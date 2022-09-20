@@ -6,7 +6,7 @@ using System.Drawing;
 
 namespace ExcelReportApplication
 {
-    public class IssueList
+    public class Issue
     {
         private String key;
         private String summary;
@@ -122,18 +122,18 @@ namespace ExcelReportApplication
         public const string col_LinkedIssue = "Linked Issues";
         public const string col_AdditionalInfo = "Additional Information"; 
 
-        public IssueList()
+        public Issue()
         {
         }
 
-        public IssueList(String key, String summary, String severity, String comment
+        public Issue(String key, String summary, String severity, String comment
             , String status, String reporter, String assignee, String due, String tcid)
         {
             this.key = key; this.summary = summary; this.severity = severity; this.comment = comment;
             this.status = status; this.reporter = reporter; this.assignee = assignee; this.duedate = due; this.testcaseid = tcid;
         }
 
-        public IssueList(List<String> members)
+        public Issue(List<String> members)
         {
             this.key = members[(int)IssueListMemberIndex.KEY];
             this.summary = members[(int)IssueListMemberIndex.SUMMARY];
@@ -206,9 +206,9 @@ namespace ExcelReportApplication
          // Key value
         static public string KeyPrefix = "BENSE";
 
-        static public List<IssueList> GenerateIssueList(string buglist_filename)
+        static public List<Issue> GenerateIssueList(string buglist_filename)
         {
-            List<IssueList> ret_issue_list = new List<IssueList>();
+            List<Issue> ret_issue_list = new List<Issue>();
 
             ExcelAction.ExcelStatus status = ExcelAction.OpenIssueListExcel(buglist_filename);
 
@@ -229,7 +229,7 @@ namespace ExcelReportApplication
                     // Add issue only if key contains KeyPrefix (very likely a valid key value)
                     if (members[(int)IssueListMemberIndex.KEY].Contains(KeyPrefix))
                     {
-                        ret_issue_list.Add(new IssueList(members));
+                        ret_issue_list.Add(new Issue(members));
                     }
                 }
                 ExcelAction.CloseIssueListExcel();
@@ -253,11 +253,11 @@ namespace ExcelReportApplication
         static public Color descrption_color_issue = Color.Red;
         static public Color descrption_color_comment = Color.Blue;
          
-        static public Dictionary<string, List<StyleString>> GenerateFullIssueDescription(List<IssueList> issuelist)
+        static public Dictionary<string, List<StyleString>> GenerateFullIssueDescription(List<Issue> issuelist)
         {
             Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
 
-            foreach (IssueList issue in issuelist)
+            foreach (Issue issue in issuelist)
             {
                 List<StyleString> value_style_str = new List<StyleString>();
                 String key = issue.Key, rd_comment_str = issue.comment;
@@ -293,11 +293,11 @@ namespace ExcelReportApplication
         }
          
         // create key/rich-text-issue-description pair.
-        static public Dictionary<string, List<StyleString>> GenerateIssueDescription(List<IssueList> issuelist)
+        static public Dictionary<string, List<StyleString>> GenerateIssueDescription(List<Issue> issuelist)
         {
             Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
 
-            foreach (IssueList issue in issuelist)
+            foreach (Issue issue in issuelist)
             {
                 List<StyleString> value_style_str = new List<StyleString>();
                 String key = issue.Key, rd_comment_str = issue.comment;

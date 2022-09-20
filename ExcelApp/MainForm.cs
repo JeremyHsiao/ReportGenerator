@@ -34,15 +34,15 @@ namespace ExcelReportApplication
             }
 
             // config for issue list
-            IssueList.KeyPrefix = XMLConfig.ReadAppSetting("Issue_Key_Prefix");
-            IssueList.SheetName = XMLConfig.ReadAppSetting("Issue_SheetName");
+            Issue.KeyPrefix = XMLConfig.ReadAppSetting("Issue_Key_Prefix");
+            Issue.SheetName = XMLConfig.ReadAppSetting("Issue_SheetName");
             if (Int32.TryParse(XMLConfig.ReadAppSetting("Issue_Row_NameDefine"), out int_value))
             {
-                IssueList.NameDefinitionRow = int_value;
+                Issue.NameDefinitionRow = int_value;
             }
             if (Int32.TryParse(XMLConfig.ReadAppSetting("Issue_Row_DataBegin"), out int_value))
             {
-                IssueList.DataBeginRow = int_value;
+                Issue.DataBeginRow = int_value;
             }
 
             // config for test-case
@@ -95,7 +95,7 @@ namespace ExcelReportApplication
             else
             {
                 MsgWindow.AppendText("Processing bug_list:" + buglist_filename + ".\n");
-                ReportGenerator.global_issue_list = IssueList.GenerateIssueList(buglist_filename);
+                ReportGenerator.global_issue_list = Issue.GenerateIssueList(buglist_filename);
                 MsgWindow.AppendText("bug_list finished!\n");
                 return true;
             }
@@ -152,7 +152,7 @@ namespace ExcelReportApplication
             }
 
             // This full issue description is needed for report purpose
-            ReportGenerator.global_full_issue_description_list = IssueList.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
+            ReportGenerator.global_full_issue_description_list = Issue.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
 
 //            ReportGenerator.WriteBacktoTCJiraExcel(tc_file);
             ReportGenerator.WriteBacktoTCJiraExcelV2(tc_file, template_file);
@@ -169,7 +169,7 @@ namespace ExcelReportApplication
             }
 
             // This full issue description is needed for report purpose
-            ReportGenerator.global_full_issue_description_list = IssueList.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
+            ReportGenerator.global_full_issue_description_list = Issue.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
 
             ReportGenerator.SaveIssueToSummaryReport(template_file);
 
@@ -196,7 +196,7 @@ namespace ExcelReportApplication
             }
 
             // This issue description is needed for report purpose
-            ReportGenerator.global_issue_description_list = IssueList.GenerateIssueDescription(ReportGenerator.global_issue_list);
+            ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
 
             KeywordReport.KeywordIssueGenerationTask(template_file);
             return true;
@@ -212,7 +212,7 @@ namespace ExcelReportApplication
             }
 
             // This issue description is needed for report purpose
-            ReportGenerator.global_issue_description_list = IssueList.GenerateIssueDescription(ReportGenerator.global_issue_list);
+            ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
 
             ReportGenerator.FindFailTCLinkedIssueAllClosed(tc_file, template_file);
             return true;

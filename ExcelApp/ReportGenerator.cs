@@ -12,7 +12,7 @@ namespace ExcelReportApplication
 {
     static class ReportGenerator
     {
-        static public List<IssueList> global_issue_list = new List<IssueList>();
+        static public List<Issue> global_issue_list = new List<Issue>();
         static public Dictionary<string, List<StyleString>> global_full_issue_description_list = new Dictionary<string, List<StyleString>>();
         static public Dictionary<string, List<StyleString>> global_issue_description_list = new Dictionary<string, List<StyleString>>();
         static public List<TestCase> global_testcase_list = new List<TestCase>();
@@ -314,12 +314,12 @@ namespace ExcelReportApplication
         //
         // This demo finds out Test-case whose status is fail but all linked issues are closed (other issues are hidden)
         //
-        static String[] CloseStatusString = { IssueList.STR_CLOSE };
+        static String[] CloseStatusString = { Issue.STR_CLOSE };
         static public void FindFailTCLinkedIssueAllClosed(String tclist_filename, String template_filename)
         {
             // Prepare a list of key whose status is closed (waived treated as non-closed at the moment)
             List<String> ClosedIssueKey = new List<String>();
-            foreach(IssueList issue in global_issue_list)
+            foreach(Issue issue in global_issue_list)
             {
                 foreach (String str in CloseStatusString)
                 {
