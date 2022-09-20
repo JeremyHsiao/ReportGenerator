@@ -405,8 +405,10 @@ namespace ExcelReportApplication
                     break;
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
-                    UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
-                    bRet = Execute_ListAllDetailedTestPlanKeywordTask(txtStandardTestReport.Text, txtReportFile.Text);
+                    String main_file = txtStandardTestReport.Text;
+                    String file_dir = Storage.GetDirectoryName(main_file);
+                    String report_root_dir = Storage.GetDirectoryName(file_dir);
+                    bRet = Execute_ListAllDetailedTestPlanKeywordTask(main_file, report_root_dir);
                     break;
                 default:
                     // shouldn't be here.
@@ -503,7 +505,7 @@ namespace ExcelReportApplication
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
                     SetEnable_IssueFile(false);
                     SetEnable_TCFile(false);
-                    SetEnable_OutputFile(true);
+                    SetEnable_OutputFile(false);
                     SetEnable_StandardReport(true);
                     break;
                 default:
@@ -526,6 +528,7 @@ namespace ExcelReportApplication
                     txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_Summary");
                     break;
                 case ReportGenerator.ReportType.StandardTestReportCreation:
+                    txtStandardTestReport.Text = XMLConfig.ReadAppSetting("workbook_StandardTestReport");
                     break;
                 case ReportGenerator.ReportType.KeywordIssue_Report:
                     this.txtReportFile.Text = @".\SampleData\A.1.1_OSD _All.xlsx" ;
@@ -534,10 +537,7 @@ namespace ExcelReportApplication
                     txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Template");
                     break;
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
-                    String filename = XMLConfig.ReadAppSetting("workbook_StandardTestReport");
-                    String file_dir = Storage.GetDirectoryName(filename);
-                    String report_root_dir = Storage.GetDirectoryName(file_dir);
-                    this.txtReportFile.Text = report_root_dir;
+                    txtStandardTestReport.Text = XMLConfig.ReadAppSetting("workbook_ReportToTestKeyword");
                     break;
                 default:
                     break;
