@@ -80,6 +80,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Keyword.cs" />
     <Compile Include="StandardTestReport.cs" />
     <Compile Include="TestPlan.cs" />
     <Compile Include="Config.cs" />
