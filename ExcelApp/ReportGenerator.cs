@@ -124,42 +124,42 @@ namespace ExcelReportApplication
         // 
         // This demo open Test Case Excel and replace Issue ID on Linked Issue column with ID+Summary+Severity+RD_Comment
         //
-        static public void WriteBacktoTCJiraExcel(String tclist_filename)
-        {
-            // Open original excel (read-only & corrupt-load) and write to another filename when closed
-            ExcelAction.ExcelStatus status = ExcelAction.OpenTestCaseExcel(tclist_filename);
+        //static public void WriteBacktoTCJiraExcel(String tclist_filename)
+        //{
+        //    // Open original excel (read-only & corrupt-load) and write to another filename when closed
+        //    ExcelAction.ExcelStatus status = ExcelAction.OpenTestCaseExcel(tclist_filename);
 
-            if (status == ExcelAction.ExcelStatus.OK)
-            {
-                Dictionary<string, int> col_name_list = ExcelAction.CreateTestCaseColumnIndex();
+        //    if (status == ExcelAction.ExcelStatus.OK)
+        //    {
+        //        Dictionary<string, int> col_name_list = ExcelAction.CreateTestCaseColumnIndex();
 
-                int key_col = col_name_list[TestCase.col_Key];
-                int links_col = col_name_list[TestCase.col_LinkedIssue];
-                // Visit all rows and replace Bug-ID at Linked Issue with long description of Bug.
-                for (int index = TestCase.DataBeginRow; index <= ExcelAction.GetTestCaseAllRange().Row; index++)
-                {
-                    // Make sure Key of TC contains KeyPrefix
-                    String key = ExcelAction.GetTestCaseCellTrimmedString(index, key_col);
-                    if (key.Contains(TestCase.KeyPrefix) == false) { break; } // If not a TC key in this row, go to next row
+        //        int key_col = col_name_list[TestCase.col_Key];
+        //        int links_col = col_name_list[TestCase.col_LinkedIssue];
+        //        // Visit all rows and replace Bug-ID at Linked Issue with long description of Bug.
+        //        for (int index = TestCase.DataBeginRow; index <= ExcelAction.GetTestCaseAllRange().Row; index++)
+        //        {
+        //            // Make sure Key of TC contains KeyPrefix
+        //            String key = ExcelAction.GetTestCaseCellTrimmedString(index, key_col);
+        //            if (key.Contains(TestCase.KeyPrefix) == false) { break; } // If not a TC key in this row, go to next row
 
-                    // If Links is not empty, extend bug key into long string with font settings
-                    String links = ExcelAction.GetTestCaseCellTrimmedString(index, links_col);
-                    if (links != "")
-                    {
-                        List<StyleString> str_list = StyleString.ExtendIssueDescription(links, global_full_issue_description_list);
-                        ExcelAction.TestCase_WriteStyleString(index, links_col, str_list);
-                    }
-                }
-                // auto-fit-height of column links
-                ExcelAction.TestCase_AutoFit_Column(links_col);
+        //            // If Links is not empty, extend bug key into long string with font settings
+        //            String links = ExcelAction.GetTestCaseCellTrimmedString(index, links_col);
+        //            if (links != "")
+        //            {
+        //                List<StyleString> str_list = StyleString.ExtendIssueDescription(links, global_full_issue_description_list);
+        //                ExcelAction.TestCase_WriteStyleString(index, links_col, str_list);
+        //            }
+        //        }
+        //        // auto-fit-height of column links
+        //        ExcelAction.TestCase_AutoFit_Column(links_col);
 
-                // Write to another filename with datetime
-                string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename);
-                ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename);
-            }
-            // Always try to close at the end even there may be some error during operation
-            ExcelAction.CloseTestCaseExcel();
-        }
+        //        // Write to another filename with datetime
+        //        string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename);
+        //        ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename);
+        //    }
+        //    // Always try to close at the end even there may be some error during operation
+        //    ExcelAction.CloseTestCaseExcel();
+        //}
 
         // This version open Test Case Excel and copy content into template file and replace Issue ID on Linked Issue column with ID+Summary+Severity+RD_Comment
         static public void WriteBacktoTCJiraExcelV2(String tclist_filename, String template_filename)
