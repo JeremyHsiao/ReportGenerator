@@ -19,8 +19,14 @@ namespace ExcelReportApplication
         private int at_column;
         private List<String> issue_list;
         private List<String> tc_list;
+        private List<StyleString> issue_description_list;
+        private List<StyleString> tc_description_list;
 
-        private void TestPlanKeywordInit() { issue_list = new List<String>(); tc_list = new List<String>(); }
+        private void TestPlanKeywordInit() 
+        { 
+            issue_list = new List<String>(); tc_list = new List<String>();
+            issue_description_list = new List<StyleString>(); tc_description_list = new List<StyleString>();
+        }
 
         public TestPlanKeyword() { TestPlanKeywordInit(); }
         public TestPlanKeyword(String Keyword, String Workbook = "", String Worksheet = "", int AtRow = 0, int AtColumn = 0)
@@ -73,6 +79,18 @@ namespace ExcelReportApplication
         {
             get { return tc_list; }   // get method
             set { tc_list = value; }  // set method
+        }
+
+        public List<StyleString> IssueDescriptionList   // property
+        {
+            get { return issue_description_list; }   // get method
+            set { issue_description_list = value; }  // set method
+        }
+
+        public List<StyleString> TestCaseDescriptionList   // property
+        {
+            get { return tc_description_list; }   // get method
+            set { tc_description_list = value; }  // set method
         }
     }
 

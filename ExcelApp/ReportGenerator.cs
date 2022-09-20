@@ -90,7 +90,7 @@ namespace ExcelReportApplication
             {
                 "Keyword Issue to Report", 
                 "Input:",  "  Test Plan/Report with Keyword",
-                "Output:", "  Test Plan/Report with keyword issue list inserted on O-column",
+                "Output:", "  Test Plan/Report with keyword issue list inserted on the 1st-column next to the right-side of printable area",
             },
             new String[] 
             {
