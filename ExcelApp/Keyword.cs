@@ -45,8 +45,8 @@ namespace ExcelReportApplication
             // 1. Open Excel and find the sheet
             //
 
-            String full_filename = FileFunction.GetFullPath(report_filename);
-            String short_filename = FileFunction.GetFileName(full_filename);
+            String full_filename = Storage.GetFullPath(report_filename);
+            String short_filename = Storage.GetFileName(full_filename);
             String sheet_name = short_filename.Substring(0, short_filename.IndexOf("_"));
 
             // File exist check is done outside
@@ -149,7 +149,7 @@ namespace ExcelReportApplication
             }
 
             // Save as another file with yyyyMMddHHmmss
-            string dest_filename = FileFunction.GenerateFilenameWithDateTime(full_filename);
+            string dest_filename = Storage.GenerateFilenameWithDateTime(full_filename);
             ExcelAction.CloseExcelWorkbook(wb_keyword_issue, SaveChanges: true, AsFilename: dest_filename);
             return true;
         }
@@ -159,8 +159,8 @@ namespace ExcelReportApplication
             //
             // 1. Find keyword for user selected file
             //
-            String full_filename = FileFunction.GetFullPath(report_filename);
-            String short_filename = FileFunction.GetFileName(full_filename);
+            String full_filename = Storage.GetFullPath(report_filename);
+            String short_filename = Storage.GetFileName(full_filename);
             String[] sp_str = short_filename.Split(new Char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
             String sheet_name = sp_str[0];
             String subpart = sp_str[1];
@@ -234,7 +234,7 @@ namespace ExcelReportApplication
             }
 
             // Save as another file with yyyyMMddHHmmss
-            string dest_filename = FileFunction.GenerateFilenameWithDateTime(full_filename);
+            string dest_filename = Storage.GenerateFilenameWithDateTime(full_filename);
             ExcelAction.CloseExcelWorkbook(wb_keyword_issue, SaveChanges: true, AsFilename: dest_filename);
             return true;
         }

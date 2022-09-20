@@ -54,20 +54,20 @@ namespace ExcelReportApplication
         {
             // if testplan is not read yet, return
             if (do_plan == null) { return; }
-            if (!FileFunction.DirectoryExists(out_root)) { return; }
+            if (!Storage.DirectoryExists(out_root)) { return; }
 
             List<String> folder = new List<String> ();
             foreach (TestPlan tp in do_plan)
             {
                 String dst = out_root + @"\" + tp.ExcelFile;
-                String dst_dir = FileFunction.GetDirectoryName(dst);
-                if (!FileFunction.DirectoryExists(dst_dir)) 
+                String dst_dir = Storage.GetDirectoryName(dst);
+                if (!Storage.DirectoryExists(dst_dir)) 
                 { 
-                    FileFunction.CreateDirectory(dst_dir);
+                    Storage.CreateDirectory(dst_dir);
                 }
 
                 String src = in_root + @"\" + tp.BackupSource;
-                FileFunction.Copy(src, dst);
+                Storage.Copy(src, dst);
             }
         }
 
@@ -83,16 +83,16 @@ namespace ExcelReportApplication
         {
             // Full file name exist checked before executing task
 
-            String file_dir = FileFunction.GetDirectoryName(filename);
-            String report_root_dir = FileFunction.GetDirectoryName(file_dir);
+            String file_dir = Storage.GetDirectoryName(filename);
+            String report_root_dir = Storage.GetDirectoryName(file_dir);
             String input_report_dir = report_root_dir + src_dir;
-            String output_report_dir = FileFunction.GenerateDirectoryNameWithDateTime(report_root_dir);
+            String output_report_dir = Storage.GenerateDirectoryNameWithDateTime(report_root_dir);
 
             // test_plan (sample) dir must exist
-            if (!FileFunction.DirectoryExists(input_report_dir)) { return false; }  // should exist
+            if (!Storage.DirectoryExists(input_report_dir)) { return false; }  // should exist
 
             // output test plan root_dir must be inexist so that no overwritten
-            if (FileFunction.DirectoryExists(output_report_dir)) { return false; } // shouln't exist
+            if (Storage.DirectoryExists(output_report_dir)) { return false; } // shouln't exist
 
             // read test-plan sheet NG and return if NG
             List<TestPlan> testplan = TestReport.ReadTestPlanFromStandardTestReport(filename);
@@ -100,7 +100,7 @@ namespace ExcelReportApplication
 
             // all input parameters has been checked successfully, so generate
             List<TestPlan> do_plan = TestPlan.ListDoPlan(testplan);
-            FileFunction.CreateDirectory(output_report_dir); // create output root-dir
+            Storage.CreateDirectory(output_report_dir); // create output root-dir
             TestReport.GenerateTestReportStructure(do_plan, input_report_dir, output_report_dir);
             return true;
         }
