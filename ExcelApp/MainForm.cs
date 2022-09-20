@@ -198,7 +198,7 @@ namespace ExcelReportApplication
             // This issue description is needed for report purpose
             ReportGenerator.global_issue_description_list = IssueList.GenerateIssueDescription(ReportGenerator.global_issue_list);
 
-            TestReport.KeywordIssueGenerationTask(template_file);
+            KeywordReport.KeywordIssueGenerationTask(template_file);
             return true;
         }
 
@@ -226,7 +226,7 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            List<TestPlanKeyword> keyword_list = TestReport.ListAllDetailedTestPlanKeywordTask(main_file, report_root);
+            List<TestPlanKeyword> keyword_list = KeywordReport.ListAllDetailedTestPlanKeywordTask(main_file, report_root);
 
             MsgWindow.AppendText("Keyword list:\n");
             MsgWindow.AppendText("-------------\n");
