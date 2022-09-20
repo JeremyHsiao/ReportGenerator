@@ -74,10 +74,10 @@ namespace ExcelReportApplication
         {
             LoadConfigAll();
 
-            if ((FileFunction.GetFullPath(txtBugFile.Text) == "") ||
-                (FileFunction.GetFullPath(txtTCFile.Text) == "") ||
-                (FileFunction.GetFullPath(txtReportFile.Text) == "") ||
-                (FileFunction.GetFullPath(txtStandardTestReport.Text) == ""))
+            if ((Storage.GetFullPath(txtBugFile.Text) == "") ||
+                (Storage.GetFullPath(txtTCFile.Text) == "") ||
+                (Storage.GetFullPath(txtReportFile.Text) == "") ||
+                (Storage.GetFullPath(txtStandardTestReport.Text) == ""))
             {
                 MsgWindow.AppendText("WARNING: one or more sample files do not exist.\n");
             }
@@ -86,8 +86,8 @@ namespace ExcelReportApplication
 
         private bool ReadGlobalIssueListTask(String filename)
         {
-            String buglist_filename = FileFunction.GetFullPath(filename);
-            if (!FileFunction.FileExists(buglist_filename))
+            String buglist_filename = Storage.GetFullPath(filename);
+            if (!Storage.FileExists(buglist_filename))
             {
                 MsgWindow.AppendText(buglist_filename + " does not exist. Please check again.\n");
                 return false;
@@ -103,8 +103,8 @@ namespace ExcelReportApplication
 
         private bool ReadGlobalTCListTask(String filename)
         {
-            String tclist_filename = FileFunction.GetFullPath(filename);
-            if (!FileFunction.FileExists(tclist_filename))
+            String tclist_filename = Storage.GetFullPath(filename);
+            if (!Storage.FileExists(tclist_filename))
             {
                 MsgWindow.AppendText(tclist_filename + " does not exist. Please check again.\n");
                 return false;
@@ -145,7 +145,7 @@ namespace ExcelReportApplication
         private bool Execute_WriteIssueDescriptionToTC(String tc_file, String template_file)
         {
             if ((ReportGenerator.global_issue_list.Count == 0)||(ReportGenerator.global_testcase_list.Count == 0)||
-                (!FileFunction.FileExists(tc_file))||(!FileFunction.FileExists(template_file)))
+                (!Storage.FileExists(tc_file))||(!Storage.FileExists(template_file)))
             {
                 // protection check
                 return false;
@@ -162,7 +162,7 @@ namespace ExcelReportApplication
         private bool Execute_WriteIssueDescriptionToSummary(String template_file)
         {
             if ((ReportGenerator.global_issue_list.Count == 0)||(ReportGenerator.global_testcase_list.Count == 0)||
-                (!FileFunction.FileExists(template_file)))
+                (!Storage.FileExists(template_file)))
             {
                 // protection check
                 return false;
@@ -178,7 +178,7 @@ namespace ExcelReportApplication
 
         private bool Execute_CreateStandardTestReportTask(String main_file)
         {
-            if (!FileFunction.FileExists(main_file))
+            if (!Storage.FileExists(main_file))
             {
                 // protection check
                 return false;
@@ -189,7 +189,7 @@ namespace ExcelReportApplication
 
         private bool Execute_KeywordIssueGenerationTask(String template_file)
         {
-            if ((ReportGenerator.global_issue_list.Count == 0) || (!FileFunction.FileExists(template_file)))
+            if ((ReportGenerator.global_issue_list.Count == 0) || (!Storage.FileExists(template_file)))
             {
                 // protection check
                 return false;
@@ -205,7 +205,7 @@ namespace ExcelReportApplication
         private bool Execute_FindFailTCLinkedIssueAllClosed(String tc_file, String template_file)
         {
             if ((ReportGenerator.global_issue_list.Count == 0) || (ReportGenerator.global_testcase_list.Count == 0) ||
-                (!FileFunction.FileExists(tc_file)) || (!FileFunction.FileExists(template_file)))
+                (!Storage.FileExists(tc_file)) || (!Storage.FileExists(template_file)))
             {
                 // protection check
                 return false;
@@ -220,7 +220,7 @@ namespace ExcelReportApplication
 
         private bool Execute_ListAllDetailedTestPlanKeywordTask(String main_file, String report_root)
         {
-            if (!FileFunction.FileExists(main_file)||!FileFunction.DirectoryExists(report_root))
+            if (!Storage.FileExists(main_file)||!Storage.DirectoryExists(report_root))
             {
                 // protection check
                 return false;
@@ -245,8 +245,8 @@ namespace ExcelReportApplication
         // (3) no user input --> no relative filepath --> no need to update fileanem from relative path to full path.
         private void btnSelectBugFile_Click(object sender, EventArgs e)
         {
-            String init_dir = FileFunction.GetFullPath(txtBugFile.Text);
-            String ret_str = FileFunction.UsesrSelectFilename(init_dir: init_dir);
+            String init_dir = Storage.GetFullPath(txtBugFile.Text);
+            String ret_str = Storage.UsesrSelectFilename(init_dir: init_dir);
             if (ret_str != "")
             {
                 txtBugFile.Text = ret_str;
@@ -255,8 +255,8 @@ namespace ExcelReportApplication
 
         private void btnSelectTCFile_Click(object sender, EventArgs e)
         {
-            String init_dir = FileFunction.GetFullPath(txtTCFile.Text);
-            String ret_str = FileFunction.UsesrSelectFilename(init_dir);
+            String init_dir = Storage.GetFullPath(txtTCFile.Text);
+            String ret_str = Storage.UsesrSelectFilename(init_dir);
             if (ret_str != "")
             {
                 txtTCFile.Text = ret_str;
@@ -265,8 +265,8 @@ namespace ExcelReportApplication
 
         private void btnSelectExcelTestFile_Click(object sender, EventArgs e)
         {
-            String init_dir = FileFunction.GetFullPath(txtStandardTestReport.Text);
-            String ret_str = FileFunction.UsesrSelectFilename(init_dir: init_dir);
+            String init_dir = Storage.GetFullPath(txtStandardTestReport.Text);
+            String ret_str = Storage.UsesrSelectFilename(init_dir: init_dir);
             if (ret_str != "")
             {
                 txtStandardTestReport.Text = ret_str;
@@ -284,7 +284,7 @@ namespace ExcelReportApplication
                     break;
             }
 
-            String init_dir = FileFunction.GetFullPath(btnSelectReportFile.Text);
+            String init_dir = Storage.GetFullPath(btnSelectReportFile.Text);
             String ret_str = SelectDirectoryOrFile(init_dir, sel_file);
             if (ret_str != "")
             {
@@ -294,14 +294,14 @@ namespace ExcelReportApplication
 
         private String SelectDirectoryOrFile(String init_text, bool sel_file = true)
         {
-            String init_dir = FileFunction.GetFullPath(init_text), ret_str;
+            String init_dir = Storage.GetFullPath(init_text), ret_str;
             if (sel_file == true)
             {
-                ret_str = FileFunction.UsesrSelectFilename(init_dir: init_dir);
+                ret_str = Storage.UsesrSelectFilename(init_dir: init_dir);
             }
             else
             {
-                ret_str = FileFunction.UsersSelectDirectory(init_dir: init_dir);
+                ret_str = Storage.UsersSelectDirectory(init_dir: init_dir);
             }
             return ret_str;
         }
@@ -328,8 +328,8 @@ namespace ExcelReportApplication
         // Only enabled textbox will be updated.
         private void UpdateTextBoxPathToFullAndCheckExist(ref TextBox box)
         {
-            String name = FileFunction.GetFullPath(box.Text);
-            if (!FileFunction.FileExists(name))
+            String name = Storage.GetFullPath(box.Text);
+            if (!Storage.FileExists(name))
             {
                 MsgWindow.AppendText( box.Text + "can't be found. Please check again.\n");
                 return;
@@ -339,8 +339,8 @@ namespace ExcelReportApplication
 
         private void UpdateTextBoxDirToFullAndCheckExist(ref TextBox box)
         {
-            String name = FileFunction.GetFullPath(box.Text);
-            if (!FileFunction.DirectoryExists(name))
+            String name = Storage.GetFullPath(box.Text);
+            if (!Storage.DirectoryExists(name))
             {
                 MsgWindow.AppendText(box.Text + "can't be found. Please check again.\n");
                 return;
@@ -535,8 +535,8 @@ namespace ExcelReportApplication
                     break;
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
                     String filename = XMLConfig.ReadAppSetting("workbook_StandardTestReport");
-                    String file_dir = FileFunction.GetDirectoryName(filename);
-                    String report_root_dir = FileFunction.GetDirectoryName(file_dir);
+                    String file_dir = Storage.GetDirectoryName(filename);
+                    String report_root_dir = Storage.GetDirectoryName(file_dir);
                     this.txtReportFile.Text = report_root_dir;
                     break;
                 default:

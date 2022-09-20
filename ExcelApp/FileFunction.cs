@@ -9,7 +9,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace ExcelReportApplication
 {
-    class FileFunction
+    static class Storage
     {
         // Possible multiple-directories selection, so return String[]
         static public String[] UsersSelectDirectory(String init_dir =@".\", bool multiple = true, String title = "Select Folder(s)")

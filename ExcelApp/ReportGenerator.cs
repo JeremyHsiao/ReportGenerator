@@ -211,7 +211,7 @@ namespace ExcelReportApplication
             ExcelAction.TestCase_AutoFit_Column(links_col, IsTemplate: true);
 
             // 6. Write to another filename with datetime
-            string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename, FileExt: ".xlsx");
+            string dest_filename = Storage.GenerateFilenameWithDateTime(tclist_filename, FileExt: ".xlsx");
             ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
             
             // Close Test Case Excel
@@ -291,7 +291,7 @@ namespace ExcelReportApplication
                      }
 
                     // Save as another file with yyyyMMddHHmmss
-                    String dest_filename = FileFunction.GenerateFilenameWithDateTime(report_filename);
+                    String dest_filename = Storage.GenerateFilenameWithDateTime(report_filename);
                     ExcelAction.CloseExcelWorkbook(wb_summary, SaveChanges: true, AsFilename: dest_filename);
                 }
                 else
@@ -437,7 +437,7 @@ namespace ExcelReportApplication
                     }
 
                     // Save Template file as another filename (testcase filename with datetime & as .xlsx)
-                    string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename, FileExt: ".xlsx");
+                    string dest_filename = Storage.GenerateFilenameWithDateTime(tclist_filename, FileExt: ".xlsx");
                     ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
                 }
             }
