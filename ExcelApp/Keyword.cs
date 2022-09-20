@@ -264,19 +264,5 @@ namespace ExcelReportApplication
             return keyword_list;
         }
 
-        // 
-        // Input: Issue & keyword to check
-        // Output: true: if contains keyword; false: not contain keyword
-        // Note: Using this function so that it is easier to change the criteria of "Containing keyword"
-        //
-        static public bool IssueContainsKeyword(Issue issue, String Keyword)
-        {
-            bool ret = false;
-            if (issue.Summary.Contains(Keyword))
-            {
-                ret = true;
-            }
-            return ret;
-        }
     }
 }

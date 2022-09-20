@@ -332,9 +332,19 @@ namespace ExcelReportApplication
             return ret_list;
         }
 
+        // 
+        // Input: keyword to check
+        // Output: true: if contains keyword; false: not contain keyword
+        // Note: Using this function so that it is easier to change the criteria of "Containing keyword"
+        //
         public bool ContainKeyword(String Keyword)
         {
-            return KeywordReport.IssueContainsKeyword(this, Keyword);
+            bool ret = false;
+            if ((this.Summary.Contains(Keyword)) || (this.TestCaseID.Contains(Keyword)))
+            {
+                ret = true;
+            }
+            return ret;
         }
     }
 }
