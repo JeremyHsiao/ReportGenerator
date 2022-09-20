@@ -107,7 +107,7 @@ namespace ExcelReportApplication
             foreach (String keyword in KeywordAtRow.Keys)
             {
                 List<String> id_list = new List<String>();
-                foreach (IssueList issue in ReportGenerator.global_issue_list)
+                foreach (Issue issue in ReportGenerator.global_issue_list)
                 {
                     if (issue.ContainKeyword(keyword))
                     {
@@ -123,7 +123,7 @@ namespace ExcelReportApplication
             //         
             //    using: id_list -> ExtendIssueDescription() -> color_description_list
             // This issue description list is needed for keyword issue list
-            ReportGenerator.global_issue_description_list = IssueList.GenerateIssueDescription(ReportGenerator.global_issue_list);
+            ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
 
             // Go throught each keyword and turn id_list into color_description
             Dictionary<String, List<StyleString>> KeyWordIssueDescription = new Dictionary<String, List<StyleString>>();
@@ -197,14 +197,14 @@ namespace ExcelReportApplication
             // 3. Use keyword to find out all issues (ID) that contains keyword on id_list. 
             //    Extend list of issue ID to list of issue description (with font style settings)
             //
-            ReportGenerator.global_issue_description_list = IssueList.GenerateIssueDescription(ReportGenerator.global_issue_list);
+            ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
             Dictionary<String, List<String>> KeywordIssueIDList = new Dictionary<String, List<String>>();
             foreach (TestPlanKeyword keyword in keyword_list)
             {
                 List<StyleString> description_list;
                 List<String> id_list = new List<String>();
                 String keyword_str = keyword.Keyword;
-                foreach (IssueList issue in ReportGenerator.global_issue_list)
+                foreach (Issue issue in ReportGenerator.global_issue_list)
                 {
                     if (issue.ContainKeyword(keyword_str))
                     {
@@ -269,7 +269,7 @@ namespace ExcelReportApplication
         // Output: true: if contains keyword; false: not contain keyword
         // Note: Using this function so that it is easier to change the criteria of "Containing keyword"
         //
-        static public bool IssueContainsKeyword(IssueList issue, String Keyword)
+        static public bool IssueContainsKeyword(Issue issue, String Keyword)
         {
             bool ret = false;
             if (issue.Summary.Contains(Keyword))

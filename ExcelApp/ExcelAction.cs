@@ -251,7 +251,7 @@ namespace ExcelReportApplication
 
         static public Dictionary<string, int> CreateIssueListColumnIndex()
         {
-            return CreateTableColumnIndex(ws_issuelist, IssueList.NameDefinitionRow);
+            return CreateTableColumnIndex(ws_issuelist, Issue.NameDefinitionRow);
         }
 
         // Excel accessing function for Test Case Excel
@@ -398,7 +398,7 @@ namespace ExcelReportApplication
                     return ExcelStatus.ERR_OpenIssueListExcel_OpenExcelWorkbook;
                 }
 
-                Worksheet ws_buglist = ExcelAction.Find_Worksheet(wb_issuelist, IssueList.SheetName);
+                Worksheet ws_buglist = ExcelAction.Find_Worksheet(wb_issuelist, Issue.SheetName);
                 if (ws_buglist == null)
                 {
                     return ExcelStatus.ERR_OpenIssueListExcel_Find_Worksheet;
