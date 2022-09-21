@@ -592,6 +592,19 @@ namespace ExcelReportApplication
             Dst.Value2 = Src.Value2;
         }
 
+        static private void CopyPaste(Worksheet src, Worksheet dst, int ul_row, int ul_col)
+        {
+            CopyPaste(src, dst, ul_row, ul_col, ul_row, ul_col);
+        }
+
+        static private void CopyPaste(Worksheet src, Worksheet dst, int ul_row, int ul_col, int br_row, int br_col)
+        {
+            Range Src = src.Range[src.Cells[ul_row, ul_col], src.Cells[br_row, br_col]];
+            Range Dst = dst.Range[dst.Cells[ul_row, ul_col], dst.Cells[br_row, br_col]];
+            Src.Copy();
+            Dst.PasteSpecial(Paste: XlPasteType.xlPasteAll);
+        }
+
         // Copy value2 of Test-Case Excel (tc_data) to Test-Case-Template Excel.
         // Result: Test-Case Excel data shown in the format of Test-Case-Template
         static public bool CopyTestCaseIntoTemplate()
