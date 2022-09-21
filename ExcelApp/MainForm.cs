@@ -171,7 +171,7 @@ namespace ExcelReportApplication
             // This full issue description is needed for report purpose
             ReportGenerator.global_full_issue_description_list = Issue.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
 
-            ReportGenerator.SaveIssueToSummaryReport(template_file);
+            SummaryReport.SaveIssueToSummaryReport(template_file);
 
             return true;
         }
