@@ -198,7 +198,7 @@ namespace ExcelReportApplication
             // This issue description is needed for report purpose
             ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
 
-            KeywordReport.KeywordIssueGenerationTask(template_file);
+            KeywordReport.KeywordIssueGenerationTaskV2(template_file);
             return true;
         }
 
