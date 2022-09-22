@@ -199,6 +199,10 @@ namespace ExcelReportApplication
             //
             ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
             Dictionary<String, List<String>> KeywordIssueIDList = new Dictionary<String, List<String>>();
+            foreach (Issue issue in ReportGenerator.global_issue_list)
+            {
+                issue.KeywordList.Clear();
+            }
             foreach (TestPlanKeyword keyword in keyword_list)
             {
                 List<StyleString> description_list;
@@ -209,6 +213,7 @@ namespace ExcelReportApplication
                     if (issue.ContainKeyword(keyword_str))
                     {
                         id_list.Add(issue.Key);
+                        issue.KeywordList.Add(keyword_str);
                     }
                 }
                 keyword.IssueList = id_list;

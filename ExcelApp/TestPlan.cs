@@ -389,6 +389,34 @@ namespace ExcelReportApplication
             get { return tc_description_list; }   // get method
             set { tc_description_list = value; }  // set method
         }
+
+        public void UpdateIssueList()
+        {
+            List<String> ret_str = new List<String> ();
+
+            if (keyword != "")
+            {
+            }
+
+            IssueList = ret_str;
+        }
+
+        public void UpdateIssueDescriptionList(List<StyleString> description)
+        {
+            List<StyleString> ret_str = new List<StyleString> ();
+
+            if (IssueList == null)
+            {
+                UpdateIssueList();
+            }
+
+            if (IssueList != null)
+            {
+                
+            }
+
+            IssueDescriptionList = ret_str;
+        }
     }
 
 }
