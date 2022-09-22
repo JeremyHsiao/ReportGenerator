@@ -23,6 +23,9 @@ namespace ExcelReportApplication
         private String linkedissue;
         private String additionalinfo;
 
+        // out-of-band data
+        private List<String> keyword_list;
+
         public String Key   // property
         {
             get { return key; }   // get method
@@ -107,6 +110,12 @@ namespace ExcelReportApplication
             set { additionalinfo = value; }  // set method
         }
 
+        public List<String> KeywordList   // property
+        {
+            get { return keyword_list; }   // get method
+            set { keyword_list = value; }  // set method
+        }
+
         public const string col_Key = "Key";
         public const string col_Summary = "Summary";
         public const string col_Severity = "Severity";
@@ -122,8 +131,11 @@ namespace ExcelReportApplication
         public const string col_LinkedIssue = "Linked Issues";
         public const string col_AdditionalInfo = "Additional Information"; 
 
+        private void InitIssue() { keyword_list = new List<String>(); }
+
         public Issue()
         {
+            InitIssue();
         }
 
         public Issue(String key, String summary, String severity, String comment
@@ -131,6 +143,7 @@ namespace ExcelReportApplication
         {
             this.key = key; this.summary = summary; this.severity = severity; this.comment = comment;
             this.status = status; this.reporter = reporter; this.assignee = assignee; this.duedate = due; this.testcaseid = tcid;
+            InitIssue();
         }
 
         public Issue(List<String> members)
@@ -149,6 +162,7 @@ namespace ExcelReportApplication
             this.hwversion = members[(int)IssueListMemberIndex.HWVERSION];
             this.linkedissue = members[(int)IssueListMemberIndex.LINKEDISSUE];
             this.additionalinfo = members[(int)IssueListMemberIndex.ADDITIONALINFO];
+            InitIssue();
         }
 
         public enum IssueListMemberIndex
