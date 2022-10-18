@@ -237,8 +237,13 @@ namespace ExcelReportApplication
             MsgWindow.AppendText("-------------\n");
             return true;
         }
-
-
+        
+        // If filename has been changed, don't change it to default at report type change afterward.
+        Boolean btnSelectBugFile_Clicked = false;
+        Boolean btnSelectTCFile_Clicked = false;
+        Boolean btnSelectExcelTestFile_Clicked = false;
+        Boolean btnSelectReportFile_Clicked = false;
+        
         // Because TextBox is set to Read-only, filename can be only changed via File Dialog
         // (1) no need to handle event of TestBox Text changed.
         // (2) filename (full path) is set only after File Dialog OK
@@ -250,6 +255,7 @@ namespace ExcelReportApplication
             if (ret_str != "")
             {
                 txtBugFile.Text = ret_str;
+                btnSelectBugFile_Clicked = true;
             }
         }
 
@@ -260,6 +266,7 @@ namespace ExcelReportApplication
             if (ret_str != "")
             {
                 txtTCFile.Text = ret_str;
+                btnSelectTCFile_Clicked = true;
             }
         }
 
@@ -270,6 +277,7 @@ namespace ExcelReportApplication
             if (ret_str != "")
             {
                 txtStandardTestReport.Text = ret_str;
+                btnSelectExcelTestFile_Clicked = true;
             }
         }
 
@@ -280,7 +288,7 @@ namespace ExcelReportApplication
             switch (ReportGenerator.ReportTypeFromInt(report_index))
             {
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
-                    sel_file = false;
+                    sel_file = false;  // Here select directory instead of file
                     break;
             }
 
@@ -289,6 +297,7 @@ namespace ExcelReportApplication
             if (ret_str != "")
             {
                 txtReportFile.Text = ret_str;
+                btnSelectReportFile_Clicked = true;
             }
         }
 
@@ -522,21 +531,27 @@ namespace ExcelReportApplication
             switch (ReportGenerator.ReportTypeFromInt(ReportIndex))
             {
                 case ReportGenerator.ReportType.FullIssueDescription_TC: // "1.Issue Description for TC"
-                    txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Template");
+                    if(!btnSelectReportFile_Clicked)
+                        txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Template");
                     break;
                 case ReportGenerator.ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
-                    txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_Summary");
+                    if (!btnSelectReportFile_Clicked)
+                        txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_Summary");
                     break;
                 case ReportGenerator.ReportType.StandardTestReportCreation:
-                    txtStandardTestReport.Text = XMLConfig.ReadAppSetting("workbook_StandardTestReport");
+                    if (!btnSelectExcelTestFile_Clicked)
+                        txtStandardTestReport.Text = XMLConfig.ReadAppSetting("workbook_StandardTestReport");
                     break;
                 case ReportGenerator.ReportType.KeywordIssue_Report:
-                    this.txtReportFile.Text = @".\SampleData\A.1.1_OSD _All.xlsx" ;
+                    if (!btnSelectReportFile_Clicked)
+                        txtReportFile.Text = @".\SampleData\A.1.1_OSD _All.xlsx";
                     break;
                 case ReportGenerator.ReportType.TC_Likely_Passed:
-                    txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Template");
+                    if (!btnSelectReportFile_Clicked)
+                        txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Template");
                     break;
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
+                    if (!btnSelectExcelTestFile_Clicked)
                     txtStandardTestReport.Text = XMLConfig.ReadAppSetting("workbook_ReportToTestKeyword");
                     break;
                 default:
