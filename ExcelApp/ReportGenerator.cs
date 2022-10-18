@@ -22,7 +22,7 @@ namespace ExcelReportApplication
             FullIssueDescription_TC = 0,
             FullIssueDescription_Summary,
             StandardTestReportCreation,
-            KeywordIssue_Report,
+            KeywordIssue_Report_SingleFile,
             TC_Likely_Passed,
             FindAllKeywordInReport,
         }
@@ -60,7 +60,7 @@ namespace ExcelReportApplication
             "1.Issue Description for TC",
             "2.Issue Description for Summary",
             "3.Standard Test Report Creator",
-            "4.Keyword Issue to Report",
+            "4.Keyword Issue - Single File",
             "5.TC likely Pass",
             "6.List Keywords of all detailed reports",
         };
@@ -88,7 +88,7 @@ namespace ExcelReportApplication
             },
             new String[] 
             {
-                "Keyword Issue to Report", 
+                "Keyword Issue to Report - Single File", 
                 "Input:",  "  Test Plan/Report with Keyword",
                 "Output:", "  Test Plan/Report with keyword issue list inserted on the 1st-column next to the right-side of printable area",
             },

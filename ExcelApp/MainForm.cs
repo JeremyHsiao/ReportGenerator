@@ -398,7 +398,7 @@ namespace ExcelReportApplication
                     UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
                     bRet = Execute_CreateStandardTestReportTask(txtStandardTestReport.Text);
                     break;
-                case ReportGenerator.ReportType.KeywordIssue_Report:
+                case ReportGenerator.ReportType.KeywordIssue_Report_SingleFile:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                     if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
@@ -499,7 +499,7 @@ namespace ExcelReportApplication
                     SetEnable_OutputFile(false);
                     SetEnable_StandardReport(true);
                     break;
-                case ReportGenerator.ReportType.KeywordIssue_Report:
+                case ReportGenerator.ReportType.KeywordIssue_Report_SingleFile:
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(false);
                     SetEnable_OutputFile(true);
@@ -542,7 +542,7 @@ namespace ExcelReportApplication
                     if (!btnSelectExcelTestFile_Clicked)
                         txtStandardTestReport.Text = XMLConfig.ReadAppSetting("workbook_StandardTestReport");
                     break;
-                case ReportGenerator.ReportType.KeywordIssue_Report:
+                case ReportGenerator.ReportType.KeywordIssue_Report_SingleFile:
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = @".\SampleData\A.1.1_OSD _All.xlsx";
                     break;
