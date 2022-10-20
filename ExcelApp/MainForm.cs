@@ -287,7 +287,8 @@ namespace ExcelReportApplication
             bool sel_file = true;
             switch (ReportGenerator.ReportTypeFromInt(report_index))
             {
-                case ReportGenerator.ReportType.FindAllKeywordInReport:
+                case ReportGenerator.ReportType.KeywordIssue_Report_Directory:
+                //case ReportGenerator.ReportType.FindAllKeywordInReport:
                     sel_file = false;  // Here select directory instead of file
                     break;
             }
@@ -404,6 +405,12 @@ namespace ExcelReportApplication
                     if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                     bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text);
                     break;
+                case ReportGenerator.ReportType.KeywordIssue_Report_Directory:
+                    UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
+                    UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
+                    if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                    bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text);
+                    break;
                 case ReportGenerator.ReportType.TC_Likely_Passed:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
@@ -505,6 +512,12 @@ namespace ExcelReportApplication
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
                     break;
+                case ReportGenerator.ReportType.KeywordIssue_Report_Directory:
+                    SetEnable_IssueFile(true);
+                    SetEnable_TCFile(false);
+                    SetEnable_OutputFile(true);
+                    SetEnable_StandardReport(false);
+                    break;
                 case ReportGenerator.ReportType.TC_Likely_Passed:
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(true);
@@ -545,6 +558,10 @@ namespace ExcelReportApplication
                 case ReportGenerator.ReportType.KeywordIssue_Report_SingleFile:
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = @".\SampleData\A.1.1_OSD _All.xlsx";
+                    break;
+                case ReportGenerator.ReportType.KeywordIssue_Report_Directory:
+                    if (!btnSelectReportFile_Clicked)
+                        txtReportFile.Text = @".\SampleData\More chapters_TestCaseID";
                     break;
                 case ReportGenerator.ReportType.TC_Likely_Passed:
                     if (!btnSelectReportFile_Clicked)

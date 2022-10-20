@@ -25,6 +25,7 @@ namespace ExcelReportApplication
             KeywordIssue_Report_SingleFile,
             TC_Likely_Passed,
             FindAllKeywordInReport,
+            KeywordIssue_Report_Directory,
         }
 
         public static int ReportTypeToInt(ReportType type)
@@ -63,6 +64,7 @@ namespace ExcelReportApplication
             "4.Keyword Issue - Single File",
             "5.TC likely Pass",
             "6.List Keywords of all detailed reports",
+            "7.Keyword Issue - Directory",
         };
 
         // Must be updated if new report type added #NewReportType
@@ -103,6 +105,12 @@ namespace ExcelReportApplication
                 "Go Through all Do-plan to list down all keywords", 
                 "Input:",  "  Main Test Report File",
                 "Output:", "  All keywords listed on output log",
+            },
+            new String[] 
+            {
+                "Keyword Issue to Report - Files under directory", 
+                "Input:",  "  Test Plan/Reports with Keyword under user-specified directory",
+                "Output:", "  Test Plan/Reports with keyword issue list inserted on the 1st-column next to the right-side of printable area",
             },
         };
 
