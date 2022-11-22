@@ -187,18 +187,35 @@ namespace ExcelReportApplication
             return TestReport.CreateStandardTestReportTask(main_file);
         }
 
-        private bool Execute_KeywordIssueGenerationTask(String template_file)
+        private bool Execute_KeywordIssueGenerationTask(String FileOrDirectoryName, Boolean IsDirectory = false)
         {
-            if ((ReportGenerator.global_issue_list.Count == 0) || (!Storage.FileExists(template_file)))
+            if (IsDirectory == false)
             {
-                // protection check
-                return false;
+                if ((ReportGenerator.global_issue_list.Count == 0) || (!Storage.FileExists(FileOrDirectoryName)))
+                {
+                    // protection check
+                    return false;
+                }
+
+                // This issue description is needed for report purpose
+                ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
+
+                KeywordReport.KeywordIssueGenerationTaskV2(FileOrDirectoryName);
             }
+            else
+            {
+                // To Be Finished
+                if ((ReportGenerator.global_issue_list.Count == 0) || (!Storage.DirectoryExists(FileOrDirectoryName)))
+                {
+                    // protection check
+                    return false;
+                }
 
-            // This issue description is needed for report purpose
-            ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
+                // This issue description is needed for report purpose
+                ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
 
-            KeywordReport.KeywordIssueGenerationTaskV2(template_file);
+                KeywordReport.KeywordIssueGenerationTaskV2(FileOrDirectoryName);
+            }
             return true;
         }
 
@@ -403,13 +420,16 @@ namespace ExcelReportApplication
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                     if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                    bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text);
+                    bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory:false);
                     break;
                 case ReportGenerator.ReportType.KeywordIssue_Report_Directory:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                     UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
                     if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                    bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text);
+                    List<String> file_list = Storage.ListFilesUnderDirectory(txtReportFile.Text);
+                    foreach (String filename in file_list)
+                        MsgWindow.AppendText(filename+"\n");
+                    //bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: true);
                     break;
                 case ReportGenerator.ReportType.TC_Likely_Passed:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
