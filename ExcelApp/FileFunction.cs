@@ -279,5 +279,23 @@ namespace ExcelReportApplication
             }
             return ret;
         }
+
+        // Process all files in the directory passed in, recurse on any directories
+        // that are found, and process the files they contain.
+        public static List<String> ListFilesUnderDirectory(string targetDirectory)
+        {
+            List<String> ret_list = new List<String>();
+
+            // Get the list of files found in the directory.
+            string[] fileEntries = Directory.GetFiles(targetDirectory);
+            ret_list.AddRange(fileEntries);
+
+            // Recurse into subdirectories of this directory.
+            string[] subdirectoryEntries = Directory.GetDirectories(targetDirectory);
+            foreach (string subdirectory in subdirectoryEntries)
+                ret_list.AddRange(ListFilesUnderDirectory(subdirectory));
+
+            return ret_list;
+        }
     }
 }
