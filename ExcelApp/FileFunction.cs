@@ -6,17 +6,18 @@ using System.Windows.Forms;
 using System.IO;
 using System.Globalization;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using System.Configuration;
 
 namespace ExcelReportApplication
 {
     static class Storage
     {
         // Possible multiple-directories selection, so return String[]
-        static public String[] UsersSelectDirectory(String init_dir =@".\", bool multiple = true, String title = "Select Folder(s)")
+        static public String[] UsersSelectDirectory(String init_dir = @".\", bool multiple = true, String title = "Select Folder(s)")
         {
             var openFolder = new CommonOpenFileDialog();
             openFolder.AllowNonFileSystemItems = true;
-            openFolder.Multiselect = multiple;                 
+            openFolder.Multiselect = multiple;
             openFolder.IsFolderPicker = true;
             openFolder.Title = title;
 
@@ -48,7 +49,7 @@ namespace ExcelReportApplication
         // Sigle-directory selection, so return just String
         static public String UsersSelectDirectory()
         {
-            return UsersSelectDirectory(init_dir:GetCurrentDirectory());
+            return UsersSelectDirectory(init_dir: GetCurrentDirectory());
         }
         static public String UsersSelectDirectory(String init_dir)
         {
@@ -112,9 +113,9 @@ namespace ExcelReportApplication
             return ret;
         }
 
-        static public void Copy (String src, String dst)
-        {   
-            File.Copy(src,dst);
+        static public void Copy(String src, String dst)
+        {
+            File.Copy(src, dst);
         }
 
         static public bool DirectoryExists(String dir)
@@ -152,7 +153,7 @@ namespace ExcelReportApplication
 
         static public String GetFullPath(String Filename)
         {
-            String ret ="";
+            String ret = "";
             try
             {
                 ret = Path.GetFullPath(Filename);
@@ -266,7 +267,7 @@ namespace ExcelReportApplication
                 {
                     dir.Substring(0, dir.Length - 1); // remove '\' at the end
                 }
-                path = dir;                     
+                path = dir;
                 dt = DateTime.Now.ToString("yyyyMMddHHmmss");       // ex: 20220801160000
                 ret = path + "_" + dt;
 
@@ -282,7 +283,7 @@ namespace ExcelReportApplication
 
         // Process all files in the directory passed in, recurse on any directories
         // that are found, and process the files they contain.
-        public static List<String> ListFilesUnderDirectory(string targetDirectory)
+        static public List<String> ListFilesUnderDirectory(string targetDirectory)
         {
             List<String> ret_list = new List<String>();
 
@@ -296,6 +297,44 @@ namespace ExcelReportApplication
                 ret_list.AddRange(ListFilesUnderDirectory(subdirectory));
 
             return ret_list;
+        }
+
+        // Check if filename looks like an test report excel file
+        // need to filter out filename not in format of A.xx.xx_*_All.xlsx
+        static public string regexString = @"^[A-Z]\.\d\d?\.\d\d?[_]+[a-zA-Z0-9 ]+[_][a-zA-Z0-9 ]+\.[x][l][s][x]$";
+        static RegexStringValidator myRegexValidator = new RegexStringValidator(regexString);
+        static public bool IsReportFilename(String input_name)
+        {
+            bool bret = false;
+            String filename = Storage.GetFileName(input_name);
+
+            try
+            {
+                // Attempt validation.
+                myRegexValidator.Validate(filename);
+                bret = true; // validation ok so no exception
+            }
+            catch (ArgumentException e)
+            {
+                // Validation failed.
+                // so keep return "false"
+                bret = false;
+            }
+
+            return bret;
+        }
+
+        static public List<String> FilterFilename(List<String> filelist)
+        {
+            List<String> out_list = new List<String>();
+            foreach (String filename in filelist)
+            {
+                if (IsReportFilename(filename))
+                {
+                    out_list.Add(filename);
+                }
+            }
+            return out_list;
         }
     }
 }
