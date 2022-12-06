@@ -276,7 +276,7 @@ namespace ExcelReportApplication
         {
             Object cell_value2 = GetTestCaseCell(row, col, IsTemplate: IsTemplate);
             if (cell_value2 == null) { return ""; }
-            return cell_value2.ToString();
+            return cell_value2.ToString().Trim();
         }
 
         static public Object GetCellValue(Worksheet ws, int row, int col)
@@ -293,7 +293,7 @@ namespace ExcelReportApplication
         {
             Object cell_value2 = GetCellValue(ws, row, col);
             if (cell_value2 == null) { return ""; }
-            return cell_value2.ToString();
+            return cell_value2.ToString().Trim();
         }
 
         static public void TestCase_AutoFit_Column(int col, bool IsTemplate = false)
