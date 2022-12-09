@@ -244,6 +244,126 @@ namespace ExcelReportApplication
             return true;
         }
 
+        static public bool KeywordIssueGenerationTaskV3(List<String> report_filename)
+        {
+            //
+            // 1. Create a temporary test plan (do_plan) to include all report files 
+            //
+            // 1.1 Init an empty plan
+            List<TestPlan> do_plan = new List<TestPlan>();
+
+            // 1.2 This temporary test plan starts to includes all files listed in List<String> report_filename
+            foreach(String name in report_filename)
+            {
+                // File existing check protection (it is better also checked and giving warning before entering this function)
+                 if (Storage.FileExists(name)==false)
+                    continue; // no warning here, simply skip this file.
+            
+                // DoOrNot must be "V" & ExcelFile/ExcelSheet must be correct
+                String full_filename = Storage.GetFullPath(name);
+                String short_filename = Storage.GetFileName(full_filename);
+                String[] sp_str = short_filename.Split(new Char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+                String sheet_name = sp_str[0];
+                String subpart = sp_str[1];
+                List<String> tp_str = new List<String>();
+                tp_str.AddRange(new String[] { "N/A", short_filename, "N/A", "V", "N/A", subpart });
+                TestPlan tp = new TestPlan(tp_str);
+                tp.ExcelFile = full_filename;
+                tp.ExcelSheet = sheet_name;
+                do_plan.Add(tp);
+            }
+
+            //
+            // 2. Search keywords within all selected file (2.1) and use those keywords to find out issues containing keywords.
+           //
+            // 2.1. Find keyword for all selected file (as listed in temprary test plan)
+            //
+            List<TestPlanKeyword> keyword_list = KeywordReport.ListAllKeyword(do_plan);
+
+            //
+            // 2.2. Use keyword to find out all issues (ID) that contains keyword on id_list. 
+            //    Extend list of issue ID to list of issue description (with font style settings) -- by Issue.GenerateIssueDescription
+            //
+            //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);//done outside in advance
+            Dictionary<String, List<String>> KeywordIssueIDList = new Dictionary<String, List<String>>();
+            foreach (Issue issue in ReportGenerator.global_issue_list)
+            {
+                issue.KeywordList.Clear();
+            }
+            // Go throught each keyword, search all issues containing this keyword and add issue-id so that it can be extened into description list.
+            foreach (TestPlanKeyword keyword in keyword_list)
+            {
+                List<StyleString> description_list;
+                List<String> id_list = new List<String>();
+                String keyword_str = keyword.Keyword;
+                foreach (Issue issue in ReportGenerator.global_issue_list)
+                {
+                    if (issue.ContainKeyword(keyword_str))
+                    {
+                        id_list.Add(issue.Key);
+                        issue.KeywordList.Add(keyword_str);
+                    }
+                }
+                keyword.IssueList = id_list;
+                description_list = StyleString.ExtendIssueDescription(id_list, ReportGenerator.global_issue_description_list);
+                keyword.IssueDescriptionList = description_list;
+            }
+
+            //
+            // 3. Go throught each report excel and generate keyword report for each one.
+            //
+            foreach (TestPlan plan in do_plan)
+            {
+                String full_filename = plan.ExcelFile;
+                String sheet_name = plan.ExcelSheet;
+
+                // 3.1. Open Excel and find the sheet
+                // File exist check is done outside
+                Workbook wb_keyword_issue = ExcelAction.OpenExcelWorkbook(full_filename);
+                if (wb_keyword_issue == null)
+                {
+                    ConsoleWarning("ERR: Open workbook in V3: " + full_filename);
+                    return false;
+                }
+
+                // 3.2 Open worksheet
+                Worksheet result_worksheet = ExcelAction.Find_Worksheet(wb_keyword_issue, sheet_name);
+                if (result_worksheet == null)
+                {
+                    ConsoleWarning("ERR: Open worksheet in V3: " + full_filename + " sheet: " + sheet_name);
+                    return false;
+                }
+
+                //
+                // 3.3. input:  IssueDescriptionList of Keyword
+                //    output: write color_description_list at Excel(row_index,new_inserted_col outside printable area
+                //         
+                // 3.3.1 Insert extra column just outside printable area.
+                // Assummed that Printable area always starting at $A$1 (also data processing area)
+                // So excel data processing area ends at Printable area (row_count,col_count)
+                int column_print_area = ExcelAction.GetWorksheetPrintableRange(result_worksheet).Columns.Count;
+                int insert_col = column_print_area + 1;
+                ExcelAction.Insert_Column(result_worksheet, insert_col);
+
+                // 3.3.2 Write keyword-related formatted issue descriptions on the newly-inserted column of the row where the keyword is found.
+                foreach (TestPlanKeyword keyword in keyword_list)
+                {
+                    // Only write to keyword on currently open sheet
+                    if (keyword.Worksheet == sheet_name)
+                    {
+                        int at_row = keyword.AtRow;
+                        StyleString.WriteStyleString(result_worksheet, at_row, insert_col, keyword.IssueDescriptionList);
+                    }
+                }
+
+                // 3.4. Save as another file with yyyyMMddHHmmss
+                string dest_filename = Storage.GenerateFilenameWithDateTime(full_filename);
+                ExcelAction.CloseExcelWorkbook(wb_keyword_issue, SaveChanges: true, AsFilename: dest_filename);
+            } 
+
+            return true;
+        }
+
         // 
         // Input: Standard Test Report main file
         // Output: keyword list of all "Do" test-plans
