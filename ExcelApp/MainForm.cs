@@ -204,17 +204,21 @@ namespace ExcelReportApplication
             }
             else
             {
-                // To Be Finished
                 if ((ReportGenerator.global_issue_list.Count == 0) || (!Storage.DirectoryExists(FileOrDirectoryName)))
                 {
                     // protection check
                     return false;
                 }
+                List<String> file_list = Storage.ListFilesUnderDirectory(FileOrDirectoryName);
+                List<String> report_list = Storage.FilterFilename(file_list);
+                //MsgWindow.AppendText("File found under directory " + FileOrDirectoryName + "\n");
+                //foreach (String filename in file_list)
+                //    MsgWindow.AppendText(filename + "\n");
 
                 // This issue description is needed for report purpose
                 ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
 
-                KeywordReport.KeywordIssueGenerationTaskV2(FileOrDirectoryName);
+                KeywordReport.KeywordIssueGenerationTaskV3(report_list);
             }
             return true;
         }
@@ -418,18 +422,15 @@ namespace ExcelReportApplication
                     break;
                 case ReportGenerator.ReportType.KeywordIssue_Report_SingleFile:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);    // File path here
                     if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                     bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory:false);
                     break;
                 case ReportGenerator.ReportType.KeywordIssue_Report_Directory:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
-                    UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
+                    UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);     // Directory path here
                     if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                    List<String> file_list = Storage.ListFilesUnderDirectory(txtReportFile.Text);
-                    foreach (String filename in file_list)
-                        MsgWindow.AppendText(filename+"\n");
-                    //bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: true);
+                    bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: true);
                     break;
                 case ReportGenerator.ReportType.TC_Likely_Passed:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
