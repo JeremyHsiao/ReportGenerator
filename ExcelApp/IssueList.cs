@@ -307,6 +307,11 @@ namespace ExcelReportApplication
         }
          
         // create key/rich-text-issue-description pair.
+        // 
+        // Format: KEY+SUMMARY+(+SEVERITY+)
+        //
+        // For example: BENSE27105-99[OSD]Menu scenario-Color Gamut value incorrect Without Metadata when Sub screen(B)
+        //
         static public Dictionary<string, List<StyleString>> GenerateIssueDescription(List<Issue> issuelist)
         {
             Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
