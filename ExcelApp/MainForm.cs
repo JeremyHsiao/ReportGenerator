@@ -72,6 +72,11 @@ namespace ExcelReportApplication
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
+            string version = fvi.FileVersion;
+            this.Text = "Report Generator " + version + "   build:" + DateTime.Now.ToString("yyMMddHHmm"); ;
+
             LoadConfigAll();
 
             if ((Storage.GetFullPath(txtBugFile.Text) == "") ||
