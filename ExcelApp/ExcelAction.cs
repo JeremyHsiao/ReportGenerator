@@ -154,6 +154,16 @@ namespace ExcelReportApplication
             ws.Rows[row].AutoFit();
         }
 
+        static public void Set_Row_Height(Worksheet ws, int row, double height)
+        {
+            ws.Rows[row].RowHeight = height;
+        }
+
+        static public double Get_Row_Height(Worksheet ws, int row)
+        {
+            return ws.Rows[row].RowHeight;
+        }
+
         static public void Hide_Row(Worksheet ws, int row, int count = 1)
         {
             Range hiddenRange = ws.Range[ws.Cells[row, 1], ws.Cells[row + count - 1, GetWorksheetAllRange(ws).Column]];
