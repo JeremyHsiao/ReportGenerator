@@ -7,6 +7,156 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace ExcelReportApplication
 {
+    public class TestPlanKeyword
+    {
+        private String keyword;
+        private String workbook;
+        private String worksheet;
+        private int at_row;
+        private int at_column;
+        private List<Issue> keyword_issues;
+
+        // Generated data where items are according to keyword_list & contents are to-be-defined by requirements.
+        private List<String> issue_list;
+        private List<String> tc_list;
+        private List<StyleString> issue_description_list;
+        private List<StyleString> tc_description_list;
+
+        private void TestPlanKeywordInit()
+        {
+            keyword_issues = new List<Issue>();
+            issue_list = new List<String>(); tc_list = new List<String>();
+            issue_description_list = new List<StyleString>(); tc_description_list = new List<StyleString>();
+        }
+
+        public TestPlanKeyword() { TestPlanKeywordInit(); }
+        public TestPlanKeyword(String Keyword, String Workbook = "", String Worksheet = "", int AtRow = 0, int AtColumn = 0)
+        {
+            TestPlanKeywordInit();
+            keyword = Keyword;
+            workbook = Workbook;
+            worksheet = Worksheet;
+            at_row = AtRow;
+            at_column = AtColumn;
+        }
+
+        public String Keyword   // property
+        {
+            get { return keyword; }   // get method
+            set { keyword = value; }  // set method
+        }
+
+        public String Workbook   // property
+        {
+            get { return workbook; }   // get method
+            set { workbook = value; }  // set method
+        }
+
+        public String Worksheet   // property
+        {
+            get { return worksheet; }   // get method
+            set { worksheet = value; }  // set method
+        }
+
+        public int AtRow   // property
+        {
+            get { return at_row; }   // get method
+            set { at_row = value; }  // set method
+        }
+
+        public int AtColumn   // property
+        {
+            get { return at_column; }   // get method
+            set { at_column = value; }  // set method
+        }
+
+        public List<Issue> KeywordIssues   // property
+        {
+            get { return keyword_issues; }   // get method
+            set { keyword_issues = value; }  // set method
+        }
+
+        public List<String> IssueList   // property
+        {
+            get { return issue_list; }   // get method
+            set { issue_list = value; }  // set method
+        }
+
+        public List<String> TestCaseList   // property
+        {
+            get { return tc_list; }   // get method
+            set { tc_list = value; }  // set method
+        }
+
+        public List<StyleString> IssueDescriptionList   // property
+        {
+            get { return issue_description_list; }   // get method
+            set { issue_description_list = value; }  // set method
+        }
+
+        public List<StyleString> TestCaseDescriptionList   // property
+        {
+            get { return tc_description_list; }   // get method
+            set { tc_description_list = value; }  // set method
+        }
+
+        public void UpdateIssueList()
+        {
+            List<String> ret_str = new List<String>();
+
+            if (keyword != "")
+            {
+            }
+
+            IssueList = ret_str;
+        }
+
+        public void UpdateIssueDescriptionList(List<StyleString> description)
+        {
+            List<StyleString> ret_str = new List<StyleString>();
+
+            if (IssueList == null)
+            {
+                UpdateIssueList();
+            }
+
+            if (IssueList != null)
+            {
+
+            }
+
+            IssueDescriptionList = ret_str;
+        }
+
+        public IssueCount Calculate_Issue_GE_Stage_1_0()
+        {
+            IssueCount ret_ic = new IssueCount();
+            foreach (Issue issue in this.KeywordIssues)
+            {
+                if ((issue.Status != Issue.STR_CLOSE) && (issue.Status != Issue.STR_WAIVE))
+                {
+                    switch (issue.Severity[0])
+                    {
+                        case 'A':
+                            ret_ic.Severity_A++;
+                            break;
+                        case 'B':
+                            ret_ic.Severity_B++;
+                            break;
+                        case 'C':
+                            ret_ic.Severity_C++;
+                            break;
+                        case 'D':
+                            ret_ic.Severity_D++;
+                            break;
+                    }
+
+                }
+            }
+            return ret_ic;
+        }
+    }
+
     public static class KeywordReport
     {
         static private void ConsoleWarning(String function, int row)
@@ -39,7 +189,8 @@ namespace ExcelReportApplication
         //
         static int col_indentifier = 2;
         static int col_keyword = 3;
-        static public bool KeywordIssueGenerationTask(string report_filename)
+//        static public bool KeywordIssueGenerationTask(string report_filename)
+/*
         {
             //
             // 1. Open Excel and find the sheet
@@ -153,6 +304,7 @@ namespace ExcelReportApplication
             ExcelAction.CloseExcelWorkbook(wb_keyword_issue, SaveChanges: true, AsFilename: dest_filename);
             return true;
         }
+*/
 
         static public bool KeywordIssueGenerationTaskV2(string report_filename)
         {
