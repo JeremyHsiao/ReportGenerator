@@ -256,6 +256,10 @@ namespace ExcelReportApplication
          // Key value
         static public string KeyPrefix = "BENSE";
 
+        static public Color A_ISSUE_COLOR = Color.Red;
+        static public Color B_ISSUE_COLOR = Color.DarkOrange;
+        static public Color C_ISSUE_COLOR = Color.Black;
+
         static public List<Issue> GenerateIssueList(string buglist_filename)
         {
             List<Issue> ret_issue_list = new List<Issue>();
@@ -380,6 +384,43 @@ namespace ExcelReportApplication
                         value_style_str.Add(style_str);
                     }
                     */
+                    // Add whole string into return_list
+                    ret_list.Add(key, value_style_str);
+                }
+            }
+            return ret_list;
+        }
+
+        static public Dictionary<string, List<StyleString>> GenerateIssueDescription_Severity_by_Colors(List<Issue> issuelist)
+        {
+            Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
+
+            foreach (Issue issue in issuelist)
+            {
+                List<StyleString> value_style_str = new List<StyleString>();
+                String key = issue.Key, rd_comment_str = issue.comment;
+
+                if (key != "")
+                {
+                    Color color_by_severity;
+                    switch (issue.Severity[0])
+                    {
+                        case 'A':
+                            color_by_severity = Issue.A_ISSUE_COLOR;
+                            break;
+                        case 'B':
+                            color_by_severity = Issue.B_ISSUE_COLOR;
+                            break;
+                        case 'C':
+                            color_by_severity = Issue.C_ISSUE_COLOR;
+                            break;
+                        default:
+                            color_by_severity = Color.Black;
+                            break;
+                    }
+                    String str = key + issue.Summary + "(" + issue.Severity + ")";
+                    StyleString style_str = new StyleString(str, color_by_severity);
+                    value_style_str.Add(style_str);
                     // Add whole string into return_list
                     ret_list.Add(key, value_style_str);
                 }
