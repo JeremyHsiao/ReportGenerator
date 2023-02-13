@@ -204,7 +204,9 @@ namespace ExcelReportApplication
 
                 // This issue description is needed for report purpose
                 ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
-
+                //
+                // To-Be-Finished: replace V2 with V3
+                //
                 KeywordReport.KeywordIssueGenerationTaskV2(FileOrDirectoryName);
             }
             else
@@ -221,9 +223,9 @@ namespace ExcelReportApplication
                 //    MsgWindow.AppendText(filename + "\n");
 
                 // This issue description is needed for report purpose
-                ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
-
-                KeywordReport.KeywordIssueGenerationTaskV3(report_list);
+                //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
+                ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.global_issue_list);
+                KeywordReport.KeywordIssueGenerationTaskV3_2nd_ver(report_list);
             }
             return true;
         }
