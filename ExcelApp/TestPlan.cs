@@ -292,7 +292,16 @@ namespace ExcelReportApplication
             List<TestPlanKeyword> ret =  new List<TestPlanKeyword> ();
             foreach (String key in KeywordAtRow.Keys)
             {
-                ret.Add(new TestPlanKeyword(key,path,sheet,KeywordAtRow[key],col_keyword));
+                int row_keyword = KeywordAtRow[key];
+                // col_keyword is currently fixed value
+                int row_result, col_result, row_bug_status, col_bug_status, row_bug_list, col_bug_list;
+
+                row_result = row_bug_status = row_keyword + 1;
+                row_bug_list = row_keyword + 2;
+                col_result = col_bug_list = col_keyword + 1;
+                col_bug_status = col_keyword + 3;
+                ret.Add(new TestPlanKeyword(key, path, sheet, KeywordAtRow[key], col_keyword,
+                    row_result, col_result, row_bug_status, col_bug_status, row_bug_list, col_bug_list));
             }
             return ret;
         }
