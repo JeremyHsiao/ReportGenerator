@@ -14,6 +14,12 @@ namespace ExcelReportApplication
         private String worksheet;
         private int at_row;
         private int at_column;
+        private int result_at_row;
+        private int result_at_column;
+        private int bug_status_at_row;
+        private int bug_status_at_column;
+        private int bug_list_at_row;
+        private int bug_list_at_column;
         private List<Issue> keyword_issues;
 
         // Generated data where items are according to keyword_list & contents are to-be-defined by requirements.
@@ -30,7 +36,9 @@ namespace ExcelReportApplication
         }
 
         public TestPlanKeyword() { TestPlanKeywordInit(); }
-        public TestPlanKeyword(String Keyword, String Workbook = "", String Worksheet = "", int AtRow = 0, int AtColumn = 0)
+        public TestPlanKeyword(String Keyword, String Workbook = "", String Worksheet = "", int AtRow = 0, int AtColumn = 0,
+                                int ResultListAtRow = 0, int ResultListAtColumn = 0, int BugStatusAtRow = 0, int BugStatusAtColumn = 0,
+                                int BugListAtRow = 0, int BugListAtColumn = 0)
         {
             TestPlanKeywordInit();
             keyword = Keyword;
@@ -38,6 +46,12 @@ namespace ExcelReportApplication
             worksheet = Worksheet;
             at_row = AtRow;
             at_column = AtColumn;
+            result_at_row = ResultListAtRow;
+            result_at_column = ResultListAtColumn;
+            bug_status_at_row = BugStatusAtRow;
+            bug_status_at_column = BugStatusAtColumn;
+            bug_list_at_row = BugListAtRow;
+            bug_list_at_column = BugListAtColumn;
         }
 
         public String Keyword   // property
@@ -63,11 +77,40 @@ namespace ExcelReportApplication
             get { return at_row; }   // get method
             set { at_row = value; }  // set method
         }
-
         public int AtColumn   // property
         {
             get { return at_column; }   // get method
             set { at_column = value; }  // set method
+        }
+        public int ResultListAtRow   // propertyd
+        {
+            get { return result_at_row; }   // get method
+            set { result_at_row = value; }  // set method
+        }
+        public int ResultListAtColumn   // property
+        {
+            get { return result_at_column; }   // get method
+            set { result_at_column = value; }  // set method
+        }
+        public int BugStatusAtRow   // property
+        {
+            get { return bug_status_at_row; }   // get method
+            set { bug_status_at_row = value; }  // set method
+        }
+        public int BugStatusAtColumn   // property
+        {
+            get { return bug_status_at_column; }   // get method
+            set { bug_status_at_column = value; }  // set method
+        }
+        public int BugListAtRow   // property
+        {
+            get { return bug_list_at_row; }   // get method
+            set { bug_list_at_row = value; }  // set method
+        }
+        public int BugListAtColumn   // property
+        {
+            get { return bug_list_at_column; }   // get method
+            set { bug_list_at_column = value; }  // set method
         }
 
         public List<Issue> KeywordIssues   // property
