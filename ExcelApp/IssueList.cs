@@ -6,6 +6,42 @@ using System.Drawing;
 
 namespace ExcelReportApplication
 {
+    public class IssueCount
+    {
+        enum SeverityOrder
+        {
+            A = 0,
+            B,
+            C,
+            D
+        };
+
+        public static int severity_count = 4;
+        private int[] count = new int[severity_count];
+        public int Severity_A   // property
+        {
+            get { return count[(int)SeverityOrder.A]; }   // get method
+            set { count[(int)SeverityOrder.A] = value; }  // set method
+        }
+        public int Severity_B   // property
+        {
+            get { return count[(int)SeverityOrder.B]; }   // get method
+            set { count[(int)SeverityOrder.B] = value; }  // set method
+        }
+        public int Severity_C   // property
+        {
+            get { return count[(int)SeverityOrder.C]; }   // get method
+            set { count[(int)SeverityOrder.C] = value; }  // set method
+        }
+        public int Severity_D   // property
+        {
+            get { return count[(int)SeverityOrder.D]; }   // get method
+            set { count[(int)SeverityOrder.D] = value; }  // set method
+        }
+
+        public IssueCount() { count[0] = count[1] = count[2] = count[3] = 0;}
+    }
+
     public class Issue
     {
         private String key;
