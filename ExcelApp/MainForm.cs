@@ -222,7 +222,7 @@ namespace ExcelReportApplication
             // This issue description is needed for report purpose
             //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
             ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.global_issue_list);
-            KeywordReport.KeywordIssueGenerationTaskV3_2nd_ver(report_list);
+            KeywordReport.KeywordIssueGenerationTaskV4(report_list);
             return true;
         }
 

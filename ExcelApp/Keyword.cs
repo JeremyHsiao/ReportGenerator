@@ -562,15 +562,15 @@ namespace ExcelReportApplication
         }
 */
 
-        static public bool KeywordIssueGenerationTaskV3_2nd_ver(string report_filename)
+        static public bool KeywordIssueGenerationTaskV4(string report_filename)
         {
             List<String> report_filename_list = new List<String>();
             report_filename_list.Add(report_filename);
-            bool bRet = KeywordIssueGenerationTaskV3_2nd_ver(report_filename_list);
+            bool bRet = KeywordIssueGenerationTaskV4(report_filename_list);
             return bRet;
         }
 
-        static public bool KeywordIssueGenerationTaskV3_2nd_ver(List<String> report_filename)
+        static public bool KeywordIssueGenerationTaskV4(List<String> report_filename)
         {
             //
             // 1. Create a temporary test plan (do_plan) to include all report files 
