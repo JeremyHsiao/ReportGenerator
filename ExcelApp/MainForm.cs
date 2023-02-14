@@ -194,6 +194,7 @@ namespace ExcelReportApplication
 
         private bool Execute_KeywordIssueGenerationTask(String FileOrDirectoryName, Boolean IsDirectory = false)
         {
+            List<String> file_list = new List<String>();
             if (IsDirectory == false)
             {
                 if ((ReportGenerator.global_issue_list.Count == 0) || (!Storage.FileExists(FileOrDirectoryName)))
@@ -201,13 +202,7 @@ namespace ExcelReportApplication
                     // protection check
                     return false;
                 }
-
-                // This issue description is needed for report purpose
-                ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
-                //
-                // To-Be-Finished: replace V2 with V3
-                //
-                KeywordReport.KeywordIssueGenerationTaskV2(FileOrDirectoryName);
+                file_list.Add(FileOrDirectoryName);
             }
             else
             {
@@ -216,17 +211,18 @@ namespace ExcelReportApplication
                     // protection check
                     return false;
                 }
-                List<String> file_list = Storage.ListFilesUnderDirectory(FileOrDirectoryName);
-                List<String> report_list = Storage.FilterFilename(file_list);
+                file_list = Storage.ListFilesUnderDirectory(FileOrDirectoryName);
                 //MsgWindow.AppendText("File found under directory " + FileOrDirectoryName + "\n");
                 //foreach (String filename in file_list)
                 //    MsgWindow.AppendText(filename + "\n");
-
-                // This issue description is needed for report purpose
-                //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
-                ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.global_issue_list);
-                KeywordReport.KeywordIssueGenerationTaskV3_2nd_ver(report_list);
             }
+            // filename check to exclude non-report files.
+            List<String> report_list = Storage.FilterFilename(file_list);
+
+            // This issue description is needed for report purpose
+            //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
+            ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.global_issue_list);
+            KeywordReport.KeywordIssueGenerationTaskV3_2nd_ver(report_list);
             return true;
         }
 
