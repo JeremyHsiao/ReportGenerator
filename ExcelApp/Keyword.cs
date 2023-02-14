@@ -349,7 +349,7 @@ namespace ExcelReportApplication
             return true;
         }
 */
-
+/*
         static public bool KeywordIssueGenerationTaskV2(string report_filename)
         {
             //
@@ -439,7 +439,8 @@ namespace ExcelReportApplication
             ExcelAction.CloseExcelWorkbook(wb_keyword_issue, SaveChanges: true, AsFilename: dest_filename);
             return true;
         }
-
+*/
+/*
         static public bool KeywordIssueGenerationTaskV3(List<String> report_filename)
         {
             //
@@ -559,96 +560,14 @@ namespace ExcelReportApplication
 
             return true;
         }
+*/
 
-        static public bool KeywordIssueGenerationTaskV2_2nd_ver(string report_filename)
+        static public bool KeywordIssueGenerationTaskV3_2nd_ver(string report_filename)
         {
-            //
-            // 1. Find keyword for user selected file
-            //
-            String full_filename = Storage.GetFullPath(report_filename);
-            String short_filename = Storage.GetFileName(full_filename);
-            String[] sp_str = short_filename.Split(new Char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
-            String sheet_name = sp_str[0];
-            String subpart = sp_str[1];
-
-            // Create a temporary test plan -- DoOrNot must be "V" & ExcelFile/ExcelSheet must be correct
-            List<String> tp_str = new List<String>();
-            tp_str.AddRange(new String[] { "N/A", short_filename, "N/A", "V", "N/A", subpart });
-            TestPlan tp = new TestPlan(tp_str);
-            tp.ExcelFile = full_filename;
-            tp.ExcelSheet = sheet_name;
-            List<TestPlan> do_plan = new List<TestPlan>();
-            do_plan.Add(tp);
-
-            // List all keyword within this temprary test plan
-            List<TestPlanKeyword> keyword_list = KeywordReport.ListAllKeyword(do_plan);
-
-            // 2. Open Excel and find the sheet
-            // File exist check is done outside
-            Workbook wb_keyword_issue = ExcelAction.OpenExcelWorkbook(full_filename);
-            if (wb_keyword_issue == null)
-            {
-                ConsoleWarning("OpenExcelWorkbook in KeywordIssueGenerationTaskV2");
-                return false;
-            }
-
-            Worksheet result_worksheet = ExcelAction.Find_Worksheet(wb_keyword_issue, sheet_name);
-            if (result_worksheet == null)
-            {
-                ConsoleWarning("Find_Worksheet in KeywordIssueGenerationTaskV2");
-                return false;
-            }
-
-            //
-            // 3. Use keyword to find out all issues (ID) that contains keyword on id_list. 
-            //    Extend list of issue ID to list of issue description (with font style settings)
-            //
-            ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
-            Dictionary<String, List<String>> KeywordIssueIDList = new Dictionary<String, List<String>>();
-            foreach (Issue issue in ReportGenerator.global_issue_list)
-            {
-                issue.KeywordList.Clear();
-            }
-            foreach (TestPlanKeyword keyword in keyword_list)
-            {
-                List<StyleString> description_list;
-                List<String> id_list = new List<String>();
-                String keyword_str = keyword.Keyword;
-                foreach (Issue issue in ReportGenerator.global_issue_list)
-                {
-                    if (issue.ContainKeyword(keyword_str))
-                    {
-                        id_list.Add(issue.Key);
-                        issue.KeywordList.Add(keyword_str);
-                        keyword.KeywordIssues.Add(issue);       // keep issue with keyword so that it can be used later.
-                    }
-                }
-                keyword.IssueList = id_list;
-                description_list = StyleString.ExtendIssueDescription(id_list, ReportGenerator.global_issue_description_list);
-                keyword.IssueDescriptionList = description_list;
-            }
-
-            //
-            // 4. input:  IssueDescriptionList of Keyword
-            //    output: write color_description_list at Excel(row_index,new_inserted_col outside printable area
-            //         
-            // Insert extra column just outside printable area.
-            // Assummed that Printable area always starting at $A$1 (also data processing area)
-            // So excel data processing area ends at Printable area (row_count,col_count)
-            int column_print_area = ExcelAction.GetWorksheetPrintableRange(result_worksheet).Columns.Count;
-            int insert_col = column_print_area + 1;
-            ExcelAction.Insert_Column(result_worksheet, insert_col);
-
-            foreach (TestPlanKeyword keyword in keyword_list)
-            {
-                int at_row = keyword.AtRow;
-                StyleString.WriteStyleString(result_worksheet, at_row, insert_col, keyword.IssueDescriptionList);
-            }
-
-            // Save as another file with yyyyMMddHHmmss
-            string dest_filename = Storage.GenerateFilenameWithDateTime(full_filename);
-            ExcelAction.CloseExcelWorkbook(wb_keyword_issue, SaveChanges: true, AsFilename: dest_filename);
-            return true;
+            List<String> report_filename_list = new List<String>();
+            report_filename_list.Add(report_filename);
+            bool bRet = KeywordIssueGenerationTaskV3_2nd_ver(report_filename_list);
+            return bRet;
         }
 
         static public bool KeywordIssueGenerationTaskV3_2nd_ver(List<String> report_filename)
