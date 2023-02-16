@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Office.Interop.Excel;
 using Excel = Microsoft.Office.Interop.Excel;
+using System.Configuration;
 
 namespace ExcelReportApplication
 {
@@ -255,7 +256,8 @@ namespace ExcelReportApplication
         private const int col_indentifier = 2;
         private const int col_keyword = 3;
         private const int row_test_detail_start = 27;
-        private const String identifier_str = "Item";
+        private const String regexKeywordString = @"(?i)Item";
+        private static RegexStringValidator identifier_keyword_Regex = new RegexStringValidator(regexKeywordString);
 
         public List<TestPlanKeyword> ListKeyword()
         {
@@ -278,14 +280,20 @@ namespace ExcelReportApplication
             for (int row_index = row_test_detail_start; row_index <= row_print_area; row_index++)
             {
                 String cell_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index, col_indentifier);
-                if (cell_text == "") continue;
-                if ((cell_text.Length > identifier_str.Length) &&
-                    (cell_text.ToLowerInvariant().Contains(identifier_str.ToLowerInvariant())))
+                try
                 {
+                    // Attempt validation.
+                    identifier_keyword_Regex.Validate(cell_text);
+                    // regex validated true here, false jumping to catch
                     cell_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index, col_keyword);
                     if (cell_text == "") { ConsoleWarning("Empty Keyword", row_index); continue; }
                     if (KeywordAtRow.ContainsKey(cell_text)) { ConsoleWarning("Duplicated Keyword", row_index); continue; }
                     KeywordAtRow.Add(cell_text, row_index);
+                }
+                catch (ArgumentException e)
+                {
+                    // Validation failed.
+                    // Not a key row
                 }
             }
 
