@@ -106,6 +106,35 @@ namespace ExcelReportApplication
                 StyleString.default_fontstyle = (FontStyle) Enum.Parse((typeof(FontStyle)),fontstyle_str);
             }
             // config for report template
+
+            // config for keyword report
+            color_str = XMLConfig.ReadAppSetting("Keyword_report_A_Issue_Color");
+            if (Int32.TryParse(color_str, out int_value))
+            {
+                Issue.A_ISSUE_COLOR = Color.FromArgb(int_value);
+            }
+            else
+            {
+                Issue.A_ISSUE_COLOR = Color.FromName(color_str);
+            }
+            color_str = XMLConfig.ReadAppSetting("Keyword_report_B_Issue_Color");
+            if (Int32.TryParse(color_str, out int_value))
+            {
+                Issue.B_ISSUE_COLOR = Color.FromArgb(int_value);
+            }
+            else
+            {
+                Issue.B_ISSUE_COLOR = Color.FromName(color_str);
+            }
+            color_str = XMLConfig.ReadAppSetting("Keyword_report_C_Issue_Color");
+            if (Int32.TryParse(color_str, out int_value))
+            {
+                Issue.C_ISSUE_COLOR = Color.FromArgb(int_value);
+            }
+            else
+            {
+                Issue.C_ISSUE_COLOR = Color.FromName(color_str);
+            }
         }
 
         private void InitializeReportFunctionListBox()

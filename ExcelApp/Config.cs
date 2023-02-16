@@ -42,6 +42,10 @@ namespace ExcelReportApplication
             //@"buglist_Status_Waive",                  @"Black",
             //@"buglist_Status_Close",                  @"Black",
             //@"buglist_Status_Other",                  @"Black",
+            @"Keyword_report_A_Issue_Color",            @"Red",
+            @"Keyword_report_B_Issue_Color",            @"DarkOrange",
+            @"Keyword_report_C_Issue_Color",            @"Black",
+
         };
 
         // buglist_Severity support: Color.xxxxx
