@@ -57,6 +57,30 @@ namespace ExcelReportApplication
                 TestCase.DataBeginRow = int_value;
             }
 
+            // config for default parameters used in Test Plan / Test Report
+            if (Int32.TryParse(XMLConfig.ReadAppSetting("TestPlan_Row_NameDefine"), out int_value))
+            {
+                TestPlan.NameDefinitionRow_TestPlan = int_value;
+            }
+            if (Int32.TryParse(XMLConfig.ReadAppSetting("TestPlan_Row_DataBegin"), out int_value))
+            {
+                TestPlan.DataBeginRow_TestPlan = int_value;
+            }
+            if (Int32.TryParse(XMLConfig.ReadAppSetting("TestReport_Row_UserStart"), out int_value))
+            {
+                TestPlan.row_test_detail_start = int_value;
+            }
+            if (Int32.TryParse(XMLConfig.ReadAppSetting("TestReport_Column_Keyword_Indentifier"), out int_value))
+            {
+                TestPlan.col_keyword = int_value;
+            }
+            if (Int32.TryParse(XMLConfig.ReadAppSetting("TestReport_Column_Keyword_Location"), out int_value))
+            {
+                TestPlan.col_keyword = int_value;
+            }
+            TestPlan.regexKeywordString = XMLConfig.ReadAppSetting("TestReport_Regex_Keyword_Indentifier");
+            // end of config
+
             // config for excel report
             StyleString.default_font = XMLConfig.ReadAppSetting("default_report_Font");
             if (Int32.TryParse(XMLConfig.ReadAppSetting("default_report_FontSize"), out int_value))

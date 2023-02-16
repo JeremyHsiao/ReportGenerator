@@ -113,8 +113,8 @@ namespace ExcelReportApplication
         // The sequence of this String[] must be aligned with enum TestPlanMemberIndex
         static public String[] TestPlanMemberColumnName = { col_Group, col_Summary, col_Assignee, col_DoOrNot, col_Category, col_Subpart };
 
-        static public int NameDefinitionRow_TestPlan = 2;
-        static public int DataBeginRow_TestPlan = 3;
+        public static int NameDefinitionRow_TestPlan = 2;
+        public static int DataBeginRow_TestPlan = 3;
 
         public static List<TestPlan> ListDoPlan(List<TestPlan> testplan)
         {
@@ -253,11 +253,10 @@ namespace ExcelReportApplication
             }
         }
 
-        private const int col_indentifier = 2;
-        private const int col_keyword = 3;
-        private const int row_test_detail_start = 27;
-        private const String regexKeywordString = @"(?i)Item";
-        private static RegexStringValidator identifier_keyword_Regex = new RegexStringValidator(regexKeywordString);
+        public static int col_indentifier = 2;
+        public static int col_keyword = 3;
+        public static int row_test_detail_start = 27;
+        public static String regexKeywordString = @"(?i)Item";
 
         public List<TestPlanKeyword> ListKeyword()
         {
@@ -277,6 +276,7 @@ namespace ExcelReportApplication
             // Read report file for keyword & its row and store into keyword/row dictionary
             // Search keyword within printable area
             Dictionary<String, int> KeywordAtRow = new Dictionary<String, int>();
+            RegexStringValidator identifier_keyword_Regex = new RegexStringValidator(regexKeywordString);
             for (int row_index = row_test_detail_start; row_index <= row_print_area; row_index++)
             {
                 String cell_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index, col_indentifier);
