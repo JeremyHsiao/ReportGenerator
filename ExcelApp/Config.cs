@@ -26,7 +26,22 @@ namespace ExcelReportApplication
             @"TC_Row_NameDefine",              @"4",
             @"TC_Row_DataBegin",               @"5",
             @"workbook_TC_Template",           @".\SampleData\TC_Jira_Template.xlsx",
+            @"default_report_Font",            @"Calibri",
+            @"default_report_FontSize",        @"10",
+            @"default_report_FontColor",       @"Black",
+            @"default_report_FontStyle",       @"Regular",
+            //@"buglist_sorting",                @"Severity,Key",
+            //@"buglist_Severity_A",             @"Red",
+            //@"buglist_Severity_B",             @"DarkOrange",
+            //@"buglist_Severity_C",             @"Black",
+            //@"buglist_Severity_D",             @"Black",
+            //@"buglist_Status_Waive",           @"Black",
+            //@"buglist_Status_Close",           @"Black",
+            //@"buglist_Status_Other",           @"Black",
         };
+
+        // buglist_Severity support: Color.xxxxx
+        // buglist_Status_Other support: 
 
         public static String GetDefaultValue(String key)
         {
