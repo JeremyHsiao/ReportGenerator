@@ -57,6 +57,30 @@ namespace ExcelReportApplication
                 TestCase.DataBeginRow = int_value;
             }
 
+            // config for excel report
+            StyleString.default_font = XMLConfig.ReadAppSetting("default_report_Font");
+            if (Int32.TryParse(XMLConfig.ReadAppSetting("default_report_FontSize"), out int_value))
+            {
+                StyleString.default_size = int_value;
+            }
+            String color_str = XMLConfig.ReadAppSetting("default_report_FontSize");
+            if (Int32.TryParse(color_str, out int_value))
+            {
+                StyleString.default_color =  Color.FromArgb(int_value);
+            }
+            else
+            {
+                StyleString.default_color = Color.FromName(color_str);
+            }
+            String fontstyle_str = XMLConfig.ReadAppSetting("default_report_FontStyle");
+            if (Int32.TryParse(fontstyle_str, out int_value))
+            {
+                StyleString.default_fontstyle = (FontStyle)int_value;
+            }
+            else
+            {
+                StyleString.default_fontstyle = (FontStyle) Enum.Parse((typeof(FontStyle)),fontstyle_str);
+            }
             // config for report template
         }
 
