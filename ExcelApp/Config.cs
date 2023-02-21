@@ -26,10 +26,16 @@ namespace ExcelReportApplication
             @"TC_Row_NameDefine",                       @"4",
             @"TC_Row_DataBegin",                        @"5",
             @"workbook_TC_Template",                    @".\SampleData\TC_Jira_Template.xlsx",
-            @"TestReport_Row_UserStart",                  @"27",
-            @"TestReport_Column_Keyword_Indentifier",     @"2",
-            @"TestReport_Regex_Keyword_Indentifier",      @"(?i)Item",
-            @"TestReport_Column_Keyword_Location",        @"3",
+            @"TestReport_Row_UserStart",                @"27",
+            @"TestReport_Column_Keyword_Indentifier",   @"2",
+            @"TestReport_Regex_Keyword_Indentifier",    @"(?i)Item",
+            @"TestReport_Column_Keyword_Location",      @"3",
+            @"TestReport_Result_Titlle_Offset_Row",     @"1",
+            @"TestReport_Result_Titlle_Offset_Col",     @"1",
+            @"TestReport_BugStatus_Titlle_Offset_Row",  @"1",
+            @"TestReport_BugStatus_Titlle_Offset_Col",  @"3",
+            @"TestReport_BugList_Titlle_Offset_Row",    @"2",
+            @"TestReport_BugList_Titlle_Offset_Col",    @"1",
             @"default_report_Font",                     @"Calibri",
             @"default_report_FontSize",                 @"10",
             @"default_report_FontColor",                @"Black",
@@ -66,7 +72,8 @@ namespace ExcelReportApplication
             return result;
         }
 
-        public static String ReadAppSetting(String key)
+        // make is private so that all ReadAppSettings are type-checked.
+        private static String ReadAppSetting(String key)
         {
             try
             {
@@ -81,6 +88,81 @@ namespace ExcelReportApplication
             {
                 return GetDefaultValue(key);
             }
+        }
+
+        public static String ReadAppSetting_String(String key)
+        {
+            return ReadAppSetting(key);
+        }
+
+        public static Boolean ReadAppSetting_Boolean(String key)
+        {
+            Boolean ret_value;
+            if (!Boolean.TryParse(ReadAppSetting(key), out ret_value))
+            {
+                // TryParse failed, use default value
+                if (!Boolean.TryParse(GetDefaultValue(key), out ret_value))
+                {
+                    // If still failed, it indicated that default value in code is not correct!
+                    // highlight error
+                    Console.WriteLine("Default value for " + key + " is not a Boolean. Please check");
+                }
+            }
+            return ret_value;
+        }
+
+        public static int ReadAppSetting_int(String key)
+        {
+            int ret_value;
+            if (!int.TryParse(ReadAppSetting(key), out ret_value))
+            {
+                // TryParse failed, use default value
+                if (!int.TryParse(GetDefaultValue(key), out ret_value))
+                {
+                    // If still failed, it indicated that default value in code is not correct!
+                    // highlight error
+                    Console.WriteLine("Default value for " + key + " is not an int. Please check");
+                }
+            }
+            return ret_value;
+        }
+
+        public static System.Drawing.Color ReadAppSetting_Color(String key)
+        {
+            System.Drawing.Color ret_value;
+            int int_value;
+            string input_str = ReadAppSetting(key);
+            // Because color could be a string (ex:Black) or a ARGB value #00000000
+            if (int.TryParse(input_str, out int_value))
+            {
+                ret_value = System.Drawing.Color.FromArgb(int_value);
+            }
+            else
+            {
+                //  Treat string as color name.
+                //  If the name parameter is not the valid name of a predefined color, 
+                //  the FromName method creates a Color structure that has an ARGB value of 0 (that is, all ARGB components are 0).
+                ret_value = System.Drawing.Color.FromName(input_str);
+            }
+            return ret_value;
+        }
+
+        public static System.Drawing.FontStyle ReadAppSetting_FontStyle(String key)
+        {
+            System.Drawing.FontStyle ret_value;
+            int int_value;
+            string input_str = ReadAppSetting(key);
+            // Because FontStyle could be a string or a value
+            if (int.TryParse(input_str, out int_value))
+            {
+                ret_value = (System.Drawing.FontStyle)int_value;
+            }
+            else
+            {
+                //  Treat string as FontStyle name.
+                ret_value = (System.Drawing.FontStyle)Enum.Parse((typeof(System.Drawing.FontStyle)), input_str);
+            }
+            return ret_value;
         }
 
         public static void AddUpdateAppSettings(string key, string value)
