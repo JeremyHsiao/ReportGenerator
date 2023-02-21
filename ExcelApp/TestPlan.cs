@@ -254,9 +254,15 @@ namespace ExcelReportApplication
         }
 
         public static int col_indentifier = 2;
-        public static int col_keyword = 3;
+        public static int col_keyword = col_indentifier + 1;
         public static int row_test_detail_start = 27;
         public static String regexKeywordString = @"(?i)Item";
+        public static int row_offset_result_title = 1;                                // offset from the row of identifier regex "Item"
+        public static int row_offset_bugstatus_title = row_offset_result_title;       // offset from the row of identifier regex "Item"
+        public static int row_offset_buglist_title = row_offset_result_title + 1;     // offset from the row of identifier regex "Item"
+        public static int col_offset_result_title = 1;                                // offset from the column of identifier regex "Item"
+        public static int col_offset_bugstatus_title = col_offset_result_title + 2;   // offset from the column of identifier regex "Item"
+        public static int col_offset_buglist_title = col_offset_result_title;         // offset from the column of identifier regex "Item"
 
         public List<TestPlanKeyword> ListKeyword()
         {
@@ -283,8 +289,22 @@ namespace ExcelReportApplication
                 try
                 {
                     // Attempt validation.
+                    // regex false (not a keyword row) then jumping to catch(); 
                     identifier_keyword_Regex.Validate(cell_text);
-                    // regex validated true here, false jumping to catch
+                    // regex true, next step is to check the rest of field to validate
+                    // 1. Check "Result" title
+                    cell_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_result_title,
+                                                                            col_indentifier + col_offset_result_title);
+                    if (cell_text != "Result") { ConsoleWarning("Not Result Text", row_index + row_offset_result_title); continue; }
+                    // 2. Check "Bug Status" title
+                    cell_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_bugstatus_title,
+                                                                            col_indentifier + col_offset_bugstatus_title);
+                    if (cell_text != "Bug Status") { ConsoleWarning("Not Bug Status Text", row_index + row_offset_bugstatus_title); continue; }
+                    // 3. Check "Bug Status" title
+                    cell_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_buglist_title,
+                                                                            col_indentifier + col_offset_buglist_title);
+                    if (cell_text != "Bug list") { ConsoleWarning("Not Bug list Text", row_index + row_offset_buglist_title); continue; }
+                    // it is a keyword, read it.
                     cell_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index, col_keyword);
                     if (cell_text == "") { ConsoleWarning("Empty Keyword", row_index); continue; }
                     if (KeywordAtRow.ContainsKey(cell_text)) { ConsoleWarning("Duplicated Keyword", row_index); continue; }
