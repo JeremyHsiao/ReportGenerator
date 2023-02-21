@@ -21,120 +21,49 @@ namespace ExcelReportApplication
         public void LoadConfigAll()
         {
             int int_value;
-            bool bool_value;
 
             // config for default filename at MainForm
-            this.txtBugFile.Text = XMLConfig.ReadAppSetting("workbook_BUG_Jira");
-            this.txtTCFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Jira");
-            this.txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Template");
-            this.txtStandardTestReport.Text = XMLConfig.ReadAppSetting("workbook_StandardTestReport");
-            if (Boolean.TryParse(XMLConfig.ReadAppSetting("Excel_Visible"), out bool_value))
-            {
-                ExcelAction.ExcelVisible = bool_value;
-            }
+            this.txtBugFile.Text = XMLConfig.ReadAppSetting_String("workbook_BUG_Jira");
+            this.txtTCFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Jira");
+            this.txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
+            this.txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("workbook_StandardTestReport");
 
+            // config for default ExcelAction settings
+            ExcelAction.ExcelVisible = XMLConfig.ReadAppSetting_Boolean("Excel_Visible");
+ 
             // config for issue list
-            Issue.KeyPrefix = XMLConfig.ReadAppSetting("Issue_Key_Prefix");
-            Issue.SheetName = XMLConfig.ReadAppSetting("Issue_SheetName");
-            if (Int32.TryParse(XMLConfig.ReadAppSetting("Issue_Row_NameDefine"), out int_value))
-            {
-                Issue.NameDefinitionRow = int_value;
-            }
-            if (Int32.TryParse(XMLConfig.ReadAppSetting("Issue_Row_DataBegin"), out int_value))
-            {
-                Issue.DataBeginRow = int_value;
-            }
+            Issue.KeyPrefix = XMLConfig.ReadAppSetting_String("Issue_Key_Prefix");
+            Issue.SheetName = XMLConfig.ReadAppSetting_String("Issue_SheetName");
+            Issue.NameDefinitionRow = XMLConfig.ReadAppSetting_int("Issue_Row_NameDefine");
+            Issue.DataBeginRow = XMLConfig.ReadAppSetting_int("Issue_Row_DataBegin");
 
             // config for test-case
-            TestCase.KeyPrefix = XMLConfig.ReadAppSetting("TC_Key_Prefix");
-            TestCase.SheetName = XMLConfig.ReadAppSetting("TC_SheetName");
-            if (Int32.TryParse(XMLConfig.ReadAppSetting("TC_Row_NameDefine"), out int_value))
-            {
-                TestCase.NameDefinitionRow = int_value;
-            }
-            if (Int32.TryParse(XMLConfig.ReadAppSetting("TC_Row_DataBegin"), out int_value))
-            {
-                TestCase.DataBeginRow = int_value;
-            }
+            TestCase.KeyPrefix = XMLConfig.ReadAppSetting_String("TC_Key_Prefix");
+            TestCase.SheetName = XMLConfig.ReadAppSetting_String("TC_SheetName");
+            TestCase.NameDefinitionRow = XMLConfig.ReadAppSetting_int("TC_Row_NameDefine");
+            TestCase.DataBeginRow = XMLConfig.ReadAppSetting_int("TC_Row_DataBegin");
 
             // config for default parameters used in Test Plan / Test Report
-            if (Int32.TryParse(XMLConfig.ReadAppSetting("TestPlan_Row_NameDefine"), out int_value))
-            {
-                TestPlan.NameDefinitionRow_TestPlan = int_value;
-            }
-            if (Int32.TryParse(XMLConfig.ReadAppSetting("TestPlan_Row_DataBegin"), out int_value))
-            {
-                TestPlan.DataBeginRow_TestPlan = int_value;
-            }
-            if (Int32.TryParse(XMLConfig.ReadAppSetting("TestReport_Row_UserStart"), out int_value))
-            {
-                TestPlan.row_test_detail_start = int_value;
-            }
-            if (Int32.TryParse(XMLConfig.ReadAppSetting("TestReport_Column_Keyword_Indentifier"), out int_value))
-            {
-                TestPlan.col_keyword = int_value;
-            }
-            if (Int32.TryParse(XMLConfig.ReadAppSetting("TestReport_Column_Keyword_Location"), out int_value))
-            {
-                TestPlan.col_keyword = int_value;
-            }
-            TestPlan.regexKeywordString = XMLConfig.ReadAppSetting("TestReport_Regex_Keyword_Indentifier");
+            TestPlan.NameDefinitionRow_TestPlan = XMLConfig.ReadAppSetting_int("TestPlan_Row_NameDefine");
+            TestPlan.DataBeginRow_TestPlan = XMLConfig.ReadAppSetting_int("TestPlan_Row_DataBegin");
+            TestPlan.row_test_detail_start = XMLConfig.ReadAppSetting_int("TestReport_Row_UserStart");
+            TestPlan.col_indentifier = XMLConfig.ReadAppSetting_int("TestReport_Column_Keyword_Indentifier");
+            TestPlan.col_keyword = XMLConfig.ReadAppSetting_int("TestReport_Column_Keyword_Location");
+            TestPlan.regexKeywordString = XMLConfig.ReadAppSetting_String("TestReport_Regex_Keyword_Indentifier");
             // end of config
 
-            // config for excel report
-            StyleString.default_font = XMLConfig.ReadAppSetting("default_report_Font");
-            if (Int32.TryParse(XMLConfig.ReadAppSetting("default_report_FontSize"), out int_value))
-            {
-                StyleString.default_size = int_value;
-            }
-            String color_str = XMLConfig.ReadAppSetting("default_report_FontSize");
-            if (Int32.TryParse(color_str, out int_value))
-            {
-                StyleString.default_color =  Color.FromArgb(int_value);
-            }
-            else
-            {
-                StyleString.default_color = Color.FromName(color_str);
-            }
-            String fontstyle_str = XMLConfig.ReadAppSetting("default_report_FontStyle");
-            if (Int32.TryParse(fontstyle_str, out int_value))
-            {
-                StyleString.default_fontstyle = (FontStyle)int_value;
-            }
-            else
-            {
-                StyleString.default_fontstyle = (FontStyle) Enum.Parse((typeof(FontStyle)),fontstyle_str);
-            }
-            // config for report template
+            // config for excel report output
+            StyleString.default_font = XMLConfig.ReadAppSetting_String("default_report_Font");
+            StyleString.default_size = XMLConfig.ReadAppSetting_int("default_report_FontSize");
+            StyleString.default_color = XMLConfig.ReadAppSetting_Color("default_report_FontColor");
+            StyleString.default_fontstyle = XMLConfig.ReadAppSetting_FontStyle("default_report_FontStyle");
+            // end config for excel report output
 
             // config for keyword report
-            color_str = XMLConfig.ReadAppSetting("Keyword_report_A_Issue_Color");
-            if (Int32.TryParse(color_str, out int_value))
-            {
-                Issue.A_ISSUE_COLOR = Color.FromArgb(int_value);
-            }
-            else
-            {
-                Issue.A_ISSUE_COLOR = Color.FromName(color_str);
-            }
-            color_str = XMLConfig.ReadAppSetting("Keyword_report_B_Issue_Color");
-            if (Int32.TryParse(color_str, out int_value))
-            {
-                Issue.B_ISSUE_COLOR = Color.FromArgb(int_value);
-            }
-            else
-            {
-                Issue.B_ISSUE_COLOR = Color.FromName(color_str);
-            }
-            color_str = XMLConfig.ReadAppSetting("Keyword_report_C_Issue_Color");
-            if (Int32.TryParse(color_str, out int_value))
-            {
-                Issue.C_ISSUE_COLOR = Color.FromArgb(int_value);
-            }
-            else
-            {
-                Issue.C_ISSUE_COLOR = Color.FromName(color_str);
-            }
+            Issue.A_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_A_Issue_Color");
+            Issue.B_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_B_Issue_Color");
+            Issue.C_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_C_Issue_Color");
+            // end config for keyword report
         }
 
         private void InitializeReportFunctionListBox()
@@ -646,15 +575,15 @@ namespace ExcelReportApplication
             {
                 case ReportGenerator.ReportType.FullIssueDescription_TC: // "1.Issue Description for TC"
                     if(!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Template");
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
                 case ReportGenerator.ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
                     if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_Summary");
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_Summary");
                     break;
                 case ReportGenerator.ReportType.StandardTestReportCreation:
                     if (!btnSelectExcelTestFile_Clicked)
-                        txtStandardTestReport.Text = XMLConfig.ReadAppSetting("workbook_StandardTestReport");
+                        txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("workbook_StandardTestReport");
                     break;
                 case ReportGenerator.ReportType.KeywordIssue_Report_SingleFile:
                     if (!btnSelectReportFile_Clicked)
@@ -666,11 +595,11 @@ namespace ExcelReportApplication
                     break;
                 case ReportGenerator.ReportType.TC_Likely_Passed:
                     if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting("workbook_TC_Template");
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
                     if (!btnSelectExcelTestFile_Clicked)
-                    txtStandardTestReport.Text = XMLConfig.ReadAppSetting("workbook_ReportToTestKeyword");
+                        txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("workbook_ReportToTestKeyword");
                     break;
                 default:
                     break;
