@@ -263,6 +263,9 @@ namespace ExcelReportApplication
         public static int col_offset_result_title = 1;                                // offset from the column of identifier regex "Item"
         public static int col_offset_bugstatus_title = col_offset_result_title + 2;   // offset from the column of identifier regex "Item"
         public static int col_offset_buglist_title = col_offset_result_title;         // offset from the column of identifier regex "Item"
+        public static String regexResultString = @"^(?i)\s*Result\s*$";
+        public static String regexBugStatusString = @"^(?i)\s*Bug Status\s*$";
+        public static String regexBugListString = @"^(?i)\s*Bug List\s*$";
 
         public List<TestPlanKeyword> ListKeyword()
         {
@@ -283,37 +286,63 @@ namespace ExcelReportApplication
             // Search keyword within printable area
             Dictionary<String, int> KeywordAtRow = new Dictionary<String, int>();
             RegexStringValidator identifier_keyword_Regex = new RegexStringValidator(regexKeywordString);
+            RegexStringValidator result_keyword_Regex = new RegexStringValidator(regexResultString);
+            RegexStringValidator bug_status_keyword_Regex = new RegexStringValidator(regexBugStatusString);
+            RegexStringValidator bug_list_keyword_Regex = new RegexStringValidator(regexBugListString);
             for (int row_index = row_test_detail_start; row_index <= row_print_area; row_index++)
             {
-                String cell_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index, col_indentifier);
+                String  identifier_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index, col_indentifier),
+                        result_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_result_title,
+                                                                            col_indentifier + col_offset_result_title),
+                        bug_status_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_bugstatus_title,
+                                                                            col_indentifier + col_offset_bugstatus_title),
+                        bug_list_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_buglist_title,
+                                                                            col_indentifier + col_offset_buglist_title),
+                        keyword_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index, col_keyword);
+                int regex_step = 0;
                 try
                 {
                     // Attempt validation.
                     // regex false (not a keyword row) then jumping to catch(); 
-                    identifier_keyword_Regex.Validate(cell_text);
+                    identifier_keyword_Regex.Validate(identifier_text); regex_step++;
                     // regex true, next step is to check the rest of field to validate
                     // 1. Check "Result" title
-                    cell_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_result_title,
-                                                                            col_indentifier + col_offset_result_title);
-                    if (cell_text != "Result") { ConsoleWarning("Not Result Text", row_index + row_offset_result_title); continue; }
-                    // 2. Check "Bug Status" title
-                    cell_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_bugstatus_title,
-                                                                            col_indentifier + col_offset_bugstatus_title);
-                    if (cell_text != "Bug Status") { ConsoleWarning("Not Bug Status Text", row_index + row_offset_bugstatus_title); continue; }
-                    // 3. Check "Bug Status" title
-                    cell_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_buglist_title,
-                                                                            col_indentifier + col_offset_buglist_title);
-                    if (cell_text != "Bug list") { ConsoleWarning("Not Bug list Text", row_index + row_offset_buglist_title); continue; }
-                    // it is a keyword, read it.
-                    cell_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index, col_keyword);
-                    if (cell_text == "") { ConsoleWarning("Empty Keyword", row_index); continue; }
-                    if (KeywordAtRow.ContainsKey(cell_text)) { ConsoleWarning("Duplicated Keyword", row_index); continue; }
-                    KeywordAtRow.Add(cell_text, row_index);
+                    result_keyword_Regex.Validate(result_text); regex_step++;
+                    bug_status_keyword_Regex.Validate(bug_status_text); regex_step++;
+                    bug_list_keyword_Regex.Validate(bug_list_text); regex_step++;
+
+                    if (keyword_text == "") { ConsoleWarning("Empty Keyword", row_index); continue; }
+                    if (KeywordAtRow.ContainsKey(keyword_text)) { ConsoleWarning("Duplicated Keyword", row_index); continue; }
+                    KeywordAtRow.Add(keyword_text, row_index);
                 }
                 catch (ArgumentException e)
                 {
                     // Validation failed.
                     // Not a key row
+                    switch (regex_step)
+                    {
+                        case 0:
+                            // Not a keyword identifier 
+                            break;
+                        case 1:
+                            // Not a "Result" 
+                            ConsoleWarning(regexBugStatusString, row_index + row_offset_result_title,
+                                                                 col_indentifier + col_offset_result_title);
+                            break;
+                        case 2:
+                            // Not a "Bug Status" 
+                            ConsoleWarning(regexBugStatusString, row_index + row_index + row_offset_bugstatus_title,
+                                                                 col_indentifier + col_offset_bugstatus_title);
+                            break;
+                        case 3:
+                            // Not a "Bug List" 
+                            ConsoleWarning(regexBugListString, row_index + row_offset_buglist_title,
+                                                                 col_indentifier + col_offset_buglist_title);
+                            break;
+                        default:
+                            break;
+                    }
+                    continue; 
                 }
             }
 
@@ -334,6 +363,10 @@ namespace ExcelReportApplication
             return ret;
         }
 
+        static private void ConsoleWarning(String function, int row, int col)
+        {
+            Console.WriteLine("Warning: please check " + function + " at (" + row.ToString() + "," + col.ToString() + ")");
+        }
         static private void ConsoleWarning(String function, int row)
         {
             Console.WriteLine("Warning: please check " + function + " at line " + row.ToString());
