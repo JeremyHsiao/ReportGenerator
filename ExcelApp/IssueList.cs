@@ -272,12 +272,22 @@ namespace ExcelReportApplication
 
                 // Visit all rows and add content of IssueList
                 int ExcelLastRow = ExcelAction.GetIssueListAllRange().Row;
-                for (int index = DataBeginRow; index <= (ExcelLastRow-1); index++)  // Issue list until LastRow-1
+                for (int excel_row_index = DataBeginRow; excel_row_index <= (ExcelLastRow - 1); excel_row_index++)  // Issue list until LastRow-1
                 {
                     List<String> members = new List<String>();
                     for (int member_index = 0; member_index < IssueListMemberCount; member_index++)
                     {
-                        String str = ExcelAction.GetIssueListCellTrimmedString(index, col_name_list[IssueListMemberColumnName[member_index]]);
+                        String str;
+                        // If data of xxx column exists in Excel, store it.
+                        if (col_name_list.ContainsKey(IssueListMemberColumnName[member_index]))
+                        {
+                            str = ExcelAction.GetIssueListCellTrimmedString(excel_row_index, col_name_list[IssueListMemberColumnName[member_index]]);
+                        }
+                        // If not exist, fill an empty string to xxx
+                        else
+                        {
+                            str = "";
+                        }
                         members.Add(str);
                     }
                     // Add issue only if key contains KeyPrefix (very likely a valid key value)
