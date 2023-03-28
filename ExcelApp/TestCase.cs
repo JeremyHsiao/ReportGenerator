@@ -262,12 +262,22 @@ namespace ExcelReportApplication
 
                 // Visit all rows and add content of TestCased
                 int ExcelLastRow = ExcelAction.GetTestCaseAllRange().Row;
-                for (int index = DataBeginRow; index <= ExcelLastRow; index++)
+                for (int excel_row_index = DataBeginRow; excel_row_index <= ExcelLastRow; excel_row_index++)
                 {
                     List<String> members = new List<String>();
                     for (int member_index = 0; member_index < TestCaseMemberCount; member_index++)
                     {
-                        String str = ExcelAction.GetTestCaseCellTrimmedString(index, col_name_list[TestCaseMemberColumnName[member_index]]);
+                        String str;
+                        // If data of xxx column exists in Excel, store it.
+                        if (col_name_list.ContainsKey(TestCaseMemberColumnName[member_index]))
+                        {
+                            str = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, col_name_list[TestCaseMemberColumnName[member_index]]);
+                        }
+                        // If not exist, fill an empty string to xxx
+                        else
+                        {
+                            str = "";
+                        }
                         members.Add(str);
                     }
                     // Add issue only if key contains KeyPrefix (very likely a valid key value)
