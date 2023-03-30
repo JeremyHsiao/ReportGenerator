@@ -134,7 +134,20 @@ namespace ExcelReportApplication
 
         static public Range GetWorksheetAllRange(Worksheet ws)
         {
-            return ws.get_Range("A1").SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);
+            // For XlSpecialCellsValue,
+            // please refer to https://learn.microsoft.com/en-us/dotnet/api/microsoft.office.interop.excel.xlspecialcellsvalue?view=excel-pia
+            Range ret_range = ws.Range["A1"].SpecialCells(XlCellType.xlCellTypeLastCell,(XlSpecialCellsValue)(1+2+4+16));
+            return ret_range;
+        }
+
+        static public int Get_Range_RowNumber(Range check_range)
+        {
+            return (check_range.Row * check_range.Rows.Count);
+        }
+
+        static public int Get_Range_ColumnNumber(Range check_range)
+        {
+            return (check_range.Column * check_range.Columns.Count);
         }
 
         static public Range GetWorksheetPrintableRange(Worksheet ws)
@@ -166,7 +179,7 @@ namespace ExcelReportApplication
 
         static public void Hide_Row(Worksheet ws, int row, int count = 1)
         {
-            Range hiddenRange = ws.Range[ws.Cells[row, 1], ws.Cells[row + count - 1, GetWorksheetAllRange(ws).Column]];
+            Range hiddenRange = ws.Range[ws.Cells[row, 1], ws.Cells[row + count - 1, Get_Range_ColumnNumber(GetWorksheetAllRange(ws))]];
             //     var hiddenRange = yourWorksheet.Range[yourWorksheet.Cells[firstRowToHide, firstColToHide], yourWorksheet.Cells[lastRowToHide, lastColToHide]];
             hiddenRange.EntireRow.Hidden = true;
         }
@@ -190,7 +203,7 @@ namespace ExcelReportApplication
         {
             Dictionary<string, int> col_name_list = new Dictionary<string, int>();
 
-            int col_end = GetWorksheetAllRange(ws).Column;
+            int col_end = Get_Range_ColumnNumber(GetWorksheetAllRange(ws));
             for (int col_index = 1; col_index <= col_end; col_index++)
             {
                 String cell_value2 = GetCellTrimmedString(ws, naming_row, col_index);
@@ -236,6 +249,12 @@ namespace ExcelReportApplication
         {
             return GetWorksheetAllRange(ws_issuelist);
         }
+
+        //static public int GetIssueListMaxRow()
+        //{
+            //int max_row = GetWorksheetAllRange(ws_issuelist).Row;
+            //if(max_row
+        //}
 
         static public Object GetIssueListCell(int row, int col)
         {
@@ -595,6 +614,24 @@ namespace ExcelReportApplication
             Dst.Value2 = Src.Value2;
         }
 
+        static private void CopyValue2_different_cell_location(Worksheet src, int src_row, int src_col,
+                                                            Worksheet dst, int dst_row, int dst_col)
+        {
+            Range Src = src.Cells[src_row, src_col];
+            Range Dst = dst.Cells[dst_row, dst_col];
+            Dst.Value2 = Src.Value2;
+        }
+
+        static private void CopyValue2_different_range_location(Worksheet src, int src_ul_row, int src_ul_col, int src_br_row, int src_br_col,
+                                                                Worksheet dst, int dst_ul_row, int dst_ul_col)
+        {
+            int dst_br_row = dst_ul_row + (src_br_row - src_ul_row),
+                dst_br_col = dst_ul_col + (src_br_col - src_ul_col);
+            Range Src = src.Range[src.Cells[src_ul_row, src_ul_col], src.Cells[src_br_row, src_br_col]];
+            Range Dst = dst.Range[dst.Cells[dst_ul_row, dst_ul_col], dst.Cells[dst_br_row, dst_br_col]];
+            Dst.Value2 = Src.Value2;
+        }
+
         static private void CopyValue2(Worksheet src, Worksheet dst, int ul_row, int ul_col, int br_row, int br_col)
         {
             Range Src = src.Range[src.Cells[ul_row, ul_col], src.Cells[br_row, br_col]];
@@ -632,7 +669,7 @@ namespace ExcelReportApplication
         // Result: Test-Case Excel data shown in the format of Test-Case-Template
         static public bool CopyTestCaseIntoTemplate()
         {
-            Worksheet tc_data       = ws_testcase,
+            Worksheet tc_data     = ws_testcase,
                       tc_template = ws_tc_template;
 
             // Protection
@@ -640,10 +677,12 @@ namespace ExcelReportApplication
             if (tc_template == null) { return false; }
 
             Worksheet ws_Src = tc_data, ws_Dst = tc_template;
-            Range Src = GetWorksheetAllRange(ws_Src);
-            Range Dst = GetWorksheetAllRange(ws_Dst);
+            Range Src = GetTestCaseAllRange();
+            Range Dst = GetTestCaseAllRange(IsTemplate: true);
             int Src_last_row = Src.Row, Src_last_col = Src.Column;
             int Dst_last_row = Dst.Row, Dst_last_col = Dst.Column;
+
+            // workaround for temp
 
             // Make template (destination) row count == TestCase (source) row count
             if (Src_last_row > Dst_last_row)
@@ -678,6 +717,76 @@ namespace ExcelReportApplication
 
             // Copy the rest of data
             CopyValue2(ws_Src, ws_Dst, TestCase.DataBeginRow, 1, Src_last_row - 1, Src_last_col);
+
+            return true;
+        }
+
+        // This version doesn't assume that columns item/sequence are both the same.
+        // 1. adjust rows of tc_template to be the same as test-case excel
+        // 2. don't copy column name --> keep them instead
+        // 3. copy cell value (of each data row) into correpsonding column of tc_template.
+        //     for example copy "Key" (assumed at column 1) to another "Key" (assumed not at column 1)
+        static public bool CopyTestCaseIntoTemplate_v2()
+        {
+            Worksheet tc_data = ws_testcase,
+                      tc_template = ws_tc_template;
+
+            // Protection
+            if (tc_data == null) { return false; }
+            if (tc_template == null) { return false; }
+
+            Worksheet ws_Src = tc_data, ws_Dst = tc_template;
+            Range Src = GetWorksheetAllRange(ws_Src);
+            Range Dst = GetWorksheetAllRange(ws_Dst);
+            int Src_last_row = Get_Range_RowNumber(Src), Src_last_col = Get_Range_ColumnNumber(Src);
+            int Dst_last_row = Get_Range_RowNumber(Dst), Dst_last_col = Get_Range_ColumnNumber(Dst);
+
+            // Make template (destination) row count == TestCase (source) row count
+            if (Src_last_row > Dst_last_row)
+            {
+                // Insert row into template file
+                int rows_to_insert = Src_last_row - Dst_last_row;
+                do
+                {
+                    Insert_Row(ws_Dst, TestCase.DataBeginRow + 1);
+                }
+                while (--rows_to_insert > 0);
+            }
+            else if (Src_last_row < Dst_last_row)
+            {
+                // Delete row from template file
+                int rows_to_delete = Dst_last_row - Src_last_row;
+                do
+                {
+                    Delete_Row(ws_Dst, TestCase.DataBeginRow);
+                }
+                while (--rows_to_delete > 0);
+            }
+
+            // Copy [3,1] from tc to template
+            //CopyValue2(ws_Src, ws_Dst, 3, 1);
+
+            // Copy row 4 (Column Name) from tc to template
+            //CopyValue2(ws_Src, ws_Dst, TestCase.NameDefinitionRow, 1, TestCase.NameDefinitionRow, Src_last_col);
+
+            // Copy [Src_last_row,1] from tc to template
+            //CopyValue2(ws_Src, ws_Dst, Src_last_row, 1);
+
+            // Copy the rest of data
+            //CopyValue2(ws_Src, ws_Dst, TestCase.DataBeginRow, 1, Src_last_row - 1, Src_last_col);
+
+            // use LUT of column index for mapping the same column_name of SRC/DST
+            Dictionary<string, int> src_col_name_list = ExcelAction.CreateTestCaseColumnIndex();
+            Dictionary<string, int> dst_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate:true);
+            int row_begin = TestCase.DataBeginRow, row_end = Src_last_row - 1;
+            foreach (string col_name in dst_col_name_list.Keys)
+            {
+                if (src_col_name_list.ContainsKey(col_name))
+                {
+                    int dst_col = dst_col_name_list[col_name], src_col = src_col_name_list[col_name];
+                    CopyValue2_different_range_location(ws_Src, row_begin, src_col, row_end, src_col, ws_Dst, row_begin, dst_col);
+                }
+            }
 
             return true;
         }
