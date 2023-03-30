@@ -258,10 +258,10 @@ namespace ExcelReportApplication
 
             if (status == ExcelAction.ExcelStatus.OK)
             {
-                Dictionary<string, int> col_name_list = ExcelAction.CreateTestCaseColumnIndex();
+                Dictionary<string, int> tc_col_name_list = ExcelAction.CreateTestCaseColumnIndex();
 
-                // Visit all rows and add content of TestCased
-                int ExcelLastRow = ExcelAction.GetTestCaseAllRange().Row;
+                // Visit all rows and add content of TestCase
+                int ExcelLastRow = ExcelAction.Get_Range_RowNumber(ExcelAction.GetTestCaseAllRange());
                 for (int excel_row_index = DataBeginRow; excel_row_index <= ExcelLastRow; excel_row_index++)
                 {
                     List<String> members = new List<String>();
@@ -269,9 +269,9 @@ namespace ExcelReportApplication
                     {
                         String str;
                         // If data of xxx column exists in Excel, store it.
-                        if (col_name_list.ContainsKey(TestCaseMemberColumnName[member_index]))
+                        if (tc_col_name_list.ContainsKey(TestCaseMemberColumnName[member_index]))
                         {
-                            str = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, col_name_list[TestCaseMemberColumnName[member_index]]);
+                            str = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, tc_col_name_list[TestCaseMemberColumnName[member_index]]);
                         }
                         // If not exist, fill an empty string to xxx
                         else

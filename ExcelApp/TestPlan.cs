@@ -138,7 +138,7 @@ namespace ExcelReportApplication
 
             // Get the last (row,col) of excel
             Range rngLast = ExcelAction.GetWorksheetAllRange(testplan_ws);
-            int row_end = rngLast.Row;
+            int row_end = ExcelAction.Get_Range_RowNumber(rngLast);
             // Visit all rows and add content 
             for (int index = DataBeginRow_TestPlan; index <= row_end; index++)
             {

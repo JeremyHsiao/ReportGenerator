@@ -42,7 +42,7 @@ namespace ExcelReportApplication
                     const int col_group = 1, col_result = 2, col_issue = 3; // column "A" - "C"
                     const int row_result_starting = 6; // row starting from 6
 
-                    int end_row = rngLast.Row;
+                    int end_row = ExcelAction.Get_Range_RowNumber(rngLast);
                     for (int index = row_result_starting; index <= end_row; index++)
                     {
                         List<StyleString> str_list = new List<StyleString>();
