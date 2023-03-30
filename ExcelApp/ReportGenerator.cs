@@ -190,28 +190,29 @@ namespace ExcelReportApplication
                 return; // to-be-checked if here
             }
 
+
             // 3. Copy test case data into template excel -- both will have the same row/col and (almost) same data
-            ExcelAction.CopyTestCaseIntoTemplate();
+            ExcelAction.CopyTestCaseIntoTemplate_v2();
 
             // 4. Prepare data on test case excel and write into test-case (template)
-            Dictionary<string, int> col_name_list = ExcelAction.CreateTestCaseColumnIndex();
-            int key_col = col_name_list[TestCase.col_Key];
-            int links_col = col_name_list[TestCase.col_LinkedIssue];
-            int last_row = ExcelAction.GetTestCaseAllRange().Row;
+            Dictionary<string, int> template_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate:true);
+            int key_col = template_col_name_list[TestCase.col_Key];
+            int links_col = template_col_name_list[TestCase.col_LinkedIssue];
+            int last_row = ExcelAction.Get_Range_RowNumber(ExcelAction.GetTestCaseAllRange(IsTemplate:true));
             // Visit all rows and replace Bug-ID at Linked Issue with long description of Bug.
-            for (int index = TestCase.DataBeginRow; index <= last_row; index++)
+            for (int excel_row_index = TestCase.DataBeginRow; excel_row_index <= last_row; excel_row_index++)
             {
                 // Make sure Key of TC contains KeyPrefix
-                String key = ExcelAction.GetTestCaseCellTrimmedString(index, key_col);
+                String key = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, key_col,IsTemplate:true);
                 if (key.Contains(TestCase.KeyPrefix) == false) { break; } // If not a TC key in this row, go to next row
 
                 // If Links is not empty, extend bug key into long string with font settings
-                String links = ExcelAction.GetTestCaseCellTrimmedString(index, links_col);
+                String links = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, links_col,IsTemplate:true);
                 if (links != "")
                 {
                     List<StyleString> str_list = StyleString.ExtendIssueDescription(links, global_full_issue_description_list);
                     // write into template excel
-                    ExcelAction.TestCase_WriteStyleString(index, links_col, str_list, IsTemplate: true);
+                    ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
                 }
             }
 
@@ -323,9 +324,9 @@ namespace ExcelReportApplication
                     ExcelAction.CloseTestCaseExcel();           // original test case excel is to be closed.
 
                     // 4. Excel processing on template excel file
-                    Dictionary<string, int> col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate:true);
-                    int DataEndRow = ExcelAction.GetTestCaseAllRange(IsTemplate: true).Row;
-                    int key_col = col_name_list[TestCase.col_Key];
+                    Dictionary<string, int> template_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate:true);
+                    int DataEndRow = ExcelAction.Get_Range_RowNumber(ExcelAction.GetTestCaseAllRange(IsTemplate: true));
+                    int key_col = template_col_name_list[TestCase.col_Key];
 
                     // Visit all rows to check if key belongs to tc_fail_all_closed
                     int hide_row_start = 0, hide_row_count = 0;
