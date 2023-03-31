@@ -153,7 +153,15 @@ namespace ExcelReportApplication
         static public Range GetWorksheetPrintableRange(Worksheet ws)
         {
             String PrintArea = ws.PageSetup.PrintArea;
-            Range rngPrintable = ws.Range[PrintArea];
+            Range rngPrintable;
+            try
+            {
+                rngPrintable = ws.Range[PrintArea];
+            }
+            catch
+            {
+                rngPrintable = ws.Range["A1"];
+            }
             return rngPrintable;
         }
 
