@@ -275,8 +275,8 @@ namespace ExcelReportApplication
             // Assummed that Printable area always starting at $A$1 (also data processing area)
             // So excel data processing area ends at Printable area (row_count,col_count)
             Range rngPrintable = ExcelAction.GetWorksheetPrintableRange(ws_testplan);
-            int row_print_area = rngPrintable.Rows.Count;
-            int column_print_area = rngPrintable.Columns.Count;
+            int row_print_area = ExcelAction.Get_Range_RowNumber(rngPrintable);
+            int column_print_area = ExcelAction.Get_Range_ColumnNumber(rngPrintable);
 
             //
             // 3. Find out all keywords and create LUT (keyword,row_index)

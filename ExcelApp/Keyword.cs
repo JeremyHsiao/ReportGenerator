@@ -668,7 +668,8 @@ namespace ExcelReportApplication
                 // 3.3.1 Insert extra column just outside printable area.
                 // Assummed that Printable area always starting at $A$1 (also data processing area)
                 // So excel data processing area ends at Printable area (row_count,col_count)
-                int column_print_area = ExcelAction.GetWorksheetPrintableRange(result_worksheet).Columns.Count;
+                Range rngPrintable = ExcelAction.GetWorksheetPrintableRange(result_worksheet);
+                int column_print_area = ExcelAction.Get_Range_ColumnNumber(rngPrintable);
                 int insert_col = column_print_area + 1;
                 //ExcelAction.Insert_Column(result_worksheet, insert_col);
 
