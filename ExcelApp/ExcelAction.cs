@@ -177,12 +177,29 @@ namespace ExcelReportApplication
 
         static public void Set_Row_Height(Worksheet ws, int row, double height)
         {
-            ws.Rows[row].RowHeight = height;
+            try
+            {
+                ws.Rows[row].RowHeight = height;
+            }
+            catch
+            {
+                // TBD: deal with exception when RowHeight can't be set via ws.Rows[row].RowHeight = height;
+            }
         }
 
         static public double Get_Row_Height(Worksheet ws, int row)
         {
-            return ws.Rows[row].RowHeight;
+            double row_height;
+            try
+            {
+                row_height = ws.Rows[row].RowHeight;
+            }
+            catch
+            {
+                // TBD: need to replace this workaround with better solution.
+                row_height = ws.Rows[1].RowHeight;
+            }
+            return row_height;
         }
 
         static public void Hide_Row(Worksheet ws, int row, int count = 1)
