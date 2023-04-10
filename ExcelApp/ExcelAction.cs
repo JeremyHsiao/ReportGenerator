@@ -160,7 +160,8 @@ namespace ExcelReportApplication
             }
             catch
             {
-                rngPrintable = ws.Range["A1"];
+                // Use whole sheet as workaround for Printable Range
+                rngPrintable = ws.Range["A1"].SpecialCells(XlCellType.xlCellTypeLastCell, (XlSpecialCellsValue)(1 + 2 + 4 + 16));
             }
             return rngPrintable;
         }
