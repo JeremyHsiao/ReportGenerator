@@ -26,6 +26,7 @@ namespace ExcelReportApplication
             @"TC_Row_NameDefine",                       @"4",
             @"TC_Row_DataBegin",                        @"5",
             @"workbook_TC_Template",                    @".\SampleData\TC_Jira_Template.xlsx",
+            @"LinkIssueFilterStatusString",             @"Close (0), Waive (0.1)",
             @"TestReport_Row_UserStart",                @"27",
             @"TestReport_Column_Keyword_Indentifier",   @"2",
             @"TestReport_Regex_Keyword_Indentifier",    @"(?i)Item",
