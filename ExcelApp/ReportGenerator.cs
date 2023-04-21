@@ -15,7 +15,9 @@ namespace ExcelReportApplication
         static public List<Issue> global_issue_list = new List<Issue>();
         static public Dictionary<string, List<StyleString>> global_full_issue_description_list = new Dictionary<string, List<StyleString>>();
         static public Dictionary<string, List<StyleString>> global_issue_description_list = new Dictionary<string, List<StyleString>>();
+        static public Dictionary<string, List<StyleString>> global_issue_description_list_severity = new Dictionary<string, List<StyleString>>();
         static public List<TestCase> global_testcase_list = new List<TestCase>();
+        static public List<String> fileter_status_list = new List<String>();
 
         // Must be updated if new report type added #NewReportType
         public enum ReportType {
@@ -129,6 +131,16 @@ namespace ExcelReportApplication
             return GetReportDescription(ReportTypeToInt(type));
         }
 
+        private static List<String> GetGlobalIssueKey(List<Issue> issue_list)
+        {
+            List<String> key_list = new List<String>();
+            foreach (Issue issue in issue_list)
+            {
+                key_list.Add(issue.Key);
+            }
+            return key_list;
+        }
+
         // 
         // This demo open Test Case Excel and replace Issue ID on Linked Issue column with ID+Summary+Severity+RD_Comment
         //
@@ -210,7 +222,31 @@ namespace ExcelReportApplication
                 String links = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, links_col,IsTemplate:true);
                 if (links != "")
                 {
-                    List<StyleString> str_list = StyleString.ExtendIssueDescription(links, global_full_issue_description_list);
+                    List<String> linked_issue_key_list = TestCase.Convert_LinksString_To_ListOfString(links);
+                    // To remove closed issue & not-in-Jira-exported-data issue
+                    // 1. prepare an empty list
+                    List<String> final_id_list = new List<String>();
+                    List<String> global_issue_key_list = GetGlobalIssueKey(global_issue_list);
+                    // 2. Loop throught all global issues, add key of this issue into final_id_list if:
+                    //     (1) key of this issue exists on linked_issue_key_list
+                    //     (2) status of this issue is NOT the same as defined in "filter-status"
+                    foreach (Issue issue in global_issue_list)
+                    {
+                        // not on the list, go the next issue
+                        if (linked_issue_key_list.IndexOf(issue.Key) < 0)
+                        {
+                            continue;
+                        }
+                        // status the same as one of those defined in "filter-status", go to next issue
+                        if (fileter_status_list.IndexOf(issue.Status) >= 0)
+                        {
+                            continue;
+                        }
+                        // 2 checks are passed, add into final_id_list.Add
+                        final_id_list.Add(issue.Key);
+                    }
+                    // 
+                    List<StyleString> str_list = StyleString.ExtendIssueDescription(final_id_list, global_issue_description_list);
                     // write into template excel
                     ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
                 }
