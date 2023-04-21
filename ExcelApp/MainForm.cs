@@ -30,7 +30,7 @@ namespace ExcelReportApplication
 
             // config for default ExcelAction settings
             ExcelAction.ExcelVisible = XMLConfig.ReadAppSetting_Boolean("Excel_Visible");
- 
+
             // config for issue list
             Issue.KeyPrefix = XMLConfig.ReadAppSetting_String("Issue_Key_Prefix");
             Issue.SheetName = XMLConfig.ReadAppSetting_String("Issue_SheetName");
@@ -42,6 +42,27 @@ namespace ExcelReportApplication
             TestCase.SheetName = XMLConfig.ReadAppSetting_String("TC_SheetName");
             TestCase.NameDefinitionRow = XMLConfig.ReadAppSetting_int("TC_Row_NameDefine");
             TestCase.DataBeginRow = XMLConfig.ReadAppSetting_int("TC_Row_DataBegin");
+
+            // Status string to decompose into list of string
+            // Begin
+            List<String> ret_list = new List<String>();
+            String links = XMLConfig.ReadAppSetting_String("LinkIssueFilterStatusString");
+            String[] separators = { "," };
+            if ((links != null) && (links != ""))
+            {
+                // Separate keys into string[]
+                String[] issues = links.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                if (issues != null)
+                {
+                    // string[] to List<String> (trimmed) and return
+                    foreach (String str in issues)
+                    {
+                        ret_list.Add(str.Trim());
+                    }
+                }
+            }
+            ReportGenerator.fileter_status_list = ret_list;
+            // End
 
             // config for default parameters used in Test Plan / Test Report
             TestPlan.NameDefinitionRow_TestPlan = XMLConfig.ReadAppSetting_int("TestPlan_Row_NameDefine");
@@ -155,24 +176,24 @@ namespace ExcelReportApplication
 
         private bool Execute_WriteIssueDescriptionToTC(String tc_file, String template_file)
         {
-            if ((ReportGenerator.global_issue_list.Count == 0)||(ReportGenerator.global_testcase_list.Count == 0)||
-                (!Storage.FileExists(tc_file))||(!Storage.FileExists(template_file)))
+            if ((ReportGenerator.global_issue_list.Count == 0) || (ReportGenerator.global_testcase_list.Count == 0) ||
+                (!Storage.FileExists(tc_file)) || (!Storage.FileExists(template_file)))
             {
                 // protection check
                 return false;
             }
 
             // This full issue description is needed for report purpose
-            ReportGenerator.global_full_issue_description_list = Issue.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
+            ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
 
-//            ReportGenerator.WriteBacktoTCJiraExcel(tc_file);
+            //            ReportGenerator.WriteBacktoTCJiraExcel(tc_file);
             ReportGenerator.WriteBacktoTCJiraExcelV2(tc_file, template_file);
             return true;
         }
 
         private bool Execute_WriteIssueDescriptionToSummary(String template_file)
         {
-            if ((ReportGenerator.global_issue_list.Count == 0)||(ReportGenerator.global_testcase_list.Count == 0)||
+            if ((ReportGenerator.global_issue_list.Count == 0) || (ReportGenerator.global_testcase_list.Count == 0) ||
                 (!Storage.FileExists(template_file)))
             {
                 // protection check
@@ -227,7 +248,7 @@ namespace ExcelReportApplication
 
             // This issue description is needed for report purpose
             //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
-            ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.global_issue_list);
+            ReportGenerator.global_issue_description_list_severity = Issue.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.global_issue_list);
             KeywordReport.KeywordIssueGenerationTaskV4(report_list);
             return true;
         }
@@ -250,7 +271,7 @@ namespace ExcelReportApplication
 
         private bool Execute_ListAllDetailedTestPlanKeywordTask(String main_file, String report_root)
         {
-            if (!Storage.FileExists(main_file)||!Storage.DirectoryExists(report_root))
+            if (!Storage.FileExists(main_file) || !Storage.DirectoryExists(report_root))
             {
                 // protection check
                 return false;
@@ -267,13 +288,13 @@ namespace ExcelReportApplication
             MsgWindow.AppendText("-------------\n");
             return true;
         }
-        
+
         // If filename has been changed, don't change it to default at report type change afterward.
         Boolean btnSelectBugFile_Clicked = false;
         Boolean btnSelectTCFile_Clicked = false;
         Boolean btnSelectExcelTestFile_Clicked = false;
         Boolean btnSelectReportFile_Clicked = false;
-        
+
         // Because TextBox is set to Read-only, filename can be only changed via File Dialog
         // (1) no need to handle event of TestBox Text changed.
         // (2) filename (full path) is set only after File Dialog OK
@@ -318,7 +339,7 @@ namespace ExcelReportApplication
             switch (ReportGenerator.ReportTypeFromInt(report_index))
             {
                 case ReportGenerator.ReportType.KeywordIssue_Report_Directory:
-                //case ReportGenerator.ReportType.FindAllKeywordInReport:
+                    //case ReportGenerator.ReportType.FindAllKeywordInReport:
                     sel_file = false;  // Here select directory instead of file
                     break;
             }
@@ -345,25 +366,25 @@ namespace ExcelReportApplication
             }
             return ret_str;
         }
-       
-/*
-        private void btnGetBugList_Click(object sender, EventArgs e)
-        {
-            bool bRet;
-            bRet = ReadGlobalIssueListTask(txtBugFile.Text);
-            if (bRet)
-            {
-                // This full issue description is for demo purpose
-                ReportGenerator.global_issue_description_list = IssueList.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
-            }
-        }
 
-        private void btnGetTCList_Click(object sender, EventArgs e)
-        {
-            bool bRet;
-            bRet = ReadGlobalTCListTask(txtTCFile.Text);
-        }
-*/
+        /*
+                private void btnGetBugList_Click(object sender, EventArgs e)
+                {
+                    bool bRet;
+                    bRet = ReadGlobalIssueListTask(txtBugFile.Text);
+                    if (bRet)
+                    {
+                        // This full issue description is for demo purpose
+                        ReportGenerator.global_issue_description_list = IssueList.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
+                    }
+                }
+
+                private void btnGetTCList_Click(object sender, EventArgs e)
+                {
+                    bool bRet;
+                    bRet = ReadGlobalTCListTask(txtTCFile.Text);
+                }
+        */
         // Update file path to full path (for excel operation)
         // Only enabled textbox will be updated.
         private void UpdateTextBoxPathToFullAndCheckExist(ref TextBox box)
@@ -371,7 +392,7 @@ namespace ExcelReportApplication
             String name = Storage.GetFullPath(box.Text);
             if (!Storage.FileExists(name))
             {
-                MsgWindow.AppendText( box.Text + "can't be found. Please check again.\n");
+                MsgWindow.AppendText(box.Text + "can't be found. Please check again.\n");
                 return;
             }
             box.Text = name;
@@ -391,16 +412,16 @@ namespace ExcelReportApplication
         private void btnCreateReport_Click(object sender, EventArgs e)
         {
             bool bRet;
-            
+
             int report_index = comboBoxReportSelect.SelectedIndex;
 
-            if ((report_index < 0)||(report_index >= ReportGenerator.ReportTypeCount))
+            if ((report_index < 0) || (report_index >= ReportGenerator.ReportTypeCount))
             {
                 // shouldn't be out of range.
                 return;
             }
 
-            UpdateUIDuringExecution ( report_index: report_index, executing: true);
+            UpdateUIDuringExecution(report_index: report_index, executing: true);
 
             MsgWindow.AppendText("Executing: " + ReportGenerator.GetReportName(report_index) + ".\n");
 
@@ -433,7 +454,7 @@ namespace ExcelReportApplication
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);    // File path here
                     if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                    bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory:false);
+                    bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: false);
                     break;
                 case ReportGenerator.ReportType.KeywordIssue_Report_Directory:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
@@ -523,7 +544,7 @@ namespace ExcelReportApplication
                     SetEnable_TCFile(true);
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
-                     break;
+                    break;
                 case ReportGenerator.ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(true);
@@ -574,7 +595,7 @@ namespace ExcelReportApplication
             switch (ReportGenerator.ReportTypeFromInt(ReportIndex))
             {
                 case ReportGenerator.ReportType.FullIssueDescription_TC: // "1.Issue Description for TC"
-                    if(!btnSelectReportFile_Clicked)
+                    if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
                 case ReportGenerator.ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
