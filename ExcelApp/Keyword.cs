@@ -632,7 +632,7 @@ namespace ExcelReportApplication
                     }
                 }
                 keyword.IssueList = id_list;
-                description_list = StyleString.ExtendIssueDescription(id_list, ReportGenerator.global_issue_description_list);
+                description_list = StyleString.ExtendIssueDescription(id_list, ReportGenerator.global_issue_description_list_severity);
                 keyword.IssueDescriptionList = description_list;
             }
 
