@@ -732,31 +732,45 @@ namespace ExcelReportApplication
                         // (A/B/C) = (xx/oo/vv)
                         List<StyleString> result_string = new List<StyleString>();
                         if (severity_count.Severity_A > 0)
-                        { 
-                            result_string.Add(new StyleString("NG", Issue.C_ISSUE_COLOR));
+                        {
+                            String Has_A_Issue_str = "Fail"; // "NG"
+                            Color Has_A_Issue_color = Issue.A_ISSUE_COLOR;
+                            result_string.Add(new StyleString(Has_A_Issue_str, Has_A_Issue_color));
                         }
                         else if (severity_count.Severity_B > 0)
                         {
-                            result_string.Add(new StyleString("Defect found", Issue.B_ISSUE_COLOR));
+                            String No_A_Has_B_Issue_str = "Fail"; // "Defect found"
+                            Color No_A_Has_B_Issue_color = Issue.A_ISSUE_COLOR;
+                            result_string.Add(new StyleString(No_A_Has_B_Issue_str, No_A_Has_B_Issue_color));
                         }
                         else if (severity_count.Severity_C > 0)
                         {
-                            result_string.Add(new StyleString("Minor Issue only", Issue.C_ISSUE_COLOR));
+                            String No_AB_Has_C_Issue_str = "Fail"; // "Minor Issue only"
+                            Color No_AB_Has_C_Issue_color = Issue.A_ISSUE_COLOR;
+                            result_string.Add(new StyleString(No_AB_Has_C_Issue_str, No_AB_Has_C_Issue_color));
                         }
                         else 
                         {
-                            result_string.Add(new StyleString("Good", Color.Blue));
+                            String No_Issue_str = "Good"; 
+                            Color No_Issue_color = Color.Lime;
+                            result_string.Add(new StyleString(No_Issue_str, No_Issue_color));
                         }
                         StyleString.WriteStyleString(result_worksheet, keyword.ResultListAtRow, keyword.ResultListAtColumn, result_string);
 
                         ExcelAction.AutoFit_Row(result_worksheet, keyword.ResultListAtRow);
                         ExcelAction.AutoFit_Row(result_worksheet, keyword.BugListAtRow);
                         issue_count = severity_count.Severity_A + severity_count.Severity_B + severity_count.Severity_C;
-                        if(issue_count>1)
+                        if (issue_count >= 1)
                         {
                             double single_row_height = ExcelAction.Get_Row_Height(result_worksheet, keyword.BugListAtRow);
-                            ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, single_row_height * issue_count * 0.8);
+                            ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, single_row_height * issue_count * 0.8 + 0.2);
                         }
+                        else
+                        {
+                            // hide row if no bug list at all
+                            ExcelAction.Hide_Row(result_worksheet, keyword.BugListAtRow);
+                        }
+                        ExcelAction.CellTextAlignLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
                     }
                 }
 
