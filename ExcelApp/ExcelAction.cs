@@ -225,6 +225,11 @@ namespace ExcelReportApplication
             ws.Rows[at_row].Delete();
         }
 
+        static public void CellTextAlignLeft(Worksheet ws, int at_row, int at_col)
+        {
+            ws.Cells[at_row, at_col].HorizontalAlignment = XlHAlign.xlHAlignLeft;
+        }
+
         static public Dictionary<string, int> CreateTableColumnIndex(Worksheet ws, int naming_row)
         {
             Dictionary<string, int> col_name_list = new Dictionary<string, int>();
