@@ -674,6 +674,8 @@ namespace ExcelReportApplication
                 //ExcelAction.Insert_Column(result_worksheet, insert_col);
 
                 // 3.3.2 Write keyword-related formatted issue descriptions on the newly-inserted column of the row where the keyword is found.
+                //       also count how many "Pass" or how many "Fail"
+                int pass_count = 0, fail_count = 0; 
                 foreach (TestPlanKeyword keyword in keyword_list)
                 {
                     // Only write to keyword on currently open sheet
@@ -738,24 +740,28 @@ namespace ExcelReportApplication
                             String Has_A_Issue_str = "Fail"; // "NG"
                             Color Has_A_Issue_color = Issue.A_ISSUE_COLOR;
                             result_string.Add(new StyleString(Has_A_Issue_str, Has_A_Issue_color));
+                            fail_count++;
                         }
                         else if (severity_count.Severity_B > 0)
                         {
                             String No_A_Has_B_Issue_str = "Fail"; // "Defect found"
                             Color No_A_Has_B_Issue_color = Issue.A_ISSUE_COLOR;
                             result_string.Add(new StyleString(No_A_Has_B_Issue_str, No_A_Has_B_Issue_color));
+                            fail_count++;
                         }
                         else if (severity_count.Severity_C > 0)
                         {
                             String No_AB_Has_C_Issue_str = "Fail"; // "Minor Issue only"
                             Color No_AB_Has_C_Issue_color = Issue.A_ISSUE_COLOR;
                             result_string.Add(new StyleString(No_AB_Has_C_Issue_str, No_AB_Has_C_Issue_color));
+                            fail_count++;
                         }
                         else 
                         {
-                            String No_Issue_str = "Good"; 
+                            String No_Issue_str = "Pass"; 
                             Color No_Issue_color = Color.Lime;
                             result_string.Add(new StyleString(No_Issue_str, No_Issue_color));
+                            pass_count++;
                         }
                         StyleString.WriteStyleString(result_worksheet, keyword.ResultListAtRow, keyword.ResultListAtColumn, result_string);
 
@@ -775,6 +781,27 @@ namespace ExcelReportApplication
                         ExcelAction.CellTextAlignLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
                     }
                 }
+
+                // 3.3.3 Update Conclusion
+                const int PassCnt_at_row = 21, PassCnt_at_col = 5;
+                const int FailCnt_at_row = 21, FailCnt_at_col = 7;
+                const int TotalCnt_at_row = 21, TotalCnt_at_col = 9;
+                const int Judgement_at_row = 9, Judgement_at_col = 4;
+                String judgement_str;
+                if (fail_count > 0)
+                {
+                    // Fail
+                    judgement_str = "Fail";
+                }
+                else
+                {
+                    // pass
+                    judgement_str = "Pass";
+                }
+                ExcelAction.SetCellValue(result_worksheet, PassCnt_at_row, PassCnt_at_col, pass_count);
+                ExcelAction.SetCellValue(result_worksheet, FailCnt_at_row, FailCnt_at_col, fail_count);
+                ExcelAction.SetCellValue(result_worksheet, TotalCnt_at_row, TotalCnt_at_col, fail_count + pass_count);
+                ExcelAction.SetCellValue(result_worksheet, Judgement_at_row, Judgement_at_col, judgement_str);
 
                 // 3.4. Save as another file with yyyyMMddHHmmss
                 string dest_filename = Storage.GenerateFilenameWithDateTime(full_filename);
