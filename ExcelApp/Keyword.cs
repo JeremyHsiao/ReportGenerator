@@ -725,10 +725,12 @@ namespace ExcelReportApplication
                         bug_status_string.Clear();
 
                         // Output Result:
-                        // >0A: NG
-                        // >0B: Defect found
-                        // >0C: Minor issue only
-                        // 0A0B0C: Good
+                        //// >0A: NG
+                        //// >0B: Defect found
+                        //// >0C: Minor issue only
+                        //// 0A0B0C: Good
+                        // Pass: no issue
+                        // Fail: any issue
                         // (A/B/C) = (xx/oo/vv)
                         List<StyleString> result_string = new List<StyleString>();
                         if (severity_count.Severity_A > 0)
