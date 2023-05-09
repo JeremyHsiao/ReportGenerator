@@ -217,12 +217,20 @@ namespace ExcelReportApplication
             List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
             foreach (TestPlan plan in DoPlan)
             {
-                plan.OpenDetailExcel();
-                List<TestPlanKeyword> plan_keyword = plan.ListKeyword();
-                plan.CloseIssueListExcel();
-                if (plan_keyword != null)
+                TestPlan.ExcelStatus test_plan_status;
+                test_plan_status = plan.OpenDetailExcel();
+                if (test_plan_status == TestPlan.ExcelStatus.OK)
                 {
-                    ret.AddRange(plan_keyword);
+                    List<TestPlanKeyword> plan_keyword = plan.ListKeyword();
+                    plan.CloseIssueListExcel();
+                    if (plan_keyword != null)
+                    {
+                        ret.AddRange(plan_keyword);
+                    }
+                }
+                else
+                {
+                    ConsoleWarning("Test Plan Error occurred:" + plan.ExcelSheet + "@" + plan.ExcelFile);
                 }
             }
             return ret;
