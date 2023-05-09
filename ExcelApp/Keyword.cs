@@ -657,16 +657,16 @@ namespace ExcelReportApplication
                 Workbook wb_keyword_issue = ExcelAction.OpenExcelWorkbook(full_filename);
                 if (wb_keyword_issue == null)
                 {
-                    ConsoleWarning("ERR: Open workbook in V3: " + full_filename);
-                    return false;
+                    ConsoleWarning("ERR: Open workbook in V4: " + full_filename);
+                    continue;
                 }
 
                 // 3.2 Open worksheet
                 Worksheet result_worksheet = ExcelAction.Find_Worksheet(wb_keyword_issue, sheet_name);
                 if (result_worksheet == null)
                 {
-                    ConsoleWarning("ERR: Open worksheet in V3: " + full_filename + " sheet: " + sheet_name);
-                    return false;
+                    ConsoleWarning("ERR: Open worksheet in V4: " + full_filename + " sheet: " + sheet_name);
+                    continue;
                 }
 
                 //
