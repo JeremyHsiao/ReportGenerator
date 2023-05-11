@@ -162,6 +162,11 @@ namespace ExcelReportApplication
             }
         }
 
+        private void ClearIssueList()
+        {
+            ReportGenerator.global_issue_list.Clear();
+        }
+
         private bool LoadTCListIfEmpty(String filename)
         {
             if (ReportGenerator.global_testcase_list.Count == 0)
@@ -172,6 +177,11 @@ namespace ExcelReportApplication
             {
                 return true;
             }
+        }
+
+        private void ClearTCList()
+        {
+            ReportGenerator.global_testcase_list.Clear();
         }
 
         private bool Execute_WriteIssueDescriptionToTC(String tc_file, String template_file)
@@ -307,6 +317,7 @@ namespace ExcelReportApplication
             {
                 txtBugFile.Text = ret_str;
                 btnSelectBugFile_Clicked = true;
+                ClearIssueList();
             }
         }
 
@@ -318,6 +329,7 @@ namespace ExcelReportApplication
             {
                 txtTCFile.Text = ret_str;
                 btnSelectTCFile_Clicked = true;
+                ClearTCList();
             }
         }
 
@@ -420,6 +432,9 @@ namespace ExcelReportApplication
                 // shouldn't be out of range.
                 return;
             }
+
+            ClearIssueList();
+            ClearTCList();
 
             UpdateUIDuringExecution(report_index: report_index, executing: true);
 
