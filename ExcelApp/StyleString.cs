@@ -218,6 +218,25 @@ Returns or sets the type of underline applied to the font.
                 txt_str += style_str.Text;
             }
             input_range.Value2 = txt_str;
+
+            using (System.Drawing.Font fontTester = 
+                        new System.Drawing.Font(StyleString.default_font,
+                                                StyleString.default_size,
+                                                StyleString.default_fontstyle, 
+                                                GraphicsUnit.Pixel))
+            {
+                if (fontTester.Name == StyleString.default_font)
+                {
+                    // Font exists
+                }
+                else
+                {
+                    // Font doesn't exist ==> no need to change font
+                    return;
+                }
+            }
+            //if (StyleString.default_font == "NoChange") return;
+
             input_range.Characters.Font.Name = StyleString.default_font;
             input_range.Characters.Font.Size = StyleString.default_size;
             input_range.Characters.Font.Color = StyleString.default_color;
@@ -228,6 +247,26 @@ Returns or sets the type of underline applied to the font.
             foreach (StyleString style_str in sytle_string_list)
             {
                 int len = style_str.Text.Length;
+                
+                // Skip font-update if "NoChange";
+                //if (style_str.Font == "NoChange") continue;
+                using (System.Drawing.Font fontTester =
+                            new System.Drawing.Font(style_str.Font,
+                                                    style_str.Size,
+                                                    style_str.FontStyle,
+                                                    GraphicsUnit.Pixel))
+                {
+                    if (fontTester.Name == StyleString.default_font)
+                    {
+                        // Font exists
+                    }
+                    else
+                    {
+                        // Font doesn't exist ==> no need to change font
+                        continue;
+                    }
+                }
+
                 if (style_str.FontPropertyChanged == true)
                 {
                     input_range.get_Characters(chr_index, len).Font.Name = style_str.Font;
