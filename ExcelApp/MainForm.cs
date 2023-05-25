@@ -492,6 +492,11 @@ namespace ExcelReportApplication
                     String report_root_dir = Storage.GetDirectoryName(file_dir);
                     bRet = Execute_ListAllDetailedTestPlanKeywordTask(main_file, report_root_dir);
                     break;
+                case ReportGenerator.ReportType.Excel_Sheet_Name_Update_Tool:
+                    UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);     // Directory path here
+                    // bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: true);
+                    bRet = true;
+                    break;
                 default:
                     // shouldn't be here.
                     break;
@@ -596,6 +601,12 @@ namespace ExcelReportApplication
                     SetEnable_OutputFile(false);
                     SetEnable_StandardReport(true);
                     break;
+                case ReportGenerator.ReportType.Excel_Sheet_Name_Update_Tool:
+                    SetEnable_IssueFile(false);
+                    SetEnable_TCFile(false);
+                    SetEnable_OutputFile(true);
+                    SetEnable_StandardReport(false);
+                    break;
                 default:
                     // Shouldn't be here
                     break;
@@ -636,6 +647,10 @@ namespace ExcelReportApplication
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
                     if (!btnSelectExcelTestFile_Clicked)
                         txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("workbook_ReportToTestKeyword");
+                    break;
+                case ReportGenerator.ReportType.Excel_Sheet_Name_Update_Tool:
+                    if (!btnSelectReportFile_Clicked)
+                        txtReportFile.Text = @".\SampleData\More chapters_TestCaseID";
                     break;
                 default:
                     break;

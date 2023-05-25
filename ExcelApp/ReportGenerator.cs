@@ -28,6 +28,7 @@ namespace ExcelReportApplication
             TC_Likely_Passed,
             FindAllKeywordInReport,
             KeywordIssue_Report_Directory,
+            Excel_Sheet_Name_Update_Tool,
         }
 
         public static int ReportTypeToInt(ReportType type)
@@ -67,6 +68,7 @@ namespace ExcelReportApplication
             "5.TC likely Pass",
             "6.List Keywords of all detailed reports",
             "7.Keyword Issue - Directory",
+            "8.Excel sheet name update tool",
         };
 
         // Must be updated if new report type added #NewReportType
@@ -113,6 +115,12 @@ namespace ExcelReportApplication
                 "Keyword Issue to Report - Files under directory", 
                 "Input:",  "  Test Plan/Reports with Keyword under user-specified directory",
                 "Output:", "  Test Plan/Reports with keyword issue list inserted on the 1st-column next to the right-side of printable area",
+            },
+            new String[] 
+            {
+                "Excel Reports to be checked - Files under directory", 
+                "Input:",  "  Test Plan/Reports",
+                "Output:", "  Test Plan/Reports with updated sheet-name if original sheet-name doesn't follow rules",
             },
         };
 
