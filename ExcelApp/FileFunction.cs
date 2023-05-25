@@ -302,11 +302,16 @@ namespace ExcelReportApplication
         // Check if filename looks like an test report excel file
         // need to filter out filename not in format of A.xx.xx_*_All.xlsx
 
-        // 1. Other or single-char or digits
+        //// 1. Other or single-char or digits
+        //// 2. one or more pairs of (. + digits)
+        //// 3. two "_" and there are allowable chars (including _) between them
+        //// 4. some chars until ".xlsx" (case-insensitive)
+        //static public string regexString = @"^(Other|[A-Za-z]|\d+)(\.\d+)+_[\w\(\)\-_ ]+_[\w ]+\.(?i:xlsx)$";
+        // 1. Other or char/digit (1 or more)
         // 2. one or more pairs of (. + digits)
-        // 3. two "_" and there are allowable chars (including _) between them
-        // 4. some chars until ".xlsx" (case-insensitive)
-        static public string regexString = @"^(Other|[A-Za-z]|\d+)(\.\d+)+_[\w\(\)\-_ ]+_[\w ]+\.(?i:xlsx)$";
+        // 3. at lease one "_" and allowable chars (including _) follow until ".xlsx"
+        // 4. ".xlsx" is case-insensitive
+        static public string regexString = @"^(Other|[A-Za-z0-9]+)(\.\d+)+_[\w\(\)\-_ ]+\.(?i:xlsx)$";
         static RegexStringValidator myRegexValidator = new RegexStringValidator(regexString);
         static public bool IsReportFilename(String input_name)
         {
