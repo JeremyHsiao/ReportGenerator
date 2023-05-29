@@ -678,6 +678,13 @@ namespace ExcelReportApplication
                 String full_filename = plan.ExcelFile;
                 String sheet_name = plan.ExcelSheet;
 
+                // 3.0 if there isn't any keyword in this plan, just continue to next plan
+                //     
+                if (IsAnyKeywordInReport(keyword_list, full_filename, sheet_name) == false)
+                {
+                    continue;                                         
+                }
+
                 // 3.1. Open Excel and find the sheet
                 // File exist check is done outside
                 Workbook wb_keyword_issue = ExcelAction.OpenExcelWorkbook(full_filename);
