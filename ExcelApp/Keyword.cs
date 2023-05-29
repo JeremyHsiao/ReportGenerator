@@ -236,6 +236,32 @@ namespace ExcelReportApplication
             return ret;
         }
 
+        static public List<TestPlanKeyword> FilterSingleReportKeyword(List<TestPlanKeyword> keyword_list, String workbook, String worksheet)
+        {
+            List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
+            foreach (TestPlanKeyword kw in keyword_list)
+            {
+                if ((kw.Workbook == workbook) && (kw.Worksheet == worksheet))
+                {
+                    ret.Add(kw);
+                }
+            }
+            return ret;
+        }
+
+        static public Boolean IsAnyKeywordInReport(List<TestPlanKeyword> keyword_list, String workbook, String worksheet)
+        {
+            Boolean b_ret = false;
+            foreach (TestPlanKeyword kw in keyword_list)
+            {
+                if ((kw.Workbook == workbook) && (kw.Worksheet == worksheet))
+                {
+                    b_ret = true;
+                    break;
+                }
+            }
+            return b_ret;
+        }
         //
         // This Demo Identify Keyword on the excel and insert a column to list all issues containing that keyword
         //
