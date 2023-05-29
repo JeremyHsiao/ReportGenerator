@@ -263,10 +263,10 @@ namespace ExcelReportApplication
             return b_ret;
         }
         //
-        // This Demo Identify Keyword on the excel and insert a column to list all issues containing that keyword
+        // This Demo is to identify Keyword on the excel and insert a column to list all issues containing that keyword
         //
-        static int col_indentifier = 2;
-        static int col_keyword = 3;
+        //static int col_indentifier = 2;
+        //static int col_keyword = 3;
 //        static public bool KeywordIssueGenerationTask(string report_filename)
 /*
         {
@@ -704,17 +704,10 @@ namespace ExcelReportApplication
 
                 //
                 // 3.3. input:  IssueDescriptionList of Keyword
-                //    output: write color_description_list at Excel(row_index,new_inserted_col outside printable area
+                //    output: write color_description_list 
                 //         
-                // 3.3.1 Insert extra column just outside printable area.
-                // Assummed that Printable area always starting at $A$1 (also data processing area)
-                // So excel data processing area ends at Printable area (row_count,col_count)
-                Range rngPrintable = ExcelAction.GetWorksheetPrintableRange(result_worksheet);
-                int column_print_area = ExcelAction.Get_Range_ColumnNumber(rngPrintable);
-                int insert_col = column_print_area + 1;
-                //ExcelAction.Insert_Column(result_worksheet, insert_col);
 
-                // 3.3.2 Write keyword-related formatted issue descriptions on the newly-inserted column of the row where the keyword is found.
+                // 3.3.2 Write keyword-related formatted issue descriptions 
                 //       also count how many "Pass" or how many "Fail"
                 int pass_count = 0, fail_count = 0; 
                 foreach (TestPlanKeyword keyword in keyword_list)
