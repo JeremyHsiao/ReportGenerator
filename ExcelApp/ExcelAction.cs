@@ -230,6 +230,12 @@ namespace ExcelReportApplication
             ws.Cells[at_row, at_col].HorizontalAlignment = XlHAlign.xlHAlignLeft;
         }
 
+        static public void CellTextAlignUpperLeft(Worksheet ws, int at_row, int at_col)
+        {
+            ws.Cells[at_row, at_col].HorizontalAlignment = XlHAlign.xlHAlignLeft;
+            ws.Cells[at_row, at_col].VerticalAlignment = XlVAlign.xlVAlignTop;
+        }
+
         static public Dictionary<string, int> CreateTableColumnIndex(Worksheet ws, int naming_row)
         {
             Dictionary<string, int> col_name_list = new Dictionary<string, int>();
