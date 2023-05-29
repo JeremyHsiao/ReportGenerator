@@ -446,7 +446,8 @@ namespace ExcelReportApplication
         public bool ContainKeyword(String Keyword)
         {
             bool ret = false;
-            if ((this.Summary.Contains(Keyword)) || (this.TestCaseID.Contains(Keyword)))
+            //if ((this.Summary.Contains(Keyword)) || (this.TestCaseID.Contains(Keyword)))
+            if (this.TestCaseID.Contains(Keyword))
             {
                 ret = true;
             }
