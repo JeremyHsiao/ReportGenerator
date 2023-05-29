@@ -786,7 +786,8 @@ namespace ExcelReportApplication
                             // hide row if no bug list at all
                             ExcelAction.Hide_Row(result_worksheet, keyword.BugListAtRow);
                         }
-                        ExcelAction.CellTextAlignLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
+                        //ExcelAction.CellTextAlignLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
+                        ExcelAction.CellTextAlignUpperLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
                     }
                 }
 
