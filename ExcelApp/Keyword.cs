@@ -770,36 +770,43 @@ namespace ExcelReportApplication
                         // Pass: no issue
                         // Fail: any issue
                         // (A/B/C) = (xx/oo/vv)
-                        List<StyleString> result_string = new List<StyleString>();
+                        //List<StyleString> result_string = new List<StyleString>();
+                        String pass_fail_str = "Fail";
                         if (severity_count.Severity_A > 0)
                         {
-                            String Has_A_Issue_str = "Fail"; // "NG"
-                            Color Has_A_Issue_color = Issue.A_ISSUE_COLOR;
-                            result_string.Add(new StyleString(Has_A_Issue_str, Has_A_Issue_color));
+                            //String Has_A_Issue_str = "Fail"; // "NG"
+                            //Color Has_A_Issue_color = Issue.A_ISSUE_COLOR;
+                            //result_string.Add(new StyleString(Has_A_Issue_str, Has_A_Issue_color));
+                            pass_fail_str = "Fail";
                             fail_count++;
                         }
                         else if (severity_count.Severity_B > 0)
                         {
-                            String No_A_Has_B_Issue_str = "Fail"; // "Defect found"
-                            Color No_A_Has_B_Issue_color = Issue.A_ISSUE_COLOR;
-                            result_string.Add(new StyleString(No_A_Has_B_Issue_str, No_A_Has_B_Issue_color));
+                            //String No_A_Has_B_Issue_str = "Fail"; // "Defect found"
+                            //Color No_A_Has_B_Issue_color = Issue.A_ISSUE_COLOR;
+                            //result_string.Add(new StyleString(No_A_Has_B_Issue_str, No_A_Has_B_Issue_color));
+                            pass_fail_str = "Fail";
                             fail_count++;
                         }
                         else if (severity_count.Severity_C > 0)
                         {
-                            String No_AB_Has_C_Issue_str = "Fail"; // "Minor Issue only"
-                            Color No_AB_Has_C_Issue_color = Issue.A_ISSUE_COLOR;
-                            result_string.Add(new StyleString(No_AB_Has_C_Issue_str, No_AB_Has_C_Issue_color));
+                            //String No_AB_Has_C_Issue_str = "Fail"; // "Minor Issue only"
+                            //Color No_AB_Has_C_Issue_color = Issue.A_ISSUE_COLOR;
+                            //result_string.Add(new StyleString(No_AB_Has_C_Issue_str, No_AB_Has_C_Issue_color));
+                            pass_fail_str = "Fail";
                             fail_count++;
                         }
                         else 
                         {
-                            String No_Issue_str = "Pass"; 
-                            Color No_Issue_color = Color.Lime;
-                            result_string.Add(new StyleString(No_Issue_str, No_Issue_color));
+                            //String No_Issue_str = "Pass"; 
+                            //Color No_Issue_color = Color.Lime;
+                            //result_string.Add(new StyleString(No_Issue_str, No_Issue_color));
+                            pass_fail_str = "Pass";
                             pass_count++;
                         }
-                        StyleString.WriteStyleString(result_worksheet, keyword.ResultListAtRow, keyword.ResultListAtColumn, result_string);
+                        //StyleString.WriteStyleString(result_worksheet, keyword.ResultListAtRow, keyword.ResultListAtColumn, result_string);
+                        // Pass/Fail only value is updated.
+                        ExcelAction.SetCellValue(result_worksheet, keyword.ResultListAtRow, keyword.ResultListAtColumn, pass_fail_str);
 
                         ExcelAction.AutoFit_Row(result_worksheet, keyword.ResultListAtRow);
                         ExcelAction.AutoFit_Row(result_worksheet, keyword.BugListAtRow);
