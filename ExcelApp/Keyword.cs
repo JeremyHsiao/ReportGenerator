@@ -680,7 +680,8 @@ namespace ExcelReportApplication
 
                 // 3.0 if there isn't any keyword in this plan, just continue to next plan
                 //     
-                if (IsAnyKeywordInReport(keyword_list, full_filename, sheet_name) == false)
+                List<TestPlanKeyword> ws_keyword_list = FilterSingleReportKeyword(keyword_list, full_filename, sheet_name);
+                if (ws_keyword_list.Count <= 0)
                 {
                     continue;                                         
                 }
@@ -709,11 +710,12 @@ namespace ExcelReportApplication
 
                 // 3.3.2 Write keyword-related formatted issue descriptions 
                 //       also count how many "Pass" or how many "Fail"
-                int pass_count = 0, fail_count = 0; 
-                foreach (TestPlanKeyword keyword in keyword_list)
+                int pass_count = 0, fail_count = 0;
+                //foreach (TestPlanKeyword keyword in keyword_list)
+                foreach (TestPlanKeyword keyword in ws_keyword_list)
                 {
                     // Only write to keyword on currently open sheet
-                    if (keyword.Worksheet == sheet_name)
+                    //if (keyword.Worksheet == sheet_name)
                     {
                         // write issue description list
                         StyleString.WriteStyleString(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn, keyword.IssueDescriptionList);
