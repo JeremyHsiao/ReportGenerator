@@ -511,6 +511,15 @@ namespace ExcelReportApplication
                     // bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: true);
                     bRet = true;
                     break;
+                case ReportGenerator.ReportType.FullIssueDescription_TC_report_judgement:
+                    UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
+                    UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
+                    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                    UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
+                    if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                    if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+                    bRet = Execute_WriteIssueDescriptionToTC(txtTCFile.Text, txtReportFile.Text);
+                    break;
                 default:
                     // shouldn't be here.
                     break;
@@ -621,6 +630,12 @@ namespace ExcelReportApplication
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
                     break;
+                case ReportGenerator.ReportType.FullIssueDescription_TC_report_judgement: // "1.Issue Description for TC"
+                    SetEnable_IssueFile(true);
+                    SetEnable_TCFile(true);
+                    SetEnable_OutputFile(true);
+                    SetEnable_StandardReport(true);
+                    break;
                 default:
                     // Shouldn't be here
                     break;
@@ -665,6 +680,10 @@ namespace ExcelReportApplication
                 case ReportGenerator.ReportType.Excel_Sheet_Name_Update_Tool:
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = @".\SampleData\More chapters_TestCaseID";
+                    break;
+                case ReportGenerator.ReportType.FullIssueDescription_TC_report_judgement: // "1.Issue Description for TC"
+                    if (!btnSelectReportFile_Clicked)
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
                 default:
                     break;

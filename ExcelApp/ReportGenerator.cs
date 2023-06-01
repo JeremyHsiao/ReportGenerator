@@ -29,6 +29,7 @@ namespace ExcelReportApplication
             FindAllKeywordInReport,
             KeywordIssue_Report_Directory,
             Excel_Sheet_Name_Update_Tool,
+            FullIssueDescription_TC_report_judgement
         }
 
         public static int ReportTypeToInt(ReportType type)
@@ -69,7 +70,8 @@ namespace ExcelReportApplication
             "6.List Keywords of all detailed reports",
             "7.Keyword Issue - Directory",
             "8.Excel sheet name update tool",
-        };
+            "9.TC issue/judgement",
+       };
 
         // Must be updated if new report type added #NewReportType
         private static String[][] ReportDescription = new String[][] 
@@ -122,7 +124,13 @@ namespace ExcelReportApplication
                 "Input:",  "  Test Plan/Reports",
                 "Output:", "  Test Plan/Reports with updated sheet-name if original sheet-name doesn't follow rules",
             },
-        };
+            new String[] 
+            {
+                "Issue Description + judgement from report for TC Report", 
+                "Input:",  "  Issue List + Test Case + Template (for Test case output)",
+                "Output:", "  Test Case in the format of template file with linked issue in full description",
+            },
+                                                                                         };
 
         public static String GetReportDescription(int type_index)
         {
