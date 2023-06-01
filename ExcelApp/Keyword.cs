@@ -829,10 +829,10 @@ namespace ExcelReportApplication
                 }
 
                 // 3.3.3 Update Conclusion
-                const int PassCnt_at_row = 21, PassCnt_at_col = 5;
-                const int FailCnt_at_row = 21, FailCnt_at_col = 7;
-                const int TotalCnt_at_row = 21, TotalCnt_at_col = 9;
-                const int Judgement_at_row = 9, Judgement_at_col = 4;
+                //const int PassCnt_at_row = 21, PassCnt_at_col = 5;
+                //const int FailCnt_at_row = 21, FailCnt_at_col = 7;
+                //const int TotalCnt_at_row = 21, TotalCnt_at_col = 9;
+                //const int Judgement_at_row = 9, Judgement_at_col = 4;
                 String judgement_str;
                 if (fail_count > 0)
                 {
@@ -844,10 +844,10 @@ namespace ExcelReportApplication
                     // pass
                     judgement_str = "Pass";
                 }
-                ExcelAction.SetCellValue(result_worksheet, PassCnt_at_row, PassCnt_at_col, pass_count);
-                ExcelAction.SetCellValue(result_worksheet, FailCnt_at_row, FailCnt_at_col, fail_count);
-                ExcelAction.SetCellValue(result_worksheet, TotalCnt_at_row, TotalCnt_at_col, fail_count + pass_count);
-                ExcelAction.SetCellValue(result_worksheet, Judgement_at_row, Judgement_at_col, judgement_str);
+                ExcelAction.SetCellValue(result_worksheet, TestPlan.PassCnt_at_row, TestPlan.PassCnt_at_col, pass_count);
+                ExcelAction.SetCellValue(result_worksheet, TestPlan.FailCnt_at_row, TestPlan.FailCnt_at_col, fail_count);
+                ExcelAction.SetCellValue(result_worksheet, TestPlan.TotalCnt_at_row, TestPlan.TotalCnt_at_col, fail_count + pass_count);
+                ExcelAction.SetCellValue(result_worksheet, TestPlan.Judgement_at_row, TestPlan.Judgement_at_col, judgement_str);
 
                if ((src_dir == "") || (dest_dir == "") || !Storage.DirectoryExists(src_dir) )
                 {

@@ -267,6 +267,11 @@ namespace ExcelReportApplication
         public static String regexBugStatusString = @"^(?i)\s*Bug Status\s*$";
         public static String regexBugListString = @"^(?i)\s*Bug List\s*$";
 
+        public static int PassCnt_at_row = 21, PassCnt_at_col = 5;
+        public static int FailCnt_at_row = 21, FailCnt_at_col = 7;
+        public static int TotalCnt_at_row = 21, TotalCnt_at_col = 9;
+        public static int Judgement_at_row = 9, Judgement_at_col = 4;
+
         public List<TestPlanKeyword> ListKeyword()
         {
             //
