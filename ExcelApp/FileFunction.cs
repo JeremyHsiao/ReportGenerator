@@ -132,9 +132,23 @@ namespace ExcelReportApplication
             return ret;
         }
 
-        static public DirectoryInfo CreateDirectory(String dir)
+        static public DirectoryInfo CreateDirectory(String new_dir, Boolean auto_parent_dir=false)
         {
-            return Directory.CreateDirectory(dir);
+            if (auto_parent_dir == false)
+            {
+                return Directory.CreateDirectory(new_dir);
+            }
+            else
+            {
+                String parent_dir = GetDirectoryName(new_dir);
+                Boolean parent_dir_exist = DirectoryExists(parent_dir);
+                if(parent_dir_exist==false)
+                {
+                    // recursively create parent directory if not-existing.
+                    CreateDirectory(parent_dir, auto_parent_dir:true);
+                }
+                return Directory.CreateDirectory(new_dir);
+            }   
         }
 
         static public String GetDirectoryName(String Filename)
@@ -343,6 +357,17 @@ namespace ExcelReportApplication
                 {
                     out_list.Add(filename);
                 }
+            }
+            return out_list;
+        }
+
+        static public List<String> ReplaceDirectory(List<String> filelist, String src_dir, String dest_dir)
+        {
+            List<String> out_list = new List<String>();
+
+            foreach (String filename in filelist)
+            {
+                filename.Replace(src_dir, dest_dir);
             }
             return out_list;
         }
