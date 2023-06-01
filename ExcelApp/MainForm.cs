@@ -73,6 +73,9 @@ namespace ExcelReportApplication
             TestPlan.regexKeywordString = XMLConfig.ReadAppSetting_String("TestReport_Regex_Keyword_Indentifier");
             // end of config
 
+            // config for default output directory of test report (keyword report)
+            KeywordReport.TestReport_Default_Output_Dir = XMLConfig.ReadAppSetting_String("TestReport_Default_Output_Dir"); 
+
             // config for excel report output
             StyleString.default_font = XMLConfig.ReadAppSetting_String("default_report_Font");
             StyleString.default_size = XMLConfig.ReadAppSetting_int("default_report_FontSize");
