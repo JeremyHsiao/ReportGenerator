@@ -279,6 +279,37 @@ namespace ExcelReportApplication
             ExcelAction.CloseTestCaseExcel();
         }
 
+        // This function is used to get judgement result (only read and no update to report) of test report
+        static public String GetJudgementValue(String report_workbook, String report_worksheet)
+        {
+            String ret_str = "Fail";
+
+            // 1. Open Excel and find the sheet
+            // File exist check is done outside
+            Workbook wb_judgement = ExcelAction.OpenExcelWorkbook(report_workbook);
+            if (wb_judgement == null)
+            {
+                ConsoleWarning("ERR: Open workbook in GetJudgementValue: " + report_workbook);
+                return ret_str; 
+            }
+
+            // 2 Open worksheet
+            Worksheet ws_judgement = ExcelAction.Find_Worksheet(wb_judgement, report_worksheet);
+            if (ws_judgement == null)
+            {
+                ConsoleWarning("ERR: Open worksheet in V4: " + report_workbook + " sheet: " + report_worksheet);
+            }
+            else
+            {
+                // 3. Get Judgement value
+                Object obj = ExcelAction.GetCellValue(ws_judgement, TestPlan.Judgement_at_row, TestPlan.Judgement_at_col);
+                if (obj != null) { ret_str = (String)obj; }
+            }
+
+            ExcelAction.CloseExcelWorkbook(wb_judgement);
+            return ret_str;
+        }
+        
         static private void ConsoleWarning(String function, int row)
         {
             Console.WriteLine("Warning: please check " + function + " at line " + row.ToString());
