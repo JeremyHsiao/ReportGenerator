@@ -203,6 +203,8 @@ namespace ExcelReportApplication
 
     public static class KeywordReport
     {
+        static public String TestReport_Default_Output_Dir = "";
+
         static private void ConsoleWarning(String function, int row)
         {
             Console.WriteLine("Warning: please check " + function + " at line " + row.ToString());
