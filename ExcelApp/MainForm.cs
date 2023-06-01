@@ -265,7 +265,15 @@ namespace ExcelReportApplication
             // This issue description is needed for report purpose
             //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
             ReportGenerator.global_issue_description_list_severity = Issue.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.global_issue_list);
-            KeywordReport.KeywordIssueGenerationTaskV4(report_list, source_dir, Storage.GenerateDirectoryNameWithDateTime(source_dir));
+            String out_dir = KeywordReport.TestReport_Default_Output_Dir;
+            if ((out_dir != "") && Storage.DirectoryExists(out_dir))
+            {
+                KeywordReport.KeywordIssueGenerationTaskV4(report_list, source_dir, KeywordReport.TestReport_Default_Output_Dir);
+            }
+            else
+            {
+                KeywordReport.KeywordIssueGenerationTaskV4(report_list, source_dir, Storage.GenerateDirectoryNameWithDateTime(source_dir));
+            }
             return true;
         }
 
