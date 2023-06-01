@@ -604,7 +604,7 @@ namespace ExcelReportApplication
             return bRet;
         }
 
-        static public bool KeywordIssueGenerationTaskV4(List<String> report_filename)
+        static public bool KeywordIssueGenerationTaskV4(List<String> report_filename, String src_dir = "", String dest_dir = "")
         {
             //
             // 1. Create a temporary test plan (do_plan) to include all report files 
@@ -847,9 +847,24 @@ namespace ExcelReportApplication
                 ExcelAction.SetCellValue(result_worksheet, TotalCnt_at_row, TotalCnt_at_col, fail_count + pass_count);
                 ExcelAction.SetCellValue(result_worksheet, Judgement_at_row, Judgement_at_col, judgement_str);
 
-                // 3.4. Save as another file with yyyyMMddHHmmss
-                string dest_filename = Storage.GenerateFilenameWithDateTime(full_filename);
-                ExcelAction.CloseExcelWorkbook(wb_keyword_issue, SaveChanges: true, AsFilename: dest_filename);
+               if ((src_dir == "") || (dest_dir == "") || !Storage.DirectoryExists(src_dir) )
+                {
+                    // 3.4. Save as another file with yyyyMMddHHmmss
+                    string dest_filename = Storage.GenerateFilenameWithDateTime(full_filename);
+                    ExcelAction.CloseExcelWorkbook(wb_keyword_issue, SaveChanges: true, AsFilename: dest_filename);
+                }
+                else
+                {
+                    // 3.4. Save the same file to the folder under another root-folder with yyyyMMddHHmmss
+                    String dest_filename = full_filename.Replace(src_dir, dest_dir);
+                    String dest_filename_dir = Storage.GetDirectoryName(dest_filename);
+
+                    // if parent directory does not exist, create recursively all parents
+                    Storage.CreateDirectory(dest_filename_dir, auto_parent_dir: true);
+
+                    //string dest_filename = Storage.GenerateFilenameWithDateTime(new_fullname);
+                    ExcelAction.CloseExcelWorkbook(wb_keyword_issue, SaveChanges: true, AsFilename: dest_filename);
+                }
             }
 
             return true;
