@@ -232,6 +232,7 @@ namespace ExcelReportApplication
         private bool Execute_KeywordIssueGenerationTask(String FileOrDirectoryName, Boolean IsDirectory = false)
         {
             List<String> file_list = new List<String>();
+            String source_dir;
             if (IsDirectory == false)
             {
                 if ((ReportGenerator.global_issue_list.Count == 0) || (!Storage.FileExists(FileOrDirectoryName)))
@@ -240,6 +241,7 @@ namespace ExcelReportApplication
                     return false;
                 }
                 file_list.Add(FileOrDirectoryName);
+                source_dir = Storage.GetDirectoryName(FileOrDirectoryName);
             }
             else
             {
@@ -252,6 +254,7 @@ namespace ExcelReportApplication
                 //MsgWindow.AppendText("File found under directory " + FileOrDirectoryName + "\n");
                 //foreach (String filename in file_list)
                 //    MsgWindow.AppendText(filename + "\n");
+                source_dir = FileOrDirectoryName;
             }
             // filename check to exclude non-report files.
             List<String> report_list = Storage.FilterFilename(file_list);
@@ -259,7 +262,7 @@ namespace ExcelReportApplication
             // This issue description is needed for report purpose
             //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
             ReportGenerator.global_issue_description_list_severity = Issue.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.global_issue_list);
-            KeywordReport.KeywordIssueGenerationTaskV4(report_list);
+            KeywordReport.KeywordIssueGenerationTaskV4(report_list, source_dir, Storage.GenerateDirectoryNameWithDateTime(source_dir));
             return true;
         }
 
