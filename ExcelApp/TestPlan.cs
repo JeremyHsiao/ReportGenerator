@@ -271,6 +271,7 @@ namespace ExcelReportApplication
         public static int FailCnt_at_row = 21, FailCnt_at_col = 7;
         public static int TotalCnt_at_row = 21, TotalCnt_at_col = 9;
         public static int Judgement_at_row = 9, Judgement_at_col = 4;
+        public static int Judgement_string_at_row = 9, Judgement_string_at_col = 2;
 
         public List<TestPlanKeyword> ListKeyword()
         {
