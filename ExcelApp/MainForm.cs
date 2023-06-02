@@ -187,10 +187,11 @@ namespace ExcelReportApplication
             ReportGenerator.global_testcase_list.Clear();
         }
 
-        private bool Execute_WriteIssueDescriptionToTC(String tc_file, String template_file)
+        private bool Execute_WriteIssueDescriptionToTC(String tc_file, String template_file, String judgement_report_dir="")
         {
             if ((ReportGenerator.global_issue_list.Count == 0) || (ReportGenerator.global_testcase_list.Count == 0) ||
-                (!Storage.FileExists(tc_file)) || (!Storage.FileExists(template_file)))
+                (!Storage.FileExists(tc_file)) || (!Storage.FileExists(template_file))
+                || ((judgement_report_dir!="") && !Storage.DirectoryExists(judgement_report_dir)) )
             {
                 // protection check
                 return false;
@@ -200,7 +201,7 @@ namespace ExcelReportApplication
             ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
 
             //            ReportGenerator.WriteBacktoTCJiraExcel(tc_file);
-            ReportGenerator.WriteBacktoTCJiraExcelV2(tc_file, template_file);
+            ReportGenerator.WriteBacktoTCJiraExcelV2(tc_file, template_file,judgement_report_dir);
             return true;
         }
 
@@ -349,8 +350,19 @@ namespace ExcelReportApplication
 
         private void btnSelectExcelTestFile_Click(object sender, EventArgs e)
         {
+            int report_index = comboBoxReportSelect.SelectedIndex;
+            bool sel_file = true;
+            switch (ReportGenerator.ReportTypeFromInt(report_index))
+            {
+                case ReportGenerator.ReportType.FullIssueDescription_TC_report_judgement:
+                    //case ReportGenerator.ReportType.FindAllKeywordInReport:
+                    sel_file = false;  // Here select directory instead of file
+                    break;
+            }
+
             String init_dir = Storage.GetFullPath(txtStandardTestReport.Text);
-            String ret_str = Storage.UsesrSelectFilename(init_dir: init_dir);
+            //String ret_str = Storage.UsesrSelectFilename(init_dir: init_dir,);
+            String ret_str = SelectDirectoryOrFile(init_dir, sel_file);
             if (ret_str != "")
             {
                 txtStandardTestReport.Text = ret_str;
@@ -518,7 +530,7 @@ namespace ExcelReportApplication
                     UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
                     if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                     if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                    bRet = Execute_WriteIssueDescriptionToTC(txtTCFile.Text, txtReportFile.Text);
+                    bRet = Execute_WriteIssueDescriptionToTC(txtTCFile.Text, txtReportFile.Text, txtStandardTestReport.Text);
                     break;
                 default:
                     // shouldn't be here.
