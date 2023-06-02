@@ -198,7 +198,7 @@ namespace ExcelReportApplication
         //}
 
         // This version open Test Case Excel and copy content into template file and replace Issue ID on Linked Issue column with ID+Summary+Severity+RD_Comment
-        static public void WriteBacktoTCJiraExcelV2(String tclist_filename, String template_filename)
+        static public void WriteBacktoTCJiraExcelV2(String tclist_filename, String template_filename, String judgement_report_dir = "")
         {
             // Open original excel (read-only & corrupt-load) and write to another filename when closed
             ExcelAction.ExcelStatus status;
@@ -218,6 +218,32 @@ namespace ExcelReportApplication
                 return; // to-be-checked if here
             }
 
+            // 2.1 Get report_list under judgement_report_dir
+            Dictionary<String, String> report_list = new Dictionary<String, String>();
+            if (judgement_report_dir != "")
+            {
+                List<String> file_list = Storage.ListFilesUnderDirectory(judgement_report_dir);
+                foreach (String name in file_list)
+                {
+                    // File existing check protection (it is better also checked and giving warning before entering this function)
+                    if (Storage.FileExists(name) == false)
+                        continue; // no warning here, simply skip this file.
+
+                    String full_filename = Storage.GetFullPath(name);
+                    String short_filename = Storage.GetFileName(full_filename);
+                    String[] sp_str = short_filename.Split(new Char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+                    String sheet_name = sp_str[0];
+                    try
+                    {
+                        report_list.Add(sheet_name, full_filename);
+                    }
+                    catch (ArgumentException)
+                    {
+                        Console.WriteLine("Sheet name:" + sheet_name + " already exists.");
+                    }
+                    
+                }
+            }
 
             // 3. Copy test case data into template excel -- both will have the same row/col and (almost) same data
             ExcelAction.CopyTestCaseIntoTemplate_v2();
@@ -226,6 +252,8 @@ namespace ExcelReportApplication
             Dictionary<string, int> template_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate:true);
             int key_col = template_col_name_list[TestCase.col_Key];
             int links_col = template_col_name_list[TestCase.col_LinkedIssue];
+            int summary_col = template_col_name_list[TestCase.col_Summary];
+            int status_col = template_col_name_list[TestCase.col_Status];
             int last_row = ExcelAction.Get_Range_RowNumber(ExcelAction.GetTestCaseAllRange(IsTemplate:true));
             // Visit all rows and replace Bug-ID at Linked Issue with long description of Bug.
             for (int excel_row_index = TestCase.DataBeginRow; excel_row_index <= last_row; excel_row_index++)
@@ -265,6 +293,22 @@ namespace ExcelReportApplication
                     List<StyleString> str_list = StyleString.ExtendIssueDescription(final_id_list, global_issue_description_list);
                     // write into template excel
                     ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
+                }
+
+                // 4.x update Status according to judgement report
+                // search judgement report within list generated in 2.1
+                // if found, get judgement value and update to Status
+                //String judgement = GetJudgementValue(workbook, worksheet);
+                //ExcelAction.SetCellValue(worksheet, excel_row_index, status_col, judgement);  
+                String summary = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, summary_col, IsTemplate: true);
+                String[] sp_str = summary.Split(new Char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+                String worksheet_name = sp_str[0];
+
+                if (report_list.ContainsKey(worksheet_name))
+                {
+                    String workbook_filename = report_list[worksheet_name];
+                    Object judgement = GetJudgementValue(workbook_filename, worksheet_name);
+                    ExcelAction.SetTestCaseCell(excel_row_index, status_col, judgement, IsTemplate:true);  
                 }
             }
 
