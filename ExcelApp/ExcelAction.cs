@@ -338,6 +338,12 @@ namespace ExcelReportApplication
             return ws.Cells[row, col].Value2;
         }
 
+        static public void SetTestCaseCell(int row, int col, Object set_object, bool IsTemplate = false)
+        {
+            Worksheet ws = ((IsTemplate) ? ws_tc_template : ws_testcase);
+            ws.Cells[row, col].Value2 = set_object;
+        }
+
         static public String GetTestCaseCellTrimmedString(int row, int col, bool IsTemplate = false)
         {
             Object cell_value2 = GetTestCaseCell(row, col, IsTemplate: IsTemplate);
