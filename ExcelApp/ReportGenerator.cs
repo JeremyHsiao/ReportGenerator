@@ -22,13 +22,13 @@ namespace ExcelReportApplication
         // Must be updated if new report type added #NewReportType
         public enum ReportType {
             FullIssueDescription_TC = 0,
-            FullIssueDescription_Summary,
-            StandardTestReportCreation,
+            //FullIssueDescription_Summary,
+            //StandardTestReportCreation,
             KeywordIssue_Report_SingleFile,
-            TC_Likely_Passed,
-            FindAllKeywordInReport,
+            //TC_Likely_Passed,
+            //FindAllKeywordInReport,
             KeywordIssue_Report_Directory,
-            Excel_Sheet_Name_Update_Tool,
+            //Excel_Sheet_Name_Update_Tool,
             FullIssueDescription_TC_report_judgement
         }
 
@@ -63,13 +63,13 @@ namespace ExcelReportApplication
         private static String[] ReportName = new String[] 
         {
             "1.Issue Description for TC",
-            "2.Issue Description for Summary",
-            "3.Standard Test Report Creator",
+            //"2.Issue Description for Summary",
+            //"3.Standard Test Report Creator",
             "4.Keyword Issue - Single File",
-            "5.TC likely Pass",
-            "6.List Keywords of all detailed reports",
+            //"5.TC likely Pass",
+            //"6.List Keywords of all detailed reports",
             "7.Keyword Issue - Directory",
-            "8.Excel sheet name update tool",
+            //"8.Excel sheet name update tool",
             "9.TC issue/judgement",
        };
 
@@ -82,48 +82,48 @@ namespace ExcelReportApplication
                 "Input:",  "  Issue List + Test Case + Template (for Test case output)",
                 "Output:", "  Test Case in the format of template file with linked issue in full description",
             },
-            new String[] 
-            {
-                "Issue Description for Summary Report", 
-                "Input:",  "  Issue List + Test Case + Template (for Summary Report)",
-                "Output:", "  Summary in the format of template file with linked issue in full description",
-            },
-            new String[] 
-            {
-                "Create file structure of Standard Test Report according to user's selection (Do or Not)", 
-                "Input:",  "  Main Test Report File",
-                "Output:", "  Directory structure and report files under directories",
-            },
+            //new String[] 
+            //{
+            //    "Issue Description for Summary Report", 
+            //    "Input:",  "  Issue List + Test Case + Template (for Summary Report)",
+            //    "Output:", "  Summary in the format of template file with linked issue in full description",
+            //},
+            //new String[] 
+            //{
+            //    "Create file structure of Standard Test Report according to user's selection (Do or Not)", 
+            //    "Input:",  "  Main Test Report File",
+            //    "Output:", "  Directory structure and report files under directories",
+            //},
             new String[] 
             {
                 "Keyword Issue to Report - Single File", 
                 "Input:",  "  Test Plan/Report with Keyword",
                 "Output:", "  Test Plan/Report with keyword issue list inserted on the 1st-column next to the right-side of printable area",
             },
-            new String[] 
-            {
-                "Test case status is Fail but its linked issues are closed", 
-                "Input:",  "  Issue List + Test Case + Template (for Test case output)",
-                "Output:", "  Test Case whose linked issues are closed (other TC are hidden)",
-            },
-            new String[] 
-            {
-                "Go Through all Do-plan to list down all keywords", 
-                "Input:",  "  Main Test Report File",
-                "Output:", "  All keywords listed on output log",
-            },
+            //new String[] 
+            //{
+            //    "Test case status is Fail but its linked issues are closed", 
+            //    "Input:",  "  Issue List + Test Case + Template (for Test case output)",
+            //    "Output:", "  Test Case whose linked issues are closed (other TC are hidden)",
+            //},
+            //new String[] 
+            //{
+            //    "Go Through all Do-plan to list down all keywords", 
+            //    "Input:",  "  Main Test Report File",
+            //    "Output:", "  All keywords listed on output log",
+            //},
             new String[] 
             {
                 "Keyword Issue to Report - Files under directory", 
                 "Input:",  "  Test Plan/Reports with Keyword under user-specified directory",
                 "Output:", "  Test Plan/Reports with keyword issue list inserted on the 1st-column next to the right-side of printable area",
             },
-            new String[] 
-            {
-                "Excel Reports to be checked - Files under directory", 
-                "Input:",  "  Test Plan/Reports",
-                "Output:", "  Test Plan/Reports with updated sheet-name if original sheet-name doesn't follow rules",
-            },
+            //new String[] 
+            //{
+            //    "Excel Reports to be checked - Files under directory", 
+            //    "Input:",  "  Test Plan/Reports",
+            //    "Output:", "  Test Plan/Reports with updated sheet-name if original sheet-name doesn't follow rules",
+            //},
             new String[] 
             {
                 "Issue Description + judgement from report for TC Report", 

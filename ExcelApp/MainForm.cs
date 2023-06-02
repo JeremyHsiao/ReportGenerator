@@ -479,18 +479,18 @@ namespace ExcelReportApplication
                     if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
                     bRet = Execute_WriteIssueDescriptionToTC(txtTCFile.Text, txtReportFile.Text);
                     break;
-                case ReportGenerator.ReportType.FullIssueDescription_Summary:
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
-                    if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                    if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                    bRet = Execute_WriteIssueDescriptionToSummary(txtReportFile.Text);
-                    break;
-                case ReportGenerator.ReportType.StandardTestReportCreation:
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
-                    bRet = Execute_CreateStandardTestReportTask(txtStandardTestReport.Text);
-                    break;
+                //case ReportGenerator.ReportType.FullIssueDescription_Summary:
+                //    UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
+                //    UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
+                //    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                //    if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                //    if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+                //    bRet = Execute_WriteIssueDescriptionToSummary(txtReportFile.Text);
+                //    break;
+                //case ReportGenerator.ReportType.StandardTestReportCreation:
+                //    UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
+                //    bRet = Execute_CreateStandardTestReportTask(txtStandardTestReport.Text);
+                //    break;
                 case ReportGenerator.ReportType.KeywordIssue_Report_SingleFile:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);    // File path here
@@ -503,26 +503,26 @@ namespace ExcelReportApplication
                     if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                     bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: true);
                     break;
-                case ReportGenerator.ReportType.TC_Likely_Passed:
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
-                    if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                    if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                    bRet = Execute_FindFailTCLinkedIssueAllClosed(txtTCFile.Text, txtReportFile.Text);
-                    break;
-                case ReportGenerator.ReportType.FindAllKeywordInReport:
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
-                    String main_file = txtStandardTestReport.Text;
-                    String file_dir = Storage.GetDirectoryName(main_file);
-                    String report_root_dir = Storage.GetDirectoryName(file_dir);
-                    bRet = Execute_ListAllDetailedTestPlanKeywordTask(main_file, report_root_dir);
-                    break;
-                case ReportGenerator.ReportType.Excel_Sheet_Name_Update_Tool:
-                    UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);     // Directory path here
-                    // bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: true);
-                    bRet = true;
-                    break;
+                //case ReportGenerator.ReportType.TC_Likely_Passed:
+                //    UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
+                //    UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
+                //    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                //    if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                //    if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+                //    bRet = Execute_FindFailTCLinkedIssueAllClosed(txtTCFile.Text, txtReportFile.Text);
+                //    break;
+                //case ReportGenerator.ReportType.FindAllKeywordInReport:
+                //    UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
+                //    String main_file = txtStandardTestReport.Text;
+                //    String file_dir = Storage.GetDirectoryName(main_file);
+                //    String report_root_dir = Storage.GetDirectoryName(file_dir);
+                //    bRet = Execute_ListAllDetailedTestPlanKeywordTask(main_file, report_root_dir);
+                //    break;
+                //case ReportGenerator.ReportType.Excel_Sheet_Name_Update_Tool:
+                //    UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);     // Directory path here
+                //    // bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: true);
+                //    bRet = true;
+                //    break;
                 case ReportGenerator.ReportType.FullIssueDescription_TC_report_judgement:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
@@ -600,18 +600,18 @@ namespace ExcelReportApplication
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
                     break;
-                case ReportGenerator.ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
-                    SetEnable_IssueFile(true);
-                    SetEnable_TCFile(true);
-                    SetEnable_OutputFile(true);
-                    SetEnable_StandardReport(false);
-                    break;
-                case ReportGenerator.ReportType.StandardTestReportCreation:
-                    SetEnable_IssueFile(false);
-                    SetEnable_TCFile(false);
-                    SetEnable_OutputFile(false);
-                    SetEnable_StandardReport(true);
-                    break;
+                //case ReportGenerator.ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
+                //    SetEnable_IssueFile(true);
+                //    SetEnable_TCFile(true);
+                //    SetEnable_OutputFile(true);
+                //    SetEnable_StandardReport(false);
+                //    break;
+                //case ReportGenerator.ReportType.StandardTestReportCreation:
+                //    SetEnable_IssueFile(false);
+                //    SetEnable_TCFile(false);
+                //    SetEnable_OutputFile(false);
+                //    SetEnable_StandardReport(true);
+                //    break;
                 case ReportGenerator.ReportType.KeywordIssue_Report_SingleFile:
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(false);
@@ -624,24 +624,24 @@ namespace ExcelReportApplication
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
                     break;
-                case ReportGenerator.ReportType.TC_Likely_Passed:
-                    SetEnable_IssueFile(true);
-                    SetEnable_TCFile(true);
-                    SetEnable_OutputFile(true);
-                    SetEnable_StandardReport(false);
-                    break;
-                case ReportGenerator.ReportType.FindAllKeywordInReport:
-                    SetEnable_IssueFile(false);
-                    SetEnable_TCFile(false);
-                    SetEnable_OutputFile(false);
-                    SetEnable_StandardReport(true);
-                    break;
-                case ReportGenerator.ReportType.Excel_Sheet_Name_Update_Tool:
-                    SetEnable_IssueFile(false);
-                    SetEnable_TCFile(false);
-                    SetEnable_OutputFile(true);
-                    SetEnable_StandardReport(false);
-                    break;
+                //case ReportGenerator.ReportType.TC_Likely_Passed:
+                //    SetEnable_IssueFile(true);
+                //    SetEnable_TCFile(true);
+                //    SetEnable_OutputFile(true);
+                //    SetEnable_StandardReport(false);
+                //    break;
+                //case ReportGenerator.ReportType.FindAllKeywordInReport:
+                //    SetEnable_IssueFile(false);
+                //    SetEnable_TCFile(false);
+                //    SetEnable_OutputFile(false);
+                //    SetEnable_StandardReport(true);
+                //    break;
+                //case ReportGenerator.ReportType.Excel_Sheet_Name_Update_Tool:
+                //    SetEnable_IssueFile(false);
+                //    SetEnable_TCFile(false);
+                //    SetEnable_OutputFile(true);
+                //    SetEnable_StandardReport(false);
+                //    break;
                 case ReportGenerator.ReportType.FullIssueDescription_TC_report_judgement: // "1.Issue Description for TC"
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(true);
@@ -665,14 +665,14 @@ namespace ExcelReportApplication
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
-                case ReportGenerator.ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
-                    if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_Summary");
-                    break;
-                case ReportGenerator.ReportType.StandardTestReportCreation:
-                    if (!btnSelectExcelTestFile_Clicked)
-                        txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("workbook_StandardTestReport");
-                    break;
+                //case ReportGenerator.ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
+                //    if (!btnSelectReportFile_Clicked)
+                //        txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_Summary");
+                //    break;
+                //case ReportGenerator.ReportType.StandardTestReportCreation:
+                //    if (!btnSelectExcelTestFile_Clicked)
+                //        txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("workbook_StandardTestReport");
+                //    break;
                 case ReportGenerator.ReportType.KeywordIssue_Report_SingleFile:
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = @".\SampleData\A.1.1_OSD _All.xlsx";
@@ -681,18 +681,18 @@ namespace ExcelReportApplication
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = @".\SampleData\More chapters_TestCaseID";
                     break;
-                case ReportGenerator.ReportType.TC_Likely_Passed:
-                    if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
-                    break;
-                case ReportGenerator.ReportType.FindAllKeywordInReport:
-                    if (!btnSelectExcelTestFile_Clicked)
-                        txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("workbook_ReportToTestKeyword");
-                    break;
-                case ReportGenerator.ReportType.Excel_Sheet_Name_Update_Tool:
-                    if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = @".\SampleData\More chapters_TestCaseID";
-                    break;
+                //case ReportGenerator.ReportType.TC_Likely_Passed:
+                //    if (!btnSelectReportFile_Clicked)
+                //        txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
+                //    break;
+                //case ReportGenerator.ReportType.FindAllKeywordInReport:
+                //    if (!btnSelectExcelTestFile_Clicked)
+                //        txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("workbook_ReportToTestKeyword");
+                //    break;
+                //case ReportGenerator.ReportType.Excel_Sheet_Name_Update_Tool:
+                //    if (!btnSelectReportFile_Clicked)
+                //        txtReportFile.Text = @".\SampleData\More chapters_TestCaseID";
+                //    break;
                 case ReportGenerator.ReportType.FullIssueDescription_TC_report_judgement: // "1.Issue Description for TC"
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
