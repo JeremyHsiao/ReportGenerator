@@ -614,26 +614,8 @@ namespace ExcelReportApplication
             // 1.1 Init an empty plan
             List<TestPlan> do_plan = new List<TestPlan>();
 
-            // 1.2 This temporary test plan starts to includes all files listed in List<String> report_filename
-            foreach (String name in report_filename)
-            {
-                // File existing check protection (it is better also checked and giving warning before entering this function)
-                if (Storage.FileExists(name) == false)
-                    continue; // no warning here, simply skip this file.
-
-                // DoOrNot must be "V" & ExcelFile/ExcelSheet must be correct
-                String full_filename = Storage.GetFullPath(name);
-                String short_filename = Storage.GetFileName(full_filename);
-                String[] sp_str = short_filename.Split(new Char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
-                String sheet_name = sp_str[0];
-                String subpart = sp_str[1];
-                List<String> tp_str = new List<String>();
-                tp_str.AddRange(new String[] { "N/A", short_filename, "N/A", "V", "N/A", subpart });
-                TestPlan tp = new TestPlan(tp_str);
-                tp.ExcelFile = full_filename;
-                tp.ExcelSheet = sheet_name;
-                do_plan.Add(tp);
-            }
+            // 1.2 Create a temporary test plan to includes all files listed in List<String> report_filename
+            do_plan = TestPlan.CreateTempPlanFromFileList(report_filename);
 
             //
             // 2. Search keywords within all selected file (2.1) and use those keywords to find out issues containing keywords.
