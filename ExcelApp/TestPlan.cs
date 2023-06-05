@@ -253,6 +253,31 @@ namespace ExcelReportApplication
             }
         }
 
+        public static List<TestPlan> CreateTempPlanFromFileList(List<String> filename)
+        {
+            List<TestPlan> ret_plan = new List<TestPlan>();
+            foreach (String name in filename)
+            {
+                // File existing check protection (it is better also checked and giving warning before entering this function)
+                if (Storage.FileExists(name) == false)
+                    continue; // no warning here, simply skip this file.
+
+                // DoOrNot must be "V" & ExcelFile/ExcelSheet must be correct
+                String full_filename = Storage.GetFullPath(name);
+                String short_filename = Storage.GetFileName(full_filename);
+                String[] sp_str = short_filename.Split(new Char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+                String sheet_name = sp_str[0];
+                String subpart = sp_str[1];
+                List<String> tp_str = new List<String>();
+                tp_str.AddRange(new String[] { "N/A", short_filename, "N/A", "V", "N/A", subpart });
+                TestPlan tp = new TestPlan(tp_str);
+                tp.ExcelFile = full_filename;
+                tp.ExcelSheet = sheet_name;
+                ret_plan.Add(tp);
+            }
+            return ret_plan;
+        }
+
         public static int col_indentifier = 2;
         public static int col_keyword = col_indentifier + 1;
         public static int row_test_detail_start = 27;
