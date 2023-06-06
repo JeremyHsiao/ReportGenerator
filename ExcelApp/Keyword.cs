@@ -205,6 +205,10 @@ namespace ExcelReportApplication
     {
         static public String TestReport_Default_Output_Dir = "";
 
+        static private void ConsoleWarning(String function, int row, int col)
+        {
+            Console.WriteLine("Warning: please check " + function + " at (" + row.ToString() + "," + col.ToString() + ")");
+        }
         static private void ConsoleWarning(String function, int row)
         {
             Console.WriteLine("Warning: please check " + function + " at line " + row.ToString());
@@ -214,6 +218,126 @@ namespace ExcelReportApplication
             Console.WriteLine("Warning: please check " + function);
         }
 
+        public static int col_indentifier = 2;
+        public static int col_keyword = col_indentifier + 1;
+        public static int row_test_detail_start = 27;
+        public static String regexKeywordString = @"(?i)Item";
+        public static int row_offset_result_title = 1;                                // offset from the row of identifier regex "Item"
+        public static int row_offset_bugstatus_title = row_offset_result_title;       // offset from the row of identifier regex "Item"
+        public static int row_offset_buglist_title = row_offset_result_title + 1;     // offset from the row of identifier regex "Item"
+        public static int col_offset_result_title = 1;                                // offset from the column of identifier regex "Item"
+        public static int col_offset_bugstatus_title = col_offset_result_title + 2;   // offset from the column of identifier regex "Item"
+        public static int col_offset_buglist_title = col_offset_result_title;         // offset from the column of identifier regex "Item"
+        public static String regexResultString = @"^(?i)\s*Result\s*$";
+        public static String regexBugStatusString = @"^(?i)\s*Bug Status\s*$";
+        public static String regexBugListString = @"^(?i)\s*Bug List\s*$";
+
+        public static int PassCnt_at_row = 21, PassCnt_at_col = 5;
+        public static int FailCnt_at_row = 21, FailCnt_at_col = 7;
+        public static int TotalCnt_at_row = 21, TotalCnt_at_col = 9;
+        public static int Judgement_at_row = 9, Judgement_at_col = 4;
+        public static int Judgement_string_at_row = 9, Judgement_string_at_col = 2;
+
+        static public List<TestPlanKeyword> ListKeyword(TestPlan plan)
+        {
+            NotReportFileRecord not_keyword_report;
+            not_keyword_report = new NotReportFileRecord();
+
+            //
+            // 2. Find out Printable Area
+            //
+            // Assummed that Printable area always starting at $A$1 (also data processing area)
+            // So excel data processing area ends at Printable area (row_count,col_count)
+            Worksheet ws_testplan = plan.TestPlanWorksheet;
+            Range rngPrintable = ExcelAction.GetWorksheetPrintableRange(ws_testplan);
+            int row_print_area = ExcelAction.Get_Range_RowNumber(rngPrintable);
+            int column_print_area = ExcelAction.Get_Range_ColumnNumber(rngPrintable);
+
+            //
+            // 3. Find out all keywords and create LUT (keyword,row_index)
+            //    output:  LUT (keyword,row_index)
+            //
+            // Read report file for keyword & its row and store into keyword/row dictionary
+            // Search keyword within printable area
+            Dictionary<String, int> KeywordAtRow = new Dictionary<String, int>();
+            RegexStringValidator identifier_keyword_Regex = new RegexStringValidator(regexKeywordString);
+            RegexStringValidator result_keyword_Regex = new RegexStringValidator(regexResultString);
+            RegexStringValidator bug_status_keyword_Regex = new RegexStringValidator(regexBugStatusString);
+            RegexStringValidator bug_list_keyword_Regex = new RegexStringValidator(regexBugListString);
+            for (int row_index = row_test_detail_start; row_index <= row_print_area; row_index++)
+            {
+                String identifier_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index, col_indentifier),
+                        result_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_result_title,
+                                                                            col_indentifier + col_offset_result_title),
+                        bug_status_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_bugstatus_title,
+                                                                            col_indentifier + col_offset_bugstatus_title),
+                        bug_list_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_buglist_title,
+                                                                            col_indentifier + col_offset_buglist_title),
+                        keyword_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index, col_keyword);
+                int regex_step = 0;
+                try
+                {
+                    // Attempt validation.
+                    // regex false (not a keyword row) then jumping to catch(); 
+                    identifier_keyword_Regex.Validate(identifier_text); regex_step++;
+                    // regex true, next step is to check the rest of field to validate
+                    // 1. Check "Result" title
+                    result_keyword_Regex.Validate(result_text); regex_step++;
+                    bug_status_keyword_Regex.Validate(bug_status_text); regex_step++;
+                    bug_list_keyword_Regex.Validate(bug_list_text); regex_step++;
+
+                    if (keyword_text == "") { ConsoleWarning("Empty Keyword", row_index); continue; }
+                    if (KeywordAtRow.ContainsKey(keyword_text)) { ConsoleWarning("Duplicated Keyword", row_index); continue; }
+                    KeywordAtRow.Add(keyword_text, row_index);
+                }
+                catch (ArgumentException e)
+                {
+                    // Validation failed.
+                    // Not a key row
+                    switch (regex_step)
+                    {
+                        case 0:
+                            // Not a keyword identifier 
+                            break;
+                        case 1:
+                            // Not a "Result" 
+                            ConsoleWarning(regexBugStatusString, row_index + row_offset_result_title,
+                                                                 col_indentifier + col_offset_result_title);
+                            break;
+                        case 2:
+                            // Not a "Bug Status" 
+                            ConsoleWarning(regexBugStatusString, row_index + row_index + row_offset_bugstatus_title,
+                                                                 col_indentifier + col_offset_bugstatus_title);
+                            break;
+                        case 3:
+                            // Not a "Bug List" 
+                            ConsoleWarning(regexBugListString, row_index + row_offset_buglist_title,
+                                                                 col_indentifier + col_offset_buglist_title);
+                            break;
+                        default:
+                            break;
+                    }
+                    continue;
+                }
+            }
+
+            List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
+            foreach (String key in KeywordAtRow.Keys)
+            {
+                int row_keyword = KeywordAtRow[key];
+                // col_keyword is currently fixed value
+                int row_result, col_result, row_bug_status, col_bug_status, row_bug_list, col_bug_list;
+
+                row_result = row_bug_status = row_keyword + 1;
+                row_bug_list = row_keyword + 2;
+                col_result = col_bug_list = col_keyword + 1;
+                col_bug_status = col_keyword + 3;
+                ret.Add(new TestPlanKeyword(key, plan.ExcelFile, plan.ExcelSheet, KeywordAtRow[key], col_keyword,
+                    row_result, col_result, row_bug_status, col_bug_status, row_bug_list, col_bug_list));
+            }
+            return ret;
+        }
+
         static public List<TestPlanKeyword> ListAllKeyword(List<TestPlan> DoPlan)
         {
             List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
@@ -221,38 +345,43 @@ namespace ExcelReportApplication
 
             foreach (TestPlan plan in DoPlan)
             {
+                String path = Storage.GetDirectoryName(plan.ExcelFile);
+                String filename = Storage.GetFileName(plan.ExcelFile);
+                NotReportFileRecord fail_log = new NotReportFileRecord(path, filename);
+
                 TestPlan.ExcelStatus test_plan_status;
                 test_plan_status = plan.OpenDetailExcel();
                 if (test_plan_status == TestPlan.ExcelStatus.OK)
                 {
-                    List<TestPlanKeyword> plan_keyword = plan.ListKeyword();
+                    List<TestPlanKeyword> plan_keyword = ListKeyword(plan);
                     plan.CloseIssueListExcel();
                     if (plan_keyword != null)
                     {
                         ret.AddRange(plan_keyword);
                     }
+                    else
+                    {
+                    }
                 }
                 else
                 {
-                    String path = Storage.GetDirectoryName(plan.ExcelFile);
-                    String filename = Storage.GetFileName(plan.ExcelFile);
-                    NotReportFileRecord fail_report_log = new NotReportFileRecord(path, filename);
                     if (test_plan_status == TestPlan.ExcelStatus.ERR_OpenDetailExcel_OpenExcelWorkbook)
                     {
-                        fail_report_log.SetFlagFail(filenamefail: true);
+                        fail_log.SetFlagFail(filenamefail: true);
                     }
                     else if (test_plan_status == TestPlan.ExcelStatus.ERR_OpenDetailExcel_Find_Worksheet)
                     {
-                        fail_report_log.SetFlagFail(sheetnamefail: true);
+                        fail_log.SetFlagFail(sheetnamefail: true);
                     }
                     else
                     {
-                        fail_report_log.SetFlagFail(otherFailure: true);
+                        fail_log.SetFlagFail(otherFailure: true);
                         ConsoleWarning("Test Plan Error occurred:" + plan.ExcelSheet + "@" + plan.ExcelFile);
                     }
-                    ret_not_report_log.Add(fail_report_log);
+                    ret_not_report_log.Add(fail_log);
                 }
             }
+            ReportGenerator.excel_not_report_log.AddRange(ret_not_report_log);
             return ret;
         }
 
@@ -640,7 +769,8 @@ namespace ExcelReportApplication
             //
             // 2.1. Find keyword for all selected file (as listed in temprary test plan)
             //
-            List<TestPlanKeyword> keyword_list = KeywordReport.ListAllKeyword(do_plan);
+            ReportGenerator.excel_not_report_log.Clear();
+            List<TestPlanKeyword> keyword_list = ListAllKeyword(do_plan);
 
             //
             // 2.2. Use keyword to find out all issues (ID) that contains keyword on id_list. 
@@ -844,10 +974,10 @@ namespace ExcelReportApplication
                     // pass
                     judgement_str = "Pass";
                 }
-                ExcelAction.SetCellValue(result_worksheet, TestPlan.PassCnt_at_row, TestPlan.PassCnt_at_col, pass_count);
-                ExcelAction.SetCellValue(result_worksheet, TestPlan.FailCnt_at_row, TestPlan.FailCnt_at_col, fail_count);
-                ExcelAction.SetCellValue(result_worksheet, TestPlan.TotalCnt_at_row, TestPlan.TotalCnt_at_col, fail_count + pass_count);
-                ExcelAction.SetCellValue(result_worksheet, TestPlan.Judgement_at_row, TestPlan.Judgement_at_col, judgement_str);
+                ExcelAction.SetCellValue(result_worksheet, PassCnt_at_row, PassCnt_at_col, pass_count);
+                ExcelAction.SetCellValue(result_worksheet, FailCnt_at_row, FailCnt_at_col, fail_count);
+                ExcelAction.SetCellValue(result_worksheet, TotalCnt_at_row, TotalCnt_at_col, fail_count + pass_count);
+                ExcelAction.SetCellValue(result_worksheet, Judgement_at_row, Judgement_at_col, judgement_str);
 
                if ((src_dir == "") || (dest_dir == "") || !Storage.DirectoryExists(src_dir) )
                 {
@@ -892,7 +1022,8 @@ namespace ExcelReportApplication
             {
                 plan.ExcelFile = report_root_dir + @"\" + plan.ExcelFile;
             }
-            keyword_list = KeywordReport.ListAllKeyword(do_plan);
+            ReportGenerator.excel_not_report_log.Clear();
+            keyword_list = ListAllKeyword(do_plan);
 
             return keyword_list;
         }

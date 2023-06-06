@@ -67,10 +67,10 @@ namespace ExcelReportApplication
             // config for default parameters used in Test Plan / Test Report
             TestPlan.NameDefinitionRow_TestPlan = XMLConfig.ReadAppSetting_int("TestPlan_Row_NameDefine");
             TestPlan.DataBeginRow_TestPlan = XMLConfig.ReadAppSetting_int("TestPlan_Row_DataBegin");
-            TestPlan.row_test_detail_start = XMLConfig.ReadAppSetting_int("TestReport_Row_UserStart");
-            TestPlan.col_indentifier = XMLConfig.ReadAppSetting_int("TestReport_Column_Keyword_Indentifier");
-            TestPlan.col_keyword = XMLConfig.ReadAppSetting_int("TestReport_Column_Keyword_Location");
-            TestPlan.regexKeywordString = XMLConfig.ReadAppSetting_String("TestReport_Regex_Keyword_Indentifier");
+            KeywordReport.row_test_detail_start = XMLConfig.ReadAppSetting_int("TestReport_Row_UserStart");
+            KeywordReport.col_indentifier = XMLConfig.ReadAppSetting_int("TestReport_Column_Keyword_Indentifier");
+            KeywordReport.col_keyword = XMLConfig.ReadAppSetting_int("TestReport_Column_Keyword_Location");
+            KeywordReport.regexKeywordString = XMLConfig.ReadAppSetting_String("TestReport_Regex_Keyword_Indentifier");
             // end of config
 
             // config for default output directory of test report (keyword report)
