@@ -217,6 +217,8 @@ namespace ExcelReportApplication
         static public List<TestPlanKeyword> ListAllKeyword(List<TestPlan> DoPlan)
         {
             List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
+            List<NotReportFileRecord> ret_not_report_log = new List<NotReportFileRecord>();
+
             foreach (TestPlan plan in DoPlan)
             {
                 TestPlan.ExcelStatus test_plan_status;
@@ -232,7 +234,23 @@ namespace ExcelReportApplication
                 }
                 else
                 {
-                    ConsoleWarning("Test Plan Error occurred:" + plan.ExcelSheet + "@" + plan.ExcelFile);
+                    String path = Storage.GetDirectoryName(plan.ExcelFile);
+                    String filename = Storage.GetFileName(plan.ExcelFile);
+                    NotReportFileRecord fail_report_log = new NotReportFileRecord(path, filename);
+                    if (test_plan_status == TestPlan.ExcelStatus.ERR_OpenDetailExcel_OpenExcelWorkbook)
+                    {
+                        fail_report_log.SetFlagFail(filenamefail: true);
+                    }
+                    else if (test_plan_status == TestPlan.ExcelStatus.ERR_OpenDetailExcel_Find_Worksheet)
+                    {
+                        fail_report_log.SetFlagFail(sheetnamefail: true);
+                    }
+                    else
+                    {
+                        fail_report_log.SetFlagFail(otherFailure: true);
+                        ConsoleWarning("Test Plan Error occurred:" + plan.ExcelSheet + "@" + plan.ExcelFile);
+                    }
+                    ret_not_report_log.Add(fail_report_log);
                 }
             }
             return ret;
