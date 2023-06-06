@@ -9,6 +9,21 @@ using System.Configuration;
 
 namespace ExcelReportApplication
 {
+    //public enum FindKeywordStatus
+    //{
+    //    OK = 0,
+    //    INIT_STATE,
+    //    ERR_OpenDetailExcel_OpenExcelWorkbook,
+    //    ERR_OpenDetailExcel_Find_Worksheet,
+    //    ERR_CloseDetailExcel_wb_null,
+    //    ERR_SaveChangesAndCloseDetailExcel_wb_null,
+    //    ERR_NOT_DEFINED,
+    //    EX_OpenDetailExcel,
+    //    EX_CloseDetailExcel,
+    //    EX_SaveChangesAndCloseDetailExcel,
+    //    MAX_NO
+    //};
+
     public class TestPlanKeyword
     {
         private String keyword;
@@ -298,7 +313,7 @@ namespace ExcelReportApplication
                     switch (regex_step)
                     {
                         case 0:
-                            // Not a keyword identifier 
+                            // Not a keyword identifier (string beginning with "item")
                             break;
                         case 1:
                             // Not a "Result" 
@@ -358,10 +373,27 @@ namespace ExcelReportApplication
                     plan.CloseIssueListExcel();
                     if (plan_keyword != null)
                     {
-                        ret.AddRange(plan_keyword);
+                        if (plan_keyword.Count() > 0)
+                        {
+                            ret.AddRange(plan_keyword);
+                            fail_log.SetFlagOK(openfileOK: true, findWorksheetOK: true, findAnyKeyword: true);
+                            // not adding ok report log at the moment
+                            //ret_not_report_log.Add(fail_log);
+                        }
+                        else
+                        {
+                            fail_log.SetFlagOK(openfileOK: true, findWorksheetOK: true);
+                            fail_log.SetFlagFail(findNoKeyword: true);
+                            ret_not_report_log.Add(fail_log);
+                        }
                     }
-                    else
+                    
+                    else // (null) 
                     {
+                        fail_log.SetFlagOK(openfileOK: true, findWorksheetOK: true);
+                        fail_log.SetFlagFail(findNoKeyword: true, otherFailure: true);
+                        ret_not_report_log.Add(fail_log);
+                        ConsoleWarning("Test Plan null keyword list Error occurred:" + plan.ExcelSheet + "@" + plan.ExcelFile);
                     }
                 }
                 else
@@ -372,12 +404,13 @@ namespace ExcelReportApplication
                     }
                     else if (test_plan_status == TestPlan.ExcelStatus.ERR_OpenDetailExcel_Find_Worksheet)
                     {
+                        fail_log.SetFlagOK(openfileOK: true); 
                         fail_log.SetFlagFail(findWorksheetFail: true);
                     }
                     else
                     {
-                        fail_log.SetFlagFail(otherFailure: true);
-                        ConsoleWarning("Test Plan Error occurred:" + plan.ExcelSheet + "@" + plan.ExcelFile);
+                        fail_log.SetFlagFail(openfileFail: true, otherFailure: true);
+                        ConsoleWarning("Test Plan Unknown Error occurred:" + plan.ExcelSheet + "@" + plan.ExcelFile);
                     }
                     ret_not_report_log.Add(fail_log);
                 }
