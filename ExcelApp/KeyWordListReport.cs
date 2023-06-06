@@ -53,11 +53,11 @@ namespace ExcelReportApplication
         //}
 
         //
-        public NotReportFileRecord() { this.otherFailure=false; }
-        public NotReportFileRecord(String path, String filename) { this.path = path; this.filename = filename; this.otherFailure=false; }
-        public NotReportFileRecord(String path, String filename, Boolean filenameOK,
-                                    Boolean sheetnameOK, Boolean itemOK, Boolean captionOK, Boolean otherFailure=false)
-        { SetRecord(path, filename, filenameOK, sheetnameOK, itemOK, captionOK, otherFailure); }
+        public NotReportFileRecord() { this.filenameOK = false; this.otherFailure = false; }
+        public NotReportFileRecord(String path, String filename) { this.filenameOK = false; this.otherFailure = false; this.otherFailure = false; }
+        //public NotReportFileRecord(String path, String filename, Boolean filenameOK,
+        //                            Boolean sheetnameOK, Boolean itemOK, Boolean captionOK, Boolean otherFailure=false)
+        //{ SetRecord(path, filename, filenameOK, sheetnameOK, itemOK, captionOK, otherFailure); }
 
         public void SetFlagFail(Boolean filenamefail = false, Boolean sheetnamefail = false, Boolean itemfail = false, 
                                 Boolean captionfail = false, Boolean otherFailure = false)
