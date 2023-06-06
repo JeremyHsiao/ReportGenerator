@@ -9,11 +9,9 @@ namespace ExcelReportApplication
     {
         private String path;
         private String filename;
-        private Boolean filenameOK;
-        private Boolean sheetnameOK;
-        private Boolean itemOK;
-        private Boolean captionOK;
-        //private Boolean OtherCaptiponOK;
+        private Boolean openfileOK;
+        private Boolean findWorksheetOK;
+        private Boolean findAnyKeyword;
         private Boolean otherFailure;
 
         //public String Path   // property
@@ -53,69 +51,65 @@ namespace ExcelReportApplication
         //}
 
         //
-        public NotReportFileRecord() { this.filenameOK = false; this.otherFailure = false; }
-        public NotReportFileRecord(String path, String filename) { this.filenameOK = false; this.otherFailure = false; this.otherFailure = false; }
+        public NotReportFileRecord() { this.path = this.filename = ""; this.openfileOK = false; this.otherFailure = false; }
+        public NotReportFileRecord(String path="", String filename="") 
+        {
+            this.path = path;
+            this.filename = filename;
+            this.openfileOK = false; 
+            this.otherFailure = false; 
+        }
         //public NotReportFileRecord(String path, String filename, Boolean filenameOK,
         //                            Boolean sheetnameOK, Boolean itemOK, Boolean captionOK, Boolean otherFailure=false)
         //{ SetRecord(path, filename, filenameOK, sheetnameOK, itemOK, captionOK, otherFailure); }
 
-        public void SetFlagFail(Boolean filenamefail = false, Boolean sheetnamefail = false, Boolean itemfail = false, 
-                                Boolean captionfail = false, Boolean otherFailure = false)
+        // only set fail flag, don't change if it doesn't fail
+        public void SetFlagFail(Boolean openfileFail = false, Boolean findWorksheetFail = false, Boolean findNoKeyword = false, 
+                                Boolean otherFailure = false)
         {
-            if (filenamefail) { this.filenameOK = false; }
-            if (sheetnamefail) { this.sheetnameOK = false; }
-            if (itemfail) { this.itemOK = false; }
-            if (captionfail) { this.captionOK = false; }
+            if (openfileFail) { this.openfileOK = false; }
+            if (findWorksheetFail) { this.findWorksheetOK = false; }
+            if (findNoKeyword) { this.findAnyKeyword = false; }
             if (otherFailure) { this.otherFailure = true; }
         }
-        public void SetFlagOK(Boolean filenameOK = false, Boolean sheetnameOK = false, Boolean itemOK = false, 
-                                Boolean captionOK = false, Boolean otherOK = false)
+        // only set OK flag, don't change if it doesn't OK
+        public void SetFlagOK(Boolean openfileOK = false, Boolean findWorksheetOK = false, Boolean findAnyKeyword = false, 
+                              Boolean otherAllOK = false)
         {
-            if (filenameOK) { this.filenameOK = true; }
-            if (sheetnameOK) { this.sheetnameOK = true; }
-            if (itemOK) { this.itemOK = true; }
-            if (captionOK) { this.captionOK = true; }
-            if (otherOK) { this.otherFailure = false; }
+            if (openfileOK) { this.openfileOK = true; }
+            if (findWorksheetOK) { this.findWorksheetOK = true; }
+            if (findAnyKeyword) { this.findAnyKeyword = true; }
+            if (otherAllOK) { this.otherFailure = false; }
         }
-        public void GetFlagValue(out Boolean filenameOK, out Boolean sheetnameOK, out Boolean itemOK, 
-                                out Boolean captionOK, out Boolean otherFailure)
+        public void GetFlagValue(out Boolean openfileOK, out Boolean findWorksheetOK, out Boolean findAnyKeyword, 
+                                out Boolean otherFailure)
         {
-            filenameOK = this.filenameOK;
-            sheetnameOK = this.sheetnameOK;
-            itemOK = this.itemOK;
-            captionOK = this.captionOK;
+            openfileOK = this.openfileOK;
+            findWorksheetOK = this.findWorksheetOK;
+            findAnyKeyword = this.findAnyKeyword;
             otherFailure = this.otherFailure;
         }
-        public void SetFlagValue(Boolean filenameOK, Boolean sheetnameOK, Boolean itemOK, Boolean captionOK, Boolean otherFailure = false)
+        public void SetFlagValue(Boolean openfileOK, Boolean findWorksheetOK, Boolean findAnyKeyword, Boolean otherFailure = false)
         {
-            this.filenameOK = filenameOK;
-            this.sheetnameOK = sheetnameOK;
-            this.itemOK = itemOK;
-            this.captionOK = captionOK;
+            this.openfileOK = openfileOK;
+            this.findWorksheetOK = findWorksheetOK;
+            this.findAnyKeyword = findAnyKeyword;
             this.otherFailure = otherFailure;
         }
-        public void GetRecord(out String path, out String filename, out Boolean filenameOK, out Boolean sheetnameOK, 
-                            out Boolean itemOK, out Boolean captionOK, out Boolean otherFailure)
+        public void GetRecord(out String path, out String filename, out Boolean openfileOK, out Boolean findWorksheetOK, 
+                            out Boolean findAnyKeyword, out Boolean otherFailure)
         {
             path = this.path;
             filename = this.filename;
-            filenameOK = this.filenameOK;
-            sheetnameOK = this.sheetnameOK;
-            itemOK = this.itemOK;
-            captionOK = this.captionOK;
-            otherFailure = this.otherFailure;
+            this.GetFlagValue(out openfileOK, out findWorksheetOK, out findAnyKeyword, out otherFailure);
         }
 
-        public void SetRecord(String path, String filename, Boolean filenameOK, Boolean sheetnameOK, Boolean itemOK, 
-                                Boolean captionOK, Boolean otherFailure)
+        public void SetRecord(String path, String filename, Boolean openfileOK, Boolean findWorksheetOK, Boolean findAnyKeyword, 
+                                Boolean otherFailure = false)
         {
             this.path = path;
             this.filename = filename;
-            this.filenameOK = filenameOK;
-            this.sheetnameOK = sheetnameOK;
-            this.itemOK = itemOK;
-            this.captionOK = captionOK;
-            this.otherFailure = otherFailure;
+            this.SetFlagValue(openfileOK, findWorksheetOK, findAnyKeyword, otherFailure);
         }
     }
 
@@ -124,7 +118,7 @@ namespace ExcelReportApplication
         static private string Template_Excel = "Template_Excel";
         static private string WS_KeyWord_List = "Keyword_List";
         static private string WS_NotKeyWord_List = "Not_Keyword_File";
-        static private string  Output_Excel = "Output_Excel";
+        static private string Output_Excel = "Output_Excel";
 
         //static public 
     }

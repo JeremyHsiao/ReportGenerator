@@ -78,6 +78,12 @@ namespace ExcelReportApplication
             set { path = value; }  // set method
         }
 
+        public Worksheet TestPlanWorksheet   // property
+        {
+            get { return ws_testplan; }   // get method
+            set { ws_testplan = value; }  // set method
+        }
+
         public TestPlan()
         {
         }
