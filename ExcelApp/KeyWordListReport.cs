@@ -14,76 +14,88 @@ namespace ExcelReportApplication
         private Boolean itemOK;
         private Boolean captionOK;
         //private Boolean OtherCaptiponOK;
-        //private Boolean EverythingOK;
+        private Boolean otherFailure;
 
-        public String Path   // property
-        {
-            get { return path; }   // get method
-            set { path = value; }  // set method
-        }
-        public String Filename   // property
-        {
-            get { return filename; }   // get method
-            set { filename = value; }  // set method
-        }
-        public Boolean FilenameOK   // property
-        {
-            get { return filenameOK; }   // get method
-            set { filenameOK = value; }  // set method
-        }
-        public Boolean SheetnameOK   // property
-        {
-            get { return sheetnameOK; }   // get method
-            set { sheetnameOK = value; }  // set method
-        }
-        public Boolean ItemOK   // property
-        {
-            get { return itemOK; }   // get method
-            set { itemOK = value; }  // set method
-        }
-        public Boolean CaptionOK   // property
-        {
-            get { return captionOK; }   // get method
-            set { captionOK = value; }  // set method
-        }
+        //public String Path   // property
+        //{
+        //    get { return path; }   // get method
+        //    set { path = value; }  // set method
+        //}
+        //public String Filename   // property
+        //{
+        //    get { return filename; }   // get method
+        //    set { filename = value; }  // set method
+        //}
+        //public Boolean FilenameOK   // property
+        //{
+        //    get { return filenameOK; }   // get method
+        //    set { filenameOK = value; }  // set method
+        //}
+        //public Boolean SheetnameOK   // property
+        //{
+        //    get { return sheetnameOK; }   // get method
+        //    set { sheetnameOK = value; }  // set method
+        //}
+        //public Boolean ItemOK   // property
+        //{
+        //    get { return itemOK; }   // get method
+        //    set { itemOK = value; }  // set method
+        //}
+        //public Boolean CaptionOK   // property
+        //{
+        //    get { return captionOK; }   // get method
+        //    set { captionOK = value; }  // set method
+        //}
+        //public Boolean OtherFailure   // property
+        //{
+        //    get { return otherFailure; }   // get method
+        //    set { otherFailure = value; }  // set method
+        //}
 
         //
-        public NotReportFileRecord() { }
-        public NotReportFileRecord(String path, String filename) { this.path = path; this.filename = filename; }
+        public NotReportFileRecord() { this.otherFailure=false; }
+        public NotReportFileRecord(String path, String filename) { this.path = path; this.filename = filename; this.otherFailure=false; }
         public NotReportFileRecord(String path, String filename, Boolean filenameOK,
-                                    Boolean sheetnameOK, Boolean itemOK, Boolean captionOK)
-        { SetRecord(path, filename, filenameOK, sheetnameOK, itemOK, captionOK); }
+                                    Boolean sheetnameOK, Boolean itemOK, Boolean captionOK, Boolean otherFailure=false)
+        { SetRecord(path, filename, filenameOK, sheetnameOK, itemOK, captionOK, otherFailure); }
 
-        public void SetFlagFail(Boolean filenamefail = false, Boolean sheetnamefail = false, Boolean itemfail = false, Boolean captionfail = false)
+        public void SetFlagFail(Boolean filenamefail = false, Boolean sheetnamefail = false, Boolean itemfail = false, 
+                                Boolean captionfail = false, Boolean otherFailure = false)
         {
             if (filenamefail) { this.filenameOK = false; }
             if (sheetnamefail) { this.sheetnameOK = false; }
             if (itemfail) { this.itemOK = false; }
             if (captionfail) { this.captionOK = false; }
+            if (otherFailure) { this.otherFailure = true; }
         }
-        public void SetFlagOK(Boolean filenameOK = false, Boolean sheetnameOK = false, Boolean itemOK = false, Boolean captionOK = false)
+        public void SetFlagOK(Boolean filenameOK = false, Boolean sheetnameOK = false, Boolean itemOK = false, 
+                                Boolean captionOK = false, Boolean otherOK = false)
         {
             if (filenameOK) { this.filenameOK = true; }
             if (sheetnameOK) { this.sheetnameOK = true; }
             if (itemOK) { this.itemOK = true; }
             if (captionOK) { this.captionOK = true; }
+            if (otherOK) { this.otherFailure = false; }
         }
-        public void GetFlagValue(out Boolean filenameOK, out Boolean sheetnameOK, out Boolean itemOK, out Boolean captionOK)
+        public void GetFlagValue(out Boolean filenameOK, out Boolean sheetnameOK, out Boolean itemOK, 
+                                out Boolean captionOK, out Boolean otherFailure)
         {
             filenameOK = this.filenameOK;
             sheetnameOK = this.sheetnameOK;
             itemOK = this.itemOK;
             captionOK = this.captionOK;
+            otherFailure = this.otherFailure;
         }
-        public void SetFlagValue(Boolean filenameOK, Boolean sheetnameOK, Boolean itemOK, Boolean keywordOK)
+        public void SetFlagValue(Boolean filenameOK, Boolean sheetnameOK, Boolean itemOK, Boolean captionOK, Boolean otherFailure = false)
         {
             this.filenameOK = filenameOK;
             this.sheetnameOK = sheetnameOK;
             this.itemOK = itemOK;
-            this.captionOK = keywordOK;
+            this.captionOK = captionOK;
+            this.otherFailure = otherFailure;
         }
-        public void GetRecord(out String path, out String filename,
-                            out Boolean filenameOK, out Boolean sheetnameOK, out Boolean itemOK, out Boolean captionOK)
+        public void GetRecord(out String path, out String filename, out Boolean filenameOK, out Boolean sheetnameOK, 
+                            out Boolean itemOK, out Boolean captionOK, out Boolean otherFailure)
         {
             path = this.path;
             filename = this.filename;
@@ -91,9 +103,11 @@ namespace ExcelReportApplication
             sheetnameOK = this.sheetnameOK;
             itemOK = this.itemOK;
             captionOK = this.captionOK;
+            otherFailure = this.otherFailure;
         }
 
-        public void SetRecord(String path, String filename, Boolean filenameOK, Boolean sheetnameOK, Boolean itemOK, Boolean captionOK)
+        public void SetRecord(String path, String filename, Boolean filenameOK, Boolean sheetnameOK, Boolean itemOK, 
+                                Boolean captionOK, Boolean otherFailure)
         {
             this.path = path;
             this.filename = filename;
@@ -101,6 +115,7 @@ namespace ExcelReportApplication
             this.sheetnameOK = sheetnameOK;
             this.itemOK = itemOK;
             this.captionOK = captionOK;
+            this.otherFailure = otherFailure;
         }
     }
 
