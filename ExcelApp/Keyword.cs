@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Office.Interop.Excel;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Drawing;
+using System.Configuration;
 
 namespace ExcelReportApplication
 {
@@ -367,11 +368,11 @@ namespace ExcelReportApplication
                 {
                     if (test_plan_status == TestPlan.ExcelStatus.ERR_OpenDetailExcel_OpenExcelWorkbook)
                     {
-                        fail_log.SetFlagFail(filenamefail: true);
+                        fail_log.SetFlagFail(openfileFail: true);
                     }
                     else if (test_plan_status == TestPlan.ExcelStatus.ERR_OpenDetailExcel_Find_Worksheet)
                     {
-                        fail_log.SetFlagFail(sheetnamefail: true);
+                        fail_log.SetFlagFail(findWorksheetFail: true);
                     }
                     else
                     {
