@@ -18,6 +18,7 @@ namespace ExcelReportApplication
         static public Dictionary<string, List<StyleString>> global_issue_description_list_severity = new Dictionary<string, List<StyleString>>();
         static public List<TestCase> global_testcase_list = new List<TestCase>();
         static public List<String> fileter_status_list = new List<String>();
+        static public List<NotReportFileRecord> excel_not_report_log = new List<NotReportFileRecord>();
 
         // Must be updated if new report type added #NewReportType
         public enum ReportType {
@@ -346,7 +347,7 @@ namespace ExcelReportApplication
             else
             {
                 // 3. Get Judgement value
-                Object obj = ExcelAction.GetCellValue(ws_judgement, TestPlan.Judgement_at_row, TestPlan.Judgement_at_col);
+                Object obj = ExcelAction.GetCellValue(ws_judgement, KeywordReport.Judgement_at_row, KeywordReport.Judgement_at_col);
                 if (obj != null) { ret_str = (String)obj; }
             }
 
