@@ -787,6 +787,7 @@ namespace ExcelReportApplication
         //    return bRet;
         //}
 
+        static public bool KeywordIssueGenerationTaskV4(List<String> report_filename, String src_dir, String dest_dir = "")
         {
             //
             // 1. Create a temporary test plan (do_plan) to include all report files 
