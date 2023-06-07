@@ -1013,7 +1013,7 @@ namespace ExcelReportApplication
                 ExcelAction.SetCellValue(result_worksheet, TotalCnt_at_row, TotalCnt_at_col, fail_count + pass_count);
                 ExcelAction.SetCellValue(result_worksheet, Judgement_at_row, Judgement_at_col, judgement_str);
 
-               if ((src_dir == "") || (dest_dir == "") || !Storage.DirectoryExists(src_dir) )
+               if ((dest_dir == "") || !Storage.DirectoryExists(src_dir) )
                 {
                     // 3.4. Save as another file with yyyyMMddHHmmss
                     string dest_filename = Storage.GenerateFilenameWithDateTime(full_filename);
