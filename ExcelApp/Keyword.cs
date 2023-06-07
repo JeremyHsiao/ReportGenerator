@@ -779,15 +779,14 @@ namespace ExcelReportApplication
         }
 */
 
-        static public bool KeywordIssueGenerationTaskV4(string report_filename)
-        {
-            List<String> report_filename_list = new List<String>();
-            report_filename_list.Add(report_filename);
-            bool bRet = KeywordIssueGenerationTaskV4(report_filename_list);
-            return bRet;
-        }
+        //static public bool KeywordIssueGenerationTaskV4(string report_filename)
+        //{
+        //    List<String> report_filename_list = new List<String>();
+        //    report_filename_list.Add(report_filename);
+        //    bool bRet = KeywordIssueGenerationTaskV4(report_filename_list, Storage.GetDirectoryName(report_filename));
+        //    return bRet;
+        //}
 
-        static public bool KeywordIssueGenerationTaskV4(List<String> report_filename, String src_dir = "", String dest_dir = "")
         {
             //
             // 1. Create a temporary test plan (do_plan) to include all report files 
