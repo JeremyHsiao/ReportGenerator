@@ -194,12 +194,16 @@ namespace ExcelReportApplication
 
                 if (wb == null)
                 {
+                    wb_testplan = null;
+                    ws_testplan = null;
                     return ExcelStatus.ERR_OpenDetailExcel_OpenExcelWorkbook;
                 }
 
                 Worksheet ws = ExcelAction.Find_Worksheet(wb, sheet);
                 if (ws == null)
                 {
+                    wb_testplan = wb;
+                    ws_testplan = null;
                     return ExcelStatus.ERR_OpenDetailExcel_Find_Worksheet;
                 }
                 else
