@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using Microsoft.Office.Interop.Excel;
 using Excel = Microsoft.Office.Interop.Excel;
+using System.Reflection;
 using System.IO;
+using System.Drawing;
 
 namespace ExcelReportApplication
 {
@@ -19,6 +21,10 @@ namespace ExcelReportApplication
         static private Worksheet ws_tc_template;
         //static private Workbook workbook_testplan;
         //static private Worksheet ws_testplan;
+        //static private Workbook workbook_keywordlog_template;
+        static private Worksheet ws_keyword_list;
+        static private Worksheet ws_not_keyword_file;
+        static private Workbook workbook_new_keyword_list;
 
         static public bool ExcelVisible = true;
 
@@ -261,10 +267,15 @@ namespace ExcelReportApplication
             ERR_OpenIssueListExcel_Find_Worksheet,
             ERR_OpenTestCaseExcel_OpenExcelWorkbook,
             ERR_OpenTestCaseExcel_Find_Worksheet,
+            ERR_OpenKeywordLogTemplateExcel_OpenExcelWorkbook,
+            ERR_OpenKeywordLogTemplateExcel_Find_Keyword_Worksheet,
+            ERR_OpenKeywordLogTemplateExcel_Find_NonKeyword_Worksheet,
             ERR_CloseIssueListExcel_wb_null,
             ERR_CloseTestCaseExcel_wb_null,
+            ERR_CloseKeywordLogTemplateExcel_wb_null,
             ERR_SaveChangesAndCloseIssueListExcel_wb_null,
             ERR_SaveChangesAndCloseTestCaseExcel_wb_null,
+            ERR_SaveChangesAndCloseKeywordLogTemplateExcel_wb_null,
             ERR_NOT_DEFINED,
             EX_OpenIssueListWorksheet,
             EX_CloseIssueListExcel,
@@ -272,6 +283,9 @@ namespace ExcelReportApplication
             EX_OpenTestCaseWorksheet,
             EX_CloseTestCaseWorksheet,
             EX_SaveChangesAndCloseTestCaseExcel,
+            EX_OpenKeywordLogTemplateWorksheet,
+            EX_CloseKeywordLogTemplateExcel,
+            EX_SaveChangesAndCloseKeywordLogTemplateExcel,
             MAX_NO
         };
 
@@ -350,6 +364,12 @@ namespace ExcelReportApplication
             if (cell_value2 == null) { return ""; }
             return cell_value2.ToString().Trim();
         }
+
+        //static public void SetKeywordListCell(int row, int col, Object set_object, Boolean to_keyword_list = true)
+        //{
+        //    Worksheet ws = ((to_keyword_list) ? ws_keyword_list : ws_not_keyword_file);
+        //    ws.Cells[row, col].Value2 = set_object;
+        //}
 
         static public Object GetCellValue(Worksheet ws, int row, int col)
         {
@@ -833,5 +853,277 @@ namespace ExcelReportApplication
 
             return true;
         }
+
+        //static public ExcelStatus OpenKeywordLogTemplateExcel(String template_filename)
+        //{
+        //    try
+        //    {
+        //        Workbook wb_keywordlog;
+
+        //        // Open excel (read-only & corrupt-load)
+        //        wb_keywordlog = ExcelAction.OpenExcelWorkbook(template_filename);
+
+        //        if (wb_keywordlog == null)
+        //        {
+        //            return ExcelStatus.ERR_OpenKeywordLogTemplateExcel_OpenExcelWorkbook;
+        //        }
+
+        //        // Check both worksheet
+        //        Worksheet ws_kw_list = ExcelAction.Find_Worksheet(wb_keywordlog, KeyWordListReport.WS_KeyWord_List);
+        //        if (ws_kw_list == null)
+        //        {
+        //            return ExcelStatus.ERR_OpenKeywordLogTemplateExcel_Find_Keyword_Worksheet;
+        //        }
+        //        Worksheet ws_not_kw_file = ExcelAction.Find_Worksheet(wb_keywordlog, KeyWordListReport.WS_NotKeyWord_File);
+        //        if (ws_not_kw_file == null)
+        //        {
+        //            return ExcelStatus.ERR_OpenKeywordLogTemplateExcel_Find_NonKeyword_Worksheet;
+        //        }
+
+        //        workbook_keywordlog_template = wb_keywordlog;
+        //        ws_keyword_list = ws_kw_list;
+        //        ws_not_keyword_file = ws_not_kw_file;
+
+        //        return ExcelStatus.OK;
+        //    }
+        //    catch
+        //    {
+        //        return ExcelStatus.EX_OpenKeywordLogTemplateWorksheet;
+        //    }
+
+        //    // Not needed because never reaching here
+        //    //return ExcelStatus.ERR_NOT_DEFINED;
+        //}
+
+        //static public ExcelStatus CloseKeywordLogTemplateExcel()
+        //{
+        //    try
+        //    {
+        //        if (workbook_keywordlog_template == null)
+        //        {
+        //            return ExcelStatus.ERR_CloseKeywordLogTemplateExcel_wb_null;
+        //        }
+        //        ExcelAction.CloseExcelWorkbook(workbook_keywordlog_template, SaveChanges: false);
+        //        ws_keyword_list = ws_not_keyword_file = null;
+        //        workbook_keywordlog_template = null;
+        //        return ExcelStatus.OK;
+        //    }
+        //    catch
+        //    {
+        //        ws_keyword_list = ws_not_keyword_file = null;
+        //        workbook_keywordlog_template = null;
+        //        return ExcelStatus.EX_CloseKeywordLogTemplateExcel;
+        //    }
+        //}
+
+        //static public ExcelStatus SaveChangesAndCloseKeywordLogTemplateExcel(String dest_filename)
+        //{
+        //    try
+        //    {
+        //        if (workbook_keywordlog_template == null)
+        //        {
+        //            return ExcelStatus.ERR_SaveChangesAndCloseKeywordLogTemplateExcel_wb_null;
+        //        }
+        //        ExcelAction.CloseExcelWorkbook(workbook_keywordlog_template, SaveChanges: true, AsFilename: dest_filename);
+        //        ws_keyword_list = ws_not_keyword_file = null;
+        //        workbook_keywordlog_template = null;
+        //        return ExcelStatus.OK;
+        //    }
+        //    catch
+        //    {
+        //        ws_keyword_list = ws_not_keyword_file = null;
+        //        workbook_keywordlog_template = null;
+        //        return ExcelStatus.EX_SaveChangesAndCloseKeywordLogTemplateExcel;
+        //    }
+        //}
+
+        static public ExcelStatus CreateNewKeywordListExcel()
+        {
+            int original_SheetsInNewWorkbook = excel_app.SheetsInNewWorkbook;
+
+            excel_app.SheetsInNewWorkbook = 2;
+
+            Workbook wb =  excel_app.Workbooks.Add(Missing.Value);
+            workbook_new_keyword_list = wb;
+
+            ws_keyword_list = workbook_new_keyword_list.Sheets.Item[1];
+            ws_keyword_list.Name = KeyWordListReport.WS_KeyWord_List;
+
+            ws_not_keyword_file = workbook_new_keyword_list.Sheets.Item[2];
+            ws_not_keyword_file.Name = KeyWordListReport.WS_NotKeyWord_File;
+
+            excel_app.SheetsInNewWorkbook = original_SheetsInNewWorkbook;
+            return ExcelStatus.OK;
+        }
+
+        static public ExcelStatus CloseNewKeywordListExcel()
+        {
+            try
+            {
+                if (workbook_new_keyword_list == null)
+                {
+                    return ExcelStatus.ERR_CloseKeywordLogTemplateExcel_wb_null;
+                }
+                ExcelAction.CloseExcelWorkbook(workbook_new_keyword_list, SaveChanges: false);
+                ws_keyword_list = ws_not_keyword_file = null;
+                workbook_new_keyword_list = null;
+                return ExcelStatus.OK;
+            }
+            catch
+            {
+                ws_keyword_list = ws_not_keyword_file = null;
+                workbook_new_keyword_list = null;
+                return ExcelStatus.EX_CloseKeywordLogTemplateExcel;
+            }
+        }
+
+        static public ExcelStatus SaveChangesAndCloseNewKeywordListExcel(String dest_filename)
+        {
+            try
+            {
+                if (workbook_new_keyword_list == null)
+                {
+                    return ExcelStatus.ERR_SaveChangesAndCloseKeywordLogTemplateExcel_wb_null;
+                }
+                ExcelAction.CloseExcelWorkbook(workbook_new_keyword_list, SaveChanges: true, AsFilename: dest_filename);
+                ws_keyword_list = ws_not_keyword_file = null;
+                workbook_new_keyword_list = null;
+                return ExcelStatus.OK;
+            }
+            catch
+            {
+                ws_keyword_list = ws_not_keyword_file = null;
+                workbook_new_keyword_list = null;
+                return ExcelStatus.EX_SaveChangesAndCloseKeywordLogTemplateExcel;
+            }
+        }
+
+        static public String default_table_font_name = "Mabry Pro";
+        static public int default_table_font_size = 12;
+        static public Color default_table_font_color = Color.Black;
+        static public FontStyle default_table_font_style =  FontStyle.Regular;
+
+        static public void WriteTableObjectToExcel(Worksheet worksheet, List<List<Object>> table_object, 
+                            int start_row = 1, int start_col = 1, Boolean with_title = true,
+                            List<int> left_alignment_col = null, List<int> center_alignment_col = null)
+        {
+            int row_pos = start_row;
+            int col_pos = start_col;
+            int row_end = start_row;
+            int col_end = start_col;
+            int content_start_row = start_row;
+
+            // 1. Fill worksheet with objects
+            foreach (List<Object> row_obj_list in table_object)
+            {
+                foreach (Object obj in row_obj_list)
+                {
+                    SetCellValue(worksheet, row_pos, col_pos++, obj);
+                }
+                // update new right border of table
+                if ((col_pos-1)>col_end)
+                {
+                    col_end = col_pos - 1;     
+                }
+                row_pos++;
+                col_pos = start_col;
+            }
+            row_end = row_pos - 1;
+
+            // 2. formating all table cells with font & border / auto-fit columns
+            Range table_range = worksheet.Range[worksheet.Cells[start_row, start_col], worksheet.Cells[row_end, col_end]];
+            using (System.Drawing.Font fontTester = new System.Drawing.Font(StyleString.default_font, StyleString.default_size,
+                                                StyleString.default_fontstyle, GraphicsUnit.Pixel))
+            {
+                if (fontTester.Name == StyleString.default_font)
+                {
+                    // Font exists
+                    table_range.Characters.Font.Name = StyleString.default_font;
+                    table_range.Characters.Font.Size = StyleString.default_size;
+                    table_range.Characters.Font.Color = StyleString.default_color;
+                    table_range.Characters.Font.FontStyle = StyleString.default_fontstyle;
+                }
+                else
+                {
+                    // Font doesn't exist ==> use internal default
+                    table_range.Characters.Font.Name = default_table_font_name;
+                    table_range.Characters.Font.Size = default_table_font_size;
+                    table_range.Characters.Font.Color = default_table_font_color;
+                    table_range.Characters.Font.FontStyle = default_table_font_style;
+               }
+            }
+            table_range.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+            table_range.Borders.Weight = Excel.XlBorderWeight.xlThin;
+            // auto-fit columns
+            for (int col_index = start_col; col_index <= col_end; col_index++)
+            {
+                AutoFit_Column(worksheet, col_index);
+            }
+
+            // 3. format cell BG color if with_title is true
+            if (with_title)
+            {
+                Range title_range = worksheet.Range[worksheet.Cells[start_row, start_col], worksheet.Cells[start_row, col_end]];
+                title_range.HorizontalAlignment = XlHAlign.xlHAlignCenter;
+                title_range.Interior.Color = Color.LightGray;
+                content_start_row++; // adjust content_start_row to exclude title row in the following operation
+            }
+
+            // 4. left-alignment specific column 
+            if (center_alignment_col != null)
+            {
+                foreach (int col in left_alignment_col)
+                {
+                    Range col_range = worksheet.Range[worksheet.Cells[content_start_row, col], worksheet.Cells[row_end, col]];
+                    col_range.HorizontalAlignment = XlHAlign.xlHAlignLeft;
+                }
+            }
+
+            // 5. center-alignment specific column 
+            if (center_alignment_col != null)
+            {
+                foreach (int col in center_alignment_col)
+                {
+                    Range col_range = worksheet.Range[worksheet.Cells[content_start_row, col], worksheet.Cells[row_end, col]];
+                    col_range.HorizontalAlignment = XlHAlign.xlHAlignCenter;
+                }
+            }
+       }
+
+        static public void WriteTableToKeywordList(List<List<Object>> table_object)
+        {
+            List<int> left_alignment_col = new List<int> ();
+            List<int> center_alignment_col = new List<int> ();
+            int start_row = KeyWordListReport.keyword_list_title_row, 
+                start_col = KeyWordListReport.keyword_list_title_col_start;
+            Boolean with_title = true;
+
+            left_alignment_col.Add(1);
+            left_alignment_col.Add(2);
+            left_alignment_col.Add(3);
+            left_alignment_col.Add(4);
+            center_alignment_col.Add(5);
+            WriteTableObjectToExcel(ws_keyword_list, table_object, start_row, start_col, with_title, 
+                                    left_alignment_col, center_alignment_col);
+        }
+
+        static public void WriteTableToNotKeywordFile(List<List<Object>> table_object)
+        {
+            List<int> left_alignment_col = new List<int> ();
+            List<int> center_alignment_col = new List<int> ();
+            int start_row = KeyWordListReport.not_keyword_file_title_row,
+                start_col = KeyWordListReport.not_keyword_file_title_col_start;
+            Boolean with_title = true;
+
+            left_alignment_col.Add(1);
+            left_alignment_col.Add(2);
+            center_alignment_col.Add(3);
+            center_alignment_col.Add(4);
+            center_alignment_col.Add(5);
+            center_alignment_col.Add(6);
+            WriteTableObjectToExcel(ws_not_keyword_file, table_object, start_row, start_col, with_title, 
+                                    left_alignment_col, center_alignment_col);
+        }
+
     }
 }
