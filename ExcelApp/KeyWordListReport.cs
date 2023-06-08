@@ -52,19 +52,19 @@ namespace ExcelReportApplication
 
         //
         public NotReportFileRecord() { this.path = this.filename = ""; this.openfileOK = false; this.otherFailure = false; }
-        public NotReportFileRecord(String path="", String filename="") 
+        public NotReportFileRecord(String path = "", String filename = "")
         {
             this.path = path;
             this.filename = filename;
-            this.openfileOK = false; 
-            this.otherFailure = false; 
+            this.openfileOK = false;
+            this.otherFailure = false;
         }
         //public NotReportFileRecord(String path, String filename, Boolean filenameOK,
         //                            Boolean sheetnameOK, Boolean itemOK, Boolean captionOK, Boolean otherFailure=false)
         //{ SetRecord(path, filename, filenameOK, sheetnameOK, itemOK, captionOK, otherFailure); }
 
         // only set fail flag, don't change if it doesn't fail
-        public void SetFlagFail(Boolean openfileFail = false, Boolean findWorksheetFail = false, Boolean findNoKeyword = false, 
+        public void SetFlagFail(Boolean openfileFail = false, Boolean findWorksheetFail = false, Boolean findNoKeyword = false,
                                 Boolean otherFailure = false)
         {
             if (openfileFail) { this.openfileOK = false; }
@@ -73,7 +73,7 @@ namespace ExcelReportApplication
             if (otherFailure) { this.otherFailure = true; }
         }
         // only set OK flag, don't change if it doesn't OK
-        public void SetFlagOK(Boolean openfileOK = false, Boolean findWorksheetOK = false, Boolean findAnyKeyword = false, 
+        public void SetFlagOK(Boolean openfileOK = false, Boolean findWorksheetOK = false, Boolean findAnyKeyword = false,
                               Boolean otherAllOK = false)
         {
             if (openfileOK) { this.openfileOK = true; }
@@ -81,7 +81,7 @@ namespace ExcelReportApplication
             if (findAnyKeyword) { this.findAnyKeyword = true; }
             if (otherAllOK) { this.otherFailure = false; }
         }
-        public void GetFlagValue(out Boolean openfileOK, out Boolean findWorksheetOK, out Boolean findAnyKeyword, 
+        public void GetFlagValue(out Boolean openfileOK, out Boolean findWorksheetOK, out Boolean findAnyKeyword,
                                 out Boolean otherFailure)
         {
             openfileOK = this.openfileOK;
@@ -96,7 +96,7 @@ namespace ExcelReportApplication
             this.findAnyKeyword = findAnyKeyword;
             this.otherFailure = otherFailure;
         }
-        public void GetRecord(out String path, out String filename, out Boolean openfileOK, out Boolean findWorksheetOK, 
+        public void GetRecord(out String path, out String filename, out Boolean openfileOK, out Boolean findWorksheetOK,
                             out Boolean findAnyKeyword, out Boolean otherFailure)
         {
             path = this.path;
@@ -104,7 +104,7 @@ namespace ExcelReportApplication
             this.GetFlagValue(out openfileOK, out findWorksheetOK, out findAnyKeyword, out otherFailure);
         }
 
-        public void SetRecord(String path, String filename, Boolean openfileOK, Boolean findWorksheetOK, Boolean findAnyKeyword, 
+        public void SetRecord(String path, String filename, Boolean openfileOK, Boolean findWorksheetOK, Boolean findAnyKeyword,
                                 Boolean otherFailure = false)
         {
             this.path = path;
@@ -115,11 +115,149 @@ namespace ExcelReportApplication
 
     class KeyWordListReport
     {
-        static private string Template_Excel = "Template_Excel";
-        static private string WS_KeyWord_List = "Keyword_List";
-        static private string WS_NotKeyWord_List = "Not_Keyword_File";
-        static private string Output_Excel = "Output_Excel";
+        //static public string Template_Excel = "KeywordLogTemplate.xlsx";
+        static public string WS_KeyWord_List = "Keyword_List";
+        static public string WS_NotKeyWord_File = "Not_Keyword_File";
+        static public string Output_Excel = "KeywordListLog.xlsx";
+
+        static public int keyword_list_title_row = 1;
+        static public int keyword_list_title_col_start = 1;
+        private static String[] keyword_list_title = new String[] 
+        {
+            "Keyword",
+            "Filepath",
+            "Filename",
+            "Worksheet",
+            "Duplicated?",
+       };
+
+        static public int not_keyword_file_title_row = 1;
+        static public int not_keyword_file_title_col_start = 1;
+        private static String[] not_keyword_file_title = new String[] 
+        {
+            "Filepath",
+            "Filename",
+            "OpenFileOK",
+            "FindWorksheetOK",
+            "FindAnyKeyword",
+            "AnyOtherFailure",
+       };
 
         //static public 
+        static public void OutputKeywordLog(String out_path, List<TestPlanKeyword> keyword_list, 
+                                            List<NotReportFileRecord> not_keyword_report_list)
+        {
+            // Open template excel and write to another filename when closed
+            ExcelAction.ExcelStatus status;
+
+            // 1. open a new workbook with 2 worksheets
+            status = ExcelAction.CreateNewKeywordListExcel();
+            if (status != ExcelAction.ExcelStatus.OK)
+            {
+                ExcelAction.CloseNewKeywordListExcel();
+                return; // to-be-checked if here
+            }
+
+            // 2. output keyword_list
+            List<List<Object>> output_keyword_list_table = new List<List<Object>>();
+            List<Object> row_list = new List<Object> ();
+            // title
+            row_list.AddRange(keyword_list_title);
+            output_keyword_list_table.Add(row_list);
+            // keyword
+            SortedSet<String> check_duplicated_keyword = new SortedSet<String>();
+            foreach (TestPlanKeyword keyword_data in keyword_list)
+            {
+                String keyword = keyword_data.Keyword;
+                String full_path = keyword_data.Workbook;
+                row_list = new List<Object>();
+                // Keyword
+                row_list.Add(keyword);
+                //"Filepath"
+                row_list.Add(Storage.GetDirectoryName(full_path));
+                //"Filename"
+                row_list.Add(Storage.GetFileName(full_path));
+                //"Worksheet"
+                row_list.Add(keyword_data.Worksheet);
+                //"Duplicated?"
+                if (check_duplicated_keyword.Contains(keyword))
+                {
+                    // duplicated
+                    row_list.Add("v");
+                }
+                else
+                {
+                    check_duplicated_keyword.Add(keyword);
+                }
+                output_keyword_list_table.Add(row_list);
+            }
+            ExcelAction.WriteTableToKeywordList(output_keyword_list_table);
+
+            // 3. output not-keyword file linst
+            // title
+            List<List<Object>> output_not_report_file_table = new List<List<Object>>();
+            row_list.Clear();
+            row_list.AddRange(not_keyword_file_title);
+            output_not_report_file_table.Add(row_list);
+
+            // not-keyword-file
+            foreach (NotReportFileRecord not_keyword_report in not_keyword_report_list)
+            {
+                String path, filename;
+                Boolean openfileOK, findWorksheetOK, findAnyKeyword, otherFailure;
+
+                not_keyword_report.GetRecord(out path, out filename, out openfileOK, out findWorksheetOK,
+                            out findAnyKeyword, out otherFailure);
+
+                row_list = new List<Object>();
+                //"Filepath",
+                row_list.Add(path);
+                //"Filename",
+                row_list.Add(filename);
+                //"OpenFileOK",
+                if(!openfileOK)
+                {
+                    row_list.Add("X");
+                    row_list.Add("-");
+                    row_list.Add("-");
+                }
+                else
+                {
+                    row_list.Add(" ");
+                    if(!findWorksheetOK)
+                    {
+                        row_list.Add("X");
+                        row_list.Add("-");
+                    }   
+                    else
+                    {
+                        row_list.Add(" ");
+                        if(!findAnyKeyword)
+                        {
+                            row_list.Add("X");
+                        }
+                        else
+                        {
+                            row_list.Add(" ");
+                        }
+                    }
+                }
+                if(otherFailure)
+                {
+                    row_list.Add("X");
+                }
+                else
+                {
+                    row_list.Add(" ");
+                }
+                output_not_report_file_table.Add(row_list);
+            }
+            ExcelAction.WriteTableToNotKeywordFile(output_not_report_file_table);
+
+            // 4. Close and Save
+            String output_file_full_path = Storage.GetValidFullFilename(out_path, Output_Excel);
+            ExcelAction.SaveChangesAndCloseNewKeywordListExcel(output_file_full_path);
+        }
+
     }
 }

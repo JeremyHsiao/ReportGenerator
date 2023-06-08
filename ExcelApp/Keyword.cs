@@ -256,9 +256,6 @@ namespace ExcelReportApplication
 
         static public List<TestPlanKeyword> ListKeyword(TestPlan plan)
         {
-            NotReportFileRecord not_keyword_report;
-            not_keyword_report = new NotReportFileRecord();
-
             //
             // 2. Find out Printable Area
             //
@@ -387,7 +384,6 @@ namespace ExcelReportApplication
                             ret_not_report_log.Add(fail_log);
                         }
                     }
-                    
                     else // (null) 
                     {
                         fail_log.SetFlagOK(openfileOK: true, findWorksheetOK: true);
@@ -806,6 +802,9 @@ namespace ExcelReportApplication
             //
             ReportGenerator.excel_not_report_log.Clear();
             List<TestPlanKeyword> keyword_list = ListAllKeyword(do_plan);
+            
+            // Output keyword list log excel here.
+            KeyWordListReport.OutputKeywordLog(src_dir, keyword_list, ReportGenerator.excel_not_report_log);
 
             //
             // 2.2. Use keyword to find out all issues (ID) that contains keyword on id_list. 
