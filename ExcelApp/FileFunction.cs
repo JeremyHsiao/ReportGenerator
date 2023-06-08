@@ -371,5 +371,11 @@ namespace ExcelReportApplication
             }
             return out_list;
         }
+
+        static public String GetValidFullFilename(String path, String filename)
+        {
+            String combined = Path.Combine(path, Path.GetFileName(filename));
+            return combined;
+        }
     }
 }
