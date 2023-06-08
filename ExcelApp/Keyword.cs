@@ -370,7 +370,7 @@ namespace ExcelReportApplication
                 if (test_plan_status == TestPlan.ExcelStatus.OK)
                 {
                     List<TestPlanKeyword> plan_keyword = ListKeyword(plan);
-                    plan.CloseIssueListExcel();
+                    plan.CloseDetailExcel();
                     if (plan_keyword != null)
                     {
                         if (plan_keyword.Count() > 0)
@@ -413,6 +413,7 @@ namespace ExcelReportApplication
                         ConsoleWarning("Test Plan Unknown Error occurred:" + plan.ExcelSheet + "@" + plan.ExcelFile);
                     }
                     ret_not_report_log.Add(fail_log);
+                    plan.CloseDetailExcel();
                 }
             }
             ReportGenerator.excel_not_report_log.AddRange(ret_not_report_log);
