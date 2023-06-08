@@ -221,7 +221,7 @@ namespace ExcelReportApplication
             //return ExcelStatus.ERR_NOT_DEFINED;
         }
 
-        public ExcelStatus CloseIssueListExcel()
+        public ExcelStatus CloseDetailExcel()
         {
             try
             {
