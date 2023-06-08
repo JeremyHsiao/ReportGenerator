@@ -841,7 +841,7 @@ namespace ExcelReportApplication
             // use LUT of column index for mapping the same column_name of SRC/DST
             Dictionary<string, int> src_col_name_list = ExcelAction.CreateTestCaseColumnIndex();
             Dictionary<string, int> dst_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate:true);
-            int row_begin = TestCase.DataBeginRow, row_end = Src_last_row - 1;
+            int row_begin = TestCase.DataBeginRow, row_end = Src_last_row;
             foreach (string col_name in dst_col_name_list.Keys)
             {
                 if (src_col_name_list.ContainsKey(col_name))
