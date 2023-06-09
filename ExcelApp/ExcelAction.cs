@@ -1005,7 +1005,8 @@ namespace ExcelReportApplication
 
         static public void WriteTableObjectToExcel(Worksheet worksheet, List<List<Object>> table_object, 
                             int start_row = 1, int start_col = 1, Boolean with_title = true,
-                            List<int> left_alignment_col = null, List<int> center_alignment_col = null)
+                            List<int> left_alignment_col = null, List<int> center_alignment_col = null,
+                            List<int> auto_fit_col = null)
         {
             int row_pos = start_row;
             int col_pos = start_col;
@@ -1054,11 +1055,6 @@ namespace ExcelReportApplication
             }
             table_range.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
             table_range.Borders.Weight = Excel.XlBorderWeight.xlThin;
-            // auto-fit columns
-            for (int col_index = start_col; col_index <= col_end; col_index++)
-            {
-                AutoFit_Column(worksheet, col_index);
-            }
 
             // 3. format cell BG color if with_title is true
             if (with_title)
@@ -1069,7 +1065,16 @@ namespace ExcelReportApplication
                 content_start_row++; // adjust content_start_row to exclude title row in the following operation
             }
 
-            // 4. left-alignment specific column 
+            // 4.auto-fit columns
+            if (auto_fit_col != null)
+            {
+                foreach (int col in auto_fit_col)
+                {
+                    AutoFit_Column(worksheet, col);
+                }
+            }
+
+            // 5. left-alignment specific column 
             if (center_alignment_col != null)
             {
                 foreach (int col in left_alignment_col)
@@ -1079,7 +1084,7 @@ namespace ExcelReportApplication
                 }
             }
 
-            // 5. center-alignment specific column 
+            // 6. center-alignment specific column 
             if (center_alignment_col != null)
             {
                 foreach (int col in center_alignment_col)
@@ -1094,6 +1099,7 @@ namespace ExcelReportApplication
         {
             List<int> left_alignment_col = new List<int> ();
             List<int> center_alignment_col = new List<int> ();
+            List<int> auto_fit_col = new List<int>();
             int start_row = KeyWordListReport.keyword_list_title_row, 
                 start_col = KeyWordListReport.keyword_list_title_col_start;
             Boolean with_title = true;
@@ -1103,14 +1109,19 @@ namespace ExcelReportApplication
             left_alignment_col.Add(3);
             left_alignment_col.Add(4);
             center_alignment_col.Add(5);
-            WriteTableObjectToExcel(ws_keyword_list, table_object, start_row, start_col, with_title, 
-                                    left_alignment_col, center_alignment_col);
+            auto_fit_col.Add(1);
+            auto_fit_col.Add(3);
+            auto_fit_col.Add(4);
+            auto_fit_col.Add(5);
+            WriteTableObjectToExcel(ws_keyword_list, table_object, start_row, start_col, with_title,
+                                    left_alignment_col, center_alignment_col, auto_fit_col);
         }
 
         static public void WriteTableToNotKeywordFile(List<List<Object>> table_object)
         {
             List<int> left_alignment_col = new List<int> ();
             List<int> center_alignment_col = new List<int> ();
+            List<int> auto_fit_col = new List<int>();
             int start_row = KeyWordListReport.not_keyword_file_title_row,
                 start_col = KeyWordListReport.not_keyword_file_title_col_start;
             Boolean with_title = true;
@@ -1121,8 +1132,13 @@ namespace ExcelReportApplication
             center_alignment_col.Add(4);
             center_alignment_col.Add(5);
             center_alignment_col.Add(6);
-            WriteTableObjectToExcel(ws_not_keyword_file, table_object, start_row, start_col, with_title, 
-                                    left_alignment_col, center_alignment_col);
+            auto_fit_col.Add(2);
+            auto_fit_col.Add(3);
+            auto_fit_col.Add(4);
+            auto_fit_col.Add(5);
+            auto_fit_col.Add(6);
+            WriteTableObjectToExcel(ws_not_keyword_file, table_object, start_row, start_col, with_title,
+                                    left_alignment_col, center_alignment_col, auto_fit_col);
         }
 
     }
