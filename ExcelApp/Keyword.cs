@@ -804,7 +804,8 @@ namespace ExcelReportApplication
             List<TestPlanKeyword> keyword_list = ListAllKeyword(do_plan);
             
             // Output keyword list log excel here.
-            KeyWordListReport.OutputKeywordLog(src_dir, keyword_list, ReportGenerator.excel_not_report_log);
+            String out_dir = (dest_dir!="")?dest_dir:src_dir;
+            KeyWordListReport.OutputKeywordLog(out_dir, keyword_list, ReportGenerator.excel_not_report_log);
 
             //
             // 2.2. Use keyword to find out all issues (ID) that contains keyword on id_list. 
@@ -1013,27 +1014,64 @@ namespace ExcelReportApplication
                 ExcelAction.SetCellValue(result_worksheet, TotalCnt_at_row, TotalCnt_at_col, fail_count + pass_count);
                 ExcelAction.SetCellValue(result_worksheet, Judgement_at_row, Judgement_at_col, judgement_str);
 
-               if ((dest_dir == "") || !Storage.DirectoryExists(src_dir) )
-                {
-                    // 3.4. Save as another file with yyyyMMddHHmmss
-                    string dest_filename = Storage.GenerateFilenameWithDateTime(full_filename);
-                    ExcelAction.CloseExcelWorkbook(wb_keyword_issue, SaveChanges: true, AsFilename: dest_filename);
-                }
-                else
-                {
-                    // 3.4. Save the same file to the folder under another root-folder with yyyyMMddHHmmss
-                    String dest_filename = full_filename.Replace(src_dir, dest_dir);
-                    String dest_filename_dir = Storage.GetDirectoryName(dest_filename);
-
-                    // if parent directory does not exist, create recursively all parents
-                    Storage.CreateDirectory(dest_filename_dir, auto_parent_dir: true);
-
-                    //string dest_filename = Storage.GenerateFilenameWithDateTime(new_fullname);
-                    ExcelAction.CloseExcelWorkbook(wb_keyword_issue, SaveChanges: true, AsFilename: dest_filename);
-                }
+                // 3.4. Save the file to either 
+                //  (1) filename with yyyyMMddHHmmss if dest_dir is not specified
+                //  (2) the same filename but to the sub-folder of same strucure under new root-folder "dest_dir"
+                String dest_filename = DecideDestinationFilename(src_dir, dest_dir, full_filename);
+                String dest_filename_dir = Storage.GetDirectoryName(dest_filename);
+                // if parent directory does not exist, create recursively all parents
+                Storage.CreateDirectory(dest_filename_dir, auto_parent_dir: true);
+                ExcelAction.CloseExcelWorkbook(wb_keyword_issue, SaveChanges: true, AsFilename: dest_filename);
             }
 
+            //// Output updated report with recommended sheetname.
+            //if (KeywordReport.Auto_Correct_Sheetname == true)
+            //{
+            //    // ReportGenerator.excel_not_report_log
+            //    foreach (NotReportFileRecord item in ReportGenerator.excel_not_report_log)
+            //    {
+            //        Boolean openfileOK, findWorksheetOK, findAnyKeyword, otherFailure;
+            //        item.GetFlagValue(out openfileOK, out findWorksheetOK, out findAnyKeyword, out otherFailure);
+            //        if((openfileOK==true)&&(findWorksheetOK==false)&&(otherFailure==false))
+            //        {
+            //            String full_filename, sheet_name;
+            //            // Open Excel and find the sheet
+            //            full_filename = item.GetFullFilePath();
+            //            Workbook wb = ExcelAction.OpenExcelWorkbook(full_filename);
+            //            if (wb == null)
+            //            {
+            //                ConsoleWarning("ERR: Open workbook in V4_2: " + full_filename);
+            //                continue;
+            //            }
+
+            //            // Use active worksheet and rename it.
+            //            Worksheet ws = ExcelAction.Find_Worksheet(wb, sheet_name);
+            //            if (result_worksheet == null)
+            //            {
+            //                ConsoleWarning("ERR: Open worksheet in V4_2: " + full_filename + " sheet: " + sheet_name);
+            //                continue;
+            //            }
+            //        }
+            //  }
+            //}
+
             return true;
+        }
+
+        static private String DecideDestinationFilename(String src_dir, String dest_dir, String full_filename)
+        {
+            String ret_str;
+
+            if ((dest_dir == "") || !Storage.DirectoryExists(src_dir))
+            {
+                ret_str = Storage.GenerateFilenameWithDateTime(full_filename);
+            }
+            else
+            {
+                ret_str = full_filename.Replace(src_dir, dest_dir);
+             }
+
+            return ret_str;
         }
 
         // 
