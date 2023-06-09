@@ -59,6 +59,16 @@ namespace ExcelReportApplication
             this.openfileOK = false;
             this.otherFailure = false;
         }
+
+        public String GetFullFilePath()
+        {
+            String path, filename, ret_str;
+            path = this.path;
+            filename = this.filename;
+            ret_str = Storage.GetValidFullFilename(path, filename);
+            return ret_str;
+        }
+
         //public NotReportFileRecord(String path, String filename, Boolean filenameOK,
         //                            Boolean sheetnameOK, Boolean itemOK, Boolean captionOK, Boolean otherFailure=false)
         //{ SetRecord(path, filename, filenameOK, sheetnameOK, itemOK, captionOK, otherFailure); }
@@ -256,6 +266,8 @@ namespace ExcelReportApplication
 
             // 4. Close and Save
             String output_file_full_path = Storage.GetValidFullFilename(out_path, Output_Excel);
+            // if parent directory does not exist, create recursively all parents
+            Storage.CreateDirectory(out_path, auto_parent_dir: true);
             ExcelAction.SaveChangesAndCloseNewKeywordListExcel(output_file_full_path);
         }
 
