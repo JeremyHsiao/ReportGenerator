@@ -303,7 +303,7 @@ namespace ExcelReportApplication
                     bug_list_keyword_Regex.Validate(bug_list_text); regex_step++;
 
                     if (keyword_text == "") { ConsoleWarning("Empty Keyword", row_index); continue; }
-                    if (KeywordAtRow.ContainsKey(keyword_text)) { ConsoleWarning("Duplicated Keyword", row_index); continue; }
+                    if (KeywordAtRow.ContainsKey(keyword_text)) { ConsoleWarning("Duplicated Keyword in single report", row_index); continue; }
                     KeywordAtRow.Add(keyword_text, row_index);
                 }
                 catch (ArgumentException e)
