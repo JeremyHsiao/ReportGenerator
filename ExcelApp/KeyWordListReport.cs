@@ -178,8 +178,10 @@ namespace ExcelReportApplication
             // title
             row_list.AddRange(keyword_list_title);
             output_keyword_list_table.Add(row_list);
-            // keyword
-            SortedSet<String> check_duplicated_keyword = new SortedSet<String>();
+
+            // list keyword string of all duplicated keyword
+            List<String> duplicate_keyword_str_list = KeywordReport.ListDuplicatedKeywordString(keyword_list);
+
             foreach (TestPlanKeyword keyword_data in keyword_list)
             {
                 String keyword = keyword_data.Keyword;
@@ -194,14 +196,10 @@ namespace ExcelReportApplication
                 //"Worksheet"
                 row_list.Add(keyword_data.Worksheet);
                 //"Duplicated?"
-                if (check_duplicated_keyword.Contains(keyword))
+                if (duplicate_keyword_str_list.Contains(keyword))
                 {
                     // duplicated
                     row_list.Add("v");
-                }
-                else
-                {
-                    check_duplicated_keyword.Add(keyword);
                 }
                 output_keyword_list_table.Add(row_list);
             }
