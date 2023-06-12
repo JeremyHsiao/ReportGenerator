@@ -53,6 +53,7 @@ namespace ExcelReportApplication
             @"Keyword_report_A_Issue_Color",            @"Red",
             @"Keyword_report_B_Issue_Color",            @"DarkOrange",
             @"Keyword_report_C_Issue_Color",            @"Black",
+            @"Keyword_Auto_Correct_Worksheet",          @"false",
 
         };
 
