@@ -254,6 +254,8 @@ namespace ExcelReportApplication
         public static int Judgement_at_row = 9, Judgement_at_col = 4;
         public static int Judgement_string_at_row = 9, Judgement_string_at_col = 2;
 
+        public static Boolean Auto_Correct_Sheetname = false;
+
         static public List<TestPlanKeyword> ListKeyword(TestPlan plan)
         {
             //
@@ -360,7 +362,8 @@ namespace ExcelReportApplication
             {
                 String path = Storage.GetDirectoryName(plan.ExcelFile);
                 String filename = Storage.GetFileName(plan.ExcelFile);
-                NotReportFileRecord fail_log = new NotReportFileRecord(path, filename);
+                String sheet_name = plan.ExcelSheet;
+                NotReportFileRecord fail_log = new NotReportFileRecord(path, filename, sheet_name);
 
                 TestPlan.ExcelStatus test_plan_status;
                 test_plan_status = plan.OpenDetailExcel();
@@ -1024,36 +1027,39 @@ namespace ExcelReportApplication
                 ExcelAction.CloseExcelWorkbook(wb_keyword_issue, SaveChanges: true, AsFilename: dest_filename);
             }
 
-            //// Output updated report with recommended sheetname.
-            //if (KeywordReport.Auto_Correct_Sheetname == true)
-            //{
-            //    // ReportGenerator.excel_not_report_log
-            //    foreach (NotReportFileRecord item in ReportGenerator.excel_not_report_log)
-            //    {
-            //        Boolean openfileOK, findWorksheetOK, findAnyKeyword, otherFailure;
-            //        item.GetFlagValue(out openfileOK, out findWorksheetOK, out findAnyKeyword, out otherFailure);
-            //        if((openfileOK==true)&&(findWorksheetOK==false)&&(otherFailure==false))
-            //        {
-            //            String full_filename, sheet_name;
-            //            // Open Excel and find the sheet
-            //            full_filename = item.GetFullFilePath();
-            //            Workbook wb = ExcelAction.OpenExcelWorkbook(full_filename);
-            //            if (wb == null)
-            //            {
-            //                ConsoleWarning("ERR: Open workbook in V4_2: " + full_filename);
-            //                continue;
-            //            }
+            // Output updated report with recommended sheetname.
+            if (KeywordReport.Auto_Correct_Sheetname == true)
+            {
+                // ReportGenerator.excel_not_report_log
+                foreach (NotReportFileRecord item in ReportGenerator.excel_not_report_log)
+                {
+                    String path, filename, expected_sheetname;
+                    Boolean openfileOK, findWorksheetOK, findAnyKeyword, otherFailure;
 
-            //            // Use active worksheet and rename it.
-            //            Worksheet ws = ExcelAction.Find_Worksheet(wb, sheet_name);
-            //            if (result_worksheet == null)
-            //            {
-            //                ConsoleWarning("ERR: Open worksheet in V4_2: " + full_filename + " sheet: " + sheet_name);
-            //                continue;
-            //            }
-            //        }
-            //  }
-            //}
+                    item.GetRecord(out path, out filename, out expected_sheetname, out openfileOK, out findWorksheetOK,
+                            out findAnyKeyword, out otherFailure);
+
+                    if ((openfileOK == true) && (findWorksheetOK == false) && (otherFailure == false))
+                    {
+                        String full_filename = Storage.GetValidFullFilename(path,filename);
+                        // Open Excel and find the sheet
+                        Workbook wb = ExcelAction.OpenExcelWorkbook(filename:full_filename, ReadOnly:false);
+                        if (wb == null)
+                        {
+                            ConsoleWarning("ERR: Open workbook in auto-correct-worksheet-name: " + full_filename);
+                            continue;
+                        }
+
+                        // Use first worksheet and rename it.
+                        Worksheet ws = wb.Sheets[1];
+                        ws.Name = expected_sheetname;
+
+                        // if parent directory does not exist, create recursively all parents
+                        Storage.CreateDirectory(path, auto_parent_dir: true);
+                        ExcelAction.CloseExcelWorkbook(wb, SaveChanges: true, AsFilename: full_filename);
+                    }
+                }
+            }
 
             return true;
         }
