@@ -446,6 +446,59 @@ namespace ExcelReportApplication
             }
             return b_ret;
         }
+
+        static public List<TestPlanKeyword> ListAllDuplicatedKeyword(List<TestPlanKeyword> keyword_list)
+        {
+            Dictionary <String,TestPlanKeyword> for_checking_duplicated = new Dictionary <String,TestPlanKeyword>();
+            Dictionary<String, List<TestPlanKeyword>> dic_ret_kw_list = new Dictionary<String, List<TestPlanKeyword>>();
+
+            foreach (TestPlanKeyword keyword in keyword_list)
+            {
+                String kw = keyword.Keyword;
+                if (for_checking_duplicated.ContainsKey(kw))
+                {
+                    // found duplicated item
+                    // first to check if already duplicated before
+                    if (!dic_ret_kw_list.ContainsKey(kw))
+                    {
+                        // 1st time duplicated so that not available in dic_ret_kw_list
+                        // then it is necessary to create a new item in dic_ret_kw_list
+                        List<TestPlanKeyword> new_duplicated_list = new List<TestPlanKeyword>();
+                        new_duplicated_list.Add(for_checking_duplicated[kw]);
+                        dic_ret_kw_list.Add(kw, new_duplicated_list);
+                    }
+                    //add duplicated item into dic_ret_kw_list[kw]
+                    dic_ret_kw_list[kw].Add(keyword);
+                }
+                else
+                {
+                    // not duplicated item
+                    // add this item into for_checking_duplicated[kw]
+                    for_checking_duplicated.Add(kw, keyword);
+                }
+            }
+
+            List<TestPlanKeyword> ret_dup_kw_list = new List<TestPlanKeyword>();
+            foreach (String kw in dic_ret_kw_list.Keys)
+            {
+                ret_dup_kw_list.AddRange(dic_ret_kw_list[kw]);
+            }
+            return ret_dup_kw_list;
+        }
+
+        static public List<String> ListDuplicatedKeywordString(List<TestPlanKeyword> keyword_list)
+        {
+            SortedSet<String> check_duplicated_keyword = new SortedSet<String>();
+            List<TestPlanKeyword> duplicate_keyword_list = ListAllDuplicatedKeyword(keyword_list);
+            foreach (TestPlanKeyword keyword in duplicate_keyword_list)
+            {
+                check_duplicated_keyword.Add(keyword.Keyword);
+            }
+            List<String> ret_str_list = new List<String>();
+            ret_str_list.AddRange(check_duplicated_keyword);
+            return ret_str_list;
+        }
+
         //
         // This Demo is to identify Keyword on the excel and insert a column to list all issues containing that keyword
         //
