@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using System.Configuration;
 
 namespace ExcelReportApplication
 {
@@ -39,7 +40,7 @@ namespace ExcelReportApplication
             set { count[(int)SeverityOrder.D] = value; }  // set method
         }
 
-        public IssueCount() { count[0] = count[1] = count[2] = count[3] = 0;}
+        public IssueCount() { count[0] = count[1] = count[2] = count[3] = 0; }
     }
 
     public class Issue
@@ -156,8 +157,8 @@ namespace ExcelReportApplication
         public const string col_Summary = "Summary";
         public const string col_Severity = "Severity";
         public const string col_RD_Comment = "Steps To Reproduce"; // used as comment currently 
-        public const string col_Status = "Status"; 
-        public const string col_Reporter = "Reporter"; 
+        public const string col_Status = "Status";
+        public const string col_Reporter = "Reporter";
         public const string col_Assignee = "Assignee";
         public const string col_DueDate = "Due Date";
         public const string col_TestCaseID = "Test Case ID";
@@ -165,7 +166,7 @@ namespace ExcelReportApplication
         public const string col_SWVersion = "SW version";
         public const string col_HWVersion = "HW version";
         public const string col_LinkedIssue = "Linked Issues";
-        public const string col_AdditionalInfo = "Additional Information"; 
+        public const string col_AdditionalInfo = "Additional Information";
 
         private void InitIssue() { keyword_list = new List<String>(); }
 
@@ -240,20 +241,20 @@ namespace ExcelReportApplication
             col_AdditionalInfo
         };
 
-        static public String STR_CLOSE              = @"Close (0)";
-        static public String STR_WAIVE              = @"Waive (0.1)";
-        static public String STR_CONFIRM            = @"Confirm (1)";
-        static public String STR_WFC                = @"WFC (2)";
-        static public String STR_RD_ANALYSIS        = @"Analyzing and solving (3)";
-        static public String STR_VENDOR_ANALYSIS    = @"Vendor analyzing (3.6)";
-        static public String STR_MORE_INFO          = @"More Info. (3.9)";
-        static public String STR_NEW                = @"New (4)";
+        static public String STR_CLOSE = @"Close (0)";
+        static public String STR_WAIVE = @"Waive (0.1)";
+        static public String STR_CONFIRM = @"Confirm (1)";
+        static public String STR_WFC = @"WFC (2)";
+        static public String STR_RD_ANALYSIS = @"Analyzing and solving (3)";
+        static public String STR_VENDOR_ANALYSIS = @"Vendor analyzing (3.6)";
+        static public String STR_MORE_INFO = @"More Info. (3.9)";
+        static public String STR_NEW = @"New (4)";
 
         // constant strings for worksheet used in this application.
         static public string SheetName = "general_report";
         static public int NameDefinitionRow = 4;
         static public int DataBeginRow = 5;
-         // Key value
+        // Key value
         static public string KeyPrefix = "BENSE";
 
         static public Color A_ISSUE_COLOR = Color.Red;
@@ -316,7 +317,7 @@ namespace ExcelReportApplication
 
         static public Color descrption_color_issue = Color.Red;
         static public Color descrption_color_comment = Color.Blue;
-         
+
         static public Dictionary<string, List<StyleString>> GenerateFullIssueDescription(List<Issue> issuelist)
         {
             Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
@@ -355,7 +356,7 @@ namespace ExcelReportApplication
             }
             return ret_list;
         }
-         
+
         // create key/rich-text-issue-description pair.
         // 
         // Format: KEY+SUMMARY+(+SEVERITY+)
@@ -445,13 +446,21 @@ namespace ExcelReportApplication
         //
         public bool ContainKeyword(String Keyword)
         {
-            bool ret = false;
-            //if ((this.Summary.Contains(Keyword)) || (this.TestCaseID.Contains(Keyword)))
-            if (this.TestCaseID.Contains(Keyword))
+            bool b_ret = false;
+
+            String regexKeywordString = @"(?:\W|^)" + @Keyword + @"(?:\W|$)";
+            RegexStringValidator identifier_keyword_Regex = new RegexStringValidator(regexKeywordString);
+            try
             {
-                ret = true;
+                // Attempt validation. if regex is false (no keyword found at all) then jumping to catch(); 
+                identifier_keyword_Regex.Validate(this.TestCaseID);
+                b_ret = true;
             }
-            return ret;
+            catch (ArgumentException e)
+            {
+                // Validation failed.
+            }
+            return b_ret;
         }
     }
 }
