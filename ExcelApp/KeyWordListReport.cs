@@ -9,6 +9,7 @@ namespace ExcelReportApplication
     {
         private String path;
         private String filename;
+        private String expected_sheetname;
         private Boolean openfileOK;
         private Boolean findWorksheetOK;
         private Boolean findAnyKeyword;
@@ -52,10 +53,11 @@ namespace ExcelReportApplication
 
         //
         public NotReportFileRecord() { this.path = this.filename = ""; this.openfileOK = false; this.otherFailure = false; }
-        public NotReportFileRecord(String path = "", String filename = "")
+        public NotReportFileRecord(String path = "", String filename = "", String expected_sheetname = "")
         {
             this.path = path;
             this.filename = filename;
+            this.expected_sheetname = expected_sheetname; 
             this.openfileOK = false;
             this.otherFailure = false;
         }
@@ -106,19 +108,21 @@ namespace ExcelReportApplication
             this.findAnyKeyword = findAnyKeyword;
             this.otherFailure = otherFailure;
         }
-        public void GetRecord(out String path, out String filename, out Boolean openfileOK, out Boolean findWorksheetOK,
+        public void GetRecord(out String path, out String filename, out String expected_sheetname, out Boolean openfileOK, out Boolean findWorksheetOK,
                             out Boolean findAnyKeyword, out Boolean otherFailure)
         {
             path = this.path;
             filename = this.filename;
+            expected_sheetname = this.expected_sheetname;
             this.GetFlagValue(out openfileOK, out findWorksheetOK, out findAnyKeyword, out otherFailure);
         }
 
-        public void SetRecord(String path, String filename, Boolean openfileOK, Boolean findWorksheetOK, Boolean findAnyKeyword,
+        public void SetRecord(String path, String filename, String expected_sheetname, Boolean openfileOK, Boolean findWorksheetOK, Boolean findAnyKeyword,
                                 Boolean otherFailure = false)
         {
             this.path = path;
             this.filename = filename;
+            this.expected_sheetname = expected_sheetname; 
             this.SetFlagValue(openfileOK, findWorksheetOK, findAnyKeyword, otherFailure);
         }
     }
@@ -213,10 +217,10 @@ namespace ExcelReportApplication
             // not-keyword-file
             foreach (NotReportFileRecord not_keyword_report in not_keyword_report_list)
             {
-                String path, filename;
+                String path, filename, expected_sheetname;
                 Boolean openfileOK, findWorksheetOK, findAnyKeyword, otherFailure;
 
-                not_keyword_report.GetRecord(out path, out filename, out openfileOK, out findWorksheetOK,
+                not_keyword_report.GetRecord(out path, out filename, out expected_sheetname, out openfileOK, out findWorksheetOK,
                             out findAnyKeyword, out otherFailure);
 
                 row_list = new List<Object>();
