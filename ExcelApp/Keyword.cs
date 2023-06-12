@@ -1108,9 +1108,14 @@ namespace ExcelReportApplication
                         Worksheet ws = wb.Sheets[1];
                         ws.Name = expected_sheetname;
 
+                        // Save the updated report file file to either 
+                        //  (1) filename with yyyyMMddHHmmss if dest_dir is not specified
+                        //  (2) the same filename but to the sub-folder of same strucure under new root-folder "dest_dir"
+                        String dest_filename = DecideDestinationFilename(src_dir, dest_dir, full_filename);
+                        String dest_filename_dir = Storage.GetDirectoryName(dest_filename);
                         // if parent directory does not exist, create recursively all parents
-                        Storage.CreateDirectory(path, auto_parent_dir: true);
-                        ExcelAction.CloseExcelWorkbook(wb, SaveChanges: true, AsFilename: full_filename);
+                        Storage.CreateDirectory(dest_filename_dir, auto_parent_dir: true);
+                        ExcelAction.CloseExcelWorkbook(wb, SaveChanges: true, AsFilename: dest_filename);
                     }
                 }
             }
