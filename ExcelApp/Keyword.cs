@@ -264,9 +264,10 @@ namespace ExcelReportApplication
             // Assummed that Printable area always starting at $A$1 (also data processing area)
             // So excel data processing area ends at Printable area (row_count,col_count)
             Worksheet ws_testplan = plan.TestPlanWorksheet;
-            Range rngPrintable = ExcelAction.GetWorksheetPrintableRange(ws_testplan);
-            int row_print_area = ExcelAction.Get_Range_RowNumber(rngPrintable);
-            int column_print_area = ExcelAction.Get_Range_ColumnNumber(rngPrintable);
+            //Range rngProcessedRange = ExcelAction.GetWorksheetPrintableRange(ws_testplan);
+            Range rngProcessedRange = ExcelAction.GetWorksheetAllRange(ws_testplan);
+            int row_end = ExcelAction.Get_Range_RowNumber(rngProcessedRange);
+            int col_end = ExcelAction.Get_Range_ColumnNumber(rngProcessedRange);
 
             //
             // 3. Find out all keywords and create LUT (keyword,row_index)
@@ -279,7 +280,7 @@ namespace ExcelReportApplication
             RegexStringValidator result_keyword_Regex = new RegexStringValidator(regexResultString);
             RegexStringValidator bug_status_keyword_Regex = new RegexStringValidator(regexBugStatusString);
             RegexStringValidator bug_list_keyword_Regex = new RegexStringValidator(regexBugListString);
-            for (int row_index = row_test_detail_start; row_index <= row_print_area; row_index++)
+            for (int row_index = row_test_detail_start; row_index <= row_end; row_index++)
             {
                 String identifier_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index, col_indentifier),
                         result_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_result_title,
