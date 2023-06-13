@@ -159,7 +159,7 @@ namespace ExcelReportApplication
 
         //static public 
         static public void OutputKeywordLog(String out_path, List<TestPlanKeyword> keyword_list, 
-                                            List<NotReportFileRecord> not_keyword_report_list)
+                                            List<NotReportFileRecord> not_keyword_report_list, String keyword_output_filename ="")
         {
             // Open template excel and write to another filename when closed
             ExcelAction.ExcelStatus status;
@@ -265,6 +265,11 @@ namespace ExcelReportApplication
                 output_not_report_file_table.Add(row_list);
             }
             ExcelAction.WriteTableToNotKeywordFile(output_not_report_file_table);
+
+            if (keyword_output_filename != "")
+            {
+                Output_Excel = keyword_output_filename;
+            }
 
             // 4. Close and Save
             String output_file_full_path = Storage.GetValidFullFilename(out_path, Output_Excel);

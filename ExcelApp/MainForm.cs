@@ -295,23 +295,16 @@ namespace ExcelReportApplication
             return true;
         }
 
-        private bool Execute_ListAllDetailedTestPlanKeywordTask(String main_file, String report_root)
+        private bool Execute_ListAllDetailedTestPlanKeywordTask(String report_root, String output_file ="")
         {
-            if (!Storage.FileExists(main_file) || !Storage.DirectoryExists(report_root))
+            if (!Storage.DirectoryExists(report_root))
             {
                 // protection check
                 return false;
             }
 
-            List<TestPlanKeyword> keyword_list = KeywordReport.ListAllDetailedTestPlanKeywordTask(main_file, report_root);
+            List<TestPlanKeyword> keyword_list = KeywordReport.ListAllDetailedTestPlanKeywordTask(report_root, output_file);
 
-            MsgWindow.AppendText("Keyword list:\n");
-            MsgWindow.AppendText("-------------\n");
-            foreach (TestPlanKeyword keyword in keyword_list)
-            {
-                MsgWindow.AppendText(keyword.Keyword + " @ " + keyword.Worksheet + "(" + keyword.AtRow + ")\n");
-            }
-            MsgWindow.AppendText("-------------\n");
             return true;
         }
 
@@ -513,11 +506,13 @@ namespace ExcelReportApplication
                     bRet = Execute_FindFailTCLinkedIssueAllClosed(txtTCFile.Text, txtReportFile.Text);
                     break;
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
-                    String main_file = txtStandardTestReport.Text;
-                    String file_dir = Storage.GetDirectoryName(main_file);
-                    String report_root_dir = Storage.GetDirectoryName(file_dir);
-                    bRet = Execute_ListAllDetailedTestPlanKeywordTask(main_file, report_root_dir);
+                    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                    //UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
+                    //String main_file = txtStandardTestReport.Text;
+                    //String file_dir = Storage.GetDirectoryName(main_file);
+                    String output_filename = "";//use default in config file
+                    String report_root_dir = Storage.GetFullPath(txtReportFile.Text);
+                    bRet = Execute_ListAllDetailedTestPlanKeywordTask(report_root_dir, output_filename);
                     break;
                 case ReportGenerator.ReportType.Excel_Sheet_Name_Update_Tool:
                     UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);     // Directory path here
@@ -634,8 +629,8 @@ namespace ExcelReportApplication
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
                     SetEnable_IssueFile(false);
                     SetEnable_TCFile(false);
-                    SetEnable_OutputFile(false);
-                    SetEnable_StandardReport(true);
+                    SetEnable_OutputFile(true);
+                    SetEnable_StandardReport(false);
                     break;
                 case ReportGenerator.ReportType.Excel_Sheet_Name_Update_Tool:
                     SetEnable_IssueFile(false);

@@ -109,9 +109,9 @@ namespace ExcelReportApplication
             },
             new String[] 
             {
-                "Go Through all Do-plan to list down all keywords", 
-                "Input:",  "  Main Test Report File",
-                "Output:", "  All keywords listed on output log",
+                "Go Through all report to list down all keywords", 
+                "Input:",  "  Root-directory of Report Files",
+                "Output:", "  All keywords listed on output excel file",
             },
             new String[] 
             {

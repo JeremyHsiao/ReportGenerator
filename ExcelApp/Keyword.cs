@@ -1143,24 +1143,73 @@ namespace ExcelReportApplication
         // Input: Standard Test Report main file
         // Output: keyword list of all "Do" test-plans
         //
-        static public List<TestPlanKeyword> ListAllDetailedTestPlanKeywordTask(String filename, String report_root_dir)
+        static public List<TestPlanKeyword> ListAllDetailedTestPlanKeywordTask(String report_root_dir, String output_filename)
         {
-            // Full file name exist checked before executing task
+            // List all files under report_root_dir.
+            List<String> file_list = Storage.ListFilesUnderDirectory(report_root_dir);
+            // filename check to exclude non-report files.
+            List<String> report_filename = Storage.FilterFilename(file_list);
 
-            List<TestPlanKeyword> keyword_list = new List<TestPlanKeyword>();
+            //
+            // 1. Create a temporary test plan (do_plan) to include all report files 
+            //
+            // 1.1 Init an empty plan
+            List<TestPlan> do_plan = new List<TestPlan>();
 
-            // read test-plan sheet NG and return if NG
-            List<TestPlan> testplan = TestReport.ReadTestPlanFromStandardTestReport(filename);
-            if (testplan == null) { return keyword_list; }
+            // 1.2 Create a temporary test plan to includes all files listed in List<String> report_filename
+            do_plan = TestPlan.CreateTempPlanFromFileList(report_filename);
 
-            // all input parameters has been checked successfully, so generate
-            List<TestPlan> do_plan = TestPlan.ListDoPlan(testplan);
-            foreach (TestPlan plan in do_plan)
-            {
-                plan.ExcelFile = report_root_dir + @"\" + plan.ExcelFile;
-            }
+            //
+            // 2. Search keywords within all selected file (2.1) and use those keywords to find out issues containing keywords.
+            //
+            // 2.1. Find keyword for all selected file (as listed in temprary test plan)
+            //
             ReportGenerator.excel_not_report_log.Clear();
-            keyword_list = ListAllKeyword(do_plan);
+            List<TestPlanKeyword> keyword_list = ListAllKeyword(do_plan);
+
+            // Output keyword list log excel here.
+            KeyWordListReport.OutputKeywordLog(report_root_dir, keyword_list, ReportGenerator.excel_not_report_log, output_filename);
+
+
+            // Output updated report with recommended sheetname.
+            if (KeywordReport.Auto_Correct_Sheetname == true)
+            {
+                String dest_dir = Storage.GenerateDirectoryNameWithDateTime(report_root_dir);
+                // ReportGenerator.excel_not_report_log
+                foreach (NotReportFileRecord item in ReportGenerator.excel_not_report_log)
+                {
+                    String path, filename, expected_sheetname;
+                    Boolean openfileOK, findWorksheetOK, findAnyKeyword, otherFailure;
+
+                    item.GetRecord(out path, out filename, out expected_sheetname, out openfileOK, out findWorksheetOK,
+                            out findAnyKeyword, out otherFailure);
+
+                    if ((openfileOK == true) && (findWorksheetOK == false) && (otherFailure == false))
+                    {
+                        String full_filename = Storage.GetValidFullFilename(path, filename);
+                        // Open Excel and find the sheet
+                        Workbook wb = ExcelAction.OpenExcelWorkbook(filename: full_filename, ReadOnly: false);
+                        if (wb == null)
+                        {
+                            ConsoleWarning("ERR: Open workbook in auto-correct-worksheet-name of ListAllDetailedTestPlanKeywordTask(): " + full_filename);
+                            continue;
+                        }
+
+                        // Use first worksheet and rename it.
+                        Worksheet ws = wb.Sheets[1];
+                        ws.Name = expected_sheetname;
+
+                        // Save the updated report file file to either 
+                        //  (1) filename with yyyyMMddHHmmss if dest_dir is not specified
+                        //  (2) the same filename but to the sub-folder of same strucure under new root-folder "dest_dir"
+                        String dest_filename = DecideDestinationFilename(report_root_dir, dest_dir, full_filename);
+                        String dest_filename_dir = Storage.GetDirectoryName(dest_filename);
+                        // if parent directory does not exist, create recursively all parents
+                        Storage.CreateDirectory(dest_filename_dir, auto_parent_dir: true);
+                        ExcelAction.CloseExcelWorkbook(wb, SaveChanges: true, AsFilename: dest_filename);
+                    }
+                }
+            }
 
             return keyword_list;
         }
