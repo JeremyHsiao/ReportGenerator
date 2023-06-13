@@ -30,7 +30,8 @@ namespace ExcelReportApplication
             FindAllKeywordInReport,
             KeywordIssue_Report_Directory,
             Excel_Sheet_Name_Update_Tool,
-            FullIssueDescription_TC_report_judgement
+            FullIssueDescription_TC_report_judgement,
+            TC_TestReportCreation,
         }
 
         public static int ReportTypeToInt(ReportType type)
@@ -72,6 +73,7 @@ namespace ExcelReportApplication
             "7.Keyword Issue - Directory",
             "8.Excel sheet name update tool",
             "9.TC issue/judgement",
+            "A.Jira Test Report Creator",
        };
 
         // Must be updated if new report type added #NewReportType
@@ -130,6 +132,12 @@ namespace ExcelReportApplication
                 "Issue Description + judgement from report for TC Report", 
                 "Input:",  "  Issue List + Test Case + Template (for Test case output)",
                 "Output:", "  Test Case in the format of template file with linked issue in full description",
+            },
+            new String[] 
+            {
+                "Create file structure of Test Report according to TC on the Jira Test Case file", 
+                "Input:",  "  Jira Test Case File & directories of source report and of output destination",
+                "Output:", "  Directory structure and report files under directories",
             },
                                                                                          };
 

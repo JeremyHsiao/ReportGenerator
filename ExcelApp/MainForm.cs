@@ -485,7 +485,7 @@ namespace ExcelReportApplication
                     UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
                     bRet = Execute_CreateStandardTestReportTask(txtStandardTestReport.Text);
                     break;
-                case ReportGenerator.ReportType.KeywordIssue_Report_SingleFile:
+               case ReportGenerator.ReportType.KeywordIssue_Report_SingleFile:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);    // File path here
                     if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
@@ -527,6 +527,13 @@ namespace ExcelReportApplication
                     if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                     if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
                     bRet = Execute_WriteIssueDescriptionToTC(txtTCFile.Text, txtReportFile.Text, txtStandardTestReport.Text);
+                    break;
+                case ReportGenerator.ReportType.TC_TestReportCreation:
+                    // need TC
+                    // need report source directory
+                    // need report destination directory
+                    UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
+                    bRet = Execute_CreateStandardTestReportTask(txtStandardTestReport.Text);
                     break;
                 default:
                     // shouldn't be here.
@@ -644,6 +651,13 @@ namespace ExcelReportApplication
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(true);
                     break;
+                case ReportGenerator.ReportType.TC_TestReportCreation:
+                    // need to rework
+                    SetEnable_IssueFile(false);
+                    SetEnable_TCFile(false);
+                    SetEnable_OutputFile(false);
+                    SetEnable_StandardReport(true);
+                    break;
                 default:
                     // Shouldn't be here
                     break;
@@ -692,6 +706,11 @@ namespace ExcelReportApplication
                 case ReportGenerator.ReportType.FullIssueDescription_TC_report_judgement: // "1.Issue Description for TC"
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
+                    break;
+                case ReportGenerator.ReportType.TC_TestReportCreation:
+                    // need to rework
+                    if (!btnSelectExcelTestFile_Clicked)
+                        txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("workbook_StandardTestReport");
                     break;
                 default:
                     break;
