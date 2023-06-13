@@ -371,7 +371,7 @@ namespace ExcelReportApplication
             switch (ReportGenerator.ReportTypeFromInt(report_index))
             {
                 case ReportGenerator.ReportType.KeywordIssue_Report_Directory:
-                    //case ReportGenerator.ReportType.FindAllKeywordInReport:
+                case ReportGenerator.ReportType.FindAllKeywordInReport:
                     sel_file = false;  // Here select directory instead of file
                     break;
             }
