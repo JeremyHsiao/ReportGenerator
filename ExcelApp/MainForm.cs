@@ -706,6 +706,8 @@ namespace ExcelReportApplication
                 case ReportGenerator.ReportType.FullIssueDescription_TC_report_judgement: // "1.Issue Description for TC"
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
+                    if (!btnSelectExcelTestFile_Clicked)
+                        txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     break;
                 case ReportGenerator.ReportType.TC_TestReportCreation:
                     // need to rework
