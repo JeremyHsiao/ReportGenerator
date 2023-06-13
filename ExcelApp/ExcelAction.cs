@@ -378,7 +378,9 @@ namespace ExcelReportApplication
 
         static public void SetCellValue(Worksheet ws, int row, int col, Object value)
         {
-            ws.Cells[row, col].Value2 = value;
+            Range cell = ws.Cells[row, col];
+            cell.NumberFormat = "@";
+            cell.Value2 = value;
         }
 
         static public String GetCellTrimmedString(Worksheet ws, int row, int col)
@@ -1022,9 +1024,9 @@ namespace ExcelReportApplication
                     SetCellValue(worksheet, row_pos, col_pos++, obj);
                 }
                 // update new right border of table
-                if ((col_pos-1)>col_end)
+                if ((col_pos - 1) > col_end)
                 {
-                    col_end = col_pos - 1;     
+                    col_end = col_pos - 1;
                 }
                 row_pos++;
                 col_pos = start_col;
@@ -1033,6 +1035,7 @@ namespace ExcelReportApplication
 
             // 2. formating all table cells with font & border / auto-fit columns
             Range table_range = worksheet.Range[worksheet.Cells[start_row, start_col], worksheet.Cells[row_end, col_end]];
+            table_range.NumberFormat = "@";
             using (System.Drawing.Font fontTester = new System.Drawing.Font(StyleString.default_font, StyleString.default_size,
                                                 StyleString.default_fontstyle, GraphicsUnit.Pixel))
             {
@@ -1051,10 +1054,11 @@ namespace ExcelReportApplication
                     table_range.Characters.Font.Size = default_table_font_size;
                     table_range.Characters.Font.Color = default_table_font_color;
                     table_range.Characters.Font.FontStyle = default_table_font_style;
-               }
+                }
             }
             table_range.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
             table_range.Borders.Weight = Excel.XlBorderWeight.xlThin;
+            table_range.NumberFormat = "@";
 
             // 3. format cell BG color if with_title is true
             if (with_title)

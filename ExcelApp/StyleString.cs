@@ -217,6 +217,7 @@ Returns or sets the type of underline applied to the font.
             {
                 txt_str += style_str.Text;
             }
+            input_range.NumberFormat = "@";
             input_range.Value2 = txt_str;
 
             using (System.Drawing.Font fontTester = 
