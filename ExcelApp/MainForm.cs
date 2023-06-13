@@ -572,7 +572,12 @@ namespace ExcelReportApplication
 
         private void comboBoxReportSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
-            UpdateUIAfterReportTypeChanged(comboBoxReportSelect.SelectedIndex);
+            int select = comboBoxReportSelect.SelectedIndex;
+            UpdateUIAfterReportTypeChanged(select);
+            label_issue.Text = ReportGenerator.GetLabelTextArray(select)[0];
+            label_tc.Text = ReportGenerator.GetLabelTextArray(select)[1];
+            label_1st.Text = ReportGenerator.GetLabelTextArray(select)[2];
+            label_2nd.Text = ReportGenerator.GetLabelTextArray(select)[3];
         }
 
         private void UpdateUIDuringExecution(int report_index, bool executing)
@@ -668,6 +673,8 @@ namespace ExcelReportApplication
         {
             txtReportInfo.Text = ReportGenerator.GetReportDescription(ReportIndex);
             UpdateFilenameBoxUIForReportType(ReportIndex);
+
+
             // Must be updated if new report type added #NewReportType
             switch (ReportGenerator.ReportTypeFromInt(ReportIndex))
             {
@@ -714,6 +721,8 @@ namespace ExcelReportApplication
                     if (!btnSelectExcelTestFile_Clicked)
                         txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("workbook_StandardTestReport");
                     break;
+                    if (!btnSelectReportFile_Clicked)
+                        txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                 default:
                     break;
             }

@@ -139,7 +139,83 @@ namespace ExcelReportApplication
                 "Input:",  "  Jira Test Case File & directories of source report and of output destination",
                 "Output:", "  Directory structure and report files under directories",
             },
-                                                                                         };
+
+        };
+
+        private static String[][] UI_Label = new String[][] 
+        {
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Output Template",
+                "Main Test Plan",
+            },
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Output Template",
+                "Main Test Plan",
+           },
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Output Template",
+                "Main Test Plant",
+            },
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Single Report",
+                "Main Test Plan",
+            },
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Output Template",
+                "Main Test Plan",
+            },
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Report Path",
+                "Main Test Plan",
+            },
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Output Template",
+                "Main Test Plan",
+            },
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Output Template",
+                "Main Test Plan",
+            },
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Report Path",
+                "Main Test Plan",
+            },
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Report Path",
+                "Report DB Path",
+            },
+
+        };
 
         public static String GetReportDescription(int type_index)
         {
@@ -149,6 +225,11 @@ namespace ExcelReportApplication
                 ret_str += str + "\r\n";
             }
             return ret_str;
+        }
+
+        public static String[] GetLabelTextArray(int type_index)
+        {
+            return UI_Label[type_index];
         }
 
         public static String GetReportDescription(ReportType type)
