@@ -16,6 +16,7 @@ namespace ExcelReportApplication
             @"workbook_TC_Jira",                        @".\SampleData\TC_Jira 2022-09-03T11_07.xls",
             @"workbook_Summary",                        @".\SampleData\Report_Template.xlsx",
             @"workbook_StandardTestReport",             @".\SampleData\TestFileFolder\0.0_DQA Test Report\BenQ_Medical_Standard Test Report.xlsx",
+            @"Keyword_default_report_dir",              @".\SampleData\EVT_Winnie_Keyword2.5_keyword\All function",
             @"Excel_Visible",                           @"true",
             @"Issue_Key_Prefix",                        @"-",
             @"Issue_SheetName",                         @"general_report",
