@@ -688,7 +688,7 @@ namespace ExcelReportApplication
                     break;
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
                     if (!btnSelectExcelTestFile_Clicked)
-                        txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("workbook_ReportToTestKeyword");
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     break;
                 case ReportGenerator.ReportType.Excel_Sheet_Name_Update_Tool:
                     if (!btnSelectReportFile_Clicked)
