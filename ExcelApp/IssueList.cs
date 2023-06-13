@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.Configuration;
+using System.Text.RegularExpressions;
 
 namespace ExcelReportApplication
 {
@@ -448,7 +449,10 @@ namespace ExcelReportApplication
         {
             bool b_ret = false;
 
-            String regexKeywordString = @"(?:\W|^)" + @Keyword + @"(?:\W|$)";
+            String allowed_delimiter = @"/,;";                                    // slash, comma, semi-colon are allowed as delimiter
+            String regexKeywordString = @"(?:["+allowed_delimiter+@"]|^)\s*" + 
+                                        Regex.Escape(@Keyword) +                 // \QKeyword\E in regex
+                                        @"\s*(?:[" + allowed_delimiter + @"]|$)";
             RegexStringValidator identifier_keyword_Regex = new RegexStringValidator(regexKeywordString);
             try
             {
