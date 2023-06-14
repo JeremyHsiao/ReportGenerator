@@ -21,7 +21,8 @@ namespace ExcelReportApplication
         static public List<NotReportFileRecord> excel_not_report_log = new List<NotReportFileRecord>();
 
         // Must be updated if new report type added #NewReportType
-        public enum ReportType {
+        public enum ReportType
+        {
             FullIssueDescription_TC = 0,
             FullIssueDescription_Summary,
             StandardTestReportCreation,
@@ -34,9 +35,37 @@ namespace ExcelReportApplication
             TC_TestReportCreation,
         }
 
+        public static ReportType[] ReportSelectableTable =
+        {
+            //ReportType.FullIssueDescription_TC,
+            //ReportType.FullIssueDescription_Summary,
+            //ReportType.StandardTestReportCreation,
+            ReportType.KeywordIssue_Report_SingleFile,
+            //ReportType.TC_Likely_Passed,
+            ReportType.FindAllKeywordInReport,
+            ReportType.KeywordIssue_Report_Directory,
+            //ReportType.Excel_Sheet_Name_Update_Tool,
+            ReportType.FullIssueDescription_TC_report_judgement,
+            //ReportType.TC_TestReportCreation,
+        };
+
+        //public static ReportType[] ReportSelectableTable =
+        //{
+        //    ReportType.FullIssueDescription_TC,
+        //    ReportType.FullIssueDescription_Summary,
+        //    ReportType.StandardTestReportCreation,
+        //    ReportType.KeywordIssue_Report_SingleFile,
+        //    ReportType.TC_Likely_Passed,
+        //    ReportType.FindAllKeywordInReport,
+        //    ReportType.KeywordIssue_Report_Directory,
+        //    ReportType.Excel_Sheet_Name_Update_Tool,
+        //    ReportType.FullIssueDescription_TC_report_judgement,
+        //    ReportType.TC_TestReportCreation,
+        //};
+
         public static int ReportTypeToInt(ReportType type)
         {
-            return (int)type; 
+            return (int)type;
         }
 
         public static ReportType ReportTypeFromInt(int int_type)
@@ -292,7 +321,7 @@ namespace ExcelReportApplication
         {
             // Open original excel (read-only & corrupt-load) and write to another filename when closed
             ExcelAction.ExcelStatus status;
-            
+
             status = ExcelAction.OpenTestCaseExcel(tclist_filename);
             if (status != ExcelAction.ExcelStatus.OK)
             {
@@ -331,7 +360,7 @@ namespace ExcelReportApplication
                     {
                         Console.WriteLine("Sheet name:" + sheet_name + " already exists.");
                     }
-                    
+
                 }
             }
 
@@ -339,21 +368,21 @@ namespace ExcelReportApplication
             ExcelAction.CopyTestCaseIntoTemplate_v2();
 
             // 4. Prepare data on test case excel and write into test-case (template)
-            Dictionary<string, int> template_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate:true);
+            Dictionary<string, int> template_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate: true);
             int key_col = template_col_name_list[TestCase.col_Key];
             int links_col = template_col_name_list[TestCase.col_LinkedIssue];
             int summary_col = template_col_name_list[TestCase.col_Summary];
             int status_col = template_col_name_list[TestCase.col_Status];
-            int last_row = ExcelAction.Get_Range_RowNumber(ExcelAction.GetTestCaseAllRange(IsTemplate:true));
+            int last_row = ExcelAction.Get_Range_RowNumber(ExcelAction.GetTestCaseAllRange(IsTemplate: true));
             // Visit all rows and replace Bug-ID at Linked Issue with long description of Bug.
             for (int excel_row_index = TestCase.DataBeginRow; excel_row_index <= last_row; excel_row_index++)
             {
                 // Make sure Key of TC contains KeyPrefix
-                String key = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, key_col,IsTemplate:true);
+                String key = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, key_col, IsTemplate: true);
                 if (key.Contains(TestCase.KeyPrefix) == false) { break; } // If not a TC key in this row, go to next row
 
                 // If Links is not empty, extend bug key into long string with font settings
-                String links = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, links_col,IsTemplate:true);
+                String links = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, links_col, IsTemplate: true);
                 if (links != "")
                 {
                     List<String> linked_issue_key_list = TestCase.Convert_LinksString_To_ListOfString(links);
@@ -398,7 +427,7 @@ namespace ExcelReportApplication
                 {
                     String workbook_filename = report_list[worksheet_name];
                     Object judgement = GetJudgementValue(workbook_filename, worksheet_name);
-                    ExcelAction.SetTestCaseCell(excel_row_index, status_col, judgement, IsTemplate:true);  
+                    ExcelAction.SetTestCaseCell(excel_row_index, status_col, judgement, IsTemplate: true);
                 }
             }
 
@@ -408,7 +437,7 @@ namespace ExcelReportApplication
             // 6. Write to another filename with datetime
             string dest_filename = Storage.GenerateFilenameWithDateTime(tclist_filename, FileExt: ".xlsx");
             ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
-            
+
             // Close Test Case Excel
             ExcelAction.CloseTestCaseExcel();
         }
@@ -424,7 +453,7 @@ namespace ExcelReportApplication
             if (wb_judgement == null)
             {
                 ConsoleWarning("ERR: Open workbook in GetJudgementValue: " + report_workbook);
-                return ret_str; 
+                return ret_str;
             }
 
             // 2 Open worksheet
@@ -443,7 +472,7 @@ namespace ExcelReportApplication
             ExcelAction.CloseExcelWorkbook(wb_judgement);
             return ret_str;
         }
-        
+
         static private void ConsoleWarning(String function, int row)
         {
             Console.WriteLine("Warning: please check " + function + " at line " + row.ToString());
@@ -461,7 +490,7 @@ namespace ExcelReportApplication
         {
             // Prepare a list of key whose status is closed (waived treated as non-closed at the moment)
             List<String> ClosedIssueKey = new List<String>();
-            foreach(Issue issue in global_issue_list)
+            foreach (Issue issue in global_issue_list)
             {
                 foreach (String str in CloseStatusString)
                 {
@@ -473,14 +502,14 @@ namespace ExcelReportApplication
                     }
                 }
             }
- 
+
             // Prepare several lists to separate TC into different groups
             List<String> tc_pass = new List<String>();                      // TC Status is Pass
             List<String> tc_none = new List<String>();                      // TC Status is None
             List<String> tc_fail_empty_link_issue = new List<String>();     // TC Status is Fail AND Links are empty
             List<String> tc_fail_some_nonclosed = new List<String>();       // TC Status is Fail AND Links have at least one non-closed issue
             List<String> tc_fail_all_closed = new List<String>();           // TC Status is Fail AND Links are all closed
- 
+
             // looping all TC where links are not empty
             foreach (TestCase tc in global_testcase_list) // looping
             {
@@ -496,7 +525,7 @@ namespace ExcelReportApplication
                 {
                     tc_fail_empty_link_issue.Add(tc.Key);
                 }
-                else 
+                else
                 {
                     List<String> LinkedIssueKey = TestCase.Convert_LinksString_To_ListOfString(tc.Links);
                     IEnumerable<String> LinkIssue_CloseIssue_intersect = ClosedIssueKey.Intersect(LinkedIssueKey);
@@ -511,7 +540,7 @@ namespace ExcelReportApplication
                     }
                 }
             }
- 
+
             // Start to hide rows unless this row belongs to tc_fail_all_closed
 
             // Open original excel (read-only & corrupt-load) and write to template file with another filename when closed
@@ -541,7 +570,7 @@ namespace ExcelReportApplication
                     ExcelAction.CloseTestCaseExcel();           // original test case excel is to be closed.
 
                     // 4. Excel processing on template excel file
-                    Dictionary<string, int> template_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate:true);
+                    Dictionary<string, int> template_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate: true);
                     int DataEndRow = ExcelAction.Get_Range_RowNumber(ExcelAction.GetTestCaseAllRange(IsTemplate: true));
                     int key_col = template_col_name_list[TestCase.col_Key];
 
@@ -567,7 +596,7 @@ namespace ExcelReportApplication
                         else
                         {
                             // This row not to be hidden --> so hide all previous to-be-hidden rows
-                            ExcelAction.TestCase_Hide_Row(hide_row_start, hide_row_count, IsTemplate:true);
+                            ExcelAction.TestCase_Hide_Row(hide_row_start, hide_row_count, IsTemplate: true);
                             hide_row_start = hide_row_count = 0;
                         }
                     }

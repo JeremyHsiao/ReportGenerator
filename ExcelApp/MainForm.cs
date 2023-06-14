@@ -93,12 +93,24 @@ namespace ExcelReportApplication
 
         private void InitializeReportFunctionListBox()
         {
-
-            foreach (String name in ReportGenerator.ReportNameToList())
+            foreach (ReportGenerator.ReportType report_type in ReportGenerator.ReportSelectableTable)
             {
-                comboBoxReportSelect.Items.Add(name);
+                String report_name;
+                report_name = ReportGenerator.GetReportName((int)report_type);
+                comboBoxReportSelect.Items.Add(report_name);
             }
-            comboBoxReportSelect.SelectedIndex = 0; // (int)ReportGenerator.ReportType.FullIssueDescription_Summary; // current default
+            //int default_select_index = (int)ReportGenerator.ReportType.FullIssueDescription_Summary; // current default
+            int default_select_index = 0;
+            Set_comboBoxReportSelect_SelectedIndex(default_select_index);  
+        }
+
+        private void Set_comboBoxReportSelect_SelectedIndex(int value) 
+        {
+            comboBoxReportSelect.SelectedIndex = (int)ReportGenerator.ReportSelectableTable[value]; 
+        }
+        private int Get_comboBoxReportSelect_SelectedIndex() 
+        {
+            return (int)ReportGenerator.ReportSelectableTable[comboBoxReportSelect.SelectedIndex]; 
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -355,7 +367,7 @@ namespace ExcelReportApplication
 
         private void btnSelectExcelTestFile_Click(object sender, EventArgs e)
         {
-            int report_index = comboBoxReportSelect.SelectedIndex;
+            int report_index = Get_comboBoxReportSelect_SelectedIndex();
             bool sel_file = true;
             switch (ReportGenerator.ReportTypeFromInt(report_index))
             {
@@ -377,7 +389,7 @@ namespace ExcelReportApplication
 
         private void btnSelectReportFile_Click(object sender, EventArgs e)
         {
-            int report_index = comboBoxReportSelect.SelectedIndex;
+            int report_index = Get_comboBoxReportSelect_SelectedIndex();
             bool sel_file = true;
             switch (ReportGenerator.ReportTypeFromInt(report_index))
             {
@@ -456,7 +468,7 @@ namespace ExcelReportApplication
         {
             bool bRet;
 
-            int report_index = comboBoxReportSelect.SelectedIndex;
+            int report_index = Get_comboBoxReportSelect_SelectedIndex();
 
             if ((report_index < 0) || (report_index >= ReportGenerator.ReportTypeCount))
             {
@@ -593,7 +605,7 @@ namespace ExcelReportApplication
 
         private void comboBoxReportSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int select = comboBoxReportSelect.SelectedIndex;
+            int select = Get_comboBoxReportSelect_SelectedIndex();
             UpdateUIAfterReportTypeChanged(select);
             label_issue.Text = ReportGenerator.GetLabelTextArray(select)[0];
             label_tc.Text = ReportGenerator.GetLabelTextArray(select)[1];
