@@ -20,8 +20,6 @@ namespace ExcelReportApplication
 
         public void LoadConfigAll()
         {
-            int int_value;
-
             // config for default filename at MainForm
             this.txtBugFile.Text = XMLConfig.ReadAppSetting_String("workbook_BUG_Jira");
             this.txtTCFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Jira");
@@ -753,9 +751,9 @@ namespace ExcelReportApplication
                     // need to rework
                     if (!btnSelectExcelTestFile_Clicked)
                         txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("workbook_StandardTestReport");
-                    break;
                     if (!btnSelectReportFile_Clicked)
                         txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                    break;
                 default:
                     break;
             }
