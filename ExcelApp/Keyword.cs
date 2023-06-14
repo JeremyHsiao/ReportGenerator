@@ -256,7 +256,7 @@ namespace ExcelReportApplication
 
         public static Boolean Auto_Correct_Sheetname = false;
 
-        static public List<TestPlanKeyword> ListKeyword(TestPlan plan)
+        static public List<TestPlanKeyword> ListKeyword_SingleReport(TestPlan plan)
         {
             //
             // 2. Find out Printable Area
@@ -370,27 +370,27 @@ namespace ExcelReportApplication
                 test_plan_status = plan.OpenDetailExcel();
                 if (test_plan_status == TestPlan.ExcelStatus.OK)
                 {
-                    List<TestPlanKeyword> plan_keyword = ListKeyword(plan);
+                    List<TestPlanKeyword> plan_keyword = ListKeyword_SingleReport(plan);
                     plan.CloseDetailExcel();
                     if (plan_keyword != null)
                     {
                         if (plan_keyword.Count() > 0)
                         {
                             ret.AddRange(plan_keyword);
-                            fail_log.SetFlagOK(openfileOK: true, findWorksheetOK: true, findAnyKeyword: true);
+                            fail_log.SetFlagOK(excelfilenameOK:true, openfileOK: true, findWorksheetOK: true, findAnyKeyword: true);
                             // not adding ok report log at the moment
                             //ret_not_report_log.Add(fail_log);
                         }
                         else
                         {
-                            fail_log.SetFlagOK(openfileOK: true, findWorksheetOK: true);
+                            fail_log.SetFlagOK(excelfilenameOK: true, openfileOK: true, findWorksheetOK: true);
                             fail_log.SetFlagFail(findNoKeyword: true);
                             ret_not_report_log.Add(fail_log);
                         }
                     }
                     else // (null) 
                     {
-                        fail_log.SetFlagOK(openfileOK: true, findWorksheetOK: true);
+                        fail_log.SetFlagOK(excelfilenameOK: true, openfileOK: true, findWorksheetOK: true);
                         fail_log.SetFlagFail(findNoKeyword: true, otherFailure: true);
                         ret_not_report_log.Add(fail_log);
                         ConsoleWarning("Test Plan null keyword list Error occurred:" + plan.ExcelSheet + "@" + plan.ExcelFile);
@@ -404,7 +404,7 @@ namespace ExcelReportApplication
                     }
                     else if (test_plan_status == TestPlan.ExcelStatus.ERR_OpenDetailExcel_Find_Worksheet)
                     {
-                        fail_log.SetFlagOK(openfileOK: true); 
+                        fail_log.SetFlagOK(excelfilenameOK: true, openfileOK: true); 
                         fail_log.SetFlagFail(findWorksheetFail: true);
                     }
                     else
@@ -1088,12 +1088,12 @@ namespace ExcelReportApplication
                 foreach (NotReportFileRecord item in ReportGenerator.excel_not_report_log)
                 {
                     String path, filename, expected_sheetname;
-                    Boolean openfileOK, findWorksheetOK, findAnyKeyword, otherFailure;
+                    Boolean excelfilenameOK, openfileOK, findWorksheetOK, findAnyKeyword, otherFailure;
 
-                    item.GetRecord(out path, out filename, out expected_sheetname, out openfileOK, out findWorksheetOK,
+                    item.GetRecord(out path, out filename, out expected_sheetname, out excelfilenameOK, out openfileOK, out findWorksheetOK,
                             out findAnyKeyword, out otherFailure);
 
-                    if ((openfileOK == true) && (findWorksheetOK == false) && (otherFailure == false))
+                    if ((excelfilenameOK == true) && (openfileOK == true) && (findWorksheetOK == false) && (otherFailure == false))
                     {
                         String full_filename = Storage.GetValidFullFilename(path,filename);
                         // Open Excel and find the sheet
@@ -1145,10 +1145,26 @@ namespace ExcelReportApplication
         //
         static public List<TestPlanKeyword> ListAllDetailedTestPlanKeywordTask(String report_root_dir, String output_filename)
         {
-            // List all files under report_root_dir.
+            // Clear keyword log report data-table
+            ReportGenerator.excel_not_report_log.Clear();
+            // 0.1 List all files under report_root_dir.
             List<String> file_list = Storage.ListFilesUnderDirectory(report_root_dir);
-            // filename check to exclude non-report files.
+            // 0.2 filename check to exclude non-report files.
             List<String> report_filename = Storage.FilterFilename(file_list);
+            // 0.3 output files in file_list but not in report_filename into Not_Keyword_File
+            foreach (String report_file in report_filename)
+            {
+                file_list.Remove(report_file);
+            }
+            foreach (String NG_file in file_list)
+            {
+                String path, filename;
+                path = Storage.GetDirectoryName(NG_file);
+                filename = Storage.GetFileName(NG_file);
+                NotReportFileRecord nrfr_item = new NotReportFileRecord(path, filename);
+                nrfr_item.SetFlagFail(excelfilenamefail: true);
+                ReportGenerator.excel_not_report_log.Add(nrfr_item);
+            }
 
             //
             // 1. Create a temporary test plan (do_plan) to include all report files 
@@ -1164,7 +1180,6 @@ namespace ExcelReportApplication
             //
             // 2.1. Find keyword for all selected file (as listed in temprary test plan)
             //
-            ReportGenerator.excel_not_report_log.Clear();
             List<TestPlanKeyword> keyword_list = ListAllKeyword(do_plan);
 
             // Output keyword list log excel here.
@@ -1179,9 +1194,9 @@ namespace ExcelReportApplication
                 foreach (NotReportFileRecord item in ReportGenerator.excel_not_report_log)
                 {
                     String path, filename, expected_sheetname;
-                    Boolean openfileOK, findWorksheetOK, findAnyKeyword, otherFailure;
+                    Boolean excelfilenameOK, openfileOK, findWorksheetOK, findAnyKeyword, otherFailure;
 
-                    item.GetRecord(out path, out filename, out expected_sheetname, out openfileOK, out findWorksheetOK,
+                    item.GetRecord(out path, out filename, out expected_sheetname, out excelfilenameOK, out openfileOK, out findWorksheetOK,
                             out findAnyKeyword, out otherFailure);
 
                     if ((openfileOK == true) && (findWorksheetOK == false) && (otherFailure == false))

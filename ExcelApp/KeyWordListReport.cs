@@ -10,6 +10,7 @@ namespace ExcelReportApplication
         private String path;
         private String filename;
         private String expected_sheetname;
+        private Boolean excelfilenameOK;
         private Boolean openfileOK;
         private Boolean findWorksheetOK;
         private Boolean findAnyKeyword;
@@ -52,12 +53,13 @@ namespace ExcelReportApplication
         //}
 
         //
-        public NotReportFileRecord() { this.path = this.filename = ""; this.openfileOK = false; this.otherFailure = false; }
+        public NotReportFileRecord() { this.path = this.filename = ""; this.excelfilenameOK = this.openfileOK = this.otherFailure = false; }
         public NotReportFileRecord(String path = "", String filename = "", String expected_sheetname = "")
         {
             this.path = path;
             this.filename = filename;
-            this.expected_sheetname = expected_sheetname; 
+            this.expected_sheetname = expected_sheetname;
+            this.excelfilenameOK = false;
             this.openfileOK = false;
             this.otherFailure = false;
         }
@@ -75,55 +77,59 @@ namespace ExcelReportApplication
         //                            Boolean sheetnameOK, Boolean itemOK, Boolean captionOK, Boolean otherFailure=false)
         //{ SetRecord(path, filename, filenameOK, sheetnameOK, itemOK, captionOK, otherFailure); }
 
-        // only set fail flag, don't change if it doesn't fail
-        public void SetFlagFail(Boolean openfileFail = false, Boolean findWorksheetFail = false, Boolean findNoKeyword = false,
-                                Boolean otherFailure = false)
+        // only set fail flag, don't change if fail_option isn't set to true
+        public void SetFlagFail(Boolean excelfilenamefail = false, Boolean openfileFail = false, Boolean findWorksheetFail = false,
+                                Boolean findNoKeyword = false, Boolean otherFailure = false)
         {
+            if (excelfilenamefail) { this.excelfilenameOK = false; }
             if (openfileFail) { this.openfileOK = false; }
             if (findWorksheetFail) { this.findWorksheetOK = false; }
             if (findNoKeyword) { this.findAnyKeyword = false; }
             if (otherFailure) { this.otherFailure = true; }
         }
-        // only set OK flag, don't change if it doesn't OK
-        public void SetFlagOK(Boolean openfileOK = false, Boolean findWorksheetOK = false, Boolean findAnyKeyword = false,
-                              Boolean otherAllOK = false)
+        // only set OK flag, don't change if OK_option isn't set to true
+        public void SetFlagOK(Boolean excelfilenameOK = false, Boolean openfileOK = false, Boolean findWorksheetOK = false, 
+                                Boolean findAnyKeyword = false, Boolean otherAllOK = false)
         {
+            if (excelfilenameOK) { this.excelfilenameOK = true; }
             if (openfileOK) { this.openfileOK = true; }
             if (findWorksheetOK) { this.findWorksheetOK = true; }
             if (findAnyKeyword) { this.findAnyKeyword = true; }
             if (otherAllOK) { this.otherFailure = false; }
         }
-        public void GetFlagValue(out Boolean openfileOK, out Boolean findWorksheetOK, out Boolean findAnyKeyword,
-                                out Boolean otherFailure)
+        public void GetFlagValue(out Boolean excelfilenameOK, out Boolean openfileOK, out Boolean findWorksheetOK, 
+                                out Boolean findAnyKeyword, out Boolean otherFailure)
         {
+            excelfilenameOK = this.excelfilenameOK;
             openfileOK = this.openfileOK;
             findWorksheetOK = this.findWorksheetOK;
             findAnyKeyword = this.findAnyKeyword;
             otherFailure = this.otherFailure;
         }
-        public void SetFlagValue(Boolean openfileOK, Boolean findWorksheetOK, Boolean findAnyKeyword, Boolean otherFailure = false)
+        public void SetFlagValue(Boolean excelfilenameOK, Boolean openfileOK, Boolean findWorksheetOK, Boolean findAnyKeyword, Boolean otherFailure = false)
         {
+            this.excelfilenameOK = excelfilenameOK;
             this.openfileOK = openfileOK;
             this.findWorksheetOK = findWorksheetOK;
             this.findAnyKeyword = findAnyKeyword;
             this.otherFailure = otherFailure;
         }
-        public void GetRecord(out String path, out String filename, out String expected_sheetname, out Boolean openfileOK, out Boolean findWorksheetOK,
-                            out Boolean findAnyKeyword, out Boolean otherFailure)
+        public void GetRecord(out String path, out String filename, out String expected_sheetname, out Boolean excelfilenameOK, 
+                            out Boolean openfileOK, out Boolean findWorksheetOK, out Boolean findAnyKeyword, out Boolean otherFailure)
         {
             path = this.path;
             filename = this.filename;
             expected_sheetname = this.expected_sheetname;
-            this.GetFlagValue(out openfileOK, out findWorksheetOK, out findAnyKeyword, out otherFailure);
+            this.GetFlagValue(out excelfilenameOK, out openfileOK, out findWorksheetOK, out findAnyKeyword, out otherFailure);
         }
 
-        public void SetRecord(String path, String filename, String expected_sheetname, Boolean openfileOK, Boolean findWorksheetOK, Boolean findAnyKeyword,
-                                Boolean otherFailure = false)
+        public void SetRecord(String path, String filename, String expected_sheetname, Boolean excelfilenameOK, Boolean openfileOK, 
+                            Boolean findWorksheetOK, Boolean findAnyKeyword, Boolean otherFailure = false)
         {
             this.path = path;
             this.filename = filename;
-            this.expected_sheetname = expected_sheetname; 
-            this.SetFlagValue(openfileOK, findWorksheetOK, findAnyKeyword, otherFailure);
+            this.expected_sheetname = expected_sheetname;
+            this.SetFlagValue(excelfilenameOK, openfileOK, findWorksheetOK, findAnyKeyword, otherFailure);
         }
     }
 
@@ -151,6 +157,7 @@ namespace ExcelReportApplication
         {
             "Filepath",
             "Filename",
+            "FilenameOK",
             "OpenFileOK",
             "FindWorksheetOK",
             "FindAnyKeyword",
@@ -216,44 +223,59 @@ namespace ExcelReportApplication
             foreach (NotReportFileRecord not_keyword_report in not_keyword_report_list)
             {
                 String path, filename, expected_sheetname;
-                Boolean openfileOK, findWorksheetOK, findAnyKeyword, otherFailure;
+                Boolean excelfilenameOK,openfileOK, findWorksheetOK, findAnyKeyword, otherFailure;
 
-                not_keyword_report.GetRecord(out path, out filename, out expected_sheetname, out openfileOK, out findWorksheetOK,
-                            out findAnyKeyword, out otherFailure);
+                not_keyword_report.GetRecord(out path, out filename, out expected_sheetname, out excelfilenameOK, out openfileOK, 
+                                            out findWorksheetOK, out findAnyKeyword, out otherFailure);
 
                 row_list = new List<Object>();
                 //"Filepath",
                 row_list.Add(path);
                 //"Filename",
                 row_list.Add(filename);
-                //"OpenFileOK",
-                if(!openfileOK)
+                //"FilenameOK"
+                if (!excelfilenameOK)
                 {
                     row_list.Add("X");
+                    row_list.Add("-");
                     row_list.Add("-");
                     row_list.Add("-");
                 }
                 else
                 {
                     row_list.Add(" ");
-                    if(!findWorksheetOK)
+                    //"OpenFileOK",
+                    if (!openfileOK)
                     {
                         row_list.Add("X");
                         row_list.Add("-");
-                    }   
+                        row_list.Add("-");
+                    }
                     else
                     {
                         row_list.Add(" ");
-                        if(!findAnyKeyword)
+                        //"FindWorksheetOK",
+                        if (!findWorksheetOK)
                         {
                             row_list.Add("X");
+                            row_list.Add("-");
                         }
                         else
                         {
                             row_list.Add(" ");
+                            //"FindAnyKeyword"
+                            if (!findAnyKeyword)
+                            {
+                                row_list.Add("X");
+                            }
+                            else
+                            {
+                                row_list.Add(" ");
+                            }
                         }
                     }
                 }
+                //"AnyOtherFailure"
                 if(otherFailure)
                 {
                     row_list.Add("X");
