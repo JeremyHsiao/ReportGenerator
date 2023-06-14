@@ -37,7 +37,7 @@ namespace ExcelReportApplication
 
         public static ReportType[] ReportSelectableTable =
         {
-            //ReportType.FullIssueDescription_TC,
+            ReportType.FullIssueDescription_TC,
             //ReportType.FullIssueDescription_Summary,
             //ReportType.StandardTestReportCreation,
             ReportType.KeywordIssue_Report_SingleFile,
