@@ -283,7 +283,9 @@ namespace ExcelReportApplication
                 source_dir = FileOrDirectoryName;
             }
             // filename check to exclude non-report files.
-            List<String> report_list = Storage.FilterFilename(file_list);
+            //List<String> report_list = Storage.FilterFilename(file_list);
+            // NOTE: FilterFilename() execution is now relocated within KeywordIssueGenerationTaskV4()
+            List<String> report_list = file_list;
 
             // This issue description is needed for report purpose
             //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);

@@ -841,8 +841,29 @@ namespace ExcelReportApplication
         //    return bRet;
         //}
 
-        static public bool KeywordIssueGenerationTaskV4(List<String> report_filename, String src_dir, String dest_dir = "")
+        static public bool KeywordIssueGenerationTaskV4(List<String> file_list, String src_dir, String dest_dir = "")
         {
+            // Clear keyword log report data-table
+            ReportGenerator.excel_not_report_log.Clear();
+            // 0.1 List all files under report_root_dir.
+            // This is done outside and result is the input paramemter file_list
+            // 0.2 filename check to exclude non-report files.
+            List<String> report_filename = Storage.FilterFilename(file_list);
+            // 0.3 output files in file_list but not in report_filename into Not_Keyword_File
+            foreach (String report_file in report_filename)
+            {
+                file_list.Remove(report_file);
+            }
+            foreach (String NG_file in file_list)
+            {
+                String path, filename;
+                path = Storage.GetDirectoryName(NG_file);
+                filename = Storage.GetFileName(NG_file);
+                NotReportFileRecord nrfr_item = new NotReportFileRecord(path, filename);
+                nrfr_item.SetFlagFail(excelfilenamefail: true);
+                ReportGenerator.excel_not_report_log.Add(nrfr_item);
+            }
+
             //
             // 1. Create a temporary test plan (do_plan) to include all report files 
             //
@@ -857,7 +878,6 @@ namespace ExcelReportApplication
             //
             // 2.1. Find keyword for all selected file (as listed in temprary test plan)
             //
-            ReportGenerator.excel_not_report_log.Clear();
             List<TestPlanKeyword> keyword_list = ListAllKeyword(do_plan);
             
             // Output keyword list log excel here.
