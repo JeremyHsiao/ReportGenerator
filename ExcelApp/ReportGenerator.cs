@@ -211,7 +211,7 @@ namespace ExcelReportApplication
             {
                 "Jira Issue File", 
                 "Test Case File",
-                "Report Path",
+                "Report Output Path",
                 "Report DB Path",
             },
 

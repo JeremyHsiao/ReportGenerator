@@ -105,6 +105,52 @@ namespace ExcelReportApplication
             return true;
         }
 
+        public static bool CopyTestReportbyTestCase(String report_Src, String output_report_dir)
+        {
+            // Full file name exist checked before executing task
+
+            String input_report_dir = report_Src;
+
+            // test_plan (sample) dir must exist
+            if (!Storage.DirectoryExists(input_report_dir)) { return false; }  // should exist
+
+            // output test plan root_dir must be inexist so that no overwritten
+            if (Storage.DirectoryExists(output_report_dir)) { return false; } // shouln't exist
+
+            // Generate a list of all possible excel report files under input_report_dir -- SET A
+            
+            // Generate a list of excel report to be copied according to test-case file -- SET B
+
+            // Copy files which belong to intersection (SET A, SET B) and record it (it is named SET A&B)
+
+            // Record files which is availble in SET B nut not in SET A -- SET (B-A&B)
+            // should be copied but not (because files don't exist in source
+
+            // Record files which is availble in SET A but not in SET B -- SET (A-A&B)
+            // files are not used in this time
+
+            // go through all test-case and copy report files.
+            foreach (TestCase tc in ReportGenerator.global_testcase_list)
+            {
+                String path = tc.Group, filename = tc.Summary + ".xlsx";
+                String src_dir= report_Src + @"\" + path,
+                       dest_dir = output_report_dir + @"\" + path;
+                String src_file = Storage.GetValidFullFilename(src_dir,filename),
+                      dest_file = Storage.GetValidFullFilename(output_report_dir,filename);
+
+               if (Storage.FileExists(src_file))
+               {
+                   if (!Storage.DirectoryExists(output_report_dir))
+                   {
+                       Storage.CreateDirectory(output_report_dir, auto_parent_dir: true);
+                   }
+                   Storage.Copy(src_file, dest_file);
+               }
+            }
+
+            return true;
+        }
+
 
         static private void ConsoleWarning(String function, int row)
         {

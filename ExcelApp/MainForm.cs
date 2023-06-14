@@ -234,6 +234,17 @@ namespace ExcelReportApplication
             return TestReport.CreateStandardTestReportTask(main_file);
         }
 
+        private bool Execute_CreateTestReportbyTestCaseTask(String report_src_dir, String output_report_dir)
+        {
+            if (!Storage.FileExists(report_src_dir))
+            {
+                // protection check
+                return false;
+            }
+
+            return TestReport.CopyTestReportbyTestCase(report_src_dir, output_report_dir);
+        }
+
         private bool Execute_KeywordIssueGenerationTask(String FileOrDirectoryName, Boolean IsDirectory = false)
         {
             List<String> file_list = new List<String>();
@@ -529,11 +540,21 @@ namespace ExcelReportApplication
                     bRet = Execute_WriteIssueDescriptionToTC(txtTCFile.Text, txtReportFile.Text, txtStandardTestReport.Text);
                     break;
                 case ReportGenerator.ReportType.TC_TestReportCreation:
-                    // need TC
-                    // need report source directory
-                    // need report destination directory
+                    UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
+                    UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
+                    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
-                    bRet = Execute_CreateStandardTestReportTask(txtStandardTestReport.Text);
+                    // based on tc, create report structure
+                    if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+                    String dest_dir = Storage.GetFullPath(txtReportFile.Text),
+                           src_dir = Storage.GetFullPath(txtStandardTestReport.Text);
+                    bRet = Execute_CreateTestReportbyTestCaseTask(src_dir, dest_dir);
+                    // update report according to jira bug
+                    if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                    // to-be-implemented
+
+                    // update judgement and header
+                    // to-be-implemented
                     break;
                 default:
                     // shouldn't be here.
