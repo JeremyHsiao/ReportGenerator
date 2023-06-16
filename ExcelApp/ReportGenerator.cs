@@ -233,15 +233,15 @@ namespace ExcelReportApplication
             {
                 "Jira Issue File", 
                 "Test Case File",
-                "Report Path",
-                "Main Test Plan",
+                "Output Template",
+                "Test Report Path",
             },
             new String[] 
             {
                 "Jira Issue File", 
                 "Test Case File",
                 "Report Output Path",
-                "Report DB Path",
+                "Report Source Path",
             },
 
         };
@@ -425,9 +425,18 @@ namespace ExcelReportApplication
 
                 if (report_list.ContainsKey(worksheet_name))
                 {
-                    String workbook_filename = report_list[worksheet_name];
-                    Object judgement = GetJudgementValue(workbook_filename, worksheet_name);
-                    ExcelAction.SetTestCaseCell(excel_row_index, status_col, judgement, IsTemplate: true);
+                    String current_status = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, status_col, IsTemplate: true);
+                    if (current_status == "Finished")
+                    {
+                        // If current_status is "Finished" in excel report, it will be updated according to judgement of corresponding test report.
+                        String workbook_filename = report_list[worksheet_name];
+                        String judgement_str;
+                        // If judgement value is available, update it.
+                        if (GetJudgementValue(workbook_filename, worksheet_name, out judgement_str))
+                        {
+                            ExcelAction.SetTestCaseCell(excel_row_index, status_col, judgement_str, IsTemplate: true);
+                        }
+                    }
                 }
             }
 
@@ -443,9 +452,10 @@ namespace ExcelReportApplication
         }
 
         // This function is used to get judgement result (only read and no update to report) of test report
-        static public String GetJudgementValue(String report_workbook, String report_worksheet)
+        static public Boolean GetJudgementValue(String report_workbook, String report_worksheet, out String judgement_str)
         {
-            String ret_str = "Fail";
+            Boolean b_ret = false;
+            String ret_str = ""; // default returning judgetment_str;
 
             // 1. Open Excel and find the sheet
             // File exist check is done outside
@@ -453,24 +463,39 @@ namespace ExcelReportApplication
             if (wb_judgement == null)
             {
                 ConsoleWarning("ERR: Open workbook in GetJudgementValue: " + report_workbook);
-                return ret_str;
-            }
-
-            // 2 Open worksheet
-            Worksheet ws_judgement = ExcelAction.Find_Worksheet(wb_judgement, report_worksheet);
-            if (ws_judgement == null)
-            {
-                ConsoleWarning("ERR: Open worksheet in V4: " + report_workbook + " sheet: " + report_worksheet);
+                judgement_str = ret_str;
+                b_ret = false;
             }
             else
             {
-                // 3. Get Judgement value
-                Object obj = ExcelAction.GetCellValue(ws_judgement, KeywordReport.Judgement_at_row, KeywordReport.Judgement_at_col);
-                if (obj != null) { ret_str = (String)obj; }
-            }
+                // 2 Open worksheet
+                Worksheet ws_judgement = ExcelAction.Find_Worksheet(wb_judgement, report_worksheet);
+                if (ws_judgement == null)
+                {
+                    ConsoleWarning("ERR: Open worksheet in V4: " + report_workbook + " sheet: " + report_worksheet);
+                    judgement_str = ret_str;
+                    b_ret = false;
+                }
+                else
+                {
+                    // 3. Get Judgement value
+                    Object obj = ExcelAction.GetCellValue(ws_judgement, KeywordReport.Judgement_at_row, KeywordReport.Judgement_at_col);
+                    if (obj != null)
+                    {
+                        judgement_str = (String)obj;
+                        b_ret = false;
+                    }
+                    else
+                    {
+                        judgement_str = ret_str;
+                        b_ret = true;
+                    }
+                }
 
-            ExcelAction.CloseExcelWorkbook(wb_judgement);
-            return ret_str;
+                // Close excel if open succeeds
+                ExcelAction.CloseExcelWorkbook(wb_judgement);
+            }
+            return b_ret;
         }
 
         static private void ConsoleWarning(String function, int row)
