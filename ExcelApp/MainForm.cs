@@ -246,9 +246,10 @@ namespace ExcelReportApplication
 
         private bool Execute_CreateTestReportbyTestCaseTask(String report_src_dir, String output_report_dir)
         {
-            if (!Storage.FileExists(report_src_dir))
+            if (!Storage.DirectoryExists(report_src_dir) || !Storage.DirectoryExists(output_report_dir))
             {
                 // protection check
+                // source_dir & output_dir must exist.
                 return false;
             }
 
@@ -372,6 +373,7 @@ namespace ExcelReportApplication
             switch (ReportGenerator.ReportTypeFromInt(report_index))
             {
                 case ReportGenerator.ReportType.FullIssueDescription_TC_report_judgement:
+                case ReportGenerator.ReportType.TC_TestReportCreation:
                     //case ReportGenerator.ReportType.FindAllKeywordInReport:
                     sel_file = false;  // Here select directory instead of file
                     break;
@@ -395,6 +397,7 @@ namespace ExcelReportApplication
             {
                 case ReportGenerator.ReportType.KeywordIssue_Report_Directory:
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
+                case ReportGenerator.ReportType.TC_TestReportCreation:
                     sel_file = false;  // Here select directory instead of file
                     break;
             }
@@ -691,9 +694,9 @@ namespace ExcelReportApplication
                     break;
                 case ReportGenerator.ReportType.TC_TestReportCreation:
                     // need to rework
-                    SetEnable_IssueFile(false);
-                    SetEnable_TCFile(false);
-                    SetEnable_OutputFile(false);
+                    SetEnable_IssueFile(true);
+                    SetEnable_TCFile(true);
+                    SetEnable_OutputFile(true);
                     SetEnable_StandardReport(true);
                     break;
                 default:

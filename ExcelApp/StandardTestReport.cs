@@ -46,7 +46,7 @@ namespace ExcelReportApplication
                 tp.ExcelFile = dst;
                 tp.ExcelSheet = sheet;
             }
- 
+
             return ret_testplan;
         }
 
@@ -56,13 +56,13 @@ namespace ExcelReportApplication
             if (do_plan == null) { return; }
             if (!Storage.DirectoryExists(out_root)) { return; }
 
-            List<String> folder = new List<String> ();
+            List<String> folder = new List<String>();
             foreach (TestPlan tp in do_plan)
             {
                 String dst = out_root + @"\" + tp.ExcelFile;
                 String dst_dir = Storage.GetDirectoryName(dst);
-                if (!Storage.DirectoryExists(dst_dir)) 
-                { 
+                if (!Storage.DirectoryExists(dst_dir))
+                {
                     Storage.CreateDirectory(dst_dir);
                 }
 
@@ -115,42 +115,91 @@ namespace ExcelReportApplication
             if (!Storage.DirectoryExists(input_report_dir)) { return false; }  // should exist
 
             // output test plan root_dir must be inexist so that no overwritten
-            if (Storage.DirectoryExists(output_report_dir)) { return false; } // shouln't exist
+            if (!Storage.DirectoryExists(output_report_dir)) { return false; } // should exist
 
-            // Generate a list of all possible excel report files under input_report_dir -- SET A
-            
-            // Generate a list of excel report to be copied according to test-case file -- SET B
+            // Generate a list of all possible excel report files under input_report_dir -- SET A (all_report_list)
+            List<String> src_dir_file_list = Storage.ListFilesUnderDirectory(report_Src);
+            List<String> all_report_list = Storage.FilterFilename(src_dir_file_list);
 
-            // Copy files which belong to intersection (SET A, SET B) and record it (it is named SET A&B)
+            // Report to be copied according to test-case file -- SET B (src_report_list)
+            List<String> src_report_list = new List<String>();
+            // Files will be copied -- the intersection (SET A, SET B) (SET A&B report_can_be_copied_list_src)
+            List<String> report_can_be_copied_list_src = new List<String>();
+            List<String> report_can_be_copied_list_dest = new List<String>();
+            // Files should be copied (listed in B) but not in A (because files don't exist in source SET A -- (B-A&B) report_not_available_list
+            List<String> report_not_available_list = new List<String>();
+            // files in A are not used in B this time -- SET (A-A&B) report_not_used_list
+            List<String> report_not_used_list = new List<String>();
 
-            // Record files which is availble in SET B nut not in SET A -- SET (B-A&B)
-            // should be copied but not (because files don't exist in source
-
-            // Record files which is availble in SET A but not in SET B -- SET (A-A&B)
-            // files are not used in this time
-
-            // go through all test-case and copy report files.
+            // Set B is generated
+            // Because A is also available, we can use it to generate A&B (check if this B is also in A) and B-A&B (check if this B is NOT in A)
             foreach (TestCase tc in ReportGenerator.global_testcase_list)
             {
+                // go through all test-case and copy report files.
                 String path = tc.Group, filename = tc.Summary + ".xlsx";
-                String src_dir= report_Src + @"\" + path,
-                       dest_dir = output_report_dir + @"\" + path;
-                String src_file = Storage.GetValidFullFilename(src_dir,filename),
-                      dest_file = Storage.GetValidFullFilename(output_report_dir,filename);
-
-               if (Storage.FileExists(src_file))
-               {
-                   if (!Storage.DirectoryExists(output_report_dir))
-                   {
-                       Storage.CreateDirectory(output_report_dir, auto_parent_dir: true);
-                   }
-                   Storage.Copy(src_file, dest_file);
-               }
+                String src_dir = Storage.CominePath(report_Src, path);
+                String src_file = Storage.GetValidFullFilename(src_dir, filename);
+                src_report_list.Add(src_file);          // item in SET B
+                if (all_report_list.IndexOf(src_file) >= 0)
+                {
+                    // also in A
+                    report_can_be_copied_list_src.Add(src_file);  // for A&B
+                    String dest_dir = Storage.CominePath(output_report_dir, path);
+                    String dest_file = Storage.GetValidFullFilename(dest_dir, filename);
+                    report_can_be_copied_list_dest.Add(dest_file);
+                }
+                else
+                {
+                    // but not in A    
+                    report_not_available_list.Add(src_file);        // for B-A&B
+                }
             }
+            // SET (A-A&B) report_not_used_list
+            report_not_used_list = all_report_list.Except(report_can_be_copied_list_src).ToList();
+            // // Iterate A and add whatever not in A&B
+            // foreach (String str in all_report_list)
+            // {
+            //     if(report_can_be_copied_list_src.IndexOf(str)<0)       // not in A&B
+            //     {
+            //         report_not_used_list.Add(str);
+            //     }
+            //}
 
+            // copy report files.
+            List<String> report_actually_copied_list_src = new List<String>();
+            List<String> report_actually_copied_list_dest = new List<String>();
+            for(int index = 0; index < report_can_be_copied_list_src.Count; index++)
+            {
+                String src_file = report_can_be_copied_list_src[index];
+                if (Storage.FileExists(src_file))
+                {
+                    String dest_file = report_can_be_copied_list_dest[index];
+                    string dest_path = Storage.GetDirectoryName(dest_file);
+                    if (!Storage.DirectoryExists(dest_path))
+                    {
+                        Storage.CreateDirectory(dest_path, auto_parent_dir: true);
+                    }
+                    Storage.Copy(src_file, dest_file);
+                    report_actually_copied_list_src.Add(src_file);
+                    report_actually_copied_list_dest.Add(dest_file);
+                }
+                else
+                {
+                    // cannot copy
+                }
+            }
             return true;
         }
 
+        // Source report
+        // Destination report (also update sheetname)
+        // new report title
+        // update header
+        // clear judgement
+        public static bool CopyTestReport(List<String> src_files, List<String> dest_files)
+        {
+            return false;
+        }
 
         static private void ConsoleWarning(String function, int row)
         {

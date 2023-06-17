@@ -372,10 +372,36 @@ namespace ExcelReportApplication
             return out_list;
         }
 
+        //static public String ReplaceDirectory(String filename_to_be_replaced, String src_dir, String dest_dir)
+        //{
+        //    filename_to_be_replaced.Replace(src_dir, dest_dir);
+        //    return filename_to_be_replaced;
+        //}
+
         static public String GetValidFullFilename(String path, String filename)
         {
-            String combined = Path.Combine(path, Path.GetFileName(filename));
-            return combined;
+            try
+            {
+                String combined = Path.Combine(path, Path.GetFileName(filename));
+                return combined;
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+        static public String CominePath(String absolute_path, String relative_path)
+        {
+            try
+            {
+                String combined = Path.Combine(absolute_path, relative_path);
+                return combined;
+            }
+            catch
+            {
+                return "";
+            }
         }
     }
 }
