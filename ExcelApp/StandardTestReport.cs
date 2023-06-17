@@ -7,12 +7,29 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace ExcelReportApplication
 {
+    class TestReportHeader
+    {
+        private String title;
+        private String model_name;
+        private String panel_module;
+        private String tcon_board;
+        //
+        //
+        private String sw_version;
+        private String test_stage;
+        private String test_period;
+        private String judgement;
+    }
+
     class TestReport
     {
         public static int PassCnt_at_row = 21, PassCnt_at_col = 5;
         public static int FailCnt_at_row = 21, FailCnt_at_col = 7;
         public static int TotalCnt_at_row = 21, TotalCnt_at_col = 9;
-        public static int Judgement_at_row = 9, Judgement_at_col = 4;
+        public static int SW_Version_at_row = 7, SW_Version_at_col = ('J'-'A' + 1 );
+        public static int Period_Start_at_row = 8, Period_Start_at_col = ('L' - 'A' + 1);
+        public static int Period_End_at_row = 8, Period_End_at_col = ('M' - 'A' + 1);
+        public static int Judgement_at_row = 9, Judgement_at_col = ('D' - 'A' + 1);
         public static int Judgement_string_at_row = 9, Judgement_string_at_col = 2;
 
         static List<TestPlan> global_tp = new List<TestPlan>();
@@ -174,26 +191,35 @@ namespace ExcelReportApplication
             // copy report files.
             List<String> report_actually_copied_list_src = new List<String>();
             List<String> report_actually_copied_list_dest = new List<String>();
-            for(int index = 0; index < report_can_be_copied_list_src.Count; index++)
-            {
-                String src_file = report_can_be_copied_list_src[index];
-                if (Storage.FileExists(src_file))
-                {
-                    String dest_file = report_can_be_copied_list_dest[index];
-                    string dest_path = Storage.GetDirectoryName(dest_file);
-                    if (!Storage.DirectoryExists(dest_path))
-                    {
-                        Storage.CreateDirectory(dest_path, auto_parent_dir: true);
-                    }
-                    Storage.Copy(src_file, dest_file);
-                    report_actually_copied_list_src.Add(src_file);
-                    report_actually_copied_list_dest.Add(dest_file);
-                }
-                else
-                {
-                    // cannot copy
-                }
-            }
+            Dictionary<String,String> report_copied = CopyTestReport(report_can_be_copied_list_src, report_can_be_copied_list_dest);
+            report_actually_copied_list_src = report_copied.Keys.ToList();
+            report_actually_copied_list_dest = report_copied.Values.ToList();
+            //for(int index = 0; index < report_can_be_copied_list_src.Count; index++)
+            //{
+            //    String src_file = report_can_be_copied_list_src[index];
+            //    if (Storage.FileExists(src_file))
+            //    {
+            //        String dest_file = report_can_be_copied_list_dest[index];
+            //        string dest_path = Storage.GetDirectoryName(dest_file);
+            //        if (!Storage.DirectoryExists(dest_path))
+            //        {
+            //            Storage.CreateDirectory(dest_path, auto_parent_dir: true);
+            //        }
+            //        if (Storage.Copy(src_file, dest_file, overwrite: true))
+            //        {
+            //            report_actually_copied_list_src.Add(src_file);
+            //            report_actually_copied_list_dest.Add(dest_file);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        // cannot copy
+            //    }
+            //}
+
+            // Clear Judgement of copied test_report
+            UpdateHeader(report_actually_copied_list_dest, Judgement:" ");
+
             return true;
         }
 
@@ -202,10 +228,91 @@ namespace ExcelReportApplication
         // new report title
         // update header
         // clear judgement
-        public static bool CopyTestReport(List<String> src_files, List<String> dest_files)
+
+        public static Boolean UpdateHeader(List<String> report_list, String SW_Version = null, String Test_Start= null, String Test_End = null, 
+                                        String Judgement = null, String Template = null)
         {
-            return false;
+            // Create a temporary test plan to includes all files listed in List<String> report_filename
+            List<TestPlan> do_plan = TestPlan.CreateTempPlanFromFileList(report_list);
+
+            foreach (TestPlan plan in do_plan)
+            {
+                String path = Storage.GetDirectoryName(plan.ExcelFile);
+                String filename = Storage.GetFileName(plan.ExcelFile);
+                String sheet_name = plan.ExcelSheet;
+                TestPlan.ExcelStatus test_plan_status;
+
+                test_plan_status = plan.OpenDetailExcel(ReadOnly:false);
+                if (test_plan_status == TestPlan.ExcelStatus.OK)
+                {
+                    // to-be-finished.
+                    if (Template != null)
+                    {
+
+                    }
+                    else
+                    {
+                        if (SW_Version != null)
+                        {
+                            ExcelAction.SetCellValue(plan.TestPlanWorksheet, SW_Version_at_row, SW_Version_at_col, Judgement);
+                        }
+                        if (Test_Start != null)
+                        {
+                            ExcelAction.SetCellValue(plan.TestPlanWorksheet, Period_Start_at_row, Period_Start_at_col, Test_Start);
+                        }
+                        if (Test_End != null)
+                        {
+                            ExcelAction.SetCellValue(plan.TestPlanWorksheet, Period_End_at_row, Period_End_at_col, Test_End);
+                        }
+                        if (Judgement != null)
+                        {
+                            ExcelAction.SetCellValue(plan.TestPlanWorksheet, Judgement_at_row, Judgement_at_col, Judgement);
+                        }
+                    }
+                    plan.SaveDetailExcel(plan.ExcelFile);
+                    plan.CloseDetailExcel();
+                }
+            }
+            return true;
         }
+
+        public static Dictionary<String, String> CopyTestReport(List<String> src_list, List<String> dest_list)
+        {
+            var dic = src_list.Zip(dest_list, (k, v) => new { k, v }).ToDictionary(x => x.k, x => x.v);
+            Dictionary<String, String> Ret_copied_files = CopyTestReport(dic);
+            return Ret_copied_files;
+        }
+
+        public static Dictionary<String, String> CopyTestReport(Dictionary<String, String> src_dest_file_list)
+        {
+            Dictionary<String, String> Ret_copied_files = new Dictionary<String, String> ();
+            foreach (String src_file in src_dest_file_list.Keys)
+            {
+                if (Storage.FileExists(src_file))
+                {
+                    String dest_file = src_dest_file_list[src_file];
+                    string dest_path = Storage.GetDirectoryName(dest_file);
+                    if (!Storage.DirectoryExists(dest_path))
+                    {
+                        Storage.CreateDirectory(dest_path, auto_parent_dir: true);
+                    }
+                    if (Storage.Copy(src_file, dest_file, overwrite: true))
+                    {
+                        Ret_copied_files.Add(src_file, dest_file);
+                    }
+                }
+                else
+                {
+                    // file not exist
+                }
+            }
+
+            return Ret_copied_files;
+        }
+
+        //static public ReadReport(String root_dir)
+        //{
+        //}
 
         static private void ConsoleWarning(String function, int row)
         {
