@@ -9,6 +9,12 @@ namespace ExcelReportApplication
 {
     class TestReport
     {
+        public static int PassCnt_at_row = 21, PassCnt_at_col = 5;
+        public static int FailCnt_at_row = 21, FailCnt_at_col = 7;
+        public static int TotalCnt_at_row = 21, TotalCnt_at_col = 9;
+        public static int Judgement_at_row = 9, Judgement_at_col = 4;
+        public static int Judgement_string_at_row = 9, Judgement_string_at_col = 2;
+
         static List<TestPlan> global_tp = new List<TestPlan>();
         static public string SheetName_TestPlan = "Test Plan";
 

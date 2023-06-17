@@ -479,7 +479,7 @@ namespace ExcelReportApplication
                 else
                 {
                     // 3. Get Judgement value
-                    Object obj = ExcelAction.GetCellValue(ws_judgement, KeywordReport.Judgement_at_row, KeywordReport.Judgement_at_col);
+                    Object obj = ExcelAction.GetCellValue(ws_judgement, TestReport.Judgement_at_row, TestReport.Judgement_at_col);
                     if (obj != null)
                     {
                         judgement_str = (String)obj;

@@ -248,12 +248,6 @@ namespace ExcelReportApplication
         public static String regexBugStatusString = @"^(?i)\s*Bug Status\s*$";
         public static String regexBugListString = @"^(?i)\s*Bug List\s*$";
 
-        public static int PassCnt_at_row = 21, PassCnt_at_col = 5;
-        public static int FailCnt_at_row = 21, FailCnt_at_col = 7;
-        public static int TotalCnt_at_row = 21, TotalCnt_at_col = 9;
-        public static int Judgement_at_row = 9, Judgement_at_col = 4;
-        public static int Judgement_string_at_row = 9, Judgement_string_at_col = 2;
-
         public static Boolean Auto_Correct_Sheetname = false;
 
         static public List<TestPlanKeyword> ListKeyword_SingleReport(TestPlan plan)
@@ -1086,10 +1080,10 @@ namespace ExcelReportApplication
                     // pass
                     judgement_str = "Pass";
                 }
-                ExcelAction.SetCellValue(result_worksheet, PassCnt_at_row, PassCnt_at_col, pass_count);
-                ExcelAction.SetCellValue(result_worksheet, FailCnt_at_row, FailCnt_at_col, fail_count);
-                ExcelAction.SetCellValue(result_worksheet, TotalCnt_at_row, TotalCnt_at_col, fail_count + pass_count);
-                ExcelAction.SetCellValue(result_worksheet, Judgement_at_row, Judgement_at_col, judgement_str);
+                ExcelAction.SetCellValue(result_worksheet, TestReport.PassCnt_at_row, TestReport.PassCnt_at_col, pass_count);
+                ExcelAction.SetCellValue(result_worksheet, TestReport.FailCnt_at_row, TestReport.FailCnt_at_col, fail_count);
+                ExcelAction.SetCellValue(result_worksheet, TestReport.TotalCnt_at_row, TestReport.TotalCnt_at_col, fail_count + pass_count);
+                ExcelAction.SetCellValue(result_worksheet, TestReport.Judgement_at_row, TestReport.Judgement_at_col, judgement_str);
 
                 // 3.4. Save the file to either 
                 //  (1) filename with yyyyMMddHHmmss if dest_dir is not specified
