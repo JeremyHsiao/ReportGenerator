@@ -18,7 +18,7 @@ namespace ExcelReportApplication
         static public Dictionary<string, List<StyleString>> global_issue_description_list_severity = new Dictionary<string, List<StyleString>>();
         static public List<TestCase> global_testcase_list = new List<TestCase>();
         static public List<String> fileter_status_list = new List<String>();
-        static public List<NotReportFileRecord> excel_not_report_log = new List<NotReportFileRecord>();
+        static public List<ReportFileRecord> excel_not_report_log = new List<ReportFileRecord>();
 
         // Must be updated if new report type added #NewReportType
         public enum ReportType
@@ -46,7 +46,7 @@ namespace ExcelReportApplication
             ReportType.KeywordIssue_Report_Directory,
             //ReportType.Excel_Sheet_Name_Update_Tool,
             ReportType.FullIssueDescription_TC_report_judgement,
-            //ReportType.TC_TestReportCreation,
+            ReportType.TC_TestReportCreation,
         };
 
         //public static ReportType[] ReportSelectableTable =

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ExcelReportApplication
 {
-    class NotReportFileRecord
+    class ReportFileRecord
     {
         private String path;
         private String filename;
@@ -53,8 +53,8 @@ namespace ExcelReportApplication
         //}
 
         //
-        public NotReportFileRecord() { this.path = this.filename = ""; this.excelfilenameOK = this.openfileOK = this.otherFailure = false; }
-        public NotReportFileRecord(String path = "", String filename = "", String expected_sheetname = "")
+        public ReportFileRecord() { this.path = this.filename = ""; this.excelfilenameOK = this.openfileOK = this.otherFailure = false; }
+        public ReportFileRecord(String path = "", String filename = "", String expected_sheetname = "")
         {
             this.path = path;
             this.filename = filename;
@@ -73,7 +73,7 @@ namespace ExcelReportApplication
             return ret_str;
         }
 
-        //public NotReportFileRecord(String path, String filename, Boolean filenameOK,
+        //public ReportFileRecord(String path, String filename, Boolean filenameOK,
         //                            Boolean sheetnameOK, Boolean itemOK, Boolean captionOK, Boolean otherFailure=false)
         //{ SetRecord(path, filename, filenameOK, sheetnameOK, itemOK, captionOK, otherFailure); }
 
@@ -166,7 +166,7 @@ namespace ExcelReportApplication
 
         //static public 
         static public void OutputKeywordLog(String out_path, List<TestPlanKeyword> keyword_list, 
-                                            List<NotReportFileRecord> not_keyword_report_list, String keyword_output_filename ="")
+                                            List<ReportFileRecord> not_keyword_report_list, String keyword_output_filename ="")
         {
             // Open template excel and write to another filename when closed
             ExcelAction.ExcelStatus status;
@@ -220,7 +220,7 @@ namespace ExcelReportApplication
             output_not_report_file_table.Add(row_list);
 
             // not-keyword-file
-            foreach (NotReportFileRecord not_keyword_report in not_keyword_report_list)
+            foreach (ReportFileRecord not_keyword_report in not_keyword_report_list)
             {
                 String path, filename, expected_sheetname;
                 Boolean excelfilenameOK,openfileOK, findWorksheetOK, findAnyKeyword, otherFailure;

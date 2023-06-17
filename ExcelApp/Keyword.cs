@@ -357,14 +357,14 @@ namespace ExcelReportApplication
         static public List<TestPlanKeyword> ListAllKeyword(List<TestPlan> DoPlan)
         {
             List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
-            List<NotReportFileRecord> ret_not_report_log = new List<NotReportFileRecord>();
+            List<ReportFileRecord> ret_not_report_log = new List<ReportFileRecord>();
 
             foreach (TestPlan plan in DoPlan)
             {
                 String path = Storage.GetDirectoryName(plan.ExcelFile);
                 String filename = Storage.GetFileName(plan.ExcelFile);
                 String sheet_name = plan.ExcelSheet;
-                NotReportFileRecord fail_log = new NotReportFileRecord(path, filename, sheet_name);
+                ReportFileRecord fail_log = new ReportFileRecord(path, filename, sheet_name);
 
                 TestPlan.ExcelStatus test_plan_status;
                 test_plan_status = plan.OpenDetailExcel();
@@ -859,7 +859,7 @@ namespace ExcelReportApplication
                 String path, filename;
                 path = Storage.GetDirectoryName(NG_file);
                 filename = Storage.GetFileName(NG_file);
-                NotReportFileRecord nrfr_item = new NotReportFileRecord(path, filename);
+                ReportFileRecord nrfr_item = new ReportFileRecord(path, filename);
                 nrfr_item.SetFlagFail(excelfilenamefail: true);
                 ReportGenerator.excel_not_report_log.Add(nrfr_item);
             }
@@ -1105,7 +1105,7 @@ namespace ExcelReportApplication
             if (KeywordReport.Auto_Correct_Sheetname == true)
             {
                 // ReportGenerator.excel_not_report_log
-                foreach (NotReportFileRecord item in ReportGenerator.excel_not_report_log)
+                foreach (ReportFileRecord item in ReportGenerator.excel_not_report_log)
                 {
                     String path, filename, expected_sheetname;
                     Boolean excelfilenameOK, openfileOK, findWorksheetOK, findAnyKeyword, otherFailure;
@@ -1181,7 +1181,7 @@ namespace ExcelReportApplication
                 String path, filename;
                 path = Storage.GetDirectoryName(NG_file);
                 filename = Storage.GetFileName(NG_file);
-                NotReportFileRecord nrfr_item = new NotReportFileRecord(path, filename);
+                ReportFileRecord nrfr_item = new ReportFileRecord(path, filename);
                 nrfr_item.SetFlagFail(excelfilenamefail: true);
                 ReportGenerator.excel_not_report_log.Add(nrfr_item);
             }
@@ -1211,7 +1211,7 @@ namespace ExcelReportApplication
             {
                 String dest_dir = Storage.GenerateDirectoryNameWithDateTime(report_root_dir);
                 // ReportGenerator.excel_not_report_log
-                foreach (NotReportFileRecord item in ReportGenerator.excel_not_report_log)
+                foreach (ReportFileRecord item in ReportGenerator.excel_not_report_log)
                 {
                     String path, filename, expected_sheetname;
                     Boolean excelfilenameOK, openfileOK, findWorksheetOK, findAnyKeyword, otherFailure;
