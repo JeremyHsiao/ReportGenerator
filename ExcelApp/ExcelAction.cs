@@ -53,6 +53,11 @@ namespace ExcelReportApplication
             return ret_workbook;
         }
 
+        static public void SaveExcelWorkbook(Workbook workbook, String filename)
+        {
+            workbook.SaveAs(filename);
+        }
+
         static public void CloseExcelWorkbook(Workbook workbook, bool SaveChanges = false, String AsFilename = "")
         {
             excel_app.DisplayAlerts = false;
