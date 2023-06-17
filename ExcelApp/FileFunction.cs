@@ -113,9 +113,17 @@ namespace ExcelReportApplication
             return ret;
         }
 
-        static public void Copy(String src, String dst)
+        static public Boolean Copy(String src, String dst, Boolean overwrite = false)
         {
-            File.Copy(src, dst);
+            try
+            {
+                File.Copy(src, dst, overwrite: overwrite);
+                return true;
+            }
+            catch(Exception ex)
+            {
+                return false;
+            }
         }
 
         static public bool DirectoryExists(String dir)
