@@ -178,19 +178,20 @@ namespace ExcelReportApplication
             ERR_SaveChangesAndCloseDetailExcel_wb_null,
             ERR_NOT_DEFINED,
             EX_OpenDetailExcel,
+            EX_SaveDetailExcel,
             EX_CloseDetailExcel,
             EX_SaveChangesAndCloseDetailExcel,
             MAX_NO
         };
 
-        public ExcelStatus OpenDetailExcel()
+        public ExcelStatus OpenDetailExcel(Boolean ReadOnly=true)
         {
             try
             {
                 Workbook wb;
 
                 // Open excel (read-only & corrupt-load)
-                wb = ExcelAction.OpenExcelWorkbook(path);
+                wb = ExcelAction.OpenExcelWorkbook(path,ReadOnly:ReadOnly);
 
                 if (wb == null)
                 {
@@ -221,7 +222,20 @@ namespace ExcelReportApplication
             //return ExcelStatus.ERR_NOT_DEFINED;
         }
 
-        public ExcelStatus CloseDetailExcel()
+        public ExcelStatus SaveDetailExcel(String AsFilename)
+        {
+            try
+            {
+                ExcelAction.SaveExcelWorkbook(wb_testplan, AsFilename);
+                return ExcelStatus.OK;
+            }
+            catch
+            {
+                return ExcelStatus.EX_SaveDetailExcel;
+            }
+        }
+
+        public ExcelStatus CloseDetailExcel(Boolean SaveChanges = false, String AsFilename = "")
         {
             try
             {
@@ -229,7 +243,7 @@ namespace ExcelReportApplication
                 {
                     return ExcelStatus.ERR_CloseDetailExcel_wb_null;
                 }
-                ExcelAction.CloseExcelWorkbook(wb_testplan, SaveChanges: false);
+                ExcelAction.CloseExcelWorkbook(wb_testplan, SaveChanges: false, AsFilename: AsFilename);
                 ws_testplan = null;
                 wb_testplan = null;
                 return ExcelStatus.OK;
