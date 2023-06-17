@@ -750,11 +750,10 @@ namespace ExcelReportApplication
                         txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     break;
                 case ReportGenerator.ReportType.TC_TestReportCreation:
-                    // need to rework
-                    if (!btnSelectExcelTestFile_Clicked)
-                        txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("workbook_StandardTestReport");
-                    if (!btnSelectReportFile_Clicked)
-                        txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                    if (!btnSelectExcelTestFile_Clicked) // source
+                        txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("TestReport_Default_Source_Path");
+                    if (!btnSelectReportFile_Clicked) // destination
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_Default_Output_Path");
                     break;
                 default:
                     break;
