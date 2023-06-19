@@ -332,6 +332,19 @@ namespace ExcelReportApplication
             return true;
         }
 
+        private bool Execute_AutoCorrectTestReportByFilename_Task(String report_root, String output_path = "")
+        {
+            if (!Storage.DirectoryExists(report_root))
+            {
+                // protection check
+                return false;
+            }
+
+            KeywordReport.AutoCorrectReport(report_root, Storage.GenerateDirectoryNameWithDateTime(report_root));
+
+            return true;
+        }
+
         // If filename has been changed, don't change it to default at report type change afterward.
         Boolean btnSelectBugFile_Clicked = false;
         Boolean btnSelectTCFile_Clicked = false;
@@ -575,7 +588,7 @@ namespace ExcelReportApplication
                 case ReportGenerator.ReportType.TC_AutoCorrectReport_By_Filename:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                     // to-be-updated
-                    bRet = Execute_ListAllDetailedTestPlanKeywordTask(Storage.GetFullPath(txtReportFile.Text), "");
+                    bRet = Execute_AutoCorrectTestReportByFilename_Task(Storage.GetFullPath(txtReportFile.Text), "");
                     break;
                 default:
                     // shouldn't be here.

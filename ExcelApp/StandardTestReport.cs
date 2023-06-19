@@ -26,6 +26,7 @@ namespace ExcelReportApplication
         public static int PassCnt_at_row = 21, PassCnt_at_col = 5;
         public static int FailCnt_at_row = 21, FailCnt_at_col = 7;
         public static int TotalCnt_at_row = 21, TotalCnt_at_col = 9;
+        public static int Title_at_row = 1, Title_at_col = ('A' - 'A' + 1);
         public static int SW_Version_at_row = 7, SW_Version_at_col = ('J'-'A' + 1 );
         public static int Period_Start_at_row = 8, Period_Start_at_col = ('L' - 'A' + 1);
         public static int Period_End_at_row = 8, Period_End_at_col = ('M' - 'A' + 1);

@@ -835,6 +835,79 @@ namespace ExcelReportApplication
         //    return bRet;
         //}
 
+        static public bool AutoCorrectReport(String report_root, String Output_dir = "")
+        {
+            Boolean b_ret = false;
+
+            // 0.1 List all files under report_root_dir.
+            List<String> file_list = Storage.ListFilesUnderDirectory(report_root);
+            // 0.2 filename check to exclude non-report files.
+            List<String> report_filename = Storage.FilterFilename(file_list);
+
+            Output_dir = Storage.GetFullPath(Output_dir);
+ 
+            // 1.1 Init an empty plan
+            List<TestPlan> do_plan = new List<TestPlan>();
+
+            // 1.2 Create a temporary test plan to includes report_file
+            do_plan = TestPlan.CreateTempPlanFromFileList(report_filename);
+            Boolean output_to_different_path = ((Output_dir=="")||(report_root==Output_dir))?false:true;
+
+            foreach (TestPlan plan in do_plan)
+            {
+                String path = Storage.GetDirectoryName(plan.ExcelFile);
+                String filename = Storage.GetFileName(plan.ExcelFile);
+                String full_filename = Storage.GetFullPath(plan.ExcelFile);
+                String sheet_name = plan.ExcelSheet;
+                Boolean file_has_been_updated = output_to_different_path;
+
+                // Open Excel workbood
+                Workbook wb = ExcelAction.OpenExcelWorkbook(filename: full_filename, ReadOnly: false);
+                if (wb == null)
+                {
+                    ConsoleWarning("ERR: Open workbook in AutoCorrectReport(): " + full_filename);
+                    continue;
+                }
+
+                // If valid sheet_name does not exist, use first worksheet and rename it.
+                Worksheet ws;
+                if (ExcelAction.WorksheetExist(wb, sheet_name) == false)
+                {
+                    ws = wb.Sheets[1];
+                    ws.Name = sheet_name;
+                    file_has_been_updated = true;
+                }
+                else
+                {
+                    ws = ExcelAction.Find_Worksheet(wb, sheet_name);
+                }
+
+                // Update header 
+                String new_title = Storage.GetFileNameWithoutExtension(filename);
+                String existing_title = ExcelAction.GetCellTrimmedString(ws, TestReport.Title_at_row, TestReport.Title_at_col);
+                if (existing_title != new_title)
+                {
+                    ExcelAction.SetCellValue(ws, TestReport.Title_at_row, TestReport.Title_at_col, new_title);
+                    file_has_been_updated = true;
+                }
+
+                if (file_has_been_updated)
+                {
+                    String dest_filename;
+                    // Something has been updated, save to excel file
+
+                    dest_filename = DecideDestinationFilename(report_root, Output_dir, full_filename);
+                    String dest_filename_dir = Storage.GetDirectoryName(dest_filename);
+                    // if parent directory does not exist, create recursively all parents
+                    Storage.CreateDirectory(dest_filename_dir, auto_parent_dir: true);
+                    ExcelAction.SaveExcelWorkbook(wb, filename: dest_filename);
+                    b_ret = true;
+                }
+                ExcelAction.CloseExcelWorkbook(wb);
+            }
+            return b_ret;
+        }
+
         static public bool KeywordIssueGenerationTaskV4(List<String> file_list, String src_dir, String dest_dir = "")
         {
             // Clear keyword log report data-table
