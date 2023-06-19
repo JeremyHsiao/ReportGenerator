@@ -266,7 +266,7 @@ namespace ExcelReportApplication
         // update header
         // clear judgement
 
-        public static Boolean UpdateAllHeader(List<String> report_list, String SW_Version = null, String Test_Start= null, String Test_End = null, 
+        public static Boolean UpdateAllHeader(List<String> report_list, String Title = null, String SW_Version = null, String Test_Start= null, String Test_End = null, 
                                         String Judgement = null, String Template = null)
         {
             // Create a temporary test plan to includes all files listed in List<String> report_filename
@@ -282,7 +282,8 @@ namespace ExcelReportApplication
                 test_plan_status = plan.OpenDetailExcel(ReadOnly:false);
                 if (test_plan_status == TestPlan.ExcelStatus.OK)
                 {
-                    UpdateReportHeader(plan.TestPlanWorksheet, SW_Version, Test_Start, Test_End, Judgement, Template);
+                    UpdateReportHeader(plan.TestPlanWorksheet, Title: Title, SW_Version: SW_Version, Test_Start: Test_Start, 
+                                            Test_End: Test_End, Judgement: Judgement, Template: Template);
                     plan.SaveDetailExcel(plan.ExcelFile);
                     plan.CloseDetailExcel();
                 }
