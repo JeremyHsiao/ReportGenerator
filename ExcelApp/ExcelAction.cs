@@ -1150,5 +1150,31 @@ namespace ExcelReportApplication
                                     left_alignment_col, center_alignment_col, auto_fit_col);
         }
 
+        static public void WriteTestReportCreationLog(List<List<Object>> table_object)
+        {
+            // TC-Test Group, TC-Summary, source_path, file_name, not_found, not_copied, dest_path
+            // 
+
+            List<int> left_alignment_col = new List<int>();
+            List<int> center_alignment_col = new List<int>();
+            List<int> auto_fit_col = new List<int>();
+            int start_row = KeyWordListReport.not_keyword_file_title_row,
+                start_col = KeyWordListReport.not_keyword_file_title_col_start;
+            Boolean with_title = true;
+
+            left_alignment_col.Add(1);
+            left_alignment_col.Add(2);
+            center_alignment_col.Add(3);
+            center_alignment_col.Add(4);
+            center_alignment_col.Add(5);
+            center_alignment_col.Add(6);
+            auto_fit_col.Add(2);
+            auto_fit_col.Add(3);
+            auto_fit_col.Add(4);
+            auto_fit_col.Add(5);
+            auto_fit_col.Add(6);
+            WriteTableObjectToExcel(ws_not_keyword_file, table_object, start_row, start_col, with_title,
+                                    left_alignment_col, center_alignment_col, auto_fit_col);
+        }
     }
 }

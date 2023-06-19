@@ -33,6 +33,8 @@ namespace ExcelReportApplication
             Excel_Sheet_Name_Update_Tool,
             FullIssueDescription_TC_report_judgement,
             TC_TestReportCreation,
+            TC_ListTestReportDetail,
+            TC_UpdateTestReportDetail, 
         }
 
         public static ReportType[] ReportSelectableTable =
@@ -47,7 +49,9 @@ namespace ExcelReportApplication
             //ReportType.Excel_Sheet_Name_Update_Tool,
             ReportType.FullIssueDescription_TC_report_judgement,
             ReportType.TC_TestReportCreation,
-        };
+            //ReportType.TC_ListTestReportDetail,
+            //ReportType.TC_UpdateTestReportDetail, 
+         };
 
         //public static ReportType[] ReportSelectableTable =
         //{
@@ -61,6 +65,8 @@ namespace ExcelReportApplication
         //    ReportType.Excel_Sheet_Name_Update_Tool,
         //    ReportType.FullIssueDescription_TC_report_judgement,
         //    ReportType.TC_TestReportCreation,
+        //    ReportType.TC_ListTestReportDetail,
+        //    ReportType.TC_UpdateTestReportDetail,
         //};
 
         public static int ReportTypeToInt(ReportType type)
@@ -103,6 +109,8 @@ namespace ExcelReportApplication
             "8.Excel sheet name update tool",
             "9.TC issue/judgement",
             "A.Jira Test Report Creator",
+            "B.List Test Report Detail",
+            "C.Update Test Report Detail",
        };
 
         // Must be updated if new report type added #NewReportType
@@ -167,6 +175,18 @@ namespace ExcelReportApplication
                 "Create file structure of Test Report according to TC on the Jira Test Case file", 
                 "Input:",  "  Jira Test Case File & directories of source report and of output destination",
                 "Output:", "  Directory structure and report files under directories",
+            },
+            new String[] 
+            {
+                "List information of Test Report Files", 
+                "Input:",  "  Root Directory of test reports",
+                "Output:", "  Excel file containing details of test report",
+            },
+            new String[] 
+            {
+                "Update filename/sheet name of Test Report Files according to input excel file", 
+                "Input:",  "  Input excel file",
+                "Output:", "  Reports copied and renamed (filename / worksheet name) according to input excel file",
             },
 
         };
