@@ -398,6 +398,7 @@ namespace ExcelReportApplication
                 case ReportGenerator.ReportType.KeywordIssue_Report_Directory:
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
                 case ReportGenerator.ReportType.TC_TestReportCreation:
+                case ReportGenerator.ReportType.TC_AutoCorrectReport_By_Filename:
                     sel_file = false;  // Here select directory instead of file
                     break;
             }
@@ -571,6 +572,11 @@ namespace ExcelReportApplication
                     // update judgement and header
                     // to-be-implemented
                     break;
+                case ReportGenerator.ReportType.TC_AutoCorrectReport_By_Filename:
+                    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                    // to-be-updated
+                    bRet = Execute_ListAllDetailedTestPlanKeywordTask(Storage.GetFullPath(txtReportFile.Text), "");
+                    break;
                 default:
                     // shouldn't be here.
                     break;
@@ -699,6 +705,12 @@ namespace ExcelReportApplication
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(true);
                     break;
+                case ReportGenerator.ReportType.TC_AutoCorrectReport_By_Filename:
+                    SetEnable_IssueFile(false);
+                    SetEnable_TCFile(false);
+                    SetEnable_OutputFile(true);
+                    SetEnable_StandardReport(false);
+                    break;
                 default:
                     // Shouldn't be here
                     break;
@@ -757,6 +769,10 @@ namespace ExcelReportApplication
                         txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("TestReport_Default_Source_Path");
                     if (!btnSelectReportFile_Clicked) // destination
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_Default_Output_Path");
+                    break;
+                case ReportGenerator.ReportType.TC_AutoCorrectReport_By_Filename:
+                    if (!btnSelectExcelTestFile_Clicked)
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     break;
                 default:
                     break;

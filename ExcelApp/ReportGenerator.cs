@@ -33,8 +33,8 @@ namespace ExcelReportApplication
             Excel_Sheet_Name_Update_Tool,
             FullIssueDescription_TC_report_judgement,
             TC_TestReportCreation,
-            TC_ListTestReportDetail,
-            TC_UpdateTestReportDetail, 
+            TC_AutoCorrectReport_By_Filename,
+            TC_AutoCorrectReport_By_ExcelList, 
         }
 
         public static ReportType[] ReportSelectableTable =
@@ -49,8 +49,8 @@ namespace ExcelReportApplication
             //ReportType.Excel_Sheet_Name_Update_Tool,
             ReportType.FullIssueDescription_TC_report_judgement,
             ReportType.TC_TestReportCreation,
-            //ReportType.TC_ListTestReportDetail,
-            //ReportType.TC_UpdateTestReportDetail, 
+            ReportType.TC_AutoCorrectReport_By_Filename,
+            //ReportType.TC_AutoCorrectReport_By_ExcelList, 
          };
 
         //public static ReportType[] ReportSelectableTable =
@@ -65,8 +65,8 @@ namespace ExcelReportApplication
         //    ReportType.Excel_Sheet_Name_Update_Tool,
         //    ReportType.FullIssueDescription_TC_report_judgement,
         //    ReportType.TC_TestReportCreation,
-        //    ReportType.TC_ListTestReportDetail,
-        //    ReportType.TC_UpdateTestReportDetail,
+        //    ReportType.TC_AutoCorrectReport_By_Filename,
+        //    ReportType.TC_AutoCorrectReport_By_ExcelList,
         //};
 
         public static int ReportTypeToInt(ReportType type)
@@ -109,8 +109,8 @@ namespace ExcelReportApplication
             "8.Excel sheet name update tool",
             "9.TC issue/judgement",
             "A.Jira Test Report Creator",
-            "B.List Test Report Detail",
-            "C.Update Test Report Detail",
+            "B.Auto-correct report header",
+            "C.Report Header Update Tool ",
        };
 
         // Must be updated if new report type added #NewReportType
@@ -178,13 +178,13 @@ namespace ExcelReportApplication
             },
             new String[] 
             {
-                "List information of Test Report Files", 
+                "Worksheet name & 1st row (header) will be auto-corrected.", 
                 "Input:",  "  Root Directory of test reports",
-                "Output:", "  Excel file containing details of test report",
+                "Output:", "  Auto-corrected test reports",
             },
             new String[] 
             {
-                "Update filename/sheet name of Test Report Files according to input excel file", 
+                "Worksheet name & 1st row (header) of report will be renamed and these reports are copied to corresponding folders", 
                 "Input:",  "  Input excel file",
                 "Output:", "  Reports copied and renamed (filename / worksheet name) according to input excel file",
             },
