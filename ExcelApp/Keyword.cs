@@ -887,7 +887,7 @@ namespace ExcelReportApplication
                 String existing_title = ExcelAction.GetCellTrimmedString(ws, TestReport.Title_at_row, TestReport.Title_at_col);
                 if (existing_title != new_title)
                 {
-                    ExcelAction.SetCellValue(ws, TestReport.Title_at_row, TestReport.Title_at_col, new_title);
+                    TestReport.UpdateReportHeader(ws,Title: new_title);
                     file_has_been_updated = true;
                 }
 

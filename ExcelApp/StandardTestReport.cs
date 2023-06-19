@@ -219,9 +219,45 @@ namespace ExcelReportApplication
             //}
 
             // Clear Judgement of copied test_report
-            UpdateHeader(report_actually_copied_list_dest, Judgement:" ");
+            UpdateAllHeader(report_actually_copied_list_dest, Judgement:" ");
 
             return true;
+        }
+
+        static public Boolean UpdateReportHeader(Worksheet ws, String Title = null, String SW_Version = null, String Test_Start = null, String Test_End = null,
+                                String Judgement = null, String Template = null)
+        {
+            Boolean b_ret = false;
+            // to-be-finished.
+            if (Template != null)
+            {
+
+            }
+            else
+            {
+                if (Title != null)
+                {
+                    ExcelAction.SetCellValue(ws, Title_at_row, Title_at_col, Title);
+                }
+                if (SW_Version != null)
+                {
+                    ExcelAction.SetCellValue(ws, SW_Version_at_row, SW_Version_at_col, Judgement);
+                }
+                if (Test_Start != null)
+                {
+                    ExcelAction.SetCellValue(ws, Period_Start_at_row, Period_Start_at_col, Test_Start);
+                }
+                if (Test_End != null)
+                {
+                    ExcelAction.SetCellValue(ws, Period_End_at_row, Period_End_at_col, Test_End);
+                }
+                if (Judgement != null)
+                {
+                    ExcelAction.SetCellValue(ws, Judgement_at_row, Judgement_at_col, Judgement);
+                }
+            }
+            b_ret = true;
+            return b_ret;
         }
 
         // Source report
@@ -230,7 +266,7 @@ namespace ExcelReportApplication
         // update header
         // clear judgement
 
-        public static Boolean UpdateHeader(List<String> report_list, String SW_Version = null, String Test_Start= null, String Test_End = null, 
+        public static Boolean UpdateAllHeader(List<String> report_list, String SW_Version = null, String Test_Start= null, String Test_End = null, 
                                         String Judgement = null, String Template = null)
         {
             // Create a temporary test plan to includes all files listed in List<String> report_filename
@@ -246,30 +282,7 @@ namespace ExcelReportApplication
                 test_plan_status = plan.OpenDetailExcel(ReadOnly:false);
                 if (test_plan_status == TestPlan.ExcelStatus.OK)
                 {
-                    // to-be-finished.
-                    if (Template != null)
-                    {
-
-                    }
-                    else
-                    {
-                        if (SW_Version != null)
-                        {
-                            ExcelAction.SetCellValue(plan.TestPlanWorksheet, SW_Version_at_row, SW_Version_at_col, Judgement);
-                        }
-                        if (Test_Start != null)
-                        {
-                            ExcelAction.SetCellValue(plan.TestPlanWorksheet, Period_Start_at_row, Period_Start_at_col, Test_Start);
-                        }
-                        if (Test_End != null)
-                        {
-                            ExcelAction.SetCellValue(plan.TestPlanWorksheet, Period_End_at_row, Period_End_at_col, Test_End);
-                        }
-                        if (Judgement != null)
-                        {
-                            ExcelAction.SetCellValue(plan.TestPlanWorksheet, Judgement_at_row, Judgement_at_col, Judgement);
-                        }
-                    }
+                    UpdateReportHeader(plan.TestPlanWorksheet, SW_Version, Test_Start, Test_End, Judgement, Template);
                     plan.SaveDetailExcel(plan.ExcelFile);
                     plan.CloseDetailExcel();
                 }

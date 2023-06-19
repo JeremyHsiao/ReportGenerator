@@ -302,6 +302,12 @@ namespace ExcelReportApplication
             return ret_plan;
         }
 
+        //public Boolean UpdateTestReportHeader(String SW_Version = null, String Test_Start = null, String Test_End = null,
+        //                                String Judgement = null, String Template = null)
+        //{
+        //    return TestReport.UpdateReportHeader(this.TestPlanWorksheet,SW_Version, Test_Start, Test_End, Judgement, Template);
+        //}
+
         static private void ConsoleWarning(String function, int row, int col)
         {
             Console.WriteLine("Warning: please check " + function + " at (" + row.ToString() + "," + col.ToString() + ")");
