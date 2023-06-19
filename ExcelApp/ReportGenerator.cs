@@ -483,12 +483,12 @@ namespace ExcelReportApplication
                     if (obj != null)
                     {
                         judgement_str = (String)obj;
-                        b_ret = false;
+                        b_ret = true;
                     }
                     else
                     {
                         judgement_str = ret_str;
-                        b_ret = true;
+                        b_ret = false;
                     }
                 }
 
