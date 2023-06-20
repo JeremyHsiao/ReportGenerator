@@ -332,7 +332,7 @@ namespace ExcelReportApplication
             return true;
         }
 
-        private bool Execute_AutoCorrectTestReportByFilename_Task(String report_root, String output_path = "")
+        private bool Execute_AutoCorrectTestReportByFilename_Task(String report_root)
         {
             if (!Storage.DirectoryExists(report_root))
             {
@@ -340,7 +340,20 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            TestReport.AutoCorrectReport(report_root, Storage.GenerateDirectoryNameWithDateTime(report_root));
+            TestReport.AutoCorrectReport_by_Folder(report_root, Storage.GenerateDirectoryNameWithDateTime(report_root));
+
+            return true;
+        }
+
+        private bool Execute_AutoCorrectTestReportByExcel_Task(String excel_input_file)
+        {
+            if (!Storage.FileExists(excel_input_file))
+            {
+                // protection check
+                return false;
+            }
+
+            TestReport.AutoCorrectReport_by_Excel(excel_input_file);
 
             return true;
         }
@@ -587,8 +600,12 @@ namespace ExcelReportApplication
                     break;
                 case ReportGenerator.ReportType.TC_AutoCorrectReport_By_Filename:
                     UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
+                    bRet = Execute_AutoCorrectTestReportByFilename_Task(Storage.GetFullPath(txtReportFile.Text));
+                    break;
+                case ReportGenerator.ReportType.TC_AutoCorrectReport_By_ExcelList:
+                    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                     // to-be-updated
-                    bRet = Execute_AutoCorrectTestReportByFilename_Task(Storage.GetFullPath(txtReportFile.Text), "");
+                    bRet = Execute_AutoCorrectTestReportByExcel_Task(Storage.GetFullPath(txtStandardTestReport.Text));
                     break;
                 default:
                     // shouldn't be here.
@@ -724,6 +741,12 @@ namespace ExcelReportApplication
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
                     break;
+                case ReportGenerator.ReportType.TC_AutoCorrectReport_By_ExcelList:
+                    SetEnable_IssueFile(false);
+                    SetEnable_TCFile(false);
+                    SetEnable_OutputFile(false);
+                    SetEnable_StandardReport(true);
+                    break;
                 default:
                     // Shouldn't be here
                     break;
@@ -786,6 +809,11 @@ namespace ExcelReportApplication
                 case ReportGenerator.ReportType.TC_AutoCorrectReport_By_Filename:
                     if (!btnSelectExcelTestFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                    break;
+                case ReportGenerator.ReportType.TC_AutoCorrectReport_By_ExcelList:
+                    if (!btnSelectExcelTestFile_Clicked)
+                        txtStandardTestReport.Text = @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Copy_Report_Excel_List.xlsx";
+                    break;;
                     break;
                 default:
                     break;

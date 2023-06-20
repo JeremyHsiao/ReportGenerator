@@ -394,12 +394,6 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
-        // Source report
-        // Destination report (also update sheetname)
-        // new report title
-        // update header
-        // clear judgement
-
         public static Boolean UpdateAllHeader(List<String> report_list, String Title = null, String SW_Version = null, String Test_Start = null, String Test_End = null,
                                         String Judgement = null, String Template = null)
         {
@@ -458,7 +452,8 @@ namespace ExcelReportApplication
 
             return Ret_copied_files;
         }
-
+        
+        // Copy and Clear judgement -- to be used for copying part/full of report from existing projects
         static public bool CopyReportClearJudgement_SingleFile(String source_file, String destination_file = "")
         {
             Boolean file_has_been_updated = false;
@@ -512,20 +507,20 @@ namespace ExcelReportApplication
             return file_has_been_updated;
         }
 
-        static public bool AutoCorrectReport_SingleFile(String source_file, String destination_file = "", Boolean always_save = false)
+        // Copy and update worksheet name & title -- to be used for starting a new project based on reports from anywhere
+        static public bool AutoCorrectReport_SingleFile(String source_file, String destination_file, Boolean always_save = false)
         {
             Boolean file_has_been_updated = false;
 
-            if (Storage.IsReportFilename(source_file) == false)
+            destination_file = Storage.GetFullPath(destination_file);
+            if (Storage.IsReportFilename(destination_file) == false)
             {
-                // Do nothing if file does not look like a report file.
+                // Do nothing if new filename does not look like a report filename.
                 return file_has_been_updated;
             }
 
-            source_file = Storage.GetFullPath(source_file);
-            destination_file = (destination_file != "") ? Storage.GetFullPath(destination_file) : source_file;
-
             // Open Excel workbook
+            source_file = Storage.GetFullPath(source_file);
             Workbook wb = ExcelAction.OpenExcelWorkbook(filename: source_file, ReadOnly: false);
             if (wb == null)
             {
@@ -533,22 +528,24 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            // If valid sheet_name does not exist, use first worksheet and rename it.
-            String sheet_name = TestPlan.GetSheetNameAccordingToFilename(source_file);
+            // If valid sheet_name does not exist, use first worksheet .
+            String current_sheet_name = TestPlan.GetSheetNameAccordingToFilename(source_file);
+            String new_sheet_name = TestPlan.GetSheetNameAccordingToFilename(destination_file);
             Worksheet ws;
-            if (ExcelAction.WorksheetExist(wb, sheet_name) == false)
+            if (ExcelAction.WorksheetExist(wb, current_sheet_name) == false)
             {
                 ws = wb.Sheets[1];
-                ws.Name = sheet_name;
-                file_has_been_updated = true;
             }
             else
             {
-                ws = ExcelAction.Find_Worksheet(wb, sheet_name);
+                ws = ExcelAction.Find_Worksheet(wb, current_sheet_name);
             }
+            // and rename it
+            ws.Name = new_sheet_name;
+            file_has_been_updated = true;
 
             // Update header 
-            String new_title = TestPlan.GetReportTitleAccordingToFilename(source_file);
+            String new_title = TestPlan.GetReportTitleAccordingToFilename(destination_file);
             String existing_title = ExcelAction.GetCellTrimmedString(ws, TestReport.Title_at_row, TestReport.Title_at_col);
             if (existing_title != new_title)
             {
@@ -573,8 +570,94 @@ namespace ExcelReportApplication
 
             return file_has_been_updated;
         }
+//
+        static public bool AutoCorrectReport_by_Excel(String input_excel_file)
+        {
+            // open excel and read and close excel
+            // Open Excel workbook
+            Workbook wb = ExcelAction.OpenExcelWorkbook(filename: input_excel_file, ReadOnly: true);
+            if (wb == null)
+            {
+                ConsoleWarning("ERR: Open workbook in AutoCorrectReport_by_Excel(): " + input_excel_file);
+                return false;
+            }
+            Worksheet ws = wb.ActiveSheet;
+            //public String source_path;
+            //public String source_group;
+            //public String source_filename;
+            //public String destination_path;
+            //public String destination_group;
+            //public String destination_filename;
+            Boolean bStillReadingExcel = true;
+            // check title row
+            int row_index = 1, col_index = 1;
+            // TBD
+            row_index++;
+            col_index = 1;
+            List<CopyTestReport> report_list = new List<CopyTestReport>();
+            do
+            {
+                CopyTestReport ctp = new CopyTestReport();
+                ctp.source_path = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
+                if (ctp.source_path != "")
+                {
+                    ctp.source_group = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
+                    ctp.source_filename = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
+                    ctp.destination_path = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
+                    ctp.destination_group = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
+                    ctp.destination_filename = ExcelAction.GetCellTrimmedString(ws, row_index, col_index);
+                    report_list.Add(ctp);
+                    row_index++;
+                    col_index = 1;
+                }
+                else
+                {
+                    bStillReadingExcel = false;
+                }
+            }
+            while (bStillReadingExcel);
+            // Close Excel
+            ExcelAction.CloseExcelWorkbook(wb);
 
-        static public bool AutoCorrectReport(String report_root, String Output_dir = "")
+            // create list of source and destination
+            Dictionary<String, String> copy_list = new Dictionary<String, String>();
+            foreach (CopyTestReport copy_report in report_list)
+            {
+                String src_path = Storage.CominePath(copy_report.source_path, copy_report.source_group);
+                String src_file = copy_report.source_filename + ".xlsx";
+                String src_fullfilename = Storage.GetValidFullFilename(src_path, src_file);
+                if (!Storage.FileExists(src_fullfilename))
+                    continue;
+
+                String dest_path = Storage.CominePath(copy_report.destination_path, copy_report.destination_group);
+                String dest_file = copy_report.destination_filename + ".xlsx";
+                String dest_fullfilename = Storage.GetValidFullFilename(dest_path, dest_file);
+                copy_list.Add(src_fullfilename, dest_fullfilename);
+            }
+
+            // auto-correct report files.
+            List<String> report_actually_copied_list_src = new List<String>();
+            List<String> report_actually_copied_list_dest = new List<String>();
+            // use Auto Correct Function to copy and auto-correct.
+
+            foreach (String src in copy_list.Keys)
+            {
+                String dest = copy_list[src];
+                if (AutoCorrectReport_SingleFile(source_file: src, destination_file: dest, always_save:true))
+                {
+                    report_actually_copied_list_src.Add(src);
+                    report_actually_copied_list_dest.Add(dest);
+                }
+            }
+
+            if (report_actually_copied_list_src.Count > 0)
+                return true;
+            else
+                return false;
+
+        }
+
+        static public bool AutoCorrectReport_by_Folder(String report_root, String Output_dir)
         {
             Boolean b_ret = false;
 
@@ -585,7 +668,7 @@ namespace ExcelReportApplication
 
             foreach (String source_report in report_filename)
             {
-                String dest_filename = KeywordReport.DecideDestinationFilename(report_root, Output_dir, source_report);
+                String dest_filename = KeywordReport.DecideDestinationFilename(report_root, Output_dir, source_report); // replace folder name
                 b_ret |= AutoCorrectReport_SingleFile(source_file: source_report, destination_file: dest_filename, always_save: true);
             }
 
