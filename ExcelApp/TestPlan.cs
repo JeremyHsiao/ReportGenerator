@@ -184,14 +184,14 @@ namespace ExcelReportApplication
             MAX_NO
         };
 
-        public ExcelStatus OpenDetailExcel(Boolean ReadOnly=true)
+        public ExcelStatus OpenDetailExcel(Boolean ReadOnly = true)
         {
             try
             {
                 Workbook wb;
 
                 // Open excel (read-only & corrupt-load)
-                wb = ExcelAction.OpenExcelWorkbook(path,ReadOnly:ReadOnly);
+                wb = ExcelAction.OpenExcelWorkbook(path, ReadOnly: ReadOnly);
 
                 if (wb == null)
                 {
@@ -291,6 +291,32 @@ namespace ExcelReportApplication
             String full_filename = Storage.GetFullPath(filename);
             String short_filename_no_extension = Storage.GetFileNameWithoutExtension(full_filename);
             return short_filename_no_extension;
+        }
+
+        public static TestPlan CreateTempPlanFromFile(String filename)
+        {
+            TestPlan ret_plan = new TestPlan();
+
+            // File existing check protection (it is better also checked and giving warning before entering this function)
+            if (Storage.FileExists(filename) != false)
+            {
+                // DoOrNot must be "V" & ExcelFile/ExcelSheet must be correct
+                String full_filename = Storage.GetFullPath(filename);
+                String short_filename = Storage.GetFileName(full_filename);
+                String[] sp_str = short_filename.Split(new Char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+                String sheet_name = sp_str[0];
+                String subpart = sp_str[1];
+                List<String> tp_str = new List<String>();
+                tp_str.AddRange(new String[] { "N/A", short_filename, "N/A", "V", "N/A", subpart });
+                ret_plan.ExcelFile = full_filename;
+                ret_plan.ExcelSheet = sheet_name;
+            }
+            else
+            {
+                // no warning here, simply skip this file.
+            }
+
+            return ret_plan;
         }
 
         public static List<TestPlan> CreateTempPlanFromFileList(List<String> filename)
