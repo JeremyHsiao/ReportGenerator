@@ -157,38 +157,40 @@ namespace ExcelReportApplication
             //public String destination_group;
             //public String destination_filename;
 
-            // Report to be copied according to List<CopyTestReport> report_list -- SET B (src_report_list)
-            List<String> src_report_list = new List<String>();
-            List<String> dest_report_list = new List<String>();
+            Dictionary<String,String> copy_list = new Dictionary<String,String>();
             foreach (CopyTestReport copy_report in report_list)
             {
                 String src_path = Storage.CominePath(copy_report.source_path, copy_report.source_group);
                 String src_file = copy_report.source_filename + ".xlsx";
                 String src_fullfilename = Storage.GetValidFullFilename(src_path, src_file);
-                if (Storage.FileExists(src_fullfilename))
-                {
-                    src_report_list.Add(src_fullfilename);
+                if (!Storage.FileExists(src_fullfilename))
+                    continue;
 
-                    String dest_path = Storage.CominePath(copy_report.source_path, copy_report.source_group);
-                    String dest_file = copy_report.source_filename + ".xlsx";
-                    String dest_fullfilename = Storage.GetValidFullFilename(dest_path, dest_file);
-                    if (Storage.FileExists(dest_fullfilename))
-                    {
-                        dest_report_list.Add(dest_fullfilename);
-                    }
-                }
+                String dest_path = Storage.CominePath(copy_report.destination_path, copy_report.destination_group);
+                String dest_file = copy_report.destination_filename + ".xlsx";
+                String dest_fullfilename = Storage.GetValidFullFilename(dest_path, dest_file);
+                copy_list.Add(src_fullfilename,dest_fullfilename);
             }
 
             // copy report files.
             List<String> report_actually_copied_list_src = new List<String>();
             List<String> report_actually_copied_list_dest = new List<String>();
-            Dictionary<String, String> report_copied = CopyTestReport(src_report_list, dest_report_list);
-            report_actually_copied_list_src = report_copied.Keys.ToList();
-            report_actually_copied_list_dest = report_copied.Values.ToList();
+            // use Auto Correct Function to copy and auto-correct.
 
-            //AutoCorrectReport(
+            foreach (String src in copy_list.Keys)
+            {
+                String dest = copy_list[src];
+                if (AutoCorrectReport_SingleFile(source_file: src, destination_file: dest))
+                {
+                    report_actually_copied_list_src.Add(src);
+                    report_actually_copied_list_dest.Add(dest);
+                }
+            }
 
-            return true;
+            if (report_actually_copied_list_src.Count > 0)
+                return true;
+            else
+                return false;
         }
 
         //public static bool CopyTestReportbyTestCase(String report_Src, String output_report_dir)
@@ -349,7 +351,10 @@ namespace ExcelReportApplication
                 }
             }
 
-            return true;
+            if (report_actually_copied_list_src.Count > 0)
+                return true;
+            else
+                return false;
         }
 
 
