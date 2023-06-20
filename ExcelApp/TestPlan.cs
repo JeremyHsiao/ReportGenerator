@@ -277,6 +277,22 @@ namespace ExcelReportApplication
             }
         }
 
+        public static String GetSheetNameAccordingToFilename(String filename)
+        {
+            String full_filename = Storage.GetFullPath(filename);
+            String short_filename = Storage.GetFileName(full_filename);
+            String[] sp_str = short_filename.Split(new Char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+            String sheet_name = sp_str[0];
+            return sheet_name;
+        }
+
+        public static String GetReportTitleAccordingToFilename(String filename)
+        {
+            String full_filename = Storage.GetFullPath(filename);
+            String short_filename_no_extension = Storage.GetFileNameWithoutExtension(full_filename);
+            return short_filename_no_extension;
+        }
+
         public static List<TestPlan> CreateTempPlanFromFileList(List<String> filename)
         {
             List<TestPlan> ret_plan = new List<TestPlan>();
