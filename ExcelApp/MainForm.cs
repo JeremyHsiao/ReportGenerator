@@ -340,7 +340,7 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            KeywordReport.AutoCorrectReport(report_root, Storage.GenerateDirectoryNameWithDateTime(report_root));
+            TestReport.AutoCorrectReport(report_root, Storage.GenerateDirectoryNameWithDateTime(report_root));
 
             return true;
         }
@@ -546,7 +546,7 @@ namespace ExcelReportApplication
                     bRet = Execute_FindFailTCLinkedIssueAllClosed(txtTCFile.Text, txtReportFile.Text);
                     break;
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                    UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
                     //UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
                     //String main_file = txtStandardTestReport.Text;
                     //String file_dir = Storage.GetDirectoryName(main_file);
@@ -586,7 +586,7 @@ namespace ExcelReportApplication
                     // to-be-implemented
                     break;
                 case ReportGenerator.ReportType.TC_AutoCorrectReport_By_Filename:
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                    UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
                     // to-be-updated
                     bRet = Execute_AutoCorrectTestReportByFilename_Task(Storage.GetFullPath(txtReportFile.Text), "");
                     break;
@@ -713,7 +713,7 @@ namespace ExcelReportApplication
                     break;
                 case ReportGenerator.ReportType.TC_TestReportCreation:
                     // need to rework
-                    SetEnable_IssueFile(true);
+                    SetEnable_IssueFile(false);
                     SetEnable_TCFile(true);
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(true);
