@@ -321,6 +321,23 @@ namespace ExcelReportApplication
             return ret_list;
         }
 
+        static public List<String> ListCandidateReportFilesUnderDirectory(string targetDirectory)
+        {
+            List<String> ret_list = new List<String>();
+
+            // Get the list of files found in the directory.
+            string[] fileEntries = Directory.GetFiles(targetDirectory);
+            ret_list.AddRange(FilterFilename(fileEntries.ToList()));
+
+            // Recurse into subdirectories of this directory.
+            string[] subdirectoryEntries = Directory.GetDirectories(targetDirectory);
+            foreach (string subdirectory in subdirectoryEntries)
+            {
+                ret_list.AddRange(ListCandidateReportFilesUnderDirectory(subdirectory));
+            }
+            return ret_list;
+        }
+
         // Check if filename looks like an test report excel file
         // need to filter out filename not in format of A.xx.xx_*_All.xlsx
 
