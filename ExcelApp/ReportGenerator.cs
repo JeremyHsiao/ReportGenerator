@@ -50,7 +50,7 @@ namespace ExcelReportApplication
             ReportType.FullIssueDescription_TC_report_judgement,
             ReportType.TC_TestReportCreation,
             ReportType.TC_AutoCorrectReport_By_Filename,
-            //ReportType.TC_AutoCorrectReport_By_ExcelList, 
+            ReportType.TC_AutoCorrectReport_By_ExcelList, 
          };
 
         //public static ReportType[] ReportSelectableTable =
@@ -188,7 +188,6 @@ namespace ExcelReportApplication
                 "Input:",  "  Input excel file",
                 "Output:", "  Reports copied and renamed (filename / worksheet name) according to input excel file",
             },
-
         };
 
         private static String[][] UI_Label = new String[][] 
@@ -263,7 +262,21 @@ namespace ExcelReportApplication
                 "Report Output Path",
                 "Report Source Path",
             },
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Check Report Path",
+                "Report Source Path",
+            },
 
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Report Output Path",
+                "Input Excel File",
+            },
         };
 
         public static String GetReportDescription(int type_index)
