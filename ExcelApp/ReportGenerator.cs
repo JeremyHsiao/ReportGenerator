@@ -110,7 +110,7 @@ namespace ExcelReportApplication
             "9.TC issue/judgement",
             "A.Jira Test Report Creator",
             "B.Auto-correct report header",
-            "C.Report Header Update Tool ",
+            "C.Create New Model Report",
        };
 
         // Must be updated if new report type added #NewReportType
@@ -238,7 +238,7 @@ namespace ExcelReportApplication
             {
                 "Jira Issue File", 
                 "Test Case File",
-                "Output Template",
+                "Test Report Path",
                 "Main Test Plan",
             },
             new String[] 
