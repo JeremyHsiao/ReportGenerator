@@ -350,7 +350,7 @@ namespace ExcelReportApplication
         // 2. one or more pairs of (. + digits)
         // 3. at lease one "_" and allowable chars (including _) follow until ".xlsx"
         // 4. ".xlsx" is case-insensitive
-        static public string regexString = @"^(Other|[A-Za-z0-9]+)(\.\d+)+_[\w\(\)\-_+&. ]+\.(?i:xlsx)$";
+        static public string regexString = @"^(Other|[A-Za-z0-9]+)(\.[A-Za-z0-9]+)+_[\w\(\)\-_+&. ]+\.(?i:xlsx)$";
         static RegexStringValidator myRegexValidator = new RegexStringValidator(regexString);
         static public bool IsReportFilename(String input_name)
         {
