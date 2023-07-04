@@ -15,10 +15,19 @@ namespace ExcelReportApplication
             A = 0,
             B,
             C,
-            D
+            D,
+            Waived_A,
+            Waived_B,
+            Waived_C,
+            Waived_D,
+            Closed_A,
+            Closed_B,
+            Closed_C,
+            Closed_D,
+            COUNT
         };
 
-        public static int severity_count = 4;
+        public static int severity_count = (int)SeverityOrder.COUNT;
         private int[] count = new int[severity_count];
         public int Severity_A   // property
         {
@@ -40,8 +49,84 @@ namespace ExcelReportApplication
             get { return count[(int)SeverityOrder.D]; }   // get method
             set { count[(int)SeverityOrder.D] = value; }  // set method
         }
+        public int Waived_A   // property
+        {
+            get { return count[(int)SeverityOrder.Waived_A]; }   // get method
+            set { count[(int)SeverityOrder.Waived_A] = value; }  // set method
+        }
+        public int Waived_B   // property
+        {
+            get { return count[(int)SeverityOrder.Waived_B]; }   // get method
+            set { count[(int)SeverityOrder.Waived_B] = value; }  // set method
+        }
+        public int Waived_C   // property
+        {
+            get { return count[(int)SeverityOrder.Waived_C]; }   // get method
+            set { count[(int)SeverityOrder.Waived_C] = value; }  // set method
+        }
+        public int Waived_D   // property
+        {
+            get { return count[(int)SeverityOrder.Waived_D]; }   // get method
+            set { count[(int)SeverityOrder.Waived_D] = value; }  // set method
+        }
+        public int Closed_A   // property
+        {
+            get { return count[(int)SeverityOrder.Closed_A]; }   // get method
+            set { count[(int)SeverityOrder.Waived_A] = value; }  // set method
+        }
+        public int Closed_B   // property
+        {
+            get { return count[(int)SeverityOrder.Closed_B]; }   // get method
+            set { count[(int)SeverityOrder.Waived_B] = value; }  // set method
+        }
+        public int Closed_C   // property
+        {
+            get { return count[(int)SeverityOrder.Closed_C]; }   // get method
+            set { count[(int)SeverityOrder.Waived_C] = value; }  // set method
+        }
+        public int Closed_D   // property
+        {
+            get { return count[(int)SeverityOrder.Closed_D]; }   // get method
+            set { count[(int)SeverityOrder.Waived_D] = value; }  // set method
+        }
 
-        public IssueCount() { count[0] = count[1] = count[2] = count[3] = 0; }
+        public IssueCount() 
+        {
+            for (int index = 0; index < (int)SeverityOrder.COUNT; index++)
+            {
+                count[index] = 0;       // clear all
+            }
+        }
+
+        public int TotalCount()
+        {
+            int total_count = 0;
+            for (int index = 0; index < (int)SeverityOrder.COUNT; index++) // count all
+            {
+                total_count += count[index];
+            }
+            return total_count;
+        }
+
+        public int NotClosedCount()
+        {
+            int total_count = 0;
+            for (int index = 0; index <= (int)SeverityOrder.Waived_D; index++) // count ABCD/Waived ABCD
+            {
+                total_count += count[index];
+            }
+            return total_count;
+        }
+
+        public int ABC_non_Wavied_IssueCount()
+        {
+            int total_count = 0;
+            for (int index = 0; index <= (int)SeverityOrder.C; index++) // count ABC 
+            {
+                total_count += count[index];
+            }
+            return total_count;
+        }
     }
 
     public class Issue
@@ -261,6 +346,7 @@ namespace ExcelReportApplication
         static public Color A_ISSUE_COLOR = Color.Red;
         static public Color B_ISSUE_COLOR = Color.DarkOrange;
         static public Color C_ISSUE_COLOR = Color.Black;
+        static public Color D_ISSUE_COLOR = Color.Black;
 
         static public List<Issue> GenerateIssueList(string buglist_filename)
         {
