@@ -188,12 +188,77 @@ namespace ExcelReportApplication
             IssueDescriptionList = ret_str;
         }
 
-        public IssueCount Calculate_Issue_GE_Stage_1_0()
+        //// Greater or Equal to 1.0 ==> not Closed(0) nor Waived(0.1)
+        //public IssueCount Calculate_Issue_GE_Stage_1_0()
+        //{
+        //    IssueCount ret_ic = new IssueCount();
+        //    foreach (Issue issue in this.KeywordIssues)
+        //    {
+        //        if ((issue.Status != Issue.STR_CLOSE) && (issue.Status != Issue.STR_WAIVE))
+        //        {
+        //            switch (issue.Severity[0])
+        //            {
+        //                case 'A':
+        //                    ret_ic.Severity_A++;
+        //                    break;
+        //                case 'B':
+        //                    ret_ic.Severity_B++;
+        //                    break;
+        //                case 'C':
+        //                    ret_ic.Severity_C++;
+        //                    break;
+        //                case 'D':
+        //                    ret_ic.Severity_D++;
+        //                    break;
+        //            }
+
+        //        }
+        //    }
+        //    return ret_ic;
+        //}
+
+        public IssueCount Calculate_Issue()
         {
             IssueCount ret_ic = new IssueCount();
             foreach (Issue issue in this.KeywordIssues)
             {
-                if ((issue.Status != Issue.STR_CLOSE) && (issue.Status != Issue.STR_WAIVE))
+                if (issue.Status == Issue.STR_CLOSE)
+                {
+                    switch (issue.Severity[0])
+                    {
+                        case 'A':
+                            ret_ic.Closed_A++;
+                            break;
+                        case 'B':
+                            ret_ic.Closed_B++;
+                            break;
+                        case 'C':
+                            ret_ic.Closed_C++;
+                            break;
+                        case 'D':
+                            ret_ic.Closed_D++;
+                            break;
+                    }
+                }
+                else if (issue.Status == Issue.STR_WAIVE)
+                {
+                    switch (issue.Severity[0])
+                    {
+                        case 'A':
+                            ret_ic.Waived_A++;
+                            break;
+                        case 'B':
+                            ret_ic.Waived_B++;
+                            break;
+                        case 'C':
+                            ret_ic.Waived_C++;
+                            break;
+                        case 'D':
+                            ret_ic.Waived_D++;
+                            break;
+                    }
+                }
+                else // if ((issue.Status != Issue.STR_CLOSE) && (issue.Status != Issue.STR_WAIVE))
                 {
                     switch (issue.Severity[0])
                     {
@@ -247,6 +312,10 @@ namespace ExcelReportApplication
         public static String regexResultString = @"^(?i)\s*Result\s*$";
         public static String regexBugStatusString = @"^(?i)\s*Bug Status\s*$";
         public static String regexBugListString = @"^(?i)\s*Bug List\s*$";
+
+        public static String PASS_str = "Pass";
+        public static String CONDITIONAL_PASS_str = "Conditional Pass";
+        public static String FAIL_str = "Fail";
 
         public static Boolean Auto_Correct_Sheetname = false;
 
@@ -948,7 +1017,7 @@ namespace ExcelReportApplication
 
                 // 3.3.2 Write keyword-related formatted issue descriptions 
                 //       also count how many "Pass" or how many "Fail"
-                int pass_count = 0, fail_count = 0;
+                int pass_count = 0, fail_count = 0, conditional_pass_count = 0;
                 //foreach (TestPlanKeyword keyword in keyword_list)
                 foreach (TestPlanKeyword keyword in ws_keyword_list)
                 {
@@ -959,7 +1028,7 @@ namespace ExcelReportApplication
                         StyleString.WriteStyleString(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn, keyword.IssueDescriptionList);
 
                         // Write severity count of all keywrod isseus
-                        IssueCount severity_count = keyword.Calculate_Issue_GE_Stage_1_0();
+                        IssueCount severity_count = keyword.Calculate_Issue();
                         List<StyleString> bug_status_string = new List<StyleString>();
                         int issue_count;
                         issue_count = severity_count.Severity_A;
@@ -985,7 +1054,7 @@ namespace ExcelReportApplication
                             bug_status_string.Add(new StyleString("0B", Color.Black));
                         }
                         //bug_status_string.Add(new StyleString(",", Color.Black));
-                        StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn+1, bug_status_string);
+                        StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 1, bug_status_string);
                         bug_status_string.Clear();
 
                         issue_count = severity_count.Severity_C;
@@ -1000,6 +1069,18 @@ namespace ExcelReportApplication
                         StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 2, bug_status_string);
                         bug_status_string.Clear();
 
+                        issue_count = severity_count.Severity_D;
+                        if (issue_count > 0)
+                        {
+                            bug_status_string.Add(new StyleString(issue_count.ToString() + "D", Issue.D_ISSUE_COLOR));
+                        }
+                        else
+                        {
+                            bug_status_string.Add(new StyleString("0D", Color.Black));
+                        }
+                        StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 3, bug_status_string);
+                        bug_status_string.Clear();
+
                         // Output Result:
                         //// >0A: NG
                         //// >0B: Defect found
@@ -1010,40 +1091,68 @@ namespace ExcelReportApplication
                         // (A/B/C) = (xx/oo/vv)
                         //List<StyleString> result_string = new List<StyleString>();
                         String pass_fail_str = "Fail";
-                        if (severity_count.Severity_A > 0)
-                        {
-                            //String Has_A_Issue_str = "Fail"; // "NG"
-                            //Color Has_A_Issue_color = Issue.A_ISSUE_COLOR;
-                            //result_string.Add(new StyleString(Has_A_Issue_str, Has_A_Issue_color));
-                            pass_fail_str = "Fail";
-                            fail_count++;
-                        }
-                        else if (severity_count.Severity_B > 0)
-                        {
-                            //String No_A_Has_B_Issue_str = "Fail"; // "Defect found"
-                            //Color No_A_Has_B_Issue_color = Issue.A_ISSUE_COLOR;
-                            //result_string.Add(new StyleString(No_A_Has_B_Issue_str, No_A_Has_B_Issue_color));
-                            pass_fail_str = "Fail";
-                            fail_count++;
-                        }
-                        else if (severity_count.Severity_C > 0)
-                        {
-                            //String No_AB_Has_C_Issue_str = "Fail"; // "Minor Issue only"
-                            //Color No_AB_Has_C_Issue_color = Issue.A_ISSUE_COLOR;
-                            //result_string.Add(new StyleString(No_AB_Has_C_Issue_str, No_AB_Has_C_Issue_color));
-                            pass_fail_str = "Fail";
-                            fail_count++;
-                        }
-                        else 
-                        {
-                            //String No_Issue_str = "Pass"; 
-                            //Color No_Issue_color = Color.Lime;
-                            //result_string.Add(new StyleString(No_Issue_str, No_Issue_color));
-                            pass_fail_str = "Pass";
-                            pass_count++;
-                        }
+                        //if (severity_count.Severity_A > 0)
+                        //{
+                        //    //String Has_A_Issue_str = "Fail"; // "NG"
+                        //    //Color Has_A_Issue_color = Issue.A_ISSUE_COLOR;
+                        //    //result_string.Add(new StyleString(Has_A_Issue_str, Has_A_Issue_color));
+                        //    pass_fail_str = "Fail";
+                        //    fail_count++;
+                        //}
+                        //else if (severity_count.Severity_B > 0)
+                        //{
+                        //    //String No_A_Has_B_Issue_str = "Fail"; // "Defect found"
+                        //    //Color No_A_Has_B_Issue_color = Issue.A_ISSUE_COLOR;
+                        //    //result_string.Add(new StyleString(No_A_Has_B_Issue_str, No_A_Has_B_Issue_color));
+                        //    pass_fail_str = "Fail";
+                        //    fail_count++;
+                        //}
+                        //else if (severity_count.Severity_C > 0)
+                        //{
+                        //    //String No_AB_Has_C_Issue_str = "Fail"; // "Minor Issue only"
+                        //    //Color No_AB_Has_C_Issue_color = Issue.A_ISSUE_COLOR;
+                        //    //result_string.Add(new StyleString(No_AB_Has_C_Issue_str, No_AB_Has_C_Issue_color));
+                        //    pass_fail_str = "Fail";
+                        //    fail_count++;
+                        //}
+                        //else if (severity_count.Severity_D > 0)
+                        //{
+                        //    //String No_AB_Has_C_Issue_str = "Fail"; // "Minor Issue only"
+                        //    //Color No_AB_Has_C_Issue_color = Issue.A_ISSUE_COLOR;
+                        //    //result_string.Add(new StyleString(No_AB_Has_C_Issue_str, No_AB_Has_C_Issue_color));
+                        //    pass_fail_str = "Fail";
+                        //    fail_count++;
+                        //}
+                        //else 
+                        //{
+                        //    //String No_Issue_str = "Pass"; 
+                        //    //Color No_Issue_color = Color.Lime;
+                        //    //result_string.Add(new StyleString(No_Issue_str, No_Issue_color));
+                        //    pass_fail_str = "Pass";
+                        //    pass_count++;
+                        //}
                         //StyleString.WriteStyleString(result_worksheet, keyword.ResultListAtRow, keyword.ResultListAtColumn, result_string);
                         // Pass/Fail only value is updated.
+                        // Judgement Result	Condition
+                        // Pass	All A/B/C/D Issues Closed; No Issue Waived
+                        // Conditional Pass	All A/B/C Issues either Closed or Waived 
+                        // Fail	Others
+                        if (severity_count.NotClosedCount() == 0)
+                        {
+                            pass_fail_str = PASS_str;
+                            pass_count++;
+                        }
+                        else if (severity_count.ABC_non_Wavied_IssueCount() == 0)
+                        {
+                            pass_fail_str = CONDITIONAL_PASS_str;
+                            conditional_pass_count++;
+                        }
+                        else
+                        {
+                            // fail
+                            pass_fail_str = FAIL_str;
+                            fail_count++;
+                        }
                         ExcelAction.SetCellValue(result_worksheet, keyword.ResultListAtRow, keyword.ResultListAtColumn, pass_fail_str);
 
                         ExcelAction.AutoFit_Row(result_worksheet, keyword.ResultListAtRow);
@@ -1073,12 +1182,17 @@ namespace ExcelReportApplication
                 if (fail_count > 0)
                 {
                     // Fail
-                    judgement_str = "Fail";
+                    judgement_str = FAIL_str;
                 }
-                else
+                else if (conditional_pass_count > 0)
+                {
+                    // conditional pass
+                    judgement_str = CONDITIONAL_PASS_str;
+                }
+                else 
                 {
                     // pass
-                    judgement_str = "Pass";
+                    judgement_str = PASS_str;
                 }
                 ExcelAction.SetCellValue(result_worksheet, TestReport.PassCnt_at_row, TestReport.PassCnt_at_col, pass_count);
                 ExcelAction.SetCellValue(result_worksheet, TestReport.FailCnt_at_row, TestReport.FailCnt_at_col, fail_count);
