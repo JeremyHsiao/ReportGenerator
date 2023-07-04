@@ -85,6 +85,7 @@ namespace ExcelReportApplication
             Issue.A_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_A_Issue_Color");
             Issue.B_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_B_Issue_Color");
             Issue.C_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_C_Issue_Color");
+            Issue.D_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_D_Issue_Color");
             KeywordReport.Auto_Correct_Sheetname = XMLConfig.ReadAppSetting_Boolean("Keyword_Auto_Correct_Worksheet");
             // end config for keyword report
         }
@@ -813,7 +814,6 @@ namespace ExcelReportApplication
                 case ReportGenerator.ReportType.TC_AutoCorrectReport_By_ExcelList:
                     if (!btnSelectExcelTestFile_Clicked)
                         txtStandardTestReport.Text = @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Copy_Report_Excel_List.xlsx";
-                    break;;
                     break;
                 default:
                     break;
