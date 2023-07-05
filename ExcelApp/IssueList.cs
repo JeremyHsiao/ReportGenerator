@@ -513,6 +513,9 @@ namespace ExcelReportApplication
                         case 'C':
                             color_by_severity = Issue.C_ISSUE_COLOR;
                             break;
+                        case 'D':
+                            color_by_severity = Issue.D_ISSUE_COLOR;
+                            break;
                         default:
                             color_by_severity = Color.Black;
                             break;
