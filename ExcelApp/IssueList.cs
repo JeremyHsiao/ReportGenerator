@@ -359,6 +359,7 @@ namespace ExcelReportApplication
         static public Color C_ISSUE_COLOR = Color.Black;
         static public Color D_ISSUE_COLOR = Color.Black;
         static public Color WAIVED_ISSUE_COLOR = Color.Black;
+        static public Color CLOSED_ISSUE_COLOR = Color.Black;
 
         static public List<Issue> GenerateIssueList(string buglist_filename)
         {
@@ -512,11 +513,13 @@ namespace ExcelReportApplication
 
                 if (key != "")
                 {
-                    Color color_by_severity;
+                    Color color_by_severity = Issue.CLOSED_ISSUE_COLOR;
                     String waive_str ="";
                     if (issue.Status == Issue.STR_CLOSE)
                     {
-                        continue; // skip this issue if closed
+                        // Use Default
+                        //color_by_severity = Color.Black;
+                        //waive_str = "";
                     }
                     else if (issue.Status == Issue.STR_WAIVE)
                     {
@@ -538,10 +541,11 @@ namespace ExcelReportApplication
                                 break;
                             case 'D':
                                 color_by_severity = Issue.D_ISSUE_COLOR;
-                            break;
-                                default:
-                                color_by_severity = Color.Black;
-                            break;
+                                break;
+                            default:
+                                // Use Default
+                                //color_by_severity = Color.Black;
+                                break;
                         }
 
                     }
