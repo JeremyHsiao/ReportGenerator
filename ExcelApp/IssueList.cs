@@ -28,6 +28,7 @@ namespace ExcelReportApplication
         };
 
         public static int severity_count = (int)SeverityOrder.COUNT;
+        //public static int severity_count = Enum.GetNames(typeof(SeverityOrder)).Length;
         private int[] count = new int[severity_count];
         public int Severity_A   // property
         {
