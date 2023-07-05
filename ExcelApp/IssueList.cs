@@ -508,30 +508,53 @@ namespace ExcelReportApplication
             foreach (Issue issue in issuelist)
             {
                 List<StyleString> value_style_str = new List<StyleString>();
-                String key = issue.Key, rd_comment_str = issue.comment;
+                String key = issue.Key;  // rd_comment_str = issue.comment;
 
                 if (key != "")
                 {
                     Color color_by_severity;
-                    switch (issue.Severity[0])
+                    String waive_str ="";
+                    if (issue.Status == Issue.STR_CLOSE)
                     {
-                        case 'A':
-                            color_by_severity = Issue.A_ISSUE_COLOR;
-                            break;
-                        case 'B':
-                            color_by_severity = Issue.B_ISSUE_COLOR;
-                            break;
-                        case 'C':
-                            color_by_severity = Issue.C_ISSUE_COLOR;
-                            break;
-                        case 'D':
-                            color_by_severity = Issue.D_ISSUE_COLOR;
-                            break;
-                        default:
-                            color_by_severity = Color.Black;
-                            break;
+                        continue; // skip this issue if closed
                     }
-                    String str = key + issue.Summary + "(" + issue.Severity + ")";
+                    else if (issue.Status == Issue.STR_WAIVE)
+                    {
+                        waive_str = KeywordReport.WAIVED_str;
+                        color_by_severity = Issue.WAIVED_ISSUE_COLOR;
+                    }
+                    else // if ((issue.Status != Issue.STR_CLOSE) && (issue.Status != Issue.STR_WAIVE))
+                    {
+                        switch (issue.Severity[0])
+                        {
+                            case 'A':
+                                color_by_severity = Issue.A_ISSUE_COLOR;
+                                break;
+                            case 'B':
+                                color_by_severity = Issue.B_ISSUE_COLOR;
+                                break;
+                            case 'C':
+                                color_by_severity = Issue.C_ISSUE_COLOR;
+                                break;
+                            case 'D':
+                                color_by_severity = Issue.D_ISSUE_COLOR;
+                            break;
+                                default:
+                                color_by_severity = Color.Black;
+                            break;
+                        }
+
+                    }
+
+                    String str;
+                    if (waive_str != "")
+                    {
+                        str = key + issue.Summary + "(" + issue.Severity + ")";
+                    }
+                    else
+                    {
+                        str = key + issue.Summary + "(" + issue.Severity + ")" + "(" + waive_str + ")";
+                    }
                     StyleString style_str = new StyleString(str, color_by_severity);
                     value_style_str.Add(style_str);
                     // Add whole string into return_list

@@ -316,6 +316,7 @@ namespace ExcelReportApplication
         public static String PASS_str = "Pass";
         public static String CONDITIONAL_PASS_str = "Conditional Pass";
         public static String FAIL_str = "Fail";
+        public static String WAIVED_str = "Waived";
 
         public static Boolean Auto_Correct_Sheetname = false;
 
@@ -1102,7 +1103,7 @@ namespace ExcelReportApplication
                         // Fail: any issue
                         // (A/B/C) = (xx/oo/vv)
                         //List<StyleString> result_string = new List<StyleString>();
-                        String pass_fail_str = "Fail";
+                        String pass_fail_str = FAIL_str;
                         //if (severity_count.Severity_A > 0)
                         //{
                         //    //String Has_A_Issue_str = "Fail"; // "NG"
