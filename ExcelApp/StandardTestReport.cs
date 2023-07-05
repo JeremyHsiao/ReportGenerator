@@ -24,11 +24,58 @@ namespace ExcelReportApplication
     public class CopyTestReport
     {
         public String source_path;
+        public String source_folder;
         public String source_group;
         public String source_filename;
         public String destination_path;
+        public String destination_folder;
         public String destination_group;
         public String destination_filename;
+
+        public String Get_SRC_Directory()
+        {
+            String path = this.source_path;
+            if (this.source_folder != "")
+            {
+                path = Storage.CominePath(path, this.source_folder);
+            }
+            if (this.source_group != "")
+            {
+                path = Storage.CominePath(path, this.source_group);
+            }
+            return path;
+        }
+
+        public String Get_DEST_Directory()
+        {
+            String path = this.destination_path;
+            if (this.destination_folder != "")
+            {
+                path = Storage.CominePath(path, this.destination_folder);
+            }
+            if (this.destination_group != "")
+            {
+                path = Storage.CominePath(path, this.destination_group);
+            }
+            return path;
+        }
+
+        public String Get_SRC_FullFilePath()
+        {
+            String path = this.Get_SRC_Directory();
+            String file = this.source_filename + ".xlsx";
+            String fullfilepath = Storage.GetValidFullFilename(path, file);
+            return fullfilepath;
+        }
+
+        public String Get_DEST_FullFilePath()
+        {
+            String path = this.Get_DEST_Directory();
+            String file = this.destination_filename + ".xlsx";
+            String fullfilepath = Storage.GetValidFullFilename(path, file);
+            return fullfilepath;
+        }
+
     }
     public enum Header_Update
     {
@@ -148,50 +195,50 @@ namespace ExcelReportApplication
             return true;
         }
 
-        public static bool CopyTestReportbyExcelList(List<CopyTestReport> report_list)
-        {
-            //public String source_path;
-            //public String source_group;
-            //public String source_filename;
-            //public String destination_path;
-            //public String destination_group;
-            //public String destination_filename;
+        //public static bool CopyTestReportbyExcelList(List<CopyTestReport> report_list)
+        //{
+        //    //public String source_path;
+        //    //public String source_folder;
+        //    //public String source_group;
+        //    //public String source_filename;
+        //    //public String destination_path;
+        //    //public String destination_folder;
+        //    //public String destination_group;
+        //    //public String destination_filename;
 
-            Dictionary<String,String> copy_list = new Dictionary<String,String>();
-            foreach (CopyTestReport copy_report in report_list)
-            {
-                String src_path = Storage.CominePath(copy_report.source_path, copy_report.source_group);
-                String src_file = copy_report.source_filename + ".xlsx";
-                String src_fullfilename = Storage.GetValidFullFilename(src_path, src_file);
-                if (!Storage.FileExists(src_fullfilename))
-                    continue;
+        //    Dictionary<String,String> copy_list = new Dictionary<String,String>();
+        //    foreach (CopyTestReport copy_report in report_list)
+        //    {
+        //        String src_path = copy_report.Get_SRC_Directory();
+        //        String src_fullfilename = copy_report.Get_SRC_FullFilePath();
+        //        if (!Storage.FileExists(src_fullfilename))
+        //            continue;
 
-                String dest_path = Storage.CominePath(copy_report.destination_path, copy_report.destination_group);
-                String dest_file = copy_report.destination_filename + ".xlsx";
-                String dest_fullfilename = Storage.GetValidFullFilename(dest_path, dest_file);
-                copy_list.Add(src_fullfilename,dest_fullfilename);
-            }
+        //        String dest_path = copy_report.Get_DEST_Directory();
+        //        String dest_fullfilename = copy_report.Get_DEST_FullFilePath();
+        //        copy_list.Add(src_fullfilename,dest_fullfilename);
+        //    }
 
-            // copy report files.
-            List<String> report_actually_copied_list_src = new List<String>();
-            List<String> report_actually_copied_list_dest = new List<String>();
-            // use Auto Correct Function to copy and auto-correct.
+        //    // copy report files.
+        //    List<String> report_actually_copied_list_src = new List<String>();
+        //    List<String> report_actually_copied_list_dest = new List<String>();
+        //    // use Auto Correct Function to copy and auto-correct.
 
-            foreach (String src in copy_list.Keys)
-            {
-                String dest = copy_list[src];
-                if (AutoCorrectReport_SingleFile(source_file: src, destination_file: dest))
-                {
-                    report_actually_copied_list_src.Add(src);
-                    report_actually_copied_list_dest.Add(dest);
-                }
-            }
+        //    foreach (String src in copy_list.Keys)
+        //    {
+        //        String dest = copy_list[src];
+        //        if (AutoCorrectReport_SingleFile(source_file: src, destination_file: dest))
+        //        {
+        //            report_actually_copied_list_src.Add(src);
+        //            report_actually_copied_list_dest.Add(dest);
+        //        }
+        //    }
 
-            if (report_actually_copied_list_src.Count > 0)
-                return true;
-            else
-                return false;
-        }
+        //    if (report_actually_copied_list_src.Count > 0)
+        //        return true;
+        //    else
+        //        return false;
+        //}
 
         //public static bool CopyTestReportbyTestCase(String report_Src, String output_report_dir)
         //{
@@ -571,6 +618,55 @@ namespace ExcelReportApplication
             return file_has_been_updated;
         }
 //
+        //public enum InputExcelIndex
+        //{
+        //    SRC_PATH = 0,
+        //    SRC_ASSIGNEE,
+        //    SEVERITY,
+        //    COMMENT,
+        //    STATUS,
+        //    REPORTER,
+        //    ASSIGNEE,
+        //    DUEDATE,
+        //    TESTCASEID,
+        //    BUGTYPE,
+        //    SWVERSION,
+        //    HWVERSION,
+        //    LINKEDISSUE,
+        //    ADDITIONALINFO,
+        //}
+
+        //public static int IssueListMemberCount = Enum.GetNames(typeof(IssueListMemberIndex)).Length;
+
+
+        //public const string col_SRC_PATH = "Source Path";
+        //public const string col_SRC_ASSIGNEE = "Source Assignee";
+        //public const string col_SRC_GROUP = "Source Report";
+        //public const string col_SRC_REPORT = "Source Report";
+        //public const string col_DEST_PATH = "Destination Path";
+        //public const string col_DEST_ASSIGNEE = "Destination Assignee";
+        //public const string col_DEST_GROUP = "Destination Group";
+        //public const string col_DEST_REPORT = "Destination Report";
+
+        //// The sequence of this String[] must be aligned with enum IssueListMemberIndex (except no need to have string for MAX_NO)
+        //static String[] IssueListMemberColumnName = 
+        //{ 
+        //    col_Key,
+        //    col_Summary,
+        //    col_Severity,
+        //    col_RD_Comment,
+        //    col_Status,
+        //    col_Reporter,
+        //    col_Assignee,
+        //    col_DueDate,
+        //    col_TestCaseID,
+        //    col_BugType,
+        //    col_SWVersion,
+        //    col_HWVersion,
+        //    col_LinkedIssue,
+        //    col_AdditionalInfo
+        //};
+
         static public bool AutoCorrectReport_by_Excel(String input_excel_file)
         {
             // open excel and read and close excel
@@ -583,9 +679,11 @@ namespace ExcelReportApplication
             }
             Worksheet ws = wb.ActiveSheet;
             //public String source_path;
+            //public String source_folder;
             //public String source_group;
             //public String source_filename;
             //public String destination_path;
+            //public String destination_folder;
             //public String destination_group;
             //public String destination_filename;
             Boolean bStillReadingExcel = true;
@@ -601,9 +699,11 @@ namespace ExcelReportApplication
                 ctp.source_path = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
                 if (ctp.source_path != "")
                 {
+                    ctp.source_folder = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
                     ctp.source_group = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
                     ctp.source_filename = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
                     ctp.destination_path = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
+                    ctp.destination_folder = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
                     ctp.destination_group = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
                     ctp.destination_filename = ExcelAction.GetCellTrimmedString(ws, row_index, col_index);
                     report_list.Add(ctp);
@@ -621,18 +721,19 @@ namespace ExcelReportApplication
 
             // create list of source and destination
             Dictionary<String, String> copy_list = new Dictionary<String, String>();
+            List<String> report_to_be_copied_list_src = new List<String>();
+            List<String> report_to_be_copied_list_dest = new List<String>();
             foreach (CopyTestReport copy_report in report_list)
             {
-                String src_path = Storage.CominePath(copy_report.source_path, copy_report.source_group);
-                String src_file = copy_report.source_filename + ".xlsx";
-                String src_fullfilename = Storage.GetValidFullFilename(src_path, src_file);
+                String src_path = copy_report.Get_SRC_Directory();
+                String src_fullfilename = copy_report.Get_SRC_FullFilePath();
                 if (!Storage.FileExists(src_fullfilename))
                     continue;
 
-                String dest_path = Storage.CominePath(copy_report.destination_path, copy_report.destination_group);
-                String dest_file = copy_report.destination_filename + ".xlsx";
-                String dest_fullfilename = Storage.GetValidFullFilename(dest_path, dest_file);
-                copy_list.Add(src_fullfilename, dest_fullfilename);
+                String dest_path = copy_report.Get_DEST_Directory();
+                String dest_fullfilename = copy_report.Get_DEST_FullFilePath();
+                report_to_be_copied_list_src.Add(src_fullfilename);
+                report_to_be_copied_list_dest.Add(dest_fullfilename);
             }
 
             // auto-correct report files.
@@ -640,9 +741,10 @@ namespace ExcelReportApplication
             List<String> report_actually_copied_list_dest = new List<String>();
             // use Auto Correct Function to copy and auto-correct.
 
-            foreach (String src in copy_list.Keys)
+            for(int index = 0; index < report_to_be_copied_list_src.Count; index++)
             {
-                String dest = copy_list[src];
+                String  src = report_to_be_copied_list_src[index], 
+                        dest = report_to_be_copied_list_dest[index];
                 if (AutoCorrectReport_SingleFile(source_file: src, destination_file: dest, always_save:true))
                 {
                     report_actually_copied_list_src.Add(src);
