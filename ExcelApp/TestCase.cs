@@ -209,8 +209,9 @@ namespace ExcelReportApplication
             col_StepsToReproduce
         };
 
-        static public String STR_PASS = @"Pass";
-        static public String STR_FAIL = @"Fail";
+        static public String STR_FINISHED = @"Finished";
+        static public String STR_BLOCKED = @"Blocked";
+        static public String STR_TESTING = @"Testing";
         static public String STR_NONE = @"None";
 
         static public int NameDefinitionRow = 4;

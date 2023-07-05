@@ -562,26 +562,31 @@ namespace ExcelReportApplication
             }
 
             // Prepare several lists to separate TC into different groups
-            List<String> tc_pass = new List<String>();                      // TC Status is Pass
-            List<String> tc_none = new List<String>();                      // TC Status is None
-            List<String> tc_fail_empty_link_issue = new List<String>();     // TC Status is Fail AND Links are empty
-            List<String> tc_fail_some_nonclosed = new List<String>();       // TC Status is Fail AND Links have at least one non-closed issue
-            List<String> tc_fail_all_closed = new List<String>();           // TC Status is Fail AND Links are all closed
+            List<String> tc_finished = new List<String>();                     // TC Status is Finished
+            List<String> tc_testing = new List<String>();                      // TC Status is Testing
+            List<String> tc_none = new List<String>();                         // TC Status is None
+            List<String> tc_blocked_empty_link_issue = new List<String>();     // TC Status is Blocked AND Links are empty
+            List<String> tc_blocked_some_nonclosed = new List<String>();       // TC Status is Blocked AND Links have at least one non-closed issue
+            List<String> tc_blocked_all_closed = new List<String>();           // TC Status is Blocked AND Links are all closed
 
             // looping all TC where links are not empty
             foreach (TestCase tc in global_testcase_list) // looping
             {
-                if (tc.Status == TestCase.STR_PASS)
+                if (tc.Status == TestCase.STR_FINISHED)
                 {
-                    tc_pass.Add(tc.Key);
+                    tc_finished.Add(tc.Key);
                 }
                 else if (tc.Status == TestCase.STR_NONE)
+                {
+                    tc_testing.Add(tc.Key);
+                }
+                else if (tc.Status == TestCase.STR_TESTING)
                 {
                     tc_none.Add(tc.Key);
                 }
                 else if (tc.Links.Trim() == "") // fail but empty linked issue
                 {
-                    tc_fail_empty_link_issue.Add(tc.Key);
+                    tc_blocked_empty_link_issue.Add(tc.Key);
                 }
                 else
                 {
@@ -590,11 +595,11 @@ namespace ExcelReportApplication
                     if (LinkIssue_CloseIssue_intersect.Count() != LinkedIssueKey.Count())
                     {
                         // One ore more linked issue are not close (or close-alike), add into this list
-                        tc_fail_some_nonclosed.Add(tc.Key);
+                        tc_blocked_some_nonclosed.Add(tc.Key);
                     }
                     else
                     {
-                        tc_fail_all_closed.Add(tc.Key);
+                        tc_blocked_all_closed.Add(tc.Key);
                     }
                 }
             }
@@ -641,8 +646,8 @@ namespace ExcelReportApplication
                         if (key.Contains(TestCase.KeyPrefix) == false) { break; } // If not a TC key in this row, go to next row
 
                         bool blToHide = false;
-                        if (tc_fail_all_closed.Count == 0) { blToHide = true; }
-                        else if (tc_fail_all_closed.IndexOf(key) < 0) { blToHide = true; }
+                        if (tc_blocked_all_closed.Count == 0) { blToHide = true; }
+                        else if (tc_blocked_all_closed.IndexOf(key) < 0) { blToHide = true; }
                         if (blToHide)
                         {
                             if (hide_row_start <= 0)
