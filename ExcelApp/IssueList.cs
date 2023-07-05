@@ -109,6 +109,16 @@ namespace ExcelReportApplication
             return total_count;
         }
 
+        public int TotalWaived()
+        {
+            int total_count = 0;
+            for (int index = (int)SeverityOrder.Waived_A; index <= (int)SeverityOrder.Waived_D; index++) // count all
+            {
+                total_count += count[index];
+            }
+            return total_count;
+        }
+
         public int NotClosedCount()
         {
             int total_count = 0;
@@ -348,6 +358,7 @@ namespace ExcelReportApplication
         static public Color B_ISSUE_COLOR = Color.DarkOrange;
         static public Color C_ISSUE_COLOR = Color.Black;
         static public Color D_ISSUE_COLOR = Color.Black;
+        static public Color WAIVED_ISSUE_COLOR = Color.Black;
 
         static public List<Issue> GenerateIssueList(string buglist_filename)
         {
