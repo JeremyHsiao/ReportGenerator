@@ -1196,7 +1196,8 @@ namespace ExcelReportApplication
                 }
                 ExcelAction.SetCellValue(result_worksheet, TestReport.PassCnt_at_row, TestReport.PassCnt_at_col, pass_count);
                 ExcelAction.SetCellValue(result_worksheet, TestReport.FailCnt_at_row, TestReport.FailCnt_at_col, fail_count);
-                ExcelAction.SetCellValue(result_worksheet, TestReport.TotalCnt_at_row, TestReport.TotalCnt_at_col, fail_count + pass_count);
+                ExcelAction.SetCellValue(result_worksheet, TestReport.ConditionalPass_string_at_row, TestReport.ConditionalPass_string_at_col, CONDITIONAL_PASS_str+":");
+                ExcelAction.SetCellValue(result_worksheet, TestReport.ConditionalPassCnt_at_row, TestReport.ConditionalPassCnt_at_col, conditional_pass_count);
                 ExcelAction.SetCellValue(result_worksheet, TestReport.Judgement_at_row, TestReport.Judgement_at_col, judgement_str);
 
                 // 3.4. Save the file to either 
