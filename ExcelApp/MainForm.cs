@@ -397,17 +397,20 @@ namespace ExcelReportApplication
         {
             int report_index = Get_comboBoxReportSelect_SelectedIndex();
             bool sel_file = true;
+            String init_dir;
             switch (ReportGenerator.ReportTypeFromInt(report_index))
             {
                 case ReportGenerator.ReportType.FullIssueDescription_TC_report_judgement:
                 case ReportGenerator.ReportType.TC_TestReportCreation:
                     //case ReportGenerator.ReportType.FindAllKeywordInReport:
                     sel_file = false;  // Here select directory instead of file
+                    init_dir = txtStandardTestReport.Text;
+                    break;
+                default:
+                    init_dir = Storage.GetFullPath(txtStandardTestReport.Text);
                     break;
             }
 
-            String init_dir = Storage.GetFullPath(txtStandardTestReport.Text);
-            //String ret_str = Storage.UsesrSelectFilename(init_dir: init_dir,);
             String ret_str = SelectDirectoryOrFile(init_dir, sel_file);
             if (ret_str != "")
             {
@@ -420,17 +423,20 @@ namespace ExcelReportApplication
         {
             int report_index = Get_comboBoxReportSelect_SelectedIndex();
             bool sel_file = true;
+            String init_dir;
             switch (ReportGenerator.ReportTypeFromInt(report_index))
             {
                 case ReportGenerator.ReportType.KeywordIssue_Report_Directory:
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
                 case ReportGenerator.ReportType.TC_TestReportCreation:
                 case ReportGenerator.ReportType.TC_AutoCorrectReport_By_Filename:
+                    init_dir = txtReportFile.Text;
                     sel_file = false;  // Here select directory instead of file
                     break;
+                default:
+                    init_dir = Storage.GetFullPath(txtReportFile.Text);
+                    break;
             }
-
-            String init_dir = Storage.GetFullPath(btnSelectReportFile.Text);
             String ret_str = SelectDirectoryOrFile(init_dir, sel_file);
             if (ret_str != "")
             {
@@ -781,7 +787,7 @@ namespace ExcelReportApplication
                     break;
                 case ReportGenerator.ReportType.KeywordIssue_Report_Directory:
                     if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = @".\SampleData\More chapters_TestCaseID";
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     break;
                 case ReportGenerator.ReportType.TC_Likely_Passed:
                     if (!btnSelectReportFile_Clicked)
