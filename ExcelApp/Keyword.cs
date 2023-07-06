@@ -1086,12 +1086,14 @@ namespace ExcelReportApplication
                         if (issue_count > 0)
                         {
                             bug_status_string.Add(new StyleString(issue_count.ToString() + " Waived", Issue.WAIVED_ISSUE_COLOR));
+                            StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 4, bug_status_string);
                         }
                         else
                         {
-                            bug_status_string.Add(new StyleString("No Waived", Color.Black));
+                            //bug_status_string.Add(new StyleString("No Waived", Color.Black));
+                            //StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 4, bug_status_string);
                         }
-                        StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 4, bug_status_string);
+                        //StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 4, bug_status_string);
                         bug_status_string.Clear();
 
                         // Output Result:
