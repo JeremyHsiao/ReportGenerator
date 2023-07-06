@@ -537,63 +537,63 @@ namespace ExcelReportApplication
         }
 
         // This function is used to get judgement result (only read and no update to report) of test report
-        static public Boolean GetAllKeywordIssueOnReport(String report_filename, String report_sheetname, out StyleString issue_list_str)
-        {
-            Boolean b_ret = false;
-            StyleString ret_str = new StyleString(); 
+        //static public Boolean GetAllKeywordIssueOnReport(String report_filename, String report_sheetname, out StyleString issue_list_str)
+        //{
+        //    Boolean b_ret = false;
+        //    StyleString ret_str = new StyleString(); 
 
-            // 1. Open Excel and find the sheet
-            // File exist check is done outside
-            Workbook wb_report = ExcelAction.OpenExcelWorkbook(report_filename);
-            if (wb_report == null)
-            {
-                ConsoleWarning("ERR: Open workbook in " + System.Reflection.MethodBase.GetCurrentMethod().Name + ": " + report_filename);
-                issue_list_str = ret_str;
-                b_ret = false;
-            }
-            else
-            {
-                // 2 Open worksheet
-                Worksheet ws_report = ExcelAction.Find_Worksheet(wb_report, report_sheetname);
-                if (ws_report == null)
-                {
-                    ConsoleWarning("ERR: Open worksheet in " + System.Reflection.MethodBase.GetCurrentMethod().Name + ": " + report_filename + " sheet: " + report_sheetname);
-                    issue_list_str = ret_str;
-                    b_ret = false;
-                }
-                else
-                {
-                    TestPlan report_testplan = TestPlan.CreateTempPlanFromFile(report_filename);
+        //    // 1. Open Excel and find the sheet
+        //    // File exist check is done outside
+        //    Workbook wb_report = ExcelAction.OpenExcelWorkbook(report_filename);
+        //    if (wb_report == null)
+        //    {
+        //        ConsoleWarning("ERR: Open workbook in " + System.Reflection.MethodBase.GetCurrentMethod().Name + ": " + report_filename);
+        //        issue_list_str = ret_str;
+        //        b_ret = false;
+        //    }
+        //    else
+        //    {
+        //        // 2 Open worksheet
+        //        Worksheet ws_report = ExcelAction.Find_Worksheet(wb_report, report_sheetname);
+        //        if (ws_report == null)
+        //        {
+        //            ConsoleWarning("ERR: Open worksheet in " + System.Reflection.MethodBase.GetCurrentMethod().Name + ": " + report_filename + " sheet: " + report_sheetname);
+        //            issue_list_str = ret_str;
+        //            b_ret = false;
+        //        }
+        //        else
+        //        {
+        //            TestPlan report_testplan = TestPlan.CreateTempPlanFromFile(report_filename);
 
-                    // 3. Get Keyword issue list
-                    List<TestPlanKeyword> keyword_report = KeywordReport.ListKeyword_SingleReport(report_testplan);
+        //            // 3. Get Keyword issue list
+        //            List<TestPlanKeyword> keyword_report = KeywordReport.ListKeyword_SingleReport(report_testplan);
 
-                    foreach (TestPlanKeyword tp_keyword in keyword_report)
-                    {
-                        int row = tp_keyword.BugListAtRow, col = tp_keyword.BugListAtColumn;
-                    }
+        //            foreach (TestPlanKeyword tp_keyword in keyword_report)
+        //            {
+        //                int row = tp_keyword.BugListAtRow, col = tp_keyword.BugListAtColumn;
+        //            }
 
-                    //List<TestPlanKeyword> ws_keyword_list = KeywordReport.FilterSingleReportKeyword(keyword_list, report_workbook, report_worksheet);
+        //            //List<TestPlanKeyword> ws_keyword_list = KeywordReport.FilterSingleReportKeyword(keyword_list, report_workbook, report_worksheet);
 
 
-                    Object obj = ExcelAction.GetCellValue(ws_report, TestReport.Judgement_at_row, TestReport.Judgement_at_col);
-                    if (obj != null)
-                    {
-                        //issue_list_str = obj;
-                        b_ret = true;
-                    }
-                    else
-                    {
-                        issue_list_str = ret_str;
-                        b_ret = false;
-                    }
-                }
+        //            Object obj = ExcelAction.GetCellValue(ws_report, TestReport.Judgement_at_row, TestReport.Judgement_at_col);
+        //            if (obj != null)
+        //            {
+        //                //issue_list_str = obj;
+        //                b_ret = true;
+        //            }
+        //            else
+        //            {
+        //                issue_list_str = ret_str;
+        //                b_ret = false;
+        //            }
+        //        }
 
-                // Close excel if open succeeds
-                ExcelAction.CloseExcelWorkbook(wb_report);
-            }
-            return b_ret;
-        }
+        //        // Close excel if open succeeds
+        //        ExcelAction.CloseExcelWorkbook(wb_report);
+        //    }
+        //    return b_ret;
+        //}
 
         static private void ConsoleWarning(String function, int row)
         {
