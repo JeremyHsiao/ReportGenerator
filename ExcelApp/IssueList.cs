@@ -73,22 +73,22 @@ namespace ExcelReportApplication
         public int Closed_A   // property
         {
             get { return count[(int)SeverityOrder.Closed_A]; }   // get method
-            set { count[(int)SeverityOrder.Waived_A] = value; }  // set method
+            set { count[(int)SeverityOrder.Closed_A] = value; }  // set method
         }
         public int Closed_B   // property
         {
             get { return count[(int)SeverityOrder.Closed_B]; }   // get method
-            set { count[(int)SeverityOrder.Waived_B] = value; }  // set method
+            set { count[(int)SeverityOrder.Closed_B] = value; }  // set method
         }
         public int Closed_C   // property
         {
             get { return count[(int)SeverityOrder.Closed_C]; }   // get method
-            set { count[(int)SeverityOrder.Waived_C] = value; }  // set method
+            set { count[(int)SeverityOrder.Closed_C] = value; }  // set method
         }
         public int Closed_D   // property
         {
             get { return count[(int)SeverityOrder.Closed_D]; }   // get method
-            set { count[(int)SeverityOrder.Waived_D] = value; }  // set method
+            set { count[(int)SeverityOrder.Closed_D] = value; }  // set method
         }
 
         public IssueCount() 
@@ -112,7 +112,7 @@ namespace ExcelReportApplication
         public int TotalWaived()
         {
             int total_count = 0;
-            for (int index = (int)SeverityOrder.Waived_A; index <= (int)SeverityOrder.Waived_D; index++) // count all
+            for (int index = (int)SeverityOrder.Waived_A; index <= (int)SeverityOrder.Waived_D; index++) // count all waived
             {
                 total_count += count[index];
             }
@@ -360,6 +360,7 @@ namespace ExcelReportApplication
         static public Color D_ISSUE_COLOR = Color.Black;
         static public Color WAIVED_ISSUE_COLOR = Color.Black;
         static public Color CLOSED_ISSUE_COLOR = Color.Black;
+        static public Color ISSUE_DEFAULT_COLOR = Color.Black;
 
         static public List<Issue> GenerateIssueList(string buglist_filename)
         {
@@ -510,21 +511,19 @@ namespace ExcelReportApplication
             {
                 List<StyleString> value_style_str = new List<StyleString>();
                 String key = issue.Key;  // rd_comment_str = issue.comment;
+                Boolean is_waived = false;
 
                 if (key != "")
                 {
-                    Color color_by_severity = Issue.CLOSED_ISSUE_COLOR;
-                    String waive_str ="";
+                    Color color_by_severity = Issue.ISSUE_DEFAULT_COLOR;
                     if (issue.Status == Issue.STR_CLOSE)
                     {
-                        // Use Default
-                        //color_by_severity = Color.Black;
-                        //waive_str = "";
+                        color_by_severity = Issue.CLOSED_ISSUE_COLOR;
                     }
                     else if (issue.Status == Issue.STR_WAIVE)
                     {
-                        waive_str = KeywordReport.WAIVED_str;
                         color_by_severity = Issue.WAIVED_ISSUE_COLOR;
+                        is_waived = true;
                     }
                     else // if ((issue.Status != Issue.STR_CLOSE) && (issue.Status != Issue.STR_WAIVE))
                     {
@@ -544,20 +543,16 @@ namespace ExcelReportApplication
                                 break;
                             default:
                                 // Use Default
-                                //color_by_severity = Color.Black;
-                                break;
+                               break;
                         }
 
                     }
 
                     String str;
-                    if (waive_str != "")
+                    str = key + issue.Summary + "(" + issue.Severity + ")";
+                    if (is_waived)
                     {
-                        str = key + issue.Summary + "(" + issue.Severity + ")";
-                    }
-                    else
-                    {
-                        str = key + issue.Summary + "(" + issue.Severity + ")" + "(" + waive_str + ")";
+                        str += "(" + KeywordReport.WAIVED_str + ")";
                     }
                     StyleString style_str = new StyleString(str, color_by_severity);
                     value_style_str.Add(style_str);

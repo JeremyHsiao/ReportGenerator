@@ -1152,33 +1152,36 @@ namespace ExcelReportApplication
                         // Fail	Others
                         if (severity_count.NotClosedCount() == 0)
                         {
+                            // all issue closed
                             pass_fail_str = PASS_str;
                             pass_count++;
                         }
-                        else if (severity_count.ABC_non_Wavied_IssueCount() == 0)
+                        else if (severity_count.ABC_non_Wavied_IssueCount() > 0)
                         {
-                            pass_fail_str = CONDITIONAL_PASS_str;
-                            conditional_pass_count++;
+                            // any issue of ABC, non-closed & non-waived issue 
+                            pass_fail_str = FAIL_str;
+                            fail_count++;
                         }
                         else
                         {
-                            // fail
-                            pass_fail_str = FAIL_str;
-                            fail_count++;
+                            // only D or waived issue 
+                            pass_fail_str = CONDITIONAL_PASS_str;
+                            conditional_pass_count++;
                         }
                         ExcelAction.SetCellValue(result_worksheet, keyword.ResultListAtRow, keyword.ResultListAtColumn, pass_fail_str);
 
                         ExcelAction.AutoFit_Row(result_worksheet, keyword.ResultListAtRow);
                         ExcelAction.AutoFit_Row(result_worksheet, keyword.BugListAtRow);
-                        issue_count = severity_count.Severity_A + severity_count.Severity_B + severity_count.Severity_C;
-                        if (issue_count >= 1)
+                        // issue_count = severity_count.Severity_A + severity_count.Severity_B + severity_count.Severity_C;
+                        //if (issue_count >= 1)
+                        if (severity_count.NotClosedCount() != 0)
                         {
                             double single_row_height = ExcelAction.Get_Row_Height(result_worksheet, keyword.BugListAtRow);
                             ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, single_row_height * issue_count * 0.8 + 0.2);
                         }
                         else
                         {
-                            // hide row if no bug list at all
+                            // Hide bug list row only when there isn't any non-closed issue at all (all issues must be closed)
                             ExcelAction.Hide_Row(result_worksheet, keyword.BugListAtRow);
                         }
                         //ExcelAction.CellTextAlignLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
