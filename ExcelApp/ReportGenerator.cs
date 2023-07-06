@@ -382,9 +382,10 @@ namespace ExcelReportApplication
                         continue; // no warning here, simply skip this file.
 
                     String full_filename = Storage.GetFullPath(name);
-                    String short_filename = Storage.GetFileName(full_filename);
-                    String[] sp_str = short_filename.Split(new Char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
-                    String sheet_name = sp_str[0];
+                    //String short_filename = Storage.GetFileName(full_filename);
+                    //String[] sp_str = short_filename.Split(new Char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+                    //String sheet_name = sp_str[0];
+                    String sheet_name = TestPlan.GetSheetNameAccordingToFilename(name);
                     try
                     {
                         report_list.Add(sheet_name, full_filename);
@@ -459,7 +460,7 @@ namespace ExcelReportApplication
                 if (report_list.ContainsKey(worksheet_name))
                 {
                     String current_status = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, status_col, IsTemplate: true);
-                    if (current_status == "Finished")
+                    if (current_status == TestCase.STR_FINISHED)
                     {
                         // If current_status is "Finished" in excel report, it will be updated according to judgement of corresponding test report.
                         String workbook_filename = report_list[worksheet_name];
@@ -469,6 +470,10 @@ namespace ExcelReportApplication
                         {
                             ExcelAction.SetTestCaseCell(excel_row_index, status_col, judgement_str, IsTemplate: true);
                         }
+                    }
+                    else
+                    {
+                        // no update at the moment
                     }
                 }
             }
@@ -527,6 +532,65 @@ namespace ExcelReportApplication
 
                 // Close excel if open succeeds
                 ExcelAction.CloseExcelWorkbook(wb_judgement);
+            }
+            return b_ret;
+        }
+
+        // This function is used to get judgement result (only read and no update to report) of test report
+        static public Boolean GetAllKeywordIssueOnReport(String report_filename, String report_sheetname, out StyleString issue_list_str)
+        {
+            Boolean b_ret = false;
+            StyleString ret_str = new StyleString(); 
+
+            // 1. Open Excel and find the sheet
+            // File exist check is done outside
+            Workbook wb_report = ExcelAction.OpenExcelWorkbook(report_filename);
+            if (wb_report == null)
+            {
+                ConsoleWarning("ERR: Open workbook in " + System.Reflection.MethodBase.GetCurrentMethod().Name + ": " + report_filename);
+                issue_list_str = ret_str;
+                b_ret = false;
+            }
+            else
+            {
+                // 2 Open worksheet
+                Worksheet ws_report = ExcelAction.Find_Worksheet(wb_report, report_sheetname);
+                if (ws_report == null)
+                {
+                    ConsoleWarning("ERR: Open worksheet in " + System.Reflection.MethodBase.GetCurrentMethod().Name + ": " + report_filename + " sheet: " + report_sheetname);
+                    issue_list_str = ret_str;
+                    b_ret = false;
+                }
+                else
+                {
+                    TestPlan report_testplan = TestPlan.CreateTempPlanFromFile(report_filename);
+
+                    // 3. Get Keyword issue list
+                    List<TestPlanKeyword> keyword_report = KeywordReport.ListKeyword_SingleReport(report_testplan);
+
+                    foreach (TestPlanKeyword tp_keyword in keyword_report)
+                    {
+                        int row = tp_keyword.BugListAtRow, col = tp_keyword.BugListAtColumn;
+                    }
+
+                    //List<TestPlanKeyword> ws_keyword_list = KeywordReport.FilterSingleReportKeyword(keyword_list, report_workbook, report_worksheet);
+
+
+                    Object obj = ExcelAction.GetCellValue(ws_report, TestReport.Judgement_at_row, TestReport.Judgement_at_col);
+                    if (obj != null)
+                    {
+                        //issue_list_str = obj;
+                        b_ret = true;
+                    }
+                    else
+                    {
+                        issue_list_str = ret_str;
+                        b_ret = false;
+                    }
+                }
+
+                // Close excel if open succeeds
+                ExcelAction.CloseExcelWorkbook(wb_report);
             }
             return b_ret;
         }
