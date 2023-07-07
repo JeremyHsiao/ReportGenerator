@@ -286,6 +286,13 @@ namespace ExcelReportApplication
             return sheet_name;
         }
 
+        public static String GetSheetNameAccordingToSummary(String summary)
+        {
+            String[] sp_str = summary.Split(new Char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+            String sheet_name = sp_str[0];
+            return sheet_name;
+        }
+
         public static String GetReportTitleAccordingToFilename(String filename)
         {
             String full_filename = Storage.GetFullPath(filename);
