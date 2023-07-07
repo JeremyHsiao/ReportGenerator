@@ -905,6 +905,103 @@ namespace ExcelReportApplication
         //    return bRet;
         //}
 
+        static public void WriteBugCountOnKeywordReport(TestPlanKeyword keyword, Worksheet result_worksheet, IssueCount severity_count)
+        {
+            // Write severity count of all keywrod isseus
+            List<StyleString> bug_status_string = new List<StyleString>();
+            int issue_count;
+            issue_count = severity_count.Severity_A;
+            if (issue_count > 0)
+            {
+                bug_status_string.Add(new StyleString(issue_count.ToString() + "A", Issue.A_ISSUE_COLOR));
+            }
+            else
+            {
+                bug_status_string.Add(new StyleString("0A", Color.Black));
+            }
+            //bug_status_string.Add(new StyleString(",", Color.Black));
+            StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn, bug_status_string);
+            bug_status_string.Clear();
+
+            issue_count = severity_count.Severity_B;
+            if (issue_count > 0)
+            {
+                bug_status_string.Add(new StyleString(issue_count.ToString() + "B", Issue.B_ISSUE_COLOR));
+            }
+            else
+            {
+                bug_status_string.Add(new StyleString("0B", Color.Black));
+            }
+            //bug_status_string.Add(new StyleString(",", Color.Black));
+            StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 1, bug_status_string);
+            bug_status_string.Clear();
+
+            issue_count = severity_count.Severity_C;
+            if (issue_count > 0)
+            {
+                bug_status_string.Add(new StyleString(issue_count.ToString() + "C", Issue.C_ISSUE_COLOR));
+            }
+            else
+            {
+                bug_status_string.Add(new StyleString("0C", Color.Black));
+            }
+            StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 2, bug_status_string);
+            bug_status_string.Clear();
+
+            issue_count = severity_count.Severity_D;
+            if (issue_count > 0)
+            {
+                bug_status_string.Add(new StyleString(issue_count.ToString() + "D", Issue.D_ISSUE_COLOR));
+            }
+            else
+            {
+                bug_status_string.Add(new StyleString("0D", Color.Black));
+            }
+            StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 3, bug_status_string);
+            bug_status_string.Clear();
+
+            issue_count = severity_count.TotalWaived();
+            if (issue_count > 0)
+            {
+                bug_status_string.Add(new StyleString(issue_count.ToString() + " Waived", Issue.WAIVED_ISSUE_COLOR));
+                StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 4, bug_status_string);
+            }
+            else
+            {
+                //bug_status_string.Add(new StyleString("No Waived", Color.Black));
+                //StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 4, bug_status_string);
+            }
+            //StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 4, bug_status_string);
+            bug_status_string.Clear();
+        }
+
+        static public void WriteKeywordConclusionOnKeywordReport(TestPlanKeyword keyword, Worksheet result_worksheet, IssueCount severity_count,
+                                    out Boolean pass, out Boolean fail, out Boolean conditional_pass)
+        {
+            String pass_fail_str;
+            pass = fail = conditional_pass = false;
+
+            if (severity_count.NotClosedCount() == 0)
+            {
+                // all issue closed
+                pass_fail_str = PASS_str;
+                pass = true;
+            }
+            else if (severity_count.ABC_non_Wavied_IssueCount() > 0)
+            {
+                // any issue of ABC, non-closed & non-waived issue 
+                pass_fail_str = FAIL_str;
+                fail = true;
+            }
+            else
+            {
+                // only D or waived issue
+                pass_fail_str = CONDITIONAL_PASS_str;
+                conditional_pass = true;
+            }
+            ExcelAction.SetCellValue(result_worksheet, keyword.ResultListAtRow, keyword.ResultListAtColumn, pass_fail_str);
+        }
+
         static public bool KeywordIssueGenerationTaskV4(List<String> file_list, String src_dir, String dest_dir = "")
         {
             // Clear keyword log report data-table
@@ -1028,155 +1125,32 @@ namespace ExcelReportApplication
                         // write issue description list
                         StyleString.WriteStyleString(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn, keyword.IssueDescriptionList);
 
-                        // Write severity count of all keywrod isseus
+                        // write issue count of each severity
                         IssueCount severity_count = keyword.Calculate_Issue();
-                        List<StyleString> bug_status_string = new List<StyleString>();
-                        int issue_count;
-                        issue_count = severity_count.Severity_A;
-                        if (issue_count>0)
-                        {
-                            bug_status_string.Add(new StyleString(issue_count.ToString() + "A", Issue.A_ISSUE_COLOR));
-                        }
-                        else
-                        {
-                            bug_status_string.Add(new StyleString("0A", Color.Black));
-                        }
-                        //bug_status_string.Add(new StyleString(",", Color.Black));
-                        StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn, bug_status_string);
-                        bug_status_string.Clear();
+                        WriteBugCountOnKeywordReport(keyword, result_worksheet, severity_count);
 
-                        issue_count = severity_count.Severity_B;
-                        if (issue_count>0)
+                        // write conclusion of each keyword
+                        Boolean pass, fail, conditional_pass;
+                        WriteKeywordConclusionOnKeywordReport(keyword, result_worksheet, severity_count, out pass, out fail, out conditional_pass);
+                        if (pass)
                         {
-                            bug_status_string.Add(new StyleString(issue_count.ToString() + "B", Issue.B_ISSUE_COLOR));
-                        }
-                        else
-                        {
-                            bug_status_string.Add(new StyleString("0B", Color.Black));
-                        }
-                        //bug_status_string.Add(new StyleString(",", Color.Black));
-                        StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 1, bug_status_string);
-                        bug_status_string.Clear();
-
-                        issue_count = severity_count.Severity_C;
-                        if (issue_count>0)
-                        {
-                            bug_status_string.Add(new StyleString(issue_count.ToString() + "C", Issue.C_ISSUE_COLOR));
-                        }
-                        else
-                        {
-                            bug_status_string.Add(new StyleString("0C", Color.Black));
-                        }
-                        StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 2, bug_status_string);
-                        bug_status_string.Clear();
-
-                        issue_count = severity_count.Severity_D;
-                        if (issue_count > 0)
-                        {
-                            bug_status_string.Add(new StyleString(issue_count.ToString() + "D", Issue.D_ISSUE_COLOR));
-                        }
-                        else
-                        {
-                            bug_status_string.Add(new StyleString("0D", Color.Black));
-                        }
-                        StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 3, bug_status_string);
-                        bug_status_string.Clear();
-
-                        issue_count = severity_count.TotalWaived();
-                        if (issue_count > 0)
-                        {
-                            bug_status_string.Add(new StyleString(issue_count.ToString() + " Waived", Issue.WAIVED_ISSUE_COLOR));
-                            StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 4, bug_status_string);
-                        }
-                        else
-                        {
-                            //bug_status_string.Add(new StyleString("No Waived", Color.Black));
-                            //StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 4, bug_status_string);
-                        }
-                        //StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 4, bug_status_string);
-                        bug_status_string.Clear();
-
-                        // Output Result:
-                        //// >0A: NG
-                        //// >0B: Defect found
-                        //// >0C: Minor issue only
-                        //// 0A0B0C: Good
-                        // Pass: no issue
-                        // Fail: any issue
-                        // (A/B/C) = (xx/oo/vv)
-                        //List<StyleString> result_string = new List<StyleString>();
-                        String pass_fail_str = FAIL_str;
-                        //if (severity_count.Severity_A > 0)
-                        //{
-                        //    //String Has_A_Issue_str = "Fail"; // "NG"
-                        //    //Color Has_A_Issue_color = Issue.A_ISSUE_COLOR;
-                        //    //result_string.Add(new StyleString(Has_A_Issue_str, Has_A_Issue_color));
-                        //    pass_fail_str = "Fail";
-                        //    fail_count++;
-                        //}
-                        //else if (severity_count.Severity_B > 0)
-                        //{
-                        //    //String No_A_Has_B_Issue_str = "Fail"; // "Defect found"
-                        //    //Color No_A_Has_B_Issue_color = Issue.A_ISSUE_COLOR;
-                        //    //result_string.Add(new StyleString(No_A_Has_B_Issue_str, No_A_Has_B_Issue_color));
-                        //    pass_fail_str = "Fail";
-                        //    fail_count++;
-                        //}
-                        //else if (severity_count.Severity_C > 0)
-                        //{
-                        //    //String No_AB_Has_C_Issue_str = "Fail"; // "Minor Issue only"
-                        //    //Color No_AB_Has_C_Issue_color = Issue.A_ISSUE_COLOR;
-                        //    //result_string.Add(new StyleString(No_AB_Has_C_Issue_str, No_AB_Has_C_Issue_color));
-                        //    pass_fail_str = "Fail";
-                        //    fail_count++;
-                        //}
-                        //else if (severity_count.Severity_D > 0)
-                        //{
-                        //    //String No_AB_Has_C_Issue_str = "Fail"; // "Minor Issue only"
-                        //    //Color No_AB_Has_C_Issue_color = Issue.A_ISSUE_COLOR;
-                        //    //result_string.Add(new StyleString(No_AB_Has_C_Issue_str, No_AB_Has_C_Issue_color));
-                        //    pass_fail_str = "Fail";
-                        //    fail_count++;
-                        //}
-                        //else 
-                        //{
-                        //    //String No_Issue_str = "Pass"; 
-                        //    //Color No_Issue_color = Color.Lime;
-                        //    //result_string.Add(new StyleString(No_Issue_str, No_Issue_color));
-                        //    pass_fail_str = "Pass";
-                        //    pass_count++;
-                        //}
-                        //StyleString.WriteStyleString(result_worksheet, keyword.ResultListAtRow, keyword.ResultListAtColumn, result_string);
-                        // Pass/Fail only value is updated.
-                        // Judgement Result	Condition
-                        // Pass	All A/B/C/D Issues Closed; No Issue Waived
-                        // Conditional Pass	All A/B/C Issues either Closed or Waived 
-                        // Fail	Others
-                        if (severity_count.NotClosedCount() == 0)
-                        {
-                            // all issue closed
-                            pass_fail_str = PASS_str;
                             pass_count++;
                         }
-                        else if (severity_count.ABC_non_Wavied_IssueCount() > 0)
+                        else if (fail)
                         {
-                            // any issue of ABC, non-closed & non-waived issue 
-                            pass_fail_str = FAIL_str;
                             fail_count++;
                         }
                         else
                         {
-                            // only D or waived issue 
-                            pass_fail_str = CONDITIONAL_PASS_str;
                             conditional_pass_count++;
                         }
-                        ExcelAction.SetCellValue(result_worksheet, keyword.ResultListAtRow, keyword.ResultListAtColumn, pass_fail_str);
 
+                        // auto-fit row-height
                         ExcelAction.AutoFit_Row(result_worksheet, keyword.ResultListAtRow);
                         ExcelAction.AutoFit_Row(result_worksheet, keyword.BugListAtRow);
                         // issue_count = severity_count.Severity_A + severity_count.Severity_B + severity_count.Severity_C;
                         //if (issue_count >= 1)
-                        issue_count = severity_count.NotClosedCount();
+                        int issue_count = severity_count.NotClosedCount();
                         if (issue_count > 0)
                         {
                             double single_row_height = ExcelAction.Get_Row_Height(result_worksheet, keyword.BugListAtRow);
