@@ -320,6 +320,25 @@ namespace ExcelReportApplication
 
         public static Boolean Auto_Correct_Sheetname = false;
 
+        private static List<TestPlanKeyword> global_keyword_list;
+        private static Boolean global_keyword_available;
+        public static List<TestPlanKeyword> GetGlobalKeywordList() 
+        {
+            if (global_keyword_available)
+            {
+                return global_keyword_list;
+            }
+            else
+            {
+                return new List<TestPlanKeyword>();
+            }
+        }
+        public static void ClearGlobalKeywordList()
+        {
+            global_keyword_available = false;
+            global_keyword_list.Clear();
+        }
+
         static public List<TestPlanKeyword> ListKeyword_SingleReport(TestPlan plan)
         {
             //
@@ -1040,7 +1059,9 @@ namespace ExcelReportApplication
             // 2.1. Find keyword for all selected file (as listed in temprary test plan)
             //
             List<TestPlanKeyword> keyword_list = ListAllKeyword(do_plan);
-            
+            // Clear global_keyword_list here
+            ClearGlobalKeywordList();
+
             // Output keyword list log excel here.
             String out_dir = (dest_dir!="")?dest_dir:src_dir;
             KeyWordListReport.OutputKeywordLog(out_dir, keyword_list, ReportGenerator.excel_not_report_log);
@@ -1074,6 +1095,10 @@ namespace ExcelReportApplication
                 description_list = StyleString.ExtendIssueDescription(id_list, ReportGenerator.global_issue_description_list_severity);
                 keyword.IssueDescriptionList = description_list;
             }
+
+            // Load global_keyword_list here
+            global_keyword_list = keyword_list;
+            global_keyword_available = true;
 
             //
             // 3. Go throught each report excel and generate keyword report for each one.
