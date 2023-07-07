@@ -1176,10 +1176,12 @@ namespace ExcelReportApplication
                         ExcelAction.AutoFit_Row(result_worksheet, keyword.BugListAtRow);
                         // issue_count = severity_count.Severity_A + severity_count.Severity_B + severity_count.Severity_C;
                         //if (issue_count >= 1)
-                        if (severity_count.NotClosedCount() != 0)
+                        issue_count = severity_count.NotClosedCount();
+                        if (issue_count > 0)
                         {
                             double single_row_height = ExcelAction.Get_Row_Height(result_worksheet, keyword.BugListAtRow);
-                            ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, single_row_height * issue_count * 0.8 + 0.2);
+                            double new_row_height = single_row_height * issue_count * 0.8 + 0.2;
+                            ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, new_row_height);
                         }
                         else
                         {
