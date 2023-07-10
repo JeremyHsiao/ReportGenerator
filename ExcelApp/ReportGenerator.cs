@@ -35,6 +35,8 @@ namespace ExcelReportApplication
             TC_TestReportCreation,
             TC_AutoCorrectReport_By_Filename,
             TC_AutoCorrectReport_By_ExcelList,
+            ReadAllReportHeaderIntoExcel,
+            WriteAllReportHeaderAccordingToExcel,
         }
 
         public static ReportType[] ReportSelectableTable =
@@ -51,6 +53,8 @@ namespace ExcelReportApplication
             ReportType.TC_TestReportCreation,
             ReportType.TC_AutoCorrectReport_By_Filename,
             ReportType.TC_AutoCorrectReport_By_ExcelList, 
+            ReportType.ReadAllReportHeaderIntoExcel,
+            ReportType.WriteAllReportHeaderAccordingToExcel, 
          };
 
         //public static ReportType[] ReportSelectableTable =
@@ -67,6 +71,8 @@ namespace ExcelReportApplication
         //    ReportType.TC_TestReportCreation,
         //    ReportType.TC_AutoCorrectReport_By_Filename,
         //    ReportType.TC_AutoCorrectReport_By_ExcelList,
+        //    ReportType.ReadAllReportHeaderIntoExcel,
+        //    ReportType.WriteAllReportHeaderAccordingToExcel, 
         //};
 
         public static int ReportTypeToInt(ReportType type)
@@ -111,87 +117,116 @@ namespace ExcelReportApplication
             "A.Jira Test Report Creator",
             "B.Auto-correct report header",
             "C.Create New Model Report",
+            "D.Read All Report Header",
+            "E.Write All Report Header",
        };
 
         // Must be updated if new report type added #NewReportType
         private static String[][] ReportDescription = new String[][] 
         {
+            // "1.Issue Description for TC",
             new String[] 
             {
                 "Issue Description for TC Report", 
                 "Input:",  "  Issue List + Test Case + Template (for Test case output)",
                 "Output:", "  Test Case in the format of template file with linked issue in full description",
             },
+            // "2.Issue Description for Summary",
             new String[] 
             {
                 "Issue Description for Summary Report", 
                 "Input:",  "  Issue List + Test Case + Template (for Summary Report)",
                 "Output:", "  Summary in the format of template file with linked issue in full description",
             },
+            // "3.Standard Test Report Creator",
             new String[] 
             {
                 "Create file structure of Standard Test Report according to user's selection (Do or Not)", 
                 "Input:",  "  Main Test Report File",
                 "Output:", "  Directory structure and report files under directories",
             },
+            // "4.Keyword Issue - Single File",
             new String[] 
             {
                 "Keyword Issue to Report - Single File", 
                 "Input:",  "  Test Plan/Report with Keyword",
                 "Output:", "  Test Plan/Report with keyword issue list inserted on the 1st-column next to the right-side of printable area",
             },
+            // "5.TC likely Pass",
             new String[] 
             {
                 "Test case status is Fail but its linked issues are closed", 
                 "Input:",  "  Issue List + Test Case + Template (for Test case output)",
                 "Output:", "  Test Case whose linked issues are closed (other TC are hidden)",
             },
+            // "6.List Keywords of all detailed reports",
             new String[] 
             {
                 "Go Through all report to list down all keywords", 
                 "Input:",  "  Root-directory of Report Files",
                 "Output:", "  All keywords listed on output excel file",
             },
+            // "7.Keyword Issue - Directory",
             new String[] 
             {
                 "Keyword Issue to Report - Files under directory", 
                 "Input:",  "  Test Plan/Reports with Keyword under user-specified directory",
                 "Output:", "  Test Plan/Reports with keyword issue list inserted on the 1st-column next to the right-side of printable area",
             },
+            // "8.Excel sheet name update tool",
             new String[] 
             {
                 "Excel Reports to be checked - Files under directory", 
                 "Input:",  "  Test Plan/Reports",
                 "Output:", "  Test Plan/Reports with updated sheet-name if original sheet-name doesn't follow rules",
             },
+            // "9.TC issue/judgement",
             new String[] 
             {
                 "Issue Description + judgement from report for TC Report", 
                 "Input:",  "  Issue List + Test Case + Template (for Test case output)",
                 "Output:", "  Test Case in the format of template file with linked issue in full description",
             },
+            // "A.Jira Test Report Creator",
             new String[] 
             {
                 "Create file structure of Test Report according to TC on the Jira Test Case file", 
                 "Input:",  "  Jira Test Case File & directories of source report and of output destination",
                 "Output:", "  Directory structure and report files under directories",
             },
+            // "B.Auto-correct report header",
             new String[] 
             {
                 "Worksheet name & 1st row (header) will be auto-corrected.", 
                 "Input:",  "  Root Directory of test reports",
                 "Output:", "  Auto-corrected test reports",
             },
+            // "C.Create New Model Report",
             new String[] 
             {
                 "Worksheet name & 1st row (header) of report will be renamed and these reports are copied to corresponding folders", 
                 "Input:",  "  Input excel file",
                 "Output:", "  Reports copied and renamed (filename / worksheet name) according to input excel file",
             },
+            // "D.Read All Report Header",
+            new String[] 
+            {
+                "Open all Repoorts and collect header information into one Excel", 
+                "Input:",  "  Report Path",
+                "Output:", "  Excel file containing header value of reports under Report Path",
+            },
+            // "E.Write All Report Header",
+            new String[] 
+            {
+                "Open all Repoorts and update header information according to value listed on Excel", 
+                "Input:",  "  Report Path & Excel file containing header value of reports under Report Path",
+                "Output:", "  Updated reports (according to header value listed on Excel",
+            },
         };
 
         private static String[][] UI_Label = new String[][] 
         {
+            // "1.Issue Description for TC",
             new String[] 
             {
                 "Jira Issue File", 
@@ -199,13 +234,15 @@ namespace ExcelReportApplication
                 "Output Template",
                 "Main Test Plan",
             },
+            // "2.Issue Description for Summary",
             new String[] 
             {
                 "Jira Issue File", 
                 "Test Case File",
                 "Output Template",
                 "Main Test Plan",
-           },
+            },
+            // "3.Standard Test Report Creator",
             new String[] 
             {
                 "Jira Issue File", 
@@ -213,6 +250,7 @@ namespace ExcelReportApplication
                 "Output Template",
                 "Main Test Plant",
             },
+            // "4.Keyword Issue - Single File",
             new String[] 
             {
                 "Jira Issue File", 
@@ -220,6 +258,7 @@ namespace ExcelReportApplication
                 "Single Report",
                 "Main Test Plan",
             },
+            // "5.TC likely Pass",
             new String[] 
             {
                 "Jira Issue File", 
@@ -227,6 +266,7 @@ namespace ExcelReportApplication
                 "Output Template",
                 "Main Test Plan",
             },
+            // "6.List Keywords of all detailed reports",
             new String[] 
             {
                 "Jira Issue File", 
@@ -234,6 +274,7 @@ namespace ExcelReportApplication
                 "Report Path",
                 "Main Test Plan",
             },
+            // "7.Keyword Issue - Directory",
             new String[] 
             {
                 "Jira Issue File", 
@@ -241,6 +282,7 @@ namespace ExcelReportApplication
                 "Test Report Path",
                 "Main Test Plan",
             },
+            // "8.Excel sheet name update tool",
             new String[] 
             {
                 "Jira Issue File", 
@@ -248,6 +290,7 @@ namespace ExcelReportApplication
                 "Output Template",
                 "Main Test Plan",
             },
+            // "9.TC issue/judgement",
             new String[] 
             {
                 "Jira Issue File", 
@@ -255,6 +298,7 @@ namespace ExcelReportApplication
                 "Output Template",
                 "Test Report Path",
             },
+            // "A.Jira Test Report Creator",
             new String[] 
             {
                 "Jira Issue File", 
@@ -262,6 +306,7 @@ namespace ExcelReportApplication
                 "Report Output Path",
                 "Report Source Path",
             },
+            // "B.Auto-correct report header",
             new String[] 
             {
                 "Jira Issue File", 
@@ -269,12 +314,28 @@ namespace ExcelReportApplication
                 "Check Report Path",
                 "Report Source Path",
             },
-
+            // "C.Create New Model Report",
             new String[] 
             {
                 "Jira Issue File", 
                 "Test Case File",
                 "Report Output Path",
+                "Input Excel File",
+            },
+            //"D.Read All Report Header",
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Report Path",
+                "Output Excel File",
+            },
+            //"E.Write All Report Header",
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Report Path",
                 "Input Excel File",
             },
         };
