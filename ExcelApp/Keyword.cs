@@ -320,7 +320,7 @@ namespace ExcelReportApplication
 
         public static Boolean Auto_Correct_Sheetname = false;
 
-        private static List<TestPlanKeyword> global_keyword_list;
+        private static List<TestPlanKeyword> global_keyword_list = new List<TestPlanKeyword> ();
         private static Boolean global_keyword_available;
         public static List<TestPlanKeyword> GetGlobalKeywordList() 
         {
@@ -509,6 +509,19 @@ namespace ExcelReportApplication
             foreach (TestPlanKeyword kw in keyword_list)
             {
                 if ((kw.Workbook == workbook) && (kw.Worksheet == worksheet))
+                {
+                    ret.Add(kw);
+                }
+            }
+            return ret;
+        }
+
+        static public List<TestPlanKeyword> FilterSingleReportKeyword_check_only_worksheet(List<TestPlanKeyword> keyword_list, String worksheet)
+        {
+            List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
+            foreach (TestPlanKeyword kw in keyword_list)
+            {
+                if ((kw.Worksheet == worksheet))
                 {
                     ret.Add(kw);
                 }
