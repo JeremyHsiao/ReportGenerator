@@ -481,6 +481,13 @@ namespace ExcelReportApplication
             return CreateTableColumnIndex(((IsTemplate)?ws_tc_template:ws_testcase), TestCase.NameDefinitionRow);
         }
 
+        static public int GetTestCaseExcelRange_Col(bool IsTemplate = false)
+        {
+            Worksheet ws = ((IsTemplate) ? ws_tc_template : ws_testcase);
+            int col_end = Get_Range_ColumnNumber(GetWorksheetAllRange(ws));
+            return col_end;
+        }
+
         // Excel Open/Close/Save for Issue List Excel
 
         static public ExcelStatus OpenIssueListExcel(String buglist_filename)
