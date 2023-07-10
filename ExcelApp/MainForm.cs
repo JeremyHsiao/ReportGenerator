@@ -18,6 +18,347 @@ namespace ExcelReportApplication
             InitializeComponent();
         }
 
+        // Must be updated if new report type added #NewReportType
+        public enum ReportType
+        {
+            FullIssueDescription_TC = 0,
+            FullIssueDescription_Summary,
+            StandardTestReportCreation,
+            KeywordIssue_Report_SingleFile,
+            TC_Likely_Passed,
+            FindAllKeywordInReport,
+            KeywordIssue_Report_Directory,
+            Excel_Sheet_Name_Update_Tool,
+            FullIssueDescription_TC_report_judgement,
+            TC_TestReportCreation,
+            TC_AutoCorrectReport_By_Filename,
+            TC_AutoCorrectReport_By_ExcelList,
+            ReadAllReportHeaderIntoExcel,
+            WriteAllReportHeaderAccordingToExcel,
+        }
+
+        public static ReportType[] ReportSelectableTable =
+        {
+            ReportType.FullIssueDescription_TC,
+            //ReportType.FullIssueDescription_Summary,
+            //ReportType.StandardTestReportCreation,
+            ReportType.KeywordIssue_Report_SingleFile,
+            //ReportType.TC_Likely_Passed,
+            ReportType.FindAllKeywordInReport,
+            ReportType.KeywordIssue_Report_Directory,
+            //ReportType.Excel_Sheet_Name_Update_Tool,
+            ReportType.FullIssueDescription_TC_report_judgement,
+            ReportType.TC_TestReportCreation,
+            ReportType.TC_AutoCorrectReport_By_Filename,
+            ReportType.TC_AutoCorrectReport_By_ExcelList, 
+            ReportType.ReadAllReportHeaderIntoExcel,
+            ReportType.WriteAllReportHeaderAccordingToExcel, 
+         };
+
+        //public static ReportType[] ReportSelectableTable =
+        //{
+        //    ReportType.FullIssueDescription_TC,
+        //    ReportType.FullIssueDescription_Summary,
+        //    ReportType.StandardTestReportCreation,
+        //    ReportType.KeywordIssue_Report_SingleFile,
+        //    ReportType.TC_Likely_Passed,
+        //    ReportType.FindAllKeywordInReport,
+        //    ReportType.KeywordIssue_Report_Directory,
+        //    ReportType.Excel_Sheet_Name_Update_Tool,
+        //    ReportType.FullIssueDescription_TC_report_judgement,
+        //    ReportType.TC_TestReportCreation,
+        //    ReportType.TC_AutoCorrectReport_By_Filename,
+        //    ReportType.TC_AutoCorrectReport_By_ExcelList,
+        //    ReportType.ReadAllReportHeaderIntoExcel,
+        //    ReportType.WriteAllReportHeaderAccordingToExcel, 
+        //};
+
+        public static int ReportTypeToInt(ReportType type)
+        {
+            return (int)type;
+        }
+
+        public static ReportType ReportTypeFromInt(int int_type)
+        {
+            return (ReportType)int_type;
+        }
+
+        public static int ReportTypeCount = Enum.GetNames(typeof(ReportType)).Length;
+
+        public static String GetReportName(ReportType type)
+        {
+            return GetReportName(ReportTypeToInt(type));
+        }
+
+        public static String GetReportName(int type_index)
+        {
+            return ReportName[type_index];
+        }
+
+        public static List<String> ReportNameToList()
+        {
+            return ReportName.ToList();
+        }
+
+        // Must be updated if new report type added #NewReportType
+        private static String[] ReportName = new String[] 
+        {
+            "1.Issue Description for TC",
+            "2.Issue Description for Summary",
+            "3.Standard Test Report Creator",
+            "4.Keyword Issue - Single File",
+            "5.TC likely Pass",
+            "6.List Keywords of all detailed reports",
+            "7.Keyword Issue - Directory",
+            "8.Excel sheet name update tool",
+            "9.TC issue/judgement",
+            "A.Jira Test Report Creator",
+            "B.Auto-correct report header",
+            "C.Create New Model Report",
+            "D.Read All Report Header",
+            "E.Write All Report Header",
+       };
+
+        // Must be updated if new report type added #NewReportType
+        private static String[][] ReportDescription = new String[][] 
+        {
+            // "1.Issue Description for TC",
+            new String[] 
+            {
+                "Issue Description for TC Report", 
+                "Input:",  "  Issue List + Test Case + Template (for Test case output)",
+                "Output:", "  Test Case in the format of template file with linked issue in full description",
+            },
+            // "2.Issue Description for Summary",
+            new String[] 
+            {
+                "Issue Description for Summary Report", 
+                "Input:",  "  Issue List + Test Case + Template (for Summary Report)",
+                "Output:", "  Summary in the format of template file with linked issue in full description",
+            },
+            // "3.Standard Test Report Creator",
+            new String[] 
+            {
+                "Create file structure of Standard Test Report according to user's selection (Do or Not)", 
+                "Input:",  "  Main Test Report File",
+                "Output:", "  Directory structure and report files under directories",
+            },
+            // "4.Keyword Issue - Single File",
+            new String[] 
+            {
+                "Keyword Issue to Report - Single File", 
+                "Input:",  "  Test Plan/Report with Keyword",
+                "Output:", "  Test Plan/Report with keyword issue list inserted on the 1st-column next to the right-side of printable area",
+            },
+            // "5.TC likely Pass",
+            new String[] 
+            {
+                "Test case status is Fail but its linked issues are closed", 
+                "Input:",  "  Issue List + Test Case + Template (for Test case output)",
+                "Output:", "  Test Case whose linked issues are closed (other TC are hidden)",
+            },
+            // "6.List Keywords of all detailed reports",
+            new String[] 
+            {
+                "Go Through all report to list down all keywords", 
+                "Input:",  "  Root-directory of Report Files",
+                "Output:", "  All keywords listed on output excel file",
+            },
+            // "7.Keyword Issue - Directory",
+            new String[] 
+            {
+                "Keyword Issue to Report - Files under directory", 
+                "Input:",  "  Test Plan/Reports with Keyword under user-specified directory",
+                "Output:", "  Test Plan/Reports with keyword issue list inserted on the 1st-column next to the right-side of printable area",
+            },
+            // "8.Excel sheet name update tool",
+            new String[] 
+            {
+                "Excel Reports to be checked - Files under directory", 
+                "Input:",  "  Test Plan/Reports",
+                "Output:", "  Test Plan/Reports with updated sheet-name if original sheet-name doesn't follow rules",
+            },
+            // "9.TC issue/judgement",
+            new String[] 
+            {
+                "Issue Description + judgement from report for TC Report", 
+                "Input:",  "  Issue List + Test Case + Template (for Test case output)",
+                "Output:", "  Test Case in the format of template file with linked issue in full description",
+            },
+            // "A.Jira Test Report Creator",
+            new String[] 
+            {
+                "Create file structure of Test Report according to TC on the Jira Test Case file", 
+                "Input:",  "  Jira Test Case File & directories of source report and of output destination",
+                "Output:", "  Directory structure and report files under directories",
+            },
+            // "B.Auto-correct report header",
+            new String[] 
+            {
+                "Worksheet name & 1st row (header) will be auto-corrected.", 
+                "Input:",  "  Root Directory of test reports",
+                "Output:", "  Auto-corrected test reports",
+            },
+            // "C.Create New Model Report",
+            new String[] 
+            {
+                "Worksheet name & 1st row (header) of report will be renamed and these reports are copied to corresponding folders", 
+                "Input:",  "  Input excel file",
+                "Output:", "  Reports copied and renamed (filename / worksheet name) according to input excel file",
+            },
+            // "D.Read All Report Header",
+            new String[] 
+            {
+                "Open all Repoorts and collect header information into one Excel", 
+                "Input:",  "  Report Path",
+                "Output:", "  Excel file containing header value of reports under Report Path",
+            },
+            // "E.Write All Report Header",
+            new String[] 
+            {
+                "Open all Repoorts and update header information according to value listed on Excel", 
+                "Input:",  "  Report Path & Excel file containing header value of reports under Report Path",
+                "Output:", "  Updated reports (according to header value listed on Excel",
+            },
+        };
+
+        private static String[][] UI_Label = new String[][] 
+        {
+            // "1.Issue Description for TC",
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Output Template",
+                "Main Test Plan",
+            },
+            // "2.Issue Description for Summary",
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Output Template",
+                "Main Test Plan",
+            },
+            // "3.Standard Test Report Creator",
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Output Template",
+                "Main Test Plant",
+            },
+            // "4.Keyword Issue - Single File",
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Single Report",
+                "Main Test Plan",
+            },
+            // "5.TC likely Pass",
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Output Template",
+                "Main Test Plan",
+            },
+            // "6.List Keywords of all detailed reports",
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Report Path",
+                "Main Test Plan",
+            },
+            // "7.Keyword Issue - Directory",
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Test Report Path",
+                "Main Test Plan",
+            },
+            // "8.Excel sheet name update tool",
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Output Template",
+                "Main Test Plan",
+            },
+            // "9.TC issue/judgement",
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Output Template",
+                "Test Report Path",
+            },
+            // "A.Jira Test Report Creator",
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Report Output Path",
+                "Report Source Path",
+            },
+            // "B.Auto-correct report header",
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Check Report Path",
+                "Report Source Path",
+            },
+            // "C.Create New Model Report",
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Report Output Path",
+                "Input Excel File",
+            },
+            //"D.Read All Report Header",
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Report Path",
+                "Output Excel File",
+            },
+            //"E.Write All Report Header",
+            new String[] 
+            {
+                "Jira Issue File", 
+                "Test Case File",
+                "Report Path",
+                "Input Excel File",
+            },
+        };
+
+        public static String GetReportDescription(int type_index)
+        {
+            String ret_str = "";
+            foreach (String str in ReportDescription[type_index])
+            {
+                ret_str += str + "\r\n";
+            }
+            return ret_str;
+        }
+
+        public static String[] GetLabelTextArray(int type_index)
+        {
+            return UI_Label[type_index];
+        }
+
+        public static String GetReportDescription(ReportType type)
+        {
+            return GetReportDescription(ReportTypeToInt(type));
+        }
+        // END
+
         public void LoadConfigAll()
         {
             // config for default filename at MainForm
@@ -92,24 +433,24 @@ namespace ExcelReportApplication
 
         private void InitializeReportFunctionListBox()
         {
-            foreach (ReportGenerator.ReportType report_type in ReportGenerator.ReportSelectableTable)
+            foreach (ReportType report_type in ReportSelectableTable)
             {
                 String report_name;
-                report_name = ReportGenerator.GetReportName((int)report_type);
+                report_name = GetReportName((int)report_type);
                 comboBoxReportSelect.Items.Add(report_name);
             }
-            //int default_select_index = (int)ReportGenerator.ReportType.FullIssueDescription_Summary; // current default
+            //int default_select_index = (int)ReportType.FullIssueDescription_Summary; // current default
             int default_select_index = 0;
             Set_comboBoxReportSelect_SelectedIndex(default_select_index);  
         }
 
         private void Set_comboBoxReportSelect_SelectedIndex(int value) 
         {
-            comboBoxReportSelect.SelectedIndex = (int)ReportGenerator.ReportSelectableTable[value]; 
+            comboBoxReportSelect.SelectedIndex = (int)ReportSelectableTable[value]; 
         }
         private int Get_comboBoxReportSelect_SelectedIndex() 
         {
-            return (int)ReportGenerator.ReportSelectableTable[comboBoxReportSelect.SelectedIndex]; 
+            return (int)ReportSelectableTable[comboBoxReportSelect.SelectedIndex]; 
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -398,11 +739,11 @@ namespace ExcelReportApplication
             int report_index = Get_comboBoxReportSelect_SelectedIndex();
             bool sel_file = true;
             String init_dir;
-            switch (ReportGenerator.ReportTypeFromInt(report_index))
+            switch (ReportTypeFromInt(report_index))
             {
-                case ReportGenerator.ReportType.FullIssueDescription_TC_report_judgement:
-                case ReportGenerator.ReportType.TC_TestReportCreation:
-                    //case ReportGenerator.ReportType.FindAllKeywordInReport:
+                case ReportType.FullIssueDescription_TC_report_judgement:
+                case ReportType.TC_TestReportCreation:
+                    //case ReportType.FindAllKeywordInReport:
                     sel_file = false;  // Here select directory instead of file
                     init_dir = txtStandardTestReport.Text;
                     break;
@@ -424,12 +765,12 @@ namespace ExcelReportApplication
             int report_index = Get_comboBoxReportSelect_SelectedIndex();
             bool sel_file = true;
             String init_dir;
-            switch (ReportGenerator.ReportTypeFromInt(report_index))
+            switch (ReportTypeFromInt(report_index))
             {
-                case ReportGenerator.ReportType.KeywordIssue_Report_Directory:
-                case ReportGenerator.ReportType.FindAllKeywordInReport:
-                case ReportGenerator.ReportType.TC_TestReportCreation:
-                case ReportGenerator.ReportType.TC_AutoCorrectReport_By_Filename:
+                case ReportType.KeywordIssue_Report_Directory:
+                case ReportType.FindAllKeywordInReport:
+                case ReportType.TC_TestReportCreation:
+                case ReportType.TC_AutoCorrectReport_By_Filename:
                     init_dir = txtReportFile.Text;
                     sel_file = false;  // Here select directory instead of file
                     break;
@@ -507,7 +848,7 @@ namespace ExcelReportApplication
 
             int report_index = Get_comboBoxReportSelect_SelectedIndex();
 
-            if ((report_index < 0) || (report_index >= ReportGenerator.ReportTypeCount))
+            if ((report_index < 0) || (report_index >= ReportTypeCount))
             {
                 // shouldn't be out of range.
                 return;
@@ -518,14 +859,14 @@ namespace ExcelReportApplication
 
             UpdateUIDuringExecution(report_index: report_index, executing: true);
 
-            MsgWindow.AppendText("Executing: " + ReportGenerator.GetReportName(report_index) + ".\n");
+            MsgWindow.AppendText("Executing: " + GetReportName(report_index) + ".\n");
 
             ExcelAction.OpenExcelApp();
 
             // Must be updated if new report type added #NewReportType
-            switch (ReportGenerator.ReportTypeFromInt(report_index))
+            switch (ReportTypeFromInt(report_index))
             {
-                case ReportGenerator.ReportType.FullIssueDescription_TC:
+                case ReportType.FullIssueDescription_TC:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
@@ -533,7 +874,7 @@ namespace ExcelReportApplication
                     if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
                     bRet = Execute_WriteIssueDescriptionToTC(txtTCFile.Text, txtReportFile.Text);
                     break;
-                case ReportGenerator.ReportType.FullIssueDescription_Summary:
+                case ReportType.FullIssueDescription_Summary:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
@@ -541,23 +882,23 @@ namespace ExcelReportApplication
                     if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
                     bRet = Execute_WriteIssueDescriptionToSummary(txtReportFile.Text);
                     break;
-                case ReportGenerator.ReportType.StandardTestReportCreation:
+                case ReportType.StandardTestReportCreation:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
                     bRet = Execute_CreateStandardTestReportTask(txtStandardTestReport.Text);
                     break;
-               case ReportGenerator.ReportType.KeywordIssue_Report_SingleFile:
+               case ReportType.KeywordIssue_Report_SingleFile:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);    // File path here
                     if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                     bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: false);
                     break;
-                case ReportGenerator.ReportType.KeywordIssue_Report_Directory:
+                case ReportType.KeywordIssue_Report_Directory:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                     UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);     // Directory path here
                     if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                     bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: true);
                     break;
-                case ReportGenerator.ReportType.TC_Likely_Passed:
+                case ReportType.TC_Likely_Passed:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
@@ -565,7 +906,7 @@ namespace ExcelReportApplication
                     if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
                     bRet = Execute_FindFailTCLinkedIssueAllClosed(txtTCFile.Text, txtReportFile.Text);
                     break;
-                case ReportGenerator.ReportType.FindAllKeywordInReport:
+                case ReportType.FindAllKeywordInReport:
                     UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
                     //UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
                     //String main_file = txtStandardTestReport.Text;
@@ -574,12 +915,12 @@ namespace ExcelReportApplication
                     String report_root_dir = Storage.GetFullPath(txtReportFile.Text);
                     bRet = Execute_ListAllDetailedTestPlanKeywordTask(report_root_dir, output_filename);
                     break;
-                case ReportGenerator.ReportType.Excel_Sheet_Name_Update_Tool:
+                case ReportType.Excel_Sheet_Name_Update_Tool:
                     UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);     // Directory path here
                     // bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: true);
                     bRet = true;
                     break;
-                case ReportGenerator.ReportType.FullIssueDescription_TC_report_judgement:
+                case ReportType.FullIssueDescription_TC_report_judgement:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
@@ -588,7 +929,7 @@ namespace ExcelReportApplication
                     if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
                     bRet = Execute_WriteIssueDescriptionToTC(txtTCFile.Text, txtReportFile.Text, txtStandardTestReport.Text);
                     break;
-                case ReportGenerator.ReportType.TC_TestReportCreation:
+                case ReportType.TC_TestReportCreation:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
@@ -605,11 +946,11 @@ namespace ExcelReportApplication
                     // update judgement and header
                     // to-be-implemented
                     break;
-                case ReportGenerator.ReportType.TC_AutoCorrectReport_By_Filename:
+                case ReportType.TC_AutoCorrectReport_By_Filename:
                     UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
                     bRet = Execute_AutoCorrectTestReportByFilename_Task(Storage.GetFullPath(txtReportFile.Text));
                     break;
-                case ReportGenerator.ReportType.TC_AutoCorrectReport_By_ExcelList:
+                case ReportType.TC_AutoCorrectReport_By_ExcelList:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                     // to-be-updated
                     bRet = Execute_AutoCorrectTestReportByExcel_Task(Storage.GetFullPath(txtStandardTestReport.Text));
@@ -653,10 +994,10 @@ namespace ExcelReportApplication
         {
             int select = Get_comboBoxReportSelect_SelectedIndex();
             UpdateUIAfterReportTypeChanged(select);
-            label_issue.Text = ReportGenerator.GetLabelTextArray(select)[0];
-            label_tc.Text = ReportGenerator.GetLabelTextArray(select)[1];
-            label_1st.Text = ReportGenerator.GetLabelTextArray(select)[2];
-            label_2nd.Text = ReportGenerator.GetLabelTextArray(select)[3];
+            label_issue.Text = GetLabelTextArray(select)[0];
+            label_tc.Text = GetLabelTextArray(select)[1];
+            label_1st.Text = GetLabelTextArray(select)[2];
+            label_2nd.Text = GetLabelTextArray(select)[3];
         }
 
         private void UpdateUIDuringExecution(int report_index, bool executing)
@@ -679,76 +1020,76 @@ namespace ExcelReportApplication
         private void UpdateFilenameBoxUIForReportType(int ReportIndex)
         {
             // Must be updated if new report type added #NewReportType
-            switch (ReportGenerator.ReportTypeFromInt(ReportIndex))
+            switch (ReportTypeFromInt(ReportIndex))
             {
-                case ReportGenerator.ReportType.FullIssueDescription_TC: // "1.Issue Description for TC"
+                case ReportType.FullIssueDescription_TC: // "1.Issue Description for TC"
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(true);
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
                     break;
-                case ReportGenerator.ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
+                case ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(true);
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
                     break;
-                case ReportGenerator.ReportType.StandardTestReportCreation:
+                case ReportType.StandardTestReportCreation:
                     SetEnable_IssueFile(false);
                     SetEnable_TCFile(false);
                     SetEnable_OutputFile(false);
                     SetEnable_StandardReport(true);
                     break;
-                case ReportGenerator.ReportType.KeywordIssue_Report_SingleFile:
+                case ReportType.KeywordIssue_Report_SingleFile:
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(false);
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
                     break;
-                case ReportGenerator.ReportType.KeywordIssue_Report_Directory:
+                case ReportType.KeywordIssue_Report_Directory:
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(false);
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
                     break;
-                case ReportGenerator.ReportType.TC_Likely_Passed:
+                case ReportType.TC_Likely_Passed:
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(true);
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
                     break;
-                case ReportGenerator.ReportType.FindAllKeywordInReport:
+                case ReportType.FindAllKeywordInReport:
                     SetEnable_IssueFile(false);
                     SetEnable_TCFile(false);
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
                     break;
-                case ReportGenerator.ReportType.Excel_Sheet_Name_Update_Tool:
+                case ReportType.Excel_Sheet_Name_Update_Tool:
                     SetEnable_IssueFile(false);
                     SetEnable_TCFile(false);
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
                     break;
-                case ReportGenerator.ReportType.FullIssueDescription_TC_report_judgement: // "1.Issue Description for TC"
+                case ReportType.FullIssueDescription_TC_report_judgement: // "1.Issue Description for TC"
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(true);
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(true);
                     break;
-                case ReportGenerator.ReportType.TC_TestReportCreation:
+                case ReportType.TC_TestReportCreation:
                     // need to rework
                     SetEnable_IssueFile(false);
                     SetEnable_TCFile(true);
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(true);
                     break;
-                case ReportGenerator.ReportType.TC_AutoCorrectReport_By_Filename:
+                case ReportType.TC_AutoCorrectReport_By_Filename:
                     SetEnable_IssueFile(false);
                     SetEnable_TCFile(false);
                     SetEnable_OutputFile(true);
                     SetEnable_StandardReport(false);
                     break;
-                case ReportGenerator.ReportType.TC_AutoCorrectReport_By_ExcelList:
+                case ReportType.TC_AutoCorrectReport_By_ExcelList:
                     SetEnable_IssueFile(false);
                     SetEnable_TCFile(false);
                     SetEnable_OutputFile(false);
@@ -762,64 +1103,74 @@ namespace ExcelReportApplication
 
         private void UpdateUIAfterReportTypeChanged(int ReportIndex)
         {
-            txtReportInfo.Text = ReportGenerator.GetReportDescription(ReportIndex);
+            txtReportInfo.Text = GetReportDescription(ReportIndex);
             UpdateFilenameBoxUIForReportType(ReportIndex);
 
 
             // Must be updated if new report type added #NewReportType
-            switch (ReportGenerator.ReportTypeFromInt(ReportIndex))
+            switch (ReportTypeFromInt(ReportIndex))
             {
-                case ReportGenerator.ReportType.FullIssueDescription_TC: // "1.Issue Description for TC"
+                case ReportType.FullIssueDescription_TC: // "1.Issue Description for TC"
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
-                case ReportGenerator.ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
+                case ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_Summary");
                     break;
-                case ReportGenerator.ReportType.StandardTestReportCreation:
+                case ReportType.StandardTestReportCreation:
                     if (!btnSelectExcelTestFile_Clicked)
                         txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("workbook_StandardTestReport");
                     break;
-                case ReportGenerator.ReportType.KeywordIssue_Report_SingleFile:
+                case ReportType.KeywordIssue_Report_SingleFile:
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = @".\SampleData\A.1.1_OSD _All.xlsx";
                     break;
-                case ReportGenerator.ReportType.KeywordIssue_Report_Directory:
+                case ReportType.KeywordIssue_Report_Directory:
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     break;
-                case ReportGenerator.ReportType.TC_Likely_Passed:
+                case ReportType.TC_Likely_Passed:
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
-                case ReportGenerator.ReportType.FindAllKeywordInReport:
+                case ReportType.FindAllKeywordInReport:
                     if (!btnSelectExcelTestFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     break;
-                case ReportGenerator.ReportType.Excel_Sheet_Name_Update_Tool:
+                case ReportType.Excel_Sheet_Name_Update_Tool:
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = @".\SampleData\More chapters_TestCaseID";
                     break;
-                case ReportGenerator.ReportType.FullIssueDescription_TC_report_judgement: // "1.Issue Description for TC"
+                case ReportType.FullIssueDescription_TC_report_judgement: // "1.Issue Description for TC"
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     if (!btnSelectExcelTestFile_Clicked)
                         txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     break;
-                case ReportGenerator.ReportType.TC_TestReportCreation:
+                case ReportType.TC_TestReportCreation:
                     if (!btnSelectExcelTestFile_Clicked) // source
                         txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("TestReport_Default_Source_Path");
                     if (!btnSelectReportFile_Clicked) // destination
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_Default_Output_Path");
                     break;
-                case ReportGenerator.ReportType.TC_AutoCorrectReport_By_Filename:
+                case ReportType.TC_AutoCorrectReport_By_Filename:
                     if (!btnSelectExcelTestFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     break;
-                case ReportGenerator.ReportType.TC_AutoCorrectReport_By_ExcelList:
+                case ReportType.TC_AutoCorrectReport_By_ExcelList:
                     if (!btnSelectExcelTestFile_Clicked)
                         txtStandardTestReport.Text = @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Copy_Report_Excel_List.xlsx";
+                    break;
+                case ReportType.ReadAllReportHeaderIntoExcel:
+                    if (!btnSelectExcelTestFile_Clicked)
+                        txtStandardTestReport.Text = @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Header_Excel_List.xlsx";
+                    break;
+                    if (!btnSelectReportFile_Clicked) // destination
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_Default_Output_Path");
+                case ReportType.WriteAllReportHeaderAccordingToExcel:
+                    if (!btnSelectExcelTestFile_Clicked)
+                        txtStandardTestReport.Text = @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Header_Excel_List.xlsx";
                     break;
                 default:
                     break;
