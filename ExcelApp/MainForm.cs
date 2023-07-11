@@ -227,112 +227,112 @@ namespace ExcelReportApplication
             // "1.Issue Description for TC",
             new String[] 
             {
-                "Jira Issue File", 
-                "Test Case File",
+                "Jira Bug File", 
+                "Jira TC File",
                 "Output Template",
                 "Main Test Plan",
             },
             // "2.Issue Description for Summary",
             new String[] 
             {
-                "Jira Issue File", 
-                "Test Case File",
+                "Jira Bug File", 
+                "Jira TC File",
                 "Output Template",
                 "Main Test Plan",
             },
             // "3.Standard Test Report Creator",
             new String[] 
             {
-                "Jira Issue File", 
-                "Test Case File",
+                "Jira Bug File", 
+                "Jira TC File",
                 "Output Template",
                 "Main Test Plant",
             },
             // "4.Keyword Issue - Single File",
             new String[] 
             {
-                "Jira Issue File", 
-                "Test Case File",
+                "Jira Bug File", 
+                "Jira TC File",
                 "Single Report",
                 "Main Test Plan",
             },
             // "5.TC likely Pass",
             new String[] 
             {
-                "Jira Issue File", 
-                "Test Case File",
+                "Jira Bug File", 
+                "Jira TC File",
                 "Output Template",
                 "Main Test Plan",
             },
             // "6.List Keywords of all detailed reports",
             new String[] 
             {
-                "Jira Issue File", 
-                "Test Case File",
+                "Jira Bug File", 
+                "Jira TC File",
                 "Report Path",
                 "Main Test Plan",
             },
             // "7.Keyword Issue - Directory",
             new String[] 
             {
-                "Jira Issue File", 
-                "Test Case File",
+                "Jira Bug File", 
+                "Jira TC File",
                 "Test Report Path",
                 "Main Test Plan",
             },
             // "8.Excel sheet name update tool",
             new String[] 
             {
-                "Jira Issue File", 
-                "Test Case File",
+                "Jira Bug File", 
+                "Jira TC File",
                 "Output Template",
                 "Main Test Plan",
             },
             // "9.TC issue/judgement",
             new String[] 
             {
-                "Jira Issue File", 
-                "Test Case File",
+                "Jira Bug File", 
+                "Jira TC File",
                 "Output Template",
                 "Test Report Path",
             },
             // "A.Jira Test Report Creator",
             new String[] 
             {
-                "Jira Issue File", 
-                "Test Case File",
+                "Jira Bug File", 
+                "Jira TC File",
                 "Report Output Path",
                 "Report Source Path",
             },
             // "B.Auto-correct report header",
             new String[] 
             {
-                "Jira Issue File", 
-                "Test Case File",
+                "Jira Bug File", 
+                "Jira TC File",
                 "Check Report Path",
                 "Report Source Path",
             },
             // "C.Create New Model Report",
             new String[] 
             {
-                "Jira Issue File", 
-                "Test Case File",
+                "Jira Bug File", 
+                "Jira TC File",
                 "Report Output Path",
                 "Input Excel File",
             },
             //"D.Read All Report Header",
             new String[] 
             {
-                "Jira Issue File", 
-                "Test Case File",
+                "Jira Bug File", 
+                "Jira TC File",
                 "Report Path",
                 "Output Excel File",
             },
             //"E.Write All Report Header",
             new String[] 
             {
-                "Jira Issue File", 
-                "Test Case File",
+                "Jira Bug File", 
+                "Jira TC File",
                 "Report Path",
                 "Input Excel File",
             },
