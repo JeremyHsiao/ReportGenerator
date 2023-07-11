@@ -341,6 +341,7 @@ namespace ExcelReportApplication
         public static String GetReportDescription(int type_index)
         {
             String ret_str = "";
+            ret_str += ReportGeneratorVersionString + "\r\n";
             foreach (String str in ReportDescription[type_index])
             {
                 ret_str += str + "\r\n";
@@ -453,13 +454,16 @@ namespace ExcelReportApplication
             return (int)ReportSelectableTable[comboBoxReportSelect.SelectedIndex]; 
         }
 
+        static public String ReportGeneratorVersionString;
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
             System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
             string version = fvi.FileVersion;
             //this.Text = "Report Generator " + version + "   build:" + DateTime.Now.ToString("yyMMddHHmm"); ;
-            this.Text = "ReportGenerator_V" + version + DateTime.Now.ToString("(yyyyMMdd)");
+            ReportGeneratorVersionString = "ReportGenerator_V" + version + DateTime.Now.ToString("(yyyyMMdd)");
+            this.Text = ReportGeneratorVersionString;
 
             LoadConfigAll();
 
