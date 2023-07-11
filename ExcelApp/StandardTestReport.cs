@@ -95,6 +95,7 @@ namespace ExcelReportApplication
         public static int ConditionalPass_string_at_row = 21, ConditionalPass_string_at_col = 8;
         public static int ConditionalPassCnt_at_row = 21, ConditionalPassCnt_at_col = 9;
         public static int Title_at_row = 1, Title_at_col = ('A' - 'A' + 1);
+        public static int Part_No_at_row = 3, Part_No_at_col = ('J' - 'A' + 1);
         public static int SW_Version_at_row = 7, SW_Version_at_col = ('J' - 'A' + 1);
         public static int Period_Start_at_row = 8, Period_Start_at_col = ('L' - 'A' + 1);
         public static int Period_End_at_row = 8, Period_End_at_col = ('M' - 'A' + 1);

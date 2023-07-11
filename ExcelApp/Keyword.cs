@@ -1236,6 +1236,13 @@ namespace ExcelReportApplication
                 ExcelAction.SetCellValue(result_worksheet, TestReport.ConditionalPass_string_at_row, TestReport.ConditionalPass_string_at_col, CONDITIONAL_PASS_str+":");
                 ExcelAction.SetCellValue(result_worksheet, TestReport.ConditionalPassCnt_at_row, TestReport.ConditionalPassCnt_at_col, conditional_pass_count);
                 ExcelAction.SetCellValue(result_worksheet, TestReport.Judgement_at_row, TestReport.Judgement_at_col, judgement_str);
+                // always update Test End Period to today
+                String end_date = DateTime.Now.ToString("yyyy/MM/dd");       
+                ExcelAction.SetCellValue(result_worksheet, TestReport.Period_End_at_row, TestReport.Period_End_at_col, end_date);
+                // update Part No.
+                String default_part_no = "99.M2710.0A4-";
+                String part_no = default_part_no + sheet_name;
+                ExcelAction.SetCellValue(result_worksheet, TestReport.Part_No_at_row, TestReport.Part_No_at_col, part_no);
 
                 // 3.4. Save the file to either 
                 //  (1) filename with yyyyMMddHHmmss if dest_dir is not specified
