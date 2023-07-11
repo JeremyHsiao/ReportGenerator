@@ -475,7 +475,17 @@ namespace ExcelReportApplication
 
                 if (key != "")
                 {
+                    Boolean is_waived = false;
+                    if (issue.Status == Issue.STR_WAIVE)
+                    {
+                        is_waived = true;
+                    }
+
                     String str = key + issue.Summary + "(" + issue.Severity + ")";
+                    if (is_waived)
+                    {
+                        str += "(" + KeywordReport.WAIVED_str + ")";
+                    }
                     StyleString style_str = new StyleString(str, descrption_color_issue);
                     value_style_str.Add(style_str);
                     /*
