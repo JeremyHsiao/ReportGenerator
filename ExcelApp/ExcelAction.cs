@@ -39,17 +39,48 @@ namespace ExcelReportApplication
 
         static public Workbook OpenExcelWorkbook(String filename, bool ReadOnly = true, bool XLS = false, bool UpdateLinks = false)
         {
-            Workbook ret_workbook;
-            if (XLS)
+            Workbook ret_workbook = null;
+            Boolean try_openXML = false;
+
+            // Protection-check: file must exist.
+            if (!Storage.FileExists(filename))
             {
-                ret_workbook = excel_app.Workbooks.Open(filename, ReadOnly: ReadOnly, CorruptLoad: XlCorruptLoad.xlExtractData,
-                                                        UpdateLinks: UpdateLinks);
+                return ret_workbook;
             }
-            else
+
+            try
             {
-                ret_workbook = excel_app.Workbooks.Open(filename, ReadOnly: ReadOnly, 
-                                                        UpdateLinks: UpdateLinks);
+                if (XLS)
+                {
+                    ret_workbook = excel_app.Workbooks.Open(filename, ReadOnly: ReadOnly, CorruptLoad: XlCorruptLoad.xlExtractData,
+                                                            UpdateLinks: UpdateLinks);
+                }
+                else
+                {
+                    ret_workbook = excel_app.Workbooks.Open(filename, ReadOnly: ReadOnly,
+                                                            UpdateLinks: UpdateLinks);
+                }
             }
+            catch (Exception ex)
+            {
+                // if exception, try
+                try_openXML = true;
+            }
+
+            if(!try_openXML)
+            {
+                return ret_workbook;
+            }
+
+            try
+            {
+                ret_workbook = excel_app.Workbooks.OpenXML(Filename:filename, LoadOption: XlXmlLoadOption.xlXmlLoadOpenXml);
+            }
+            catch (Exception ex)
+            {
+                // 
+            }
+
             return ret_workbook;
         }
 
