@@ -151,10 +151,26 @@ Returns or sets the type of underline applied to the font.
             text = string_text;
         }
 
+        public String ToString()
+        {
+            return text;
+        }
+
         //
         // Common function related to StyleString
         //
-        
+
+        static public String ListToString(List<StyleString> list_stylestring)
+        {
+            String ret_str = "";
+
+            foreach (StyleString style_string in list_stylestring)
+            {
+                ret_str += style_string.ToString();
+            }
+            return ret_str;
+        }
+
         //
         // input: bug_id separated by comma
         // output: bug descriptions (one bug each line)

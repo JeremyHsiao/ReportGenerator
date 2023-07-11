@@ -151,6 +151,17 @@ namespace ExcelReportApplication
             "Duplicated?",
        };
 
+        private static String[] keyword_list_with_issue_title = new String[] 
+        {
+            "Keyword",
+            "Filepath",
+            "Filename",
+            "Worksheet",
+            "Duplicated?",
+            "Issue Count",
+            "Issue List",
+       };
+
         static public int not_keyword_file_title_row = 1;
         static public int not_keyword_file_title_col_start = 1;
         private static String[] not_keyword_file_title = new String[] 
@@ -166,7 +177,7 @@ namespace ExcelReportApplication
 
         //static public 
         static public void OutputKeywordLog(String out_path, List<TestPlanKeyword> keyword_list, 
-                                            List<ReportFileRecord> not_keyword_report_list, String keyword_output_filename ="")
+                                            List<ReportFileRecord> not_keyword_report_list, String keyword_output_filename ="", Boolean output_keyword_issue = false)
         {
             // Open template excel and write to another filename when closed
             ExcelAction.ExcelStatus status;
@@ -183,7 +194,14 @@ namespace ExcelReportApplication
             List<List<Object>> output_keyword_list_table = new List<List<Object>>();
             List<Object> row_list = new List<Object> ();
             // title
-            row_list.AddRange(keyword_list_title);
+            if (output_keyword_issue)
+            {
+                row_list.AddRange(keyword_list_title);
+            }
+            else
+            {
+                row_list.AddRange(keyword_list_with_issue_title);
+            }
             output_keyword_list_table.Add(row_list);
 
             // list keyword string of all duplicated keyword
@@ -207,6 +225,12 @@ namespace ExcelReportApplication
                 {
                     // duplicated
                     row_list.Add("v");
+                }
+
+                if (output_keyword_issue)
+                {
+                    row_list.Add(keyword_data.KeywordIssues.Count().ToString());
+                    row_list.Add(StyleString.ListToString(keyword_data.IssueDescriptionList));
                 }
                 output_keyword_list_table.Add(row_list);
             }
