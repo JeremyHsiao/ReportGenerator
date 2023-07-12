@@ -887,105 +887,112 @@ namespace ExcelReportApplication
 
             MsgWindow.AppendText("Executing: " + GetReportName(report_index) + ".\n");
 
-            ExcelAction.OpenExcelApp();
-
-            // Must be updated if new report type added #NewReportType
-            switch (ReportTypeFromInt(report_index))
+            Boolean open_excel_ok = ExcelAction.OpenExcelApp();
+            if (open_excel_ok)
             {
-                case ReportType.FullIssueDescription_TC:
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
-                    if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                    if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                    bRet = Execute_WriteIssueDescriptionToTC(txtTCFile.Text, txtReportFile.Text);
-                    break;
-                case ReportType.FullIssueDescription_Summary:
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
-                    if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                    if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                    bRet = Execute_WriteIssueDescriptionToSummary(txtReportFile.Text);
-                    break;
-                case ReportType.StandardTestReportCreation:
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
-                    bRet = Execute_CreateStandardTestReportTask(txtStandardTestReport.Text);
-                    break;
-                case ReportType.KeywordIssue_Report_SingleFile:
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);    // File path here
-                    if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                    bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: false);
-                    break;
-                case ReportType.KeywordIssue_Report_Directory:
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
-                    UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);     // Directory path here
-                    if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                    bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: true);
-                    break;
-                case ReportType.TC_Likely_Passed:
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
-                    if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                    if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                    bRet = Execute_FindFailTCLinkedIssueAllClosed(txtTCFile.Text, txtReportFile.Text);
-                    break;
-                case ReportType.FindAllKeywordInReport:
-                    UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
-                    //UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
-                    //String main_file = txtStandardTestReport.Text;
-                    //String file_dir = Storage.GetDirectoryName(main_file);
-                    String output_filename = "";//use default in config file
-                    String report_root_dir = Storage.GetFullPath(txtReportFile.Text);
-                    bRet = Execute_ListAllDetailedTestPlanKeywordTask(report_root_dir, output_filename);
-                    break;
-                case ReportType.Excel_Sheet_Name_Update_Tool:
-                    UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);     // Directory path here
-                    // bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: true);
-                    bRet = true;
-                    break;
-                case ReportType.FullIssueDescription_TC_report_judgement:
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
-                    if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                    if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                    bRet = Execute_WriteIssueDescriptionToTC(txtTCFile.Text, txtReportFile.Text, txtStandardTestReport.Text);
-                    break;
-                case ReportType.TC_TestReportCreation:
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
-                    // based on tc, create report structure
-                    if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                    String dest_dir = Storage.GetFullPath(txtReportFile.Text),
-                           src_dir = Storage.GetFullPath(txtStandardTestReport.Text);
-                    bRet = Execute_CreateTestReportbyTestCaseTask(src_dir, dest_dir);
-                    // update report according to jira bug
-                    if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                    // to-be-implemented
 
-                    // update judgement and header
-                    // to-be-implemented
-                    break;
-                case ReportType.TC_AutoCorrectReport_By_Filename:
-                    UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
-                    bRet = Execute_AutoCorrectTestReportByFilename_Task(Storage.GetFullPath(txtReportFile.Text));
-                    break;
-                case ReportType.TC_AutoCorrectReport_By_ExcelList:
-                    UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
-                    // to-be-updated
-                    bRet = Execute_AutoCorrectTestReportByExcel_Task(Storage.GetFullPath(txtStandardTestReport.Text));
-                    break;
-                default:
-                    // shouldn't be here.
-                    break;
+                // Must be updated if new report type added #NewReportType
+                switch (ReportTypeFromInt(report_index))
+                {
+                    case ReportType.FullIssueDescription_TC:
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                        if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+                        bRet = Execute_WriteIssueDescriptionToTC(txtTCFile.Text, txtReportFile.Text);
+                        break;
+                    case ReportType.FullIssueDescription_Summary:
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                        if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+                        bRet = Execute_WriteIssueDescriptionToSummary(txtReportFile.Text);
+                        break;
+                    case ReportType.StandardTestReportCreation:
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
+                        bRet = Execute_CreateStandardTestReportTask(txtStandardTestReport.Text);
+                        break;
+                    case ReportType.KeywordIssue_Report_SingleFile:
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);    // File path here
+                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                        bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: false);
+                        break;
+                    case ReportType.KeywordIssue_Report_Directory:
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
+                        UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);     // Directory path here
+                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                        bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: true);
+                        break;
+                    case ReportType.TC_Likely_Passed:
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                        if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+                        bRet = Execute_FindFailTCLinkedIssueAllClosed(txtTCFile.Text, txtReportFile.Text);
+                        break;
+                    case ReportType.FindAllKeywordInReport:
+                        UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
+                        //UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
+                        //String main_file = txtStandardTestReport.Text;
+                        //String file_dir = Storage.GetDirectoryName(main_file);
+                        String output_filename = "";//use default in config file
+                        String report_root_dir = Storage.GetFullPath(txtReportFile.Text);
+                        bRet = Execute_ListAllDetailedTestPlanKeywordTask(report_root_dir, output_filename);
+                        break;
+                    case ReportType.Excel_Sheet_Name_Update_Tool:
+                        UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);     // Directory path here
+                        // bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: true);
+                        bRet = true;
+                        break;
+                    case ReportType.FullIssueDescription_TC_report_judgement:
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
+                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                        if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+                        bRet = Execute_WriteIssueDescriptionToTC(txtTCFile.Text, txtReportFile.Text, txtStandardTestReport.Text);
+                        break;
+                    case ReportType.TC_TestReportCreation:
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
+                        // based on tc, create report structure
+                        if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+                        String dest_dir = Storage.GetFullPath(txtReportFile.Text),
+                               src_dir = Storage.GetFullPath(txtStandardTestReport.Text);
+                        bRet = Execute_CreateTestReportbyTestCaseTask(src_dir, dest_dir);
+                        // update report according to jira bug
+                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                        // to-be-implemented
+
+                        // update judgement and header
+                        // to-be-implemented
+                        break;
+                    case ReportType.TC_AutoCorrectReport_By_Filename:
+                        UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
+                        bRet = Execute_AutoCorrectTestReportByFilename_Task(Storage.GetFullPath(txtReportFile.Text));
+                        break;
+                    case ReportType.TC_AutoCorrectReport_By_ExcelList:
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                        // to-be-updated
+                        bRet = Execute_AutoCorrectTestReportByExcel_Task(Storage.GetFullPath(txtStandardTestReport.Text));
+                        break;
+                    default:
+                        // shouldn't be here.
+                        break;
+                }
             }
-
+            else
+            {
+                // Open Excel application failed...
+                MsgWindow.AppendText("Failed at starting Excel application.\n");
+            }
             ExcelAction.CloseExcelApp();
 
             MsgWindow.AppendText("Finished.\n");

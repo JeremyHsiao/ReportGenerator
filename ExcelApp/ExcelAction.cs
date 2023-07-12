@@ -28,13 +28,24 @@ namespace ExcelReportApplication
 
         static public bool ExcelVisible = true;
 
-        static public void OpenExcelApp()
+        static public Boolean OpenExcelApp()
         {
-            if (excel_app != null) return;
-            excel_app = new Excel.Application();
-            excel_app.Visible = ExcelVisible;
-            excel_app.Caption = "DQA Report Generator";
-            excel_app.DisplayAlerts = false;
+            Boolean b_ret = false;
+
+            if (excel_app != null) return true;  //  if not null --> it can be used?!
+            try
+            {
+                excel_app = new Excel.Application();
+                excel_app.Visible = ExcelVisible;
+                excel_app.Caption = "DQA Report Generator";
+                excel_app.DisplayAlerts = false;
+                b_ret = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("OpenExcelApp has expection");
+            }
+            return b_ret;
         }
 
         static public Workbook OpenExcelWorkbook(String filename, bool ReadOnly = true, bool XLS = false, bool UpdateLinks = false)
