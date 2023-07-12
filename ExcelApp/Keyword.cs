@@ -297,6 +297,7 @@ namespace ExcelReportApplication
         public String Test_Stage = "DVT";
         public String Test_QTY_SN = "QTY or SN";
         public String Test_Period_Begin = "2023/07/10";
+        public String Test_Period_End  = "2023/07/10";
         public String Tested_by = "Jeremy Hsiao";
         public String Approved_by = "Jeremy Hsiao";
 
@@ -323,6 +324,7 @@ namespace ExcelReportApplication
         public static int Test_Stage_at_row = 8, Test_Stage_at_col = ('D' - 'A' + 1);
         public static int Test_QTY_SN_at_row = 8, Test_QTY_SN_at_col = ('H' - 'A' + 1);
         public static int Test_Period_Begin_at_row = 8, Test_Period_Begin_at_col = ('L' - 'A' + 1);
+        public static int Test_Period_End_at_row = 8, Test_Period_End_at_col = ('M' - 'A' + 1);
 
         // Judgement defined before
         public static int Tested_by_at_row = 9, Tested_by_at_col = ('H' - 'A' + 1);

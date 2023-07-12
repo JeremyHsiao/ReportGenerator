@@ -438,12 +438,14 @@ namespace ExcelReportApplication
             KeywordReport.DefaultKeywordReportHeader.AD_Board = XMLConfig.ReadAppSetting_String("Default_AD_Board");
             KeywordReport.DefaultKeywordReportHeader.Power_Board = XMLConfig.ReadAppSetting_String("Default_Power_Board");
             KeywordReport.DefaultKeywordReportHeader.Smart_BD_OS_Version = XMLConfig.ReadAppSetting_String("Default_Smart_BD_OS_Version");
-            KeywordReport.DefaultKeywordReportHeader.SW_PQ_Version = XMLConfig.ReadAppSetting_String("Default_SW_PQ_Version"); 
             KeywordReport.DefaultKeywordReportHeader.Touch_Sensor = XMLConfig.ReadAppSetting_String("Default_Touch_Sensor");
             KeywordReport.DefaultKeywordReportHeader.Speaker_AQ_Version = XMLConfig.ReadAppSetting_String("Default_Speaker_AQ_Version");
+            KeywordReport.DefaultKeywordReportHeader.SW_PQ_Version = XMLConfig.ReadAppSetting_String("Default_SW_PQ_Version");
             KeywordReport.DefaultKeywordReportHeader.Test_Stage = XMLConfig.ReadAppSetting_String("Default_Test_Stage");
             KeywordReport.DefaultKeywordReportHeader.Test_QTY_SN = XMLConfig.ReadAppSetting_String("Default_Test_QTY_SN");
             KeywordReport.DefaultKeywordReportHeader.Test_Period_Begin = XMLConfig.ReadAppSetting_String("Default_Test_Period_Begin");
+            KeywordReport.DefaultKeywordReportHeader.Test_Period_End = XMLConfig.ReadAppSetting_String("Default_Test_Period_End");
+            KeywordReport.DefaultKeywordReportHeader.Tested_by = XMLConfig.ReadAppSetting_String("Default_Tested_by");
             KeywordReport.DefaultKeywordReportHeader.Approved_by = XMLConfig.ReadAppSetting_String("Default_Approved_by");
 
             // end config for keyword report
