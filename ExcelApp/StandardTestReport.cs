@@ -89,19 +89,6 @@ namespace ExcelReportApplication
 
     class TestReport
     {
-        public static int PassCnt_at_row = 21, PassCnt_at_col = 5;
-        public static int FailCnt_at_row = 21, FailCnt_at_col = 7;
-        //public static int TotalCnt_at_row = 21, TotalCnt_at_col = 9;
-        public static int ConditionalPass_string_at_row = 21, ConditionalPass_string_at_col = 8;
-        public static int ConditionalPassCnt_at_row = 21, ConditionalPassCnt_at_col = 9;
-        public static int Title_at_row = 1, Title_at_col = ('A' - 'A' + 1);
-        public static int Part_No_at_row = 3, Part_No_at_col = ('J' - 'A' + 1);
-        public static int SW_Version_at_row = 7, SW_Version_at_col = ('J' - 'A' + 1);
-        public static int Period_Start_at_row = 8, Period_Start_at_col = ('L' - 'A' + 1);
-        public static int Period_End_at_row = 8, Period_End_at_col = ('M' - 'A' + 1);
-        public static int Judgement_at_row = 9, Judgement_at_col = ('D' - 'A' + 1);
-        public static int Judgement_string_at_row = 9, Judgement_string_at_col = 2;
-
         static List<TestPlan> global_tp = new List<TestPlan>();
         static public string SheetName_TestPlan = "Test Plan";
 
@@ -407,68 +394,6 @@ namespace ExcelReportApplication
                 return false;
         }
 
-
-        static public Boolean UpdateReportHeader(Worksheet ws, String Title = null, String SW_Version = null, String Test_Start = null, String Test_End = null,
-                                String Judgement = null, String Template = null)
-        {
-            Boolean b_ret = false;
-            // to-be-finished.
-            if (Template != null)
-            {
-
-            }
-            else
-            {
-                if (Title != null)
-                {
-                    ExcelAction.SetCellValue(ws, Title_at_row, Title_at_col, Title);
-                }
-                if (SW_Version != null)
-                {
-                    ExcelAction.SetCellValue(ws, SW_Version_at_row, SW_Version_at_col, Judgement);
-                }
-                if (Test_Start != null)
-                {
-                    ExcelAction.SetCellValue(ws, Period_Start_at_row, Period_Start_at_col, Test_Start);
-                }
-                if (Test_End != null)
-                {
-                    ExcelAction.SetCellValue(ws, Period_End_at_row, Period_End_at_col, Test_End);
-                }
-                if (Judgement != null)
-                {
-                    ExcelAction.SetCellValue(ws, Judgement_at_row, Judgement_at_col, Judgement);
-                }
-            }
-            b_ret = true;
-            return b_ret;
-        }
-
-        public static Boolean UpdateAllHeader(List<String> report_list, String Title = null, String SW_Version = null, String Test_Start = null, String Test_End = null,
-                                        String Judgement = null, String Template = null)
-        {
-            // Create a temporary test plan to includes all files listed in List<String> report_filename
-            List<TestPlan> do_plan = TestPlan.CreateTempPlanFromFileList(report_list);
-
-            foreach (TestPlan plan in do_plan)
-            {
-                String path = Storage.GetDirectoryName(plan.ExcelFile);
-                String filename = Storage.GetFileName(plan.ExcelFile);
-                String sheet_name = plan.ExcelSheet;
-                TestPlan.ExcelStatus test_plan_status;
-
-                test_plan_status = plan.OpenDetailExcel(ReadOnly: false);
-                if (test_plan_status == TestPlan.ExcelStatus.OK)
-                {
-                    UpdateReportHeader(plan.TestPlanWorksheet, Title: Title, SW_Version: SW_Version, Test_Start: Test_Start,
-                                            Test_End: Test_End, Judgement: Judgement, Template: Template);
-                    plan.SaveDetailExcel(plan.ExcelFile);
-                    plan.CloseDetailExcel();
-                }
-            }
-            return true;
-        }
-
         public static Dictionary<String, String> CopyTestReport(List<String> src_list, List<String> dest_list)
         {
             var dic = src_list.Zip(dest_list, (k, v) => new { k, v }).ToDictionary(x => x.k, x => x.v);
@@ -502,7 +427,7 @@ namespace ExcelReportApplication
 
             return Ret_copied_files;
         }
-        
+
         // Copy and Clear judgement -- to be used for copying part/full of report from existing projects
         static public bool CopyReportClearJudgement_SingleFile(String source_file, String destination_file = "")
         {
@@ -543,7 +468,7 @@ namespace ExcelReportApplication
             //}
 
             // Update Judgement 
-            TestReport.UpdateReportHeader(ws, Judgement: " ");
+            KeywordReport.UpdateReportHeader(ws, Judgement: " ");
 
             // if parent directory does not exist, create recursively all parents
             String destination_dir = Storage.GetDirectoryName(destination_file);
@@ -596,10 +521,10 @@ namespace ExcelReportApplication
 
             // Update header 
             String new_title = TestPlan.GetReportTitleAccordingToFilename(destination_file);
-            String existing_title = ExcelAction.GetCellTrimmedString(ws, TestReport.Title_at_row, TestReport.Title_at_col);
+            String existing_title = ExcelAction.GetCellTrimmedString(ws, KeywordReport.Title_at_row, KeywordReport.Title_at_col);
             if (existing_title != new_title)
             {
-                TestReport.UpdateReportHeader(ws, Title: new_title);
+                KeywordReport.UpdateReportHeader(ws, Title: new_title);
                 file_has_been_updated = true;
             }
 
@@ -620,7 +545,7 @@ namespace ExcelReportApplication
 
             return file_has_been_updated;
         }
-//
+        //
         //public enum InputExcelIndex
         //{
         //    SRC_PATH = 0,
@@ -744,11 +669,11 @@ namespace ExcelReportApplication
             List<String> report_actually_copied_list_dest = new List<String>();
             // use Auto Correct Function to copy and auto-correct.
 
-            for(int index = 0; index < report_to_be_copied_list_src.Count; index++)
+            for (int index = 0; index < report_to_be_copied_list_src.Count; index++)
             {
-                String  src = report_to_be_copied_list_src[index], 
+                String src = report_to_be_copied_list_src[index],
                         dest = report_to_be_copied_list_dest[index];
-                if (AutoCorrectReport_SingleFile(source_file: src, destination_file: dest, always_save:true))
+                if (AutoCorrectReport_SingleFile(source_file: src, destination_file: dest, always_save: true))
                 {
                     report_actually_copied_list_src.Add(src);
                     report_actually_copied_list_dest.Add(dest);
