@@ -528,6 +528,11 @@ namespace ExcelReportApplication
                 file_has_been_updated = true;
             }
 
+            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header==true)
+            {
+                KeywordReport.UpdateKeywordReportHeader_full(ws,KeywordReport.DefaultKeywordReportHeader);
+            }
+
             if ((file_has_been_updated) || (always_save))
             {
                 // Something has been updated or always save (ex: to copy file & update) ==> save to excel file
@@ -595,6 +600,7 @@ namespace ExcelReportApplication
         //    col_AdditionalInfo
         //};
 
+        // Code for Report C
         static public bool AutoCorrectReport_by_Excel(String input_excel_file)
         {
             // open excel and read and close excel

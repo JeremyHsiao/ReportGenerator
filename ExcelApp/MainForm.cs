@@ -49,10 +49,10 @@ namespace ExcelReportApplication
             //ReportType.Excel_Sheet_Name_Update_Tool,
             ReportType.FullIssueDescription_TC_report_judgement,
             ReportType.TC_TestReportCreation,
-            ReportType.TC_AutoCorrectReport_By_Filename,
+            //ReportType.TC_AutoCorrectReport_By_Filename,
             ReportType.TC_AutoCorrectReport_By_ExcelList, 
-            ReportType.ReadAllReportHeaderIntoExcel,
-            ReportType.WriteAllReportHeaderAccordingToExcel, 
+            //ReportType.ReadAllReportHeaderIntoExcel,
+            //ReportType.WriteAllReportHeaderAccordingToExcel, 
          };
 
         //public static ReportType[] ReportSelectableTable =
@@ -431,6 +431,7 @@ namespace ExcelReportApplication
             KeywordReport.Auto_Correct_Sheetname = XMLConfig.ReadAppSetting_Boolean("Keyword_Auto_Correct_Worksheet");
 
             // config for header above line 21
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Full_Header");
             KeywordReport.DefaultKeywordReportHeader.Model_Name = XMLConfig.ReadAppSetting_String("Default_Model_Name");
             KeywordReport.DefaultKeywordReportHeader.Part_No = XMLConfig.ReadAppSetting_String("Default_Part_No");
             KeywordReport.DefaultKeywordReportHeader.Panel_Module = XMLConfig.ReadAppSetting_String("Default_Panel_Module");
@@ -445,6 +446,7 @@ namespace ExcelReportApplication
             KeywordReport.DefaultKeywordReportHeader.Test_QTY_SN = XMLConfig.ReadAppSetting_String("Default_Test_QTY_SN");
             KeywordReport.DefaultKeywordReportHeader.Test_Period_Begin = XMLConfig.ReadAppSetting_String("Default_Test_Period_Begin");
             KeywordReport.DefaultKeywordReportHeader.Test_Period_End = XMLConfig.ReadAppSetting_String("Default_Test_Period_End");
+            KeywordReport.DefaultKeywordReportHeader.Judgement = XMLConfig.ReadAppSetting_String("Default_Judgement");
             KeywordReport.DefaultKeywordReportHeader.Tested_by = XMLConfig.ReadAppSetting_String("Default_Tested_by");
             KeywordReport.DefaultKeywordReportHeader.Approved_by = XMLConfig.ReadAppSetting_String("Default_Approved_by");
 
