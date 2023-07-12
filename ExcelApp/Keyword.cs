@@ -282,6 +282,53 @@ namespace ExcelReportApplication
         }
     }
 
+    public class KeywordReportHeader
+    {
+        public String Model_Name = "Model Name";
+        public String Part_No = "Part_No";
+        public String Panel_Module = "Panel_Module";
+        public String TCON_Board = "T-Con_Board";
+        public String AD_Board = "AD_Board";
+        public String Power_Board = "Power_Board";
+        public String Smart_BD_OS_Version = "Smart_BD_OS_Version";
+        public String Touch_Sensor = "Touch_Sensor";
+        public String Speaker_AQ_Version = "Speaker_AQ_Version";
+        public String SW_PQ_Version = "SW_PQ_Version";
+        public String Test_Stage = "DVT";
+        public String Test_QTY_SN = "QTY or SN";
+        public String Test_Period_Begin = "2023/07/10";
+        public String Tested_by = "Jeremy Hsiao";
+        public String Approved_by = "Jeremy Hsiao";
+
+        public static int Period_Start_at_row = 8, Period_Start_at_col = ('L' - 'A' + 1);
+        public static int Period_End_at_row = 8, Period_End_at_col = ('M' - 'A' + 1);
+        public static int Judgement_at_row = 9, Judgement_at_col = ('D' - 'A' + 1);
+        public static int Judgement_string_at_row = 9, Judgement_string_at_col = 2;
+
+        public static int Model_Name_at_row = 3, Model_Name_at_col = ('D' - 'A' + 1);
+        public static int Part_No_at_row = 3, Part_No_at_col = ('J' - 'A' + 1);
+
+        public static int Panel_Module_at_row = 4, Panel_Module_at_col = ('D' - 'A' + 1);
+        public static int TCON_Board_at_row = 4, TCON_Board_at_col = ('J' - 'A' + 1);
+
+        public static int AD_Board_at_row = 5, AD_Board_at_col = ('D' - 'A' + 1);
+        public static int Power_Board_at_row = 5, Power_Board_at_col = ('J' - 'A' + 1);
+
+        public static int Smart_BD_OS_Version_at_row = 6, Smart_BD_OS_Version_at_col = ('D' - 'A' + 1);
+        public static int Touch_Sensor_at_row = 6, Touch_Sensor_at_col = ('J' - 'A' + 1);
+
+        public static int Speaker_AQ_Version_at_row = 7, Speaker_AQ_Version_at_col = ('D' - 'A' + 1);
+        public static int SW_PQ_Version_at_row = 7, SW_PQ_Version_at_col = ('J' - 'A' + 1);
+
+        public static int Test_Stage_at_row = 8, Test_Stage_at_col = ('D' - 'A' + 1);
+        public static int Test_QTY_SN_at_row = 8, Test_QTY_SN_at_col = ('H' - 'A' + 1);
+        public static int Test_Period_Begin_at_row = 8, Test_Period_Begin_at_col = ('L' - 'A' + 1);
+
+        // Judgement defined before
+        public static int Tested_by_at_row = 9, Tested_by_at_col = ('H' - 'A' + 1);
+        public static int Approved_by_at_row = 9, Approved_by_at_col = ('L' - 'A' + 1);
+    }
+
     public static class KeywordReport
     {
         static public String TestReport_Default_Output_Dir = "";
@@ -320,21 +367,7 @@ namespace ExcelReportApplication
 
         public static Boolean Auto_Correct_Sheetname = false;
 
-        public static String Default_Model_Name = "Model Name";
-        public static String Default_Part_No = "Part_No";
-        public static String Default_Panel_Module = "Panel_Module";
-        public static String Default_TCON_Board = "T-Con_Board";
-        public static String Default_AD_Board = "AD_Board";
-        public static String Default_Power_Board = "Power_Board";
-        public static String Default_Smart_BD_OS_Version = "Smart_BD_OS_Version";
-        public static String Default_Touch_Sensor = "Touch_Sensor";
-        public static String Default_Speaker_AQ_Version = "Speaker_AQ_Version";
-        public static String Default_SW_PQ_Version = "SW_PQ_Version";
-        public static String Default_Test_Stage = "DVT";
-        public static String Default_Test_QTY_SN = "QTY or SN";
-        public static String Default_Test_Period_Begin = "2023/07/10";
-        public static String Default_Tested_by = "Jeremy Hsiao";
-        public static String Default_Approved_by = "Jeremy Hsiao";
+        public static KeywordReportHeader DefaultKeywordReportHeader = new KeywordReportHeader();
 
         public static int PassCnt_at_row = 21, PassCnt_at_col = 5;
         public static int FailCnt_at_row = 21, FailCnt_at_col = 7;
@@ -348,29 +381,6 @@ namespace ExcelReportApplication
         public static int Period_End_at_row = 8, Period_End_at_col = ('M' - 'A' + 1);
         public static int Judgement_at_row = 9, Judgement_at_col = ('D' - 'A' + 1);
         public static int Judgement_string_at_row = 9, Judgement_string_at_col = 2;
-
-        public static int Default_Model_Name_at_row = 3, Default_Model_Name_at_col = ('D' - 'A' + 1);
-        public static int Default_Part_No_at_row = 3, Default_Part_No_at_col = ('J' - 'A' + 1);
-
-        public static int Default_Panel_Module_at_row = 4, Default_Panel_Module_at_col = ('D' - 'A' + 1);
-        public static int Default_TCON_Board_at_row = 4, Default_TCON_Board_at_col = ('J' - 'A' + 1);
-
-        public static int Default_AD_Board_at_row = 5, Default_AD_Board_at_col = ('D' - 'A' + 1);
-        public static int Default_Power_Board_at_row = 5, Default_Power_Board_at_col = ('J' - 'A' + 1);
-
-        public static int Default_Smart_BD_OS_Version_at_row = 6, Default_Smart_BD_OS_Version_at_col = ('D' - 'A' + 1);
-        public static int Default_Touch_Sensor_at_row = 6, Default_Touch_Sensor_at_col = ('J' - 'A' + 1);
-
-        public static int Default_Speaker_AQ_Version_at_row = 7, Default_Speaker_AQ_Version_at_col = ('D' - 'A' + 1);
-        public static int Default_SW_PQ_Version_at_row = 7, Default_SW_PQ_Version_at_col = ('J' - 'A' + 1);
-
-        public static int Default_Test_Stage_at_row = 8, Default_Test_Stage_at_col = ('D' - 'A' + 1);
-        public static int Default_Test_QTY_SN_at_row = 8, Default_Test_QTY_SN_at_col = ('H' - 'A' + 1);
-        public static int Default_Test_Period_Begin_at_row = 8, Default_Test_Period_Begin_at_col = ('L' - 'A' + 1);
-
-        // Judgement defined before
-        public static int Default_Tested_by_at_row = 9, Default_Tested_by_at_col = ('H' - 'A' + 1);
-        public static int Default_Approved_by_at_row = 9, Default_Approved_by_at_col = ('L' - 'A' + 1);
 
         private static List<TestPlanKeyword> global_keyword_list = new List<TestPlanKeyword>();
         private static Boolean global_keyword_available;
@@ -1348,29 +1358,29 @@ namespace ExcelReportApplication
             return true;
         }
 
-        static public void UpdateKeywordReportHeader_full(Worksheet report_worksheet)
+        static public void UpdateKeywordReportHeader_full(Worksheet report_worksheet, KeywordReportHeader header)
         {
-            ExcelAction.SetCellValue(report_worksheet, Default_Model_Name_at_row, Default_Model_Name_at_col, Default_Model_Name);
-            ExcelAction.SetCellValue(report_worksheet, Default_Part_No_at_row, Default_Part_No_at_col, Default_Part_No);
+            ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Model_Name_at_row, KeywordReportHeader.Model_Name_at_col, header.Model_Name);
+            ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Part_No_at_row, KeywordReportHeader.Part_No_at_col, header.Part_No);
 
-            ExcelAction.SetCellValue(report_worksheet, Default_Panel_Module_at_row, Default_Panel_Module_at_col, Default_Panel_Module);
-            ExcelAction.SetCellValue(report_worksheet, Default_TCON_Board_at_row, Default_TCON_Board_at_col, Default_TCON_Board);
+            ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Panel_Module_at_row, KeywordReportHeader.Panel_Module_at_col, header.Panel_Module);
+            ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.TCON_Board_at_row, KeywordReportHeader.TCON_Board_at_col, header.TCON_Board);
 
-            ExcelAction.SetCellValue(report_worksheet, Default_AD_Board_at_row, Default_AD_Board_at_col, Default_AD_Board);
-            ExcelAction.SetCellValue(report_worksheet, Default_Power_Board_at_row, Default_Power_Board_at_col, Default_Power_Board);
+            ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.AD_Board_at_row, KeywordReportHeader.AD_Board_at_col, header.AD_Board);
+            ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Power_Board_at_row, KeywordReportHeader.Power_Board_at_col, header.Power_Board);
 
-            ExcelAction.SetCellValue(report_worksheet, Default_Smart_BD_OS_Version_at_row, Default_Smart_BD_OS_Version_at_col, Default_Smart_BD_OS_Version);
-            ExcelAction.SetCellValue(report_worksheet, Default_Touch_Sensor_at_row, Default_Touch_Sensor_at_col, Default_Touch_Sensor);
+            ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Smart_BD_OS_Version_at_row, KeywordReportHeader.Smart_BD_OS_Version_at_col, header.Smart_BD_OS_Version);
+            ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Touch_Sensor_at_row, KeywordReportHeader.Touch_Sensor_at_col, header.Touch_Sensor);
 
-            ExcelAction.SetCellValue(report_worksheet, Default_Speaker_AQ_Version_at_row, Default_Speaker_AQ_Version_at_col, Default_Speaker_AQ_Version);
-            ExcelAction.SetCellValue(report_worksheet, Default_SW_PQ_Version_at_row, Default_SW_PQ_Version_at_col, Default_SW_PQ_Version);
+            ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Speaker_AQ_Version_at_row, KeywordReportHeader.Speaker_AQ_Version_at_col, header.Speaker_AQ_Version);
+            ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.SW_PQ_Version_at_row, KeywordReportHeader.SW_PQ_Version_at_col, header.SW_PQ_Version);
 
-            ExcelAction.SetCellValue(report_worksheet, Default_Test_Stage_at_row, Default_Test_Stage_at_col, Default_Test_Stage);
-            ExcelAction.SetCellValue(report_worksheet, Default_Test_QTY_SN_at_row, Default_Test_QTY_SN_at_col, Default_Test_QTY_SN);
-            ExcelAction.SetCellValue(report_worksheet, Default_Test_Period_Begin_at_row, Default_Test_Period_Begin_at_col, Default_Test_Period_Begin);
+            ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Test_Stage_at_row, KeywordReportHeader.Test_Stage_at_col, header.Test_Stage);
+            ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Test_QTY_SN_at_row, KeywordReportHeader.Test_QTY_SN_at_col, header.Test_QTY_SN);
+            ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Test_Period_Begin_at_row, KeywordReportHeader.Test_Period_Begin_at_col, header.Test_Period_Begin);
 
-            ExcelAction.SetCellValue(report_worksheet, Default_Tested_by_at_row, Default_Tested_by_at_col, Default_Tested_by);
-            ExcelAction.SetCellValue(report_worksheet, Default_Approved_by_at_row, Default_Approved_by_at_col, Default_Approved_by);
+            ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Tested_by_at_row, KeywordReportHeader.Tested_by_at_col, header.Tested_by);
+            ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Approved_by_at_row, KeywordReportHeader.Approved_by_at_col, header.Approved_by);
         }
 
         static public Boolean UpdateReportHeader(Worksheet ws, String Title = null, String SW_Version = null, String Test_Start = null, String Test_End = null,

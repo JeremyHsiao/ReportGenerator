@@ -431,20 +431,20 @@ namespace ExcelReportApplication
             KeywordReport.Auto_Correct_Sheetname = XMLConfig.ReadAppSetting_Boolean("Keyword_Auto_Correct_Worksheet");
 
             // config for header above line 21
-            KeywordReport.Default_Model_Name = XMLConfig.ReadAppSetting_String("Default_Model_Name");
-            KeywordReport.Default_Part_No = XMLConfig.ReadAppSetting_String("Default_Part_No");
-            KeywordReport.Default_Panel_Module = XMLConfig.ReadAppSetting_String("Default_Panel_Module");
-            KeywordReport.Default_TCON_Board = XMLConfig.ReadAppSetting_String("Default_TCON_Board");
-            KeywordReport.Default_AD_Board = XMLConfig.ReadAppSetting_String("Default_AD_Board");
-            KeywordReport.Default_Power_Board = XMLConfig.ReadAppSetting_String("Default_Power_Board");
-            KeywordReport.Default_Smart_BD_OS_Version = XMLConfig.ReadAppSetting_String("Default_Smart_BD_OS_Version");
-            KeywordReport.Default_SW_PQ_Version = XMLConfig.ReadAppSetting_String("Default_SW_PQ_Version"); 
-            KeywordReport.Default_Touch_Sensor = XMLConfig.ReadAppSetting_String("Default_Touch_Sensor");
-            KeywordReport.Default_Speaker_AQ_Version = XMLConfig.ReadAppSetting_String("Default_Speaker_AQ_Version");
-            KeywordReport.Default_Test_Stage = XMLConfig.ReadAppSetting_String("Default_Test_Stage");
-            KeywordReport.Default_Test_QTY_SN = XMLConfig.ReadAppSetting_String("Default_Test_QTY_SN");
-            KeywordReport.Default_Test_Period_Begin = XMLConfig.ReadAppSetting_String("Default_Test_Period_Begin");
-            KeywordReport.Default_Approved_by = XMLConfig.ReadAppSetting_String("Default_Approved_by");
+            KeywordReport.DefaultKeywordReportHeader.Model_Name = XMLConfig.ReadAppSetting_String("Default_Model_Name");
+            KeywordReport.DefaultKeywordReportHeader.Part_No = XMLConfig.ReadAppSetting_String("Default_Part_No");
+            KeywordReport.DefaultKeywordReportHeader.Panel_Module = XMLConfig.ReadAppSetting_String("Default_Panel_Module");
+            KeywordReport.DefaultKeywordReportHeader.TCON_Board = XMLConfig.ReadAppSetting_String("Default_TCON_Board");
+            KeywordReport.DefaultKeywordReportHeader.AD_Board = XMLConfig.ReadAppSetting_String("Default_AD_Board");
+            KeywordReport.DefaultKeywordReportHeader.Power_Board = XMLConfig.ReadAppSetting_String("Default_Power_Board");
+            KeywordReport.DefaultKeywordReportHeader.Smart_BD_OS_Version = XMLConfig.ReadAppSetting_String("Default_Smart_BD_OS_Version");
+            KeywordReport.DefaultKeywordReportHeader.SW_PQ_Version = XMLConfig.ReadAppSetting_String("Default_SW_PQ_Version"); 
+            KeywordReport.DefaultKeywordReportHeader.Touch_Sensor = XMLConfig.ReadAppSetting_String("Default_Touch_Sensor");
+            KeywordReport.DefaultKeywordReportHeader.Speaker_AQ_Version = XMLConfig.ReadAppSetting_String("Default_Speaker_AQ_Version");
+            KeywordReport.DefaultKeywordReportHeader.Test_Stage = XMLConfig.ReadAppSetting_String("Default_Test_Stage");
+            KeywordReport.DefaultKeywordReportHeader.Test_QTY_SN = XMLConfig.ReadAppSetting_String("Default_Test_QTY_SN");
+            KeywordReport.DefaultKeywordReportHeader.Test_Period_Begin = XMLConfig.ReadAppSetting_String("Default_Test_Period_Begin");
+            KeywordReport.DefaultKeywordReportHeader.Approved_by = XMLConfig.ReadAppSetting_String("Default_Approved_by");
 
             // end config for keyword report
         }
