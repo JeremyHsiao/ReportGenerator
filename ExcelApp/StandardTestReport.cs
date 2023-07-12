@@ -521,7 +521,7 @@ namespace ExcelReportApplication
 
             // Update header 
             String new_title = TestPlan.GetReportTitleAccordingToFilename(destination_file);
-            String existing_title = ExcelAction.GetCellTrimmedString(ws, KeywordReport.Title_at_row, KeywordReport.Title_at_col);
+            String existing_title = ExcelAction.GetCellTrimmedString(ws, KeywordReportHeader.Title_at_row, KeywordReportHeader.Title_at_col);
             if (existing_title != new_title)
             {
                 KeywordReport.UpdateReportHeader(ws, Title: new_title);

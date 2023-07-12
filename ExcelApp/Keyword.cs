@@ -285,6 +285,8 @@ namespace ExcelReportApplication
     public class KeywordReportHeader
     {
         public Boolean Report_C_Update_Full_Header = false;
+        public String Report_Title = "Report_Name";
+        public String Report_SheetName= "Report_Sheet_Name";
         public String Model_Name = "Model Name";
         public String Part_No = "Part_No";
         public String Panel_Module = "Panel_Module";
@@ -303,6 +305,8 @@ namespace ExcelReportApplication
         public String Tested_by = " ";
         public String Approved_by = "Jeremy Hsiao";
 
+        public static int Title_at_row = 1, Title_at_col = ('A' - 'A' + 1);
+ 
         public static int Period_Start_at_row = 8, Period_Start_at_col = ('L' - 'A' + 1);
         public static int Period_End_at_row = 8, Period_End_at_col = ('M' - 'A' + 1);
 //        public static int Judgement_at_row = 9, Judgement_at_col = ('D' - 'A' + 1);
@@ -331,6 +335,14 @@ namespace ExcelReportApplication
         public static int Judgement_at_row = 9, Judgement_at_col = ('D' - 'A' + 1); 
         public static int Tested_by_at_row = 9, Tested_by_at_col = ('H' - 'A' + 1);
         public static int Approved_by_at_row = 9, Approved_by_at_col = ('L' - 'A' + 1);
+
+        //public static int Part_No_at_row = 3, Part_No_at_col = ('J' - 'A' + 1);
+        //public static int SW_Version_at_row = 7, SW_Version_at_col = ('J' - 'A' + 1);
+        //public static int Period_Start_at_row = 8, Period_Start_at_col = ('L' - 'A' + 1);
+        //public static int Period_End_at_row = 8, Period_End_at_col = ('M' - 'A' + 1);
+        //public static int Judgement_at_row = 9, Judgement_at_col = ('D' - 'A' + 1);
+        //public static int Judgement_string_at_row = 9, Judgement_string_at_col = 2;
+
     }
 
     public static class KeywordReport
@@ -378,13 +390,6 @@ namespace ExcelReportApplication
         //public static int TotalCnt_at_row = 21, TotalCnt_at_col = 9;
         public static int ConditionalPass_string_at_row = 21, ConditionalPass_string_at_col = 8;
         public static int ConditionalPassCnt_at_row = 21, ConditionalPassCnt_at_col = 9;
-        public static int Title_at_row = 1, Title_at_col = ('A' - 'A' + 1);
-        public static int Part_No_at_row = 3, Part_No_at_col = ('J' - 'A' + 1);
-        public static int SW_Version_at_row = 7, SW_Version_at_col = ('J' - 'A' + 1);
-        public static int Period_Start_at_row = 8, Period_Start_at_col = ('L' - 'A' + 1);
-        public static int Period_End_at_row = 8, Period_End_at_col = ('M' - 'A' + 1);
-        public static int Judgement_at_row = 9, Judgement_at_col = ('D' - 'A' + 1);
-        public static int Judgement_string_at_row = 9, Judgement_string_at_col = 2;
 
         private static List<TestPlanKeyword> global_keyword_list = new List<TestPlanKeyword>();
         private static Boolean global_keyword_available;
@@ -1301,10 +1306,10 @@ namespace ExcelReportApplication
                 ExcelAction.SetCellValue(result_worksheet, FailCnt_at_row, FailCnt_at_col, fail_count);
                 ExcelAction.SetCellValue(result_worksheet, ConditionalPass_string_at_row, ConditionalPass_string_at_col, CONDITIONAL_PASS_str + ":");
                 ExcelAction.SetCellValue(result_worksheet, ConditionalPassCnt_at_row, ConditionalPassCnt_at_col, conditional_pass_count);
-                ExcelAction.SetCellValue(result_worksheet, Judgement_at_row, Judgement_at_col, judgement_str);
+                ExcelAction.SetCellValue(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, judgement_str);
                 // always update Test End Period to today
                 String end_date = DateTime.Now.ToString("yyyy/MM/dd");
-                ExcelAction.SetCellValue(result_worksheet, Period_End_at_row, Period_End_at_col, end_date);
+                ExcelAction.SetCellValue(result_worksheet, KeywordReportHeader.Test_Period_End_at_row, KeywordReportHeader.Test_Period_End_at_col, end_date);
                 //// update Part No.
                 //String default_part_no = "99.M2710.0A4-";
                 //String part_no = default_part_no + sheet_name;
@@ -1412,23 +1417,23 @@ namespace ExcelReportApplication
             {
                 if (Title != null)
                 {
-                    ExcelAction.SetCellValue(ws, Title_at_row, Title_at_col, Title);
+                    ExcelAction.SetCellValue(ws, KeywordReportHeader.Title_at_row, KeywordReportHeader.Title_at_col, Title);
                 }
                 if (SW_Version != null)
                 {
-                    ExcelAction.SetCellValue(ws, SW_Version_at_row, SW_Version_at_col, Judgement);
+                    ExcelAction.SetCellValue(ws, KeywordReportHeader.SW_PQ_Version_at_row, KeywordReportHeader.SW_PQ_Version_at_col, Judgement);
                 }
                 if (Test_Start != null)
                 {
-                    ExcelAction.SetCellValue(ws, Period_Start_at_row, Period_Start_at_col, Test_Start);
+                    ExcelAction.SetCellValue(ws, KeywordReportHeader.Test_Period_Begin_at_row, KeywordReportHeader.Test_Period_Begin_at_col, Test_Start);
                 }
                 if (Test_End != null)
                 {
-                    ExcelAction.SetCellValue(ws, Period_End_at_row, Period_End_at_col, Test_End);
+                    ExcelAction.SetCellValue(ws, KeywordReportHeader.Test_Period_End_at_row, KeywordReportHeader.Test_Period_End_at_col, Test_End);
                 }
                 if (Judgement != null)
                 {
-                    ExcelAction.SetCellValue(ws, Judgement_at_row, Judgement_at_col, Judgement);
+                    ExcelAction.SetCellValue(ws, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, Judgement);
                 }
             }
             b_ret = true;
@@ -1488,7 +1493,7 @@ namespace ExcelReportApplication
                 else
                 {
                     // 3. Get Judgement value
-                    Object obj = ExcelAction.GetCellValue(ws_judgement, Judgement_at_row, Judgement_at_col);
+                    Object obj = ExcelAction.GetCellValue(ws_judgement, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
                     if (obj != null)
                     {
                         judgement_str = (String)obj;
