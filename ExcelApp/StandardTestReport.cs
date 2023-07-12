@@ -530,6 +530,8 @@ namespace ExcelReportApplication
 
             if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header==true)
             {
+                KeywordReport.DefaultKeywordReportHeader.Report_Title = new_title;
+                KeywordReport.DefaultKeywordReportHeader.Report_SheetName = new_sheet_name;
                 KeywordReport.UpdateKeywordReportHeader_full(ws,KeywordReport.DefaultKeywordReportHeader);
             }
 

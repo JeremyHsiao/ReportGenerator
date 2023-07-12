@@ -1372,8 +1372,11 @@ namespace ExcelReportApplication
             Boolean b_ret = false;
             try
             {
+                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Title_at_row, KeywordReportHeader.Title_at_col, header.Report_Title);
+                
                 ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Model_Name_at_row, KeywordReportHeader.Model_Name_at_col, header.Model_Name);
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Part_No_at_row, KeywordReportHeader.Part_No_at_col, header.Part_No);
+                String output_part_no = header.Part_No + "-" + header.Report_SheetName;
+                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Part_No_at_row, KeywordReportHeader.Part_No_at_col, output_part_no);
 
                 ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Panel_Module_at_row, KeywordReportHeader.Panel_Module_at_col, header.Panel_Module);
                 ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.TCON_Board_at_row, KeywordReportHeader.TCON_Board_at_col, header.TCON_Board);
