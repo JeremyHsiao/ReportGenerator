@@ -14,9 +14,23 @@ namespace ExcelReportApplication
         {
             @"workbook_BUG_Jira",                       @".\SampleData\Jira 2022-09-03T10_48.xls", 
             @"workbook_TC_Jira",                        @".\SampleData\TC_Jira 2022-09-03T11_07.xls",
-            @"workbook_Summary",                        @".\SampleData\Report_Template.xlsx",
-            @"workbook_StandardTestReport",             @".\SampleData\TestFileFolder\0.0_DQA Test Report\BenQ_Medical_Standard Test Report.xlsx",
             @"Keyword_default_report_dir",              @".\SampleData\EVT_Winnie_Keyword2.5_keyword\All function",
+            @"workbook_TC_Template",                    @".\SampleData\TC_Jira_Template.xlsx",
+            @"Default_Model_Name",                      @"Model Name",
+            @"Default_Part_No",                         @"Part_No",
+            @"Default_Panel_Module",                    @"Panel_Module",
+            @"Default_T-Con_Board",                     @"T-Con_Board",
+            @"Default_AD_Board",                        @"AD_Board",
+            @"Default_Power_Board",                     @"Power_Board",
+            @"Default_Smart_BD_OS_Version",             @"Smart_BD_OS_Version",
+            @"Default_Touch_Sensor",                    @"Touch_Sensor",
+            @"Default_Speaker_AQ_Version",              @"Speaker_AQ_Version",
+            @"Default_SW_PQ_Version",                   @"Default_SW_PQ_Version",
+            @"Default_Test_Stage",                      @"DVT",
+            @"Default_Test_QTY_SN",                     @"QTY_or)SN",
+            @"Default_Test_Period_Begin",               @"2023/07/10",
+            @"Default_Tested_by",                       @"Tested_by",
+            @"Default_Approved_by",                     @"Jeremy Hsiao",
             @"Excel_Visible",                           @"true",
             @"Issue_Key_Prefix",                        @"-",
             @"Issue_SheetName",                         @"general_report",
@@ -26,7 +40,6 @@ namespace ExcelReportApplication
             @"TC_SheetName",                            @"general_report",
             @"TC_Row_NameDefine",                       @"4",
             @"TC_Row_DataBegin",                        @"5",
-            @"workbook_TC_Template",                    @".\SampleData\TC_Jira_Template.xlsx",
             @"LinkIssueFilterStatusString",             @"Close (0), Waive (0.1)",
             @"TestReport_Row_UserStart",                @"27",
             @"TestReport_Column_Keyword_Indentifier",   @"2",
@@ -55,7 +68,11 @@ namespace ExcelReportApplication
             @"Keyword_report_B_Issue_Color",            @"DarkOrange",
             @"Keyword_report_C_Issue_Color",            @"Black",
             @"Keyword_Auto_Correct_Worksheet",          @"false",
-
+            //
+            // report 2
+            @"workbook_Summary",                        @".\SampleData\Report_Template.xlsx",
+            // report 3
+            @"workbook_StandardTestReport",             @".\SampleData\TestFileFolder\0.0_DQA Test Report\BenQ_Medical_Standard Test Report.xlsx",
         };
 
         // buglist_Severity support: Color.xxxxx

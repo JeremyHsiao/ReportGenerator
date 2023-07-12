@@ -320,9 +320,61 @@ namespace ExcelReportApplication
 
         public static Boolean Auto_Correct_Sheetname = false;
 
-        private static List<TestPlanKeyword> global_keyword_list = new List<TestPlanKeyword> ();
+        public static String Default_Model_Name = "Model Name";
+        public static String Default_Part_No = "Part_No";
+        public static String Default_Panel_Module = "Panel_Module";
+        public static String Default_TCON_Board = "T-Con_Board";
+        public static String Default_AD_Board = "AD_Board";
+        public static String Default_Power_Board = "Power_Board";
+        public static String Default_Smart_BD_OS_Version = "Smart_BD_OS_Version";
+        public static String Default_Touch_Sensor = "Touch_Sensor";
+        public static String Default_Speaker_AQ_Version = "Speaker_AQ_Version";
+        public static String Default_SW_PQ_Version = "SW_PQ_Version";
+        public static String Default_Test_Stage = "DVT";
+        public static String Default_Test_QTY_SN = "QTY or SN";
+        public static String Default_Test_Period_Begin = "2023/07/10";
+        public static String Default_Tested_by = "Jeremy Hsiao";
+        public static String Default_Approved_by = "Jeremy Hsiao";
+
+        public static int PassCnt_at_row = 21, PassCnt_at_col = 5;
+        public static int FailCnt_at_row = 21, FailCnt_at_col = 7;
+        //public static int TotalCnt_at_row = 21, TotalCnt_at_col = 9;
+        public static int ConditionalPass_string_at_row = 21, ConditionalPass_string_at_col = 8;
+        public static int ConditionalPassCnt_at_row = 21, ConditionalPassCnt_at_col = 9;
+        public static int Title_at_row = 1, Title_at_col = ('A' - 'A' + 1);
+        public static int Part_No_at_row = 3, Part_No_at_col = ('J' - 'A' + 1);
+        public static int SW_Version_at_row = 7, SW_Version_at_col = ('J' - 'A' + 1);
+        public static int Period_Start_at_row = 8, Period_Start_at_col = ('L' - 'A' + 1);
+        public static int Period_End_at_row = 8, Period_End_at_col = ('M' - 'A' + 1);
+        public static int Judgement_at_row = 9, Judgement_at_col = ('D' - 'A' + 1);
+        public static int Judgement_string_at_row = 9, Judgement_string_at_col = 2;
+
+        public static int Default_Model_Name_at_row = 3, Default_Model_Name_at_col = ('D' - 'A' + 1);
+        public static int Default_Part_No_at_row = 3, Default_Part_No_at_col = ('J' - 'A' + 1);
+
+        public static int Default_Panel_Module_at_row = 4, Default_Panel_Module_at_col = ('D' - 'A' + 1);
+        public static int Default_TCON_Board_at_row = 4, Default_TCON_Board_at_col = ('J' - 'A' + 1);
+
+        public static int Default_AD_Board_at_row = 5, Default_AD_Board_at_col = ('D' - 'A' + 1);
+        public static int Default_Power_Board_at_row = 5, Default_Power_Board_at_col = ('J' - 'A' + 1);
+
+        public static int Default_Smart_BD_OS_Version_at_row = 6, Default_Smart_BD_OS_Version_at_col = ('D' - 'A' + 1);
+        public static int Default_Touch_Sensor_at_row = 6, Default_Touch_Sensor_at_col = ('J' - 'A' + 1);
+
+        public static int Default_Speaker_AQ_Version_at_row = 7, Default_Speaker_AQ_Version_at_col = ('D' - 'A' + 1);
+        public static int Default_SW_PQ_Version_at_row = 7, Default_SW_PQ_Version_at_col = ('J' - 'A' + 1);
+
+        public static int Default_Test_Stage_at_row = 8, Default_Test_Stage_at_col = ('D' - 'A' + 1);
+        public static int Default_Test_QTY_SN_at_row = 8, Default_Test_QTY_SN_at_col = ('H' - 'A' + 1);
+        public static int Default_Test_Period_Begin_at_row = 8, Default_Test_Period_Begin_at_col = ('L' - 'A' + 1);
+
+        // Judgement defined before
+        public static int Default_Tested_by_at_row = 9, Default_Tested_by_at_col = ('H' - 'A' + 1);
+        public static int Default_Approved_by_at_row = 9, Default_Approved_by_at_col = ('L' - 'A' + 1);
+
+        private static List<TestPlanKeyword> global_keyword_list = new List<TestPlanKeyword>();
         private static Boolean global_keyword_available;
-        public static List<TestPlanKeyword> GetGlobalKeywordList() 
+        public static List<TestPlanKeyword> GetGlobalKeywordList()
         {
             if (global_keyword_available)
             {

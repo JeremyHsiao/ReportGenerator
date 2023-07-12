@@ -414,7 +414,7 @@ namespace ExcelReportApplication
             // end of config
 
             // config for default output directory of test report (keyword report)
-            KeywordReport.TestReport_Default_Output_Dir = XMLConfig.ReadAppSetting_String("TestReport_Default_Output_Dir"); 
+            KeywordReport.TestReport_Default_Output_Dir = XMLConfig.ReadAppSetting_String("TestReport_Default_Output_Dir");
 
             // config for excel report output
             StyleString.default_font = XMLConfig.ReadAppSetting_String("default_report_Font");
@@ -429,6 +429,23 @@ namespace ExcelReportApplication
             Issue.C_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_C_Issue_Color");
             Issue.D_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_D_Issue_Color");
             KeywordReport.Auto_Correct_Sheetname = XMLConfig.ReadAppSetting_Boolean("Keyword_Auto_Correct_Worksheet");
+
+            // config for header above line 21
+            KeywordReport.Default_Model_Name = XMLConfig.ReadAppSetting_String("Default_Model_Name");
+            KeywordReport.Default_Part_No = XMLConfig.ReadAppSetting_String("Default_Part_No");
+            KeywordReport.Default_Panel_Module = XMLConfig.ReadAppSetting_String("Default_Panel_Module");
+            KeywordReport.Default_TCON_Board = XMLConfig.ReadAppSetting_String("Default_TCON_Board");
+            KeywordReport.Default_AD_Board = XMLConfig.ReadAppSetting_String("Default_AD_Board");
+            KeywordReport.Default_Power_Board = XMLConfig.ReadAppSetting_String("Default_Power_Board");
+            KeywordReport.Default_Smart_BD_OS_Version = XMLConfig.ReadAppSetting_String("Default_Smart_BD_OS_Version");
+            KeywordReport.Default_SW_PQ_Version = XMLConfig.ReadAppSetting_String("Default_SW_PQ_Version"); 
+            KeywordReport.Default_Touch_Sensor = XMLConfig.ReadAppSetting_String("Default_Touch_Sensor");
+            KeywordReport.Default_Speaker_AQ_Version = XMLConfig.ReadAppSetting_String("Default_Speaker_AQ_Version");
+            KeywordReport.Default_Test_Stage = XMLConfig.ReadAppSetting_String("Default_Test_Stage");
+            KeywordReport.Default_Test_QTY_SN = XMLConfig.ReadAppSetting_String("Default_Test_QTY_SN");
+            KeywordReport.Default_Test_Period_Begin = XMLConfig.ReadAppSetting_String("Default_Test_Period_Begin");
+            KeywordReport.Default_Approved_by = XMLConfig.ReadAppSetting_String("Default_Approved_by");
+
             // end config for keyword report
         }
 
@@ -442,16 +459,16 @@ namespace ExcelReportApplication
             }
             //int default_select_index = (int)ReportType.FullIssueDescription_Summary; // current default
             int default_select_index = 0;
-            Set_comboBoxReportSelect_SelectedIndex(default_select_index);  
+            Set_comboBoxReportSelect_SelectedIndex(default_select_index);
         }
 
-        private void Set_comboBoxReportSelect_SelectedIndex(int value) 
+        private void Set_comboBoxReportSelect_SelectedIndex(int value)
         {
-            comboBoxReportSelect.SelectedIndex = (int)ReportSelectableTable[value]; 
+            comboBoxReportSelect.SelectedIndex = (int)ReportSelectableTable[value];
         }
-        private int Get_comboBoxReportSelect_SelectedIndex() 
+        private int Get_comboBoxReportSelect_SelectedIndex()
         {
-            return (int)ReportSelectableTable[comboBoxReportSelect.SelectedIndex]; 
+            return (int)ReportSelectableTable[comboBoxReportSelect.SelectedIndex];
         }
 
         static public String ReportGeneratorVersionString;
@@ -545,11 +562,11 @@ namespace ExcelReportApplication
             ReportGenerator.global_testcase_list.Clear();
         }
 
-        private bool Execute_WriteIssueDescriptionToTC(String tc_file, String template_file, String judgement_report_dir="")
+        private bool Execute_WriteIssueDescriptionToTC(String tc_file, String template_file, String judgement_report_dir = "")
         {
             if ((ReportGenerator.global_issue_list.Count == 0) || (ReportGenerator.global_testcase_list.Count == 0) ||
                 (!Storage.FileExists(tc_file)) || (!Storage.FileExists(template_file))
-                || ((judgement_report_dir!="") && !Storage.DirectoryExists(judgement_report_dir)) )
+                || ((judgement_report_dir != "") && !Storage.DirectoryExists(judgement_report_dir)))
             {
                 // protection check
                 return false;
@@ -559,7 +576,7 @@ namespace ExcelReportApplication
             ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
 
             //            ReportGenerator.WriteBacktoTCJiraExcel(tc_file);
-            ReportGenerator.WriteBacktoTCJiraExcelV2(tc_file, template_file,judgement_report_dir);
+            ReportGenerator.WriteBacktoTCJiraExcelV2(tc_file, template_file, judgement_report_dir);
             return true;
         }
 
@@ -666,7 +683,7 @@ namespace ExcelReportApplication
             return true;
         }
 
-        private bool Execute_ListAllDetailedTestPlanKeywordTask(String report_root, String output_file ="")
+        private bool Execute_ListAllDetailedTestPlanKeywordTask(String report_root, String output_file = "")
         {
             if (!Storage.DirectoryExists(report_root))
             {
@@ -891,7 +908,7 @@ namespace ExcelReportApplication
                     UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
                     bRet = Execute_CreateStandardTestReportTask(txtStandardTestReport.Text);
                     break;
-               case ReportType.KeywordIssue_Report_SingleFile:
+                case ReportType.KeywordIssue_Report_SingleFile:
                     UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                     UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);    // File path here
                     if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
@@ -1170,9 +1187,9 @@ namespace ExcelReportApplication
                 case ReportType.ReadAllReportHeaderIntoExcel:
                     if (!btnSelectExcelTestFile_Clicked)
                         txtStandardTestReport.Text = @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Header_Excel_List.xlsx";
-                    break;
                     if (!btnSelectReportFile_Clicked) // destination
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_Default_Output_Path");
+                     break;
                 case ReportType.WriteAllReportHeaderAccordingToExcel:
                     if (!btnSelectExcelTestFile_Clicked)
                         txtStandardTestReport.Text = @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Header_Excel_List.xlsx";
