@@ -151,22 +151,22 @@ Returns or sets the type of underline applied to the font.
             text = string_text;
         }
 
-        public String ToString()
+        static public String StyleStringToString(StyleString stylestring)
         {
-            return text;
+            return stylestring.text;
         }
 
         //
         // Common function related to StyleString
         //
 
-        static public String ListToString(List<StyleString> list_stylestring)
+        static public String StyleStringListToString(List<StyleString> list_stylestring)
         {
             String ret_str = "";
 
             foreach (StyleString style_string in list_stylestring)
             {
-                ret_str += style_string.ToString();
+                ret_str += StyleStringToString(style_string);
             }
             return ret_str;
         }

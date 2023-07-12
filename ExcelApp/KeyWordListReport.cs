@@ -230,7 +230,7 @@ namespace ExcelReportApplication
                 if (output_keyword_issue)
                 {
                     row_list.Add(keyword_data.KeywordIssues.Count().ToString());
-                    row_list.Add(StyleString.ListToString(keyword_data.IssueDescriptionList));
+                    row_list.Add(StyleString.StyleStringListToString(keyword_data.IssueDescriptionList));
                 }
                 output_keyword_list_table.Add(row_list);
             }
