@@ -1305,10 +1305,10 @@ namespace ExcelReportApplication
                 // always update Test End Period to today
                 String end_date = DateTime.Now.ToString("yyyy/MM/dd");
                 ExcelAction.SetCellValue(result_worksheet, Period_End_at_row, Period_End_at_col, end_date);
-                // update Part No.
-                String default_part_no = "99.M2710.0A4-";
-                String part_no = default_part_no + sheet_name;
-                ExcelAction.SetCellValue(result_worksheet, Part_No_at_row, Part_No_at_col, part_no);
+                //// update Part No.
+                //String default_part_no = "99.M2710.0A4-";
+                //String part_no = default_part_no + sheet_name;
+                //ExcelAction.SetCellValue(result_worksheet, Part_No_at_row, Part_No_at_col, part_no);
 
                 // 3.4. Save the file to either 
                 //  (1) filename with yyyyMMddHHmmss if dest_dir is not specified
