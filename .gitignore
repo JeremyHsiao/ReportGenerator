@@ -398,3 +398,9 @@ FodyWeavers.xsd
 *.sln.iml
 ExcelApp/SampleData/
 Test item Gene/
+SampleData - 複製.7z
+SampleData.7z
+CheckReportNaming/CheckReportNaming.csproj
+CheckReportNaming/Program.cs
+CheckReportNaming/Properties/AssemblyInfo.cs
+ExcelApp/KeywordLogTemplate.xlsx
