@@ -620,7 +620,7 @@ namespace ExcelReportApplication
                     break;
                 case ReportGenerator.ReportType.FindAllKeywordInReport:
                     if (!btnSelectExcelTestFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                        txtStandardTestReport.Text = XMLConfig.ReadAppSetting_String("workbook_ReportToTestKeyword");
                     break;
                 default:
                     break;
