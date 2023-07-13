@@ -1182,8 +1182,8 @@ namespace ExcelReportApplication
 
             // Output keyword list log excel here.
             String out_dir = (dest_dir != "") ? dest_dir : src_dir;
-            //KeyWordListReport.OutputKeywordLog(out_dir, keyword_list, ReportGenerator.excel_not_report_log, output_keyword_issue: true);
-            KeyWordListReport.OutputKeywordLog(out_dir, keyword_list, ReportGenerator.excel_not_report_log, output_keyword_issue: false);
+            KeyWordListReport.OutputKeywordLog(out_dir, keyword_list, ReportGenerator.excel_not_report_log, output_keyword_issue: true);
+            //KeyWordListReport.OutputKeywordLog(out_dir, keyword_list, ReportGenerator.excel_not_report_log, output_keyword_issue: false);
 
             // Load global_keyword_list here
             global_keyword_list = keyword_list;

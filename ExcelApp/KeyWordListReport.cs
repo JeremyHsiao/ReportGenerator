@@ -158,8 +158,8 @@ namespace ExcelReportApplication
             "Filename",
             "Worksheet",
             "Duplicated?",
-            "Issue Count",
-            "Issue List",
+            "Bug Count",
+            "Bug List",
        };
 
         static public int not_keyword_file_title_row = 1;
@@ -194,7 +194,7 @@ namespace ExcelReportApplication
             List<List<Object>> output_keyword_list_table = new List<List<Object>>();
             List<Object> row_list = new List<Object> ();
             // title
-            if (output_keyword_issue)
+            if (!output_keyword_issue)
             {
                 row_list.AddRange(keyword_list_title);
             }
@@ -225,6 +225,11 @@ namespace ExcelReportApplication
                 {
                     // duplicated
                     row_list.Add("v");
+                }
+                else 
+                {
+                    // add this blank space so that all subsequent element is placed at correct position.
+                    row_list.Add(" ");
                 }
 
                 if (output_keyword_issue)
