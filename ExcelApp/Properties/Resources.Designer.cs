@@ -59,5 +59,15 @@ namespace ExcelReportApplication.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   查詢類似 2023/07/17 週一 10:12:38.77 
+        /// 的當地語系化字串。
+        /// </summary>
+        internal static string BuildDate {
+            get {
+                return ResourceManager.GetString("BuildDate", resourceCulture);
+            }
+        }
     }
 }
