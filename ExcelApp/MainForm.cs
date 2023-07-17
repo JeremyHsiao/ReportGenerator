@@ -501,7 +501,13 @@ namespace ExcelReportApplication
             System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
             string version = fvi.FileVersion;
             //this.Text = "Report Generator " + version + "   build:" + DateTime.Now.ToString("yyMMddHHmm"); ;
-            ReportGeneratorVersionString = "ReportGenerator_V" + version + DateTime.Now.ToString("(yyyyMMdd)");
+            //ReportGeneratorVersionString = "ReportGenerator_V" + version + DateTime.Now.ToString("(yyyyMMdd)");
+            string strCompTime = Properties.Resources.BuildDate, strBuildDate = "";
+            if(!string.IsNullOrEmpty(strCompTime))
+            {
+                strBuildDate = "(" + strCompTime.Substring(0, "2023/07/17".Length) + ")";
+            }
+            ReportGeneratorVersionString = "ReportGenerator_V" + version + strBuildDate;
             this.Text = ReportGeneratorVersionString;
 
             LoadConfigAll();
