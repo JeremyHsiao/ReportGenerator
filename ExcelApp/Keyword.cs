@@ -286,7 +286,7 @@ namespace ExcelReportApplication
     {
         public Boolean Report_C_Update_Full_Header = false;
         public String Report_Title = "Report_Name";
-        public String Report_SheetName= "Report_Sheet_Name";
+        public String Report_SheetName = "Report_Sheet_Name";
         public String Model_Name = "Model Name";
         public String Part_No = "Part_No";
         public String Panel_Module = "Panel_Module";
@@ -300,16 +300,34 @@ namespace ExcelReportApplication
         public String Test_Stage = " ";
         public String Test_QTY_SN = " ";
         public String Test_Period_Begin = "2023/07/10";
-        public String Test_Period_End  = "2023/07/10";
+        public String Test_Period_End = "2023/07/10";
         public String Judgement = " ";
         public String Tested_by = " ";
         public String Approved_by = "Jeremy Hsiao";
+        public Boolean Update_Report_Title_by_Sheetname = true;
+        public Boolean Update_Model_Name = true;
+        public Boolean Update_Part_No = true;
+        public Boolean Update_Panel_Module = true;
+        public Boolean Update_TCON_Board = true;
+        public Boolean Update_AD_Board = true;
+        public Boolean Update_Power_Board = true;
+        public Boolean Update_Smart_BD_OS_Version = true;
+        public Boolean Update_Touch_Sensor = true;
+        public Boolean Update_Speaker_AQ_Version = true;
+        public Boolean Update_SW_PQ_Version = true;
+        public Boolean Update_Test_Stage = true;
+        public Boolean Update_Test_QTY_SN = true;
+        public Boolean Update_Test_Period_Begin = true;
+        public Boolean Update_Test_Period_End = true;
+        public Boolean Update_Judgement = true;
+        public Boolean Update_Tested_by = true;
+        public Boolean Update_Approved_by = true;
 
         public static int Title_at_row = 1, Title_at_col = ('A' - 'A' + 1);
- 
+
         public static int Period_Start_at_row = 8, Period_Start_at_col = ('L' - 'A' + 1);
         public static int Period_End_at_row = 8, Period_End_at_col = ('M' - 'A' + 1);
-//        public static int Judgement_at_row = 9, Judgement_at_col = ('D' - 'A' + 1);
+        //        public static int Judgement_at_row = 9, Judgement_at_col = ('D' - 'A' + 1);
         public static int Judgement_string_at_row = 9, Judgement_string_at_col = 2;
 
         public static int Model_Name_at_row = 3, Model_Name_at_col = ('D' - 'A' + 1);
@@ -332,7 +350,7 @@ namespace ExcelReportApplication
         public static int Test_Period_Begin_at_row = 8, Test_Period_Begin_at_col = ('L' - 'A' + 1);
         public static int Test_Period_End_at_row = 8, Test_Period_End_at_col = ('M' - 'A' + 1);
 
-        public static int Judgement_at_row = 9, Judgement_at_col = ('D' - 'A' + 1); 
+        public static int Judgement_at_row = 9, Judgement_at_col = ('D' - 'A' + 1);
         public static int Tested_by_at_row = 9, Tested_by_at_col = ('H' - 'A' + 1);
         public static int Approved_by_at_row = 9, Approved_by_at_col = ('L' - 'A' + 1);
 
@@ -1372,32 +1390,115 @@ namespace ExcelReportApplication
             Boolean b_ret = false;
             try
             {
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Title_at_row, KeywordReportHeader.Title_at_col, header.Report_Title);
-                
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Model_Name_at_row, KeywordReportHeader.Model_Name_at_col, header.Model_Name);
-                String output_part_no = header.Part_No + "-" + header.Report_SheetName;
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Part_No_at_row, KeywordReportHeader.Part_No_at_col, output_part_no);
+                //@"Update_Report_Title_by_Sheetname",        @"true",
+                if (KeywordReport.DefaultKeywordReportHeader.Update_Report_Title_by_Sheetname)
+                {
+                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Title_at_row, KeywordReportHeader.Title_at_col, header.Report_Title);
+                }
 
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Panel_Module_at_row, KeywordReportHeader.Panel_Module_at_col, header.Panel_Module);
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.TCON_Board_at_row, KeywordReportHeader.TCON_Board_at_col, header.TCON_Board);
+                //@"Update_Model_Name",                       @"true",
+                if (KeywordReport.DefaultKeywordReportHeader.Update_Model_Name)
+                {
+                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Model_Name_at_row, KeywordReportHeader.Model_Name_at_col, header.Model_Name);
+                }
 
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.AD_Board_at_row, KeywordReportHeader.AD_Board_at_col, header.AD_Board);
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Power_Board_at_row, KeywordReportHeader.Power_Board_at_col, header.Power_Board);
+                //@"Update_Part_No",                          @"true",
+                if (KeywordReport.DefaultKeywordReportHeader.Update_Part_No)
+                {
+                    String output_part_no = header.Part_No + "-" + header.Report_SheetName;
+                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Part_No_at_row, KeywordReportHeader.Part_No_at_col, output_part_no);
+                }
 
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Smart_BD_OS_Version_at_row, KeywordReportHeader.Smart_BD_OS_Version_at_col, header.Smart_BD_OS_Version);
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Touch_Sensor_at_row, KeywordReportHeader.Touch_Sensor_at_col, header.Touch_Sensor);
+                //@"Update_Panel_Module",                     @"true",
+                if (KeywordReport.DefaultKeywordReportHeader.Update_Panel_Module)
+                {
+                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Panel_Module_at_row, KeywordReportHeader.Panel_Module_at_col, header.Panel_Module);
+                }
 
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Speaker_AQ_Version_at_row, KeywordReportHeader.Speaker_AQ_Version_at_col, header.Speaker_AQ_Version);
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.SW_PQ_Version_at_row, KeywordReportHeader.SW_PQ_Version_at_col, header.SW_PQ_Version);
+                //@"Update_TCON_Board",                       @"true",
+                if (KeywordReport.DefaultKeywordReportHeader.Update_TCON_Board)
+                {
+                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.TCON_Board_at_row, KeywordReportHeader.TCON_Board_at_col, header.TCON_Board);
+                }
 
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Test_Stage_at_row, KeywordReportHeader.Test_Stage_at_col, header.Test_Stage);
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Test_QTY_SN_at_row, KeywordReportHeader.Test_QTY_SN_at_col, header.Test_QTY_SN);
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Test_Period_Begin_at_row, KeywordReportHeader.Test_Period_Begin_at_col, header.Test_Period_Begin);
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Test_Period_End_at_row, KeywordReportHeader.Test_Period_End_at_col, header.Test_Period_End);
+                //@"Update_AD_Board",                         @"true",
+                if (KeywordReport.DefaultKeywordReportHeader.Update_AD_Board)
+                {
+                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.AD_Board_at_row, KeywordReportHeader.AD_Board_at_col, header.AD_Board);
+                }
 
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, header.Judgement);
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Tested_by_at_row, KeywordReportHeader.Tested_by_at_col, header.Tested_by);
-                ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Approved_by_at_row, KeywordReportHeader.Approved_by_at_col, header.Approved_by);
+                //@"Update_Power_Board",                      @"true",
+                if (KeywordReport.DefaultKeywordReportHeader.Update_Power_Board)
+                {
+                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Power_Board_at_row, KeywordReportHeader.Power_Board_at_col, header.Power_Board);
+                }
+
+                //@"Update_Smart_BD_OS_Version",              @"true",
+                if (KeywordReport.DefaultKeywordReportHeader.Update_Smart_BD_OS_Version)
+                {
+                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Smart_BD_OS_Version_at_row, KeywordReportHeader.Smart_BD_OS_Version_at_col, header.Smart_BD_OS_Version);
+                }
+
+                //@"Update_Touch_Sensor",                     @"true",
+                if (KeywordReport.DefaultKeywordReportHeader.Update_Touch_Sensor)
+                {
+                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Touch_Sensor_at_row, KeywordReportHeader.Touch_Sensor_at_col, header.Touch_Sensor);
+                }
+
+                //@"Update_Speaker_AQ_Version",               @"true",
+                if (KeywordReport.DefaultKeywordReportHeader.Update_Speaker_AQ_Version)
+                {
+                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Speaker_AQ_Version_at_row, KeywordReportHeader.Speaker_AQ_Version_at_col, header.Speaker_AQ_Version);
+                }
+
+                //@"Update_SW_PQ_Version",                    @"true",
+                if (KeywordReport.DefaultKeywordReportHeader.Update_SW_PQ_Version)
+                {
+                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.SW_PQ_Version_at_row, KeywordReportHeader.SW_PQ_Version_at_col, header.SW_PQ_Version);
+                }
+
+                //@"Update_Test_Stage",                       @"true",
+                if (KeywordReport.DefaultKeywordReportHeader.Update_Test_Stage)
+                {
+                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Test_Stage_at_row, KeywordReportHeader.Test_Stage_at_col, header.Test_Stage);
+                }
+
+                //@"Update_Test_QTY_SN",                      @"true",
+                if (KeywordReport.DefaultKeywordReportHeader.Update_Test_QTY_SN)
+                {
+                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Test_QTY_SN_at_row, KeywordReportHeader.Test_QTY_SN_at_col, header.Test_QTY_SN);
+                }
+
+                //@"Update_Test_Period_Begin",                @"true",
+                if (KeywordReport.DefaultKeywordReportHeader.Update_Test_Period_Begin)
+                {
+                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Test_Period_Begin_at_row, KeywordReportHeader.Test_Period_Begin_at_col, header.Test_Period_Begin);
+                }
+
+                //@"Update_Test_Period_End",                  @"true",
+                if (KeywordReport.DefaultKeywordReportHeader.Update_Test_Period_End)
+                {
+                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Test_Period_End_at_row, KeywordReportHeader.Test_Period_End_at_col, header.Test_Period_End);
+                }
+
+                //@"Update_Judgement",                        @"true",
+                if (KeywordReport.DefaultKeywordReportHeader.Update_Judgement)
+                {
+                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, header.Judgement);
+                }
+
+                //@"Update_Tested_by",                        @"true",
+                if (KeywordReport.DefaultKeywordReportHeader.Update_Tested_by)
+                {
+                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Tested_by_at_row, KeywordReportHeader.Tested_by_at_col, header.Tested_by);
+                }
+
+                //@"Update_Approved_by",                      @"true",
+                if (KeywordReport.DefaultKeywordReportHeader.Update_Approved_by)
+                {
+                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Approved_by_at_row, KeywordReportHeader.Approved_by_at_col, header.Approved_by);
+                }
+
                 b_ret = true;
             }
             catch (Exception ex)

@@ -450,6 +450,24 @@ namespace ExcelReportApplication
             KeywordReport.DefaultKeywordReportHeader.Tested_by = XMLConfig.ReadAppSetting_String("Default_Tested_by");
             KeywordReport.DefaultKeywordReportHeader.Approved_by = XMLConfig.ReadAppSetting_String("Default_Approved_by");
 
+            KeywordReport.DefaultKeywordReportHeader.Update_Report_Title_by_Sheetname = XMLConfig.ReadAppSetting_Boolean("Update_Report_Title_by_Sheetname");
+            KeywordReport.DefaultKeywordReportHeader.Update_Model_Name = XMLConfig.ReadAppSetting_Boolean("Update_Model_Name");
+            KeywordReport.DefaultKeywordReportHeader.Update_Part_No = XMLConfig.ReadAppSetting_Boolean("Update_Part_No");
+            KeywordReport.DefaultKeywordReportHeader.Update_Panel_Module = XMLConfig.ReadAppSetting_Boolean("Update_Panel_Module");
+            KeywordReport.DefaultKeywordReportHeader.Update_TCON_Board = XMLConfig.ReadAppSetting_Boolean("Update_TCON_Board");
+            KeywordReport.DefaultKeywordReportHeader.Update_AD_Board = XMLConfig.ReadAppSetting_Boolean("Update_AD_Board");
+            KeywordReport.DefaultKeywordReportHeader.Update_Power_Board = XMLConfig.ReadAppSetting_Boolean("Update_Power_Board");
+            KeywordReport.DefaultKeywordReportHeader.Update_Smart_BD_OS_Version = XMLConfig.ReadAppSetting_Boolean("Update_Smart_BD_OS_Version");
+            KeywordReport.DefaultKeywordReportHeader.Update_Touch_Sensor = XMLConfig.ReadAppSetting_Boolean("Update_Touch_Sensor");
+            KeywordReport.DefaultKeywordReportHeader.Update_Speaker_AQ_Version = XMLConfig.ReadAppSetting_Boolean("Update_Speaker_AQ_Version");
+            KeywordReport.DefaultKeywordReportHeader.Update_SW_PQ_Version = XMLConfig.ReadAppSetting_Boolean("Update_SW_PQ_Version");
+            KeywordReport.DefaultKeywordReportHeader.Update_Test_Stage = XMLConfig.ReadAppSetting_Boolean("Update_Test_Stage");
+            KeywordReport.DefaultKeywordReportHeader.Update_Test_QTY_SN = XMLConfig.ReadAppSetting_Boolean("Update_Test_QTY_SN");
+            KeywordReport.DefaultKeywordReportHeader.Update_Test_Period_Begin = XMLConfig.ReadAppSetting_Boolean("Update_Test_Period_Begin");
+            KeywordReport.DefaultKeywordReportHeader.Update_Test_Period_End = XMLConfig.ReadAppSetting_Boolean("Update_Test_Period_End");
+            KeywordReport.DefaultKeywordReportHeader.Update_Judgement = XMLConfig.ReadAppSetting_Boolean("Update_Judgement");
+            KeywordReport.DefaultKeywordReportHeader.Update_Tested_by = XMLConfig.ReadAppSetting_Boolean("Update_Tested_by");
+            KeywordReport.DefaultKeywordReportHeader.Update_Approved_by = XMLConfig.ReadAppSetting_Boolean("Update_Approved_by");
             // end config for keyword report
         }
 
@@ -1200,7 +1218,7 @@ namespace ExcelReportApplication
                         txtStandardTestReport.Text = @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Header_Excel_List.xlsx";
                     if (!btnSelectReportFile_Clicked) // destination
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_Default_Output_Path");
-                     break;
+                    break;
                 case ReportType.WriteAllReportHeaderAccordingToExcel:
                     if (!btnSelectExcelTestFile_Clicked)
                         txtStandardTestReport.Text = @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Header_Excel_List.xlsx";

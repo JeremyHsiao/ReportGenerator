@@ -34,6 +34,24 @@ namespace ExcelReportApplication
             @"Default_Judgement",                       @" ",
             @"Default_Tested_by",                       @" ", 
             @"Default_Approved_by",                     @"Jeremy Hsiao",
+            @"Update_Report_Title_by_Sheetname",        @"true",
+            @"Update_Model_Name",                       @"true",
+            @"Update_Part_No",                          @"true",
+            @"Update_Panel_Module",                     @"true",
+            @"Update_TCON_Board",                       @"true",
+            @"Update_AD_Board",                         @"true",
+            @"Update_Power_Board",                      @"true",
+            @"Update_Smart_BD_OS_Version",              @"true",
+            @"Update_Touch_Sensor",                     @"true",
+            @"Update_Speaker_AQ_Version",               @"true",
+            @"Update_SW_PQ_Version",                    @"true",
+            @"Update_Test_Stage",                       @"true",
+            @"Update_Test_QTY_SN",                      @"true",
+            @"Update_Test_Period_Begin",                @"true",
+            @"Update_Test_Period_End",                  @"true",
+            @"Update_Judgement",                        @"true",
+            @"Update_Tested_by",                        @"true",
+            @"Update_Approved_by",                      @"true",
             @"Excel_Visible",                           @"true",
             @"Issue_Key_Prefix",                        @"-",
             @"Issue_SheetName",                         @"general_report",
@@ -101,8 +119,8 @@ namespace ExcelReportApplication
         {
             try
             {
-                var appSettings = ConfigurationManager.AppSettings; 
-                String result  = appSettings[key];
+                var appSettings = ConfigurationManager.AppSettings;
+                String result = appSettings[key];
 
                 // if key not found --> return default value for those listed on the DefaultKeyValuePairList
                 if (result == null) return GetDefaultValue(key);
@@ -210,7 +228,7 @@ namespace ExcelReportApplication
             {
                 Console.WriteLine("Error writing app settings");
             }
-        }  
+        }
 
     }
 }
