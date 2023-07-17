@@ -468,7 +468,7 @@ namespace ExcelReportApplication
             //}
 
             // Update Judgement 
-            KeywordReport.UpdateReportHeader(ws, Judgement: " ");
+            KeywordReport.ClearJudgement(ws);
 
             // if parent directory does not exist, create recursively all parents
             String destination_dir = Storage.GetDirectoryName(destination_file);
@@ -519,20 +519,15 @@ namespace ExcelReportApplication
             ws.Name = new_sheet_name;
             file_has_been_updated = true;
 
-            // Update header 
-            String new_title = TestPlan.GetReportTitleAccordingToFilename(destination_file);
-            String existing_title = ExcelAction.GetCellTrimmedString(ws, KeywordReportHeader.Title_at_row, KeywordReportHeader.Title_at_col);
-            if (existing_title != new_title)
-            {
-                KeywordReport.UpdateReportHeader(ws, Title: new_title);
-                file_has_been_updated = true;
-            }
-
+            // Update header
             if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header==true)
             {
+                String new_title = TestPlan.GetReportTitleAccordingToFilename(destination_file);
                 KeywordReport.DefaultKeywordReportHeader.Report_Title = new_title;
-                KeywordReport.DefaultKeywordReportHeader.Report_SheetName = new_sheet_name;
+                // sheet-name is not defined as part of header --> it should be part of excel report (eg. filename, sheetname)
+                //KeywordReport.DefaultKeywordReportHeader.Report_SheetName = new_sheet_name;
                 KeywordReport.UpdateKeywordReportHeader_full(ws,KeywordReport.DefaultKeywordReportHeader);
+                file_has_been_updated = true;
             }
 
             if ((file_has_been_updated) || (always_save))

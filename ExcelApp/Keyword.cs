@@ -1508,65 +1508,79 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
-        static public Boolean UpdateReportHeader(Worksheet ws, String Title = null, String SW_Version = null, String Test_Start = null, String Test_End = null,
-                        String Judgement = null, String Template = null)
+        //static public Boolean UpdateReportHeader(Worksheet ws, String Title = null, String SW_Version = null, String Test_Start = null, String Test_End = null,
+        //                String Judgement = null, String Template = null)
+        //{
+        //    Boolean b_ret = false;
+        //    // to-be-finished.
+        //    if (Template != null)
+        //    {
+
+        //    }
+        //    else
+        //    {
+        //        if (Title != null)
+        //        {
+        //            ExcelAction.SetCellValue(ws, KeywordReportHeader.Title_at_row, KeywordReportHeader.Title_at_col, Title);
+        //        }
+        //        if (SW_Version != null)
+        //        {
+        //            ExcelAction.SetCellValue(ws, KeywordReportHeader.SW_PQ_Version_at_row, KeywordReportHeader.SW_PQ_Version_at_col, Judgement);
+        //        }
+        //        if (Test_Start != null)
+        //        {
+        //            ExcelAction.SetCellValue(ws, KeywordReportHeader.Test_Period_Begin_at_row, KeywordReportHeader.Test_Period_Begin_at_col, Test_Start);
+        //        }
+        //        if (Test_End != null)
+        //        {
+        //            ExcelAction.SetCellValue(ws, KeywordReportHeader.Test_Period_End_at_row, KeywordReportHeader.Test_Period_End_at_col, Test_End);
+        //        }
+        //        if (Judgement != null)
+        //        {
+        //            ExcelAction.SetCellValue(ws, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, Judgement);
+        //        }
+        //    }
+        //    b_ret = true;
+        //    return b_ret;
+        //}
+
+        //public static Boolean UpdateAllHeader(List<String> report_list, String Title = null, String SW_Version = null, String Test_Start = null, String Test_End = null,
+        //                                String Judgement = null, String Template = null)
+        //{
+        //    // Create a temporary test plan to includes all files listed in List<String> report_filename
+        //    List<TestPlan> do_plan = TestPlan.CreateTempPlanFromFileList(report_list);
+
+        //    foreach (TestPlan plan in do_plan)
+        //    {
+        //        String path = Storage.GetDirectoryName(plan.ExcelFile);
+        //        String filename = Storage.GetFileName(plan.ExcelFile);
+        //        String sheet_name = plan.ExcelSheet;
+        //        TestPlan.ExcelStatus test_plan_status;
+
+        //        test_plan_status = plan.OpenDetailExcel(ReadOnly: false);
+        //        if (test_plan_status == TestPlan.ExcelStatus.OK)
+        //        {
+        //            UpdateReportHeader(plan.TestPlanWorksheet, Title: Title, SW_Version: SW_Version, Test_Start: Test_Start,
+        //                                    Test_End: Test_End, Judgement: Judgement, Template: Template);
+        //            plan.SaveDetailExcel(plan.ExcelFile);
+        //            plan.CloseDetailExcel();
+        //        }
+        //    }
+        //    return true;
+        //}
+
+        static public Boolean ClearJudgement(Worksheet ws)
         {
             Boolean b_ret = false;
-            // to-be-finished.
-            if (Template != null)
+            try
             {
-
+                ExcelAction.SetCellValue(ws, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, " ");
+                b_ret = true;
             }
-            else
+            catch (Exception ex)
             {
-                if (Title != null)
-                {
-                    ExcelAction.SetCellValue(ws, KeywordReportHeader.Title_at_row, KeywordReportHeader.Title_at_col, Title);
-                }
-                if (SW_Version != null)
-                {
-                    ExcelAction.SetCellValue(ws, KeywordReportHeader.SW_PQ_Version_at_row, KeywordReportHeader.SW_PQ_Version_at_col, Judgement);
-                }
-                if (Test_Start != null)
-                {
-                    ExcelAction.SetCellValue(ws, KeywordReportHeader.Test_Period_Begin_at_row, KeywordReportHeader.Test_Period_Begin_at_col, Test_Start);
-                }
-                if (Test_End != null)
-                {
-                    ExcelAction.SetCellValue(ws, KeywordReportHeader.Test_Period_End_at_row, KeywordReportHeader.Test_Period_End_at_col, Test_End);
-                }
-                if (Judgement != null)
-                {
-                    ExcelAction.SetCellValue(ws, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, Judgement);
-                }
             }
-            b_ret = true;
             return b_ret;
-        }
-
-        public static Boolean UpdateAllHeader(List<String> report_list, String Title = null, String SW_Version = null, String Test_Start = null, String Test_End = null,
-                                        String Judgement = null, String Template = null)
-        {
-            // Create a temporary test plan to includes all files listed in List<String> report_filename
-            List<TestPlan> do_plan = TestPlan.CreateTempPlanFromFileList(report_list);
-
-            foreach (TestPlan plan in do_plan)
-            {
-                String path = Storage.GetDirectoryName(plan.ExcelFile);
-                String filename = Storage.GetFileName(plan.ExcelFile);
-                String sheet_name = plan.ExcelSheet;
-                TestPlan.ExcelStatus test_plan_status;
-
-                test_plan_status = plan.OpenDetailExcel(ReadOnly: false);
-                if (test_plan_status == TestPlan.ExcelStatus.OK)
-                {
-                    UpdateReportHeader(plan.TestPlanWorksheet, Title: Title, SW_Version: SW_Version, Test_Start: Test_Start,
-                                            Test_End: Test_End, Judgement: Judgement, Template: Template);
-                    plan.SaveDetailExcel(plan.ExcelFile);
-                    plan.CloseDetailExcel();
-                }
-            }
-            return true;
         }
 
         // This function is used to get judgement result (only read and no update to report) of keyword report
