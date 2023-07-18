@@ -39,8 +39,8 @@
             this.label_1st = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.btnCreateReport = new System.Windows.Forms.Button();
-            this.btnSelectExcelTestFile = new System.Windows.Forms.Button();
-            this.txtStandardTestReport = new System.Windows.Forms.TextBox();
+            this.btnSelectOutputTemplate = new System.Windows.Forms.Button();
+            this.txtOutputTemplate = new System.Windows.Forms.TextBox();
             this.label_2nd = new System.Windows.Forms.Label();
             this.comboBoxReportSelect = new System.Windows.Forms.ComboBox();
             this.MsgWindow = new System.Windows.Forms.TextBox();
@@ -103,6 +103,7 @@
             this.txtTCFile.Size = new System.Drawing.Size(345, 21);
             this.txtTCFile.TabIndex = 6;
             this.txtTCFile.TabStop = false;
+            this.txtTCFile.TextChanged += new System.EventHandler(this.txtTCFile_TextChanged);
             // 
             // btnSelectTCFile
             // 
@@ -142,9 +143,9 @@
             this.label_1st.Font = new System.Drawing.Font("Arial", 9F);
             this.label_1st.Location = new System.Drawing.Point(9, 98);
             this.label_1st.Name = "label_1st";
-            this.label_1st.Size = new System.Drawing.Size(103, 15);
+            this.label_1st.Size = new System.Drawing.Size(74, 15);
             this.label_1st.TabIndex = 8;
-            this.label_1st.Text = "Output / Template";
+            this.label_1st.Text = "Report Files";
             // 
             // label4
             // 
@@ -167,26 +168,26 @@
             this.btnCreateReport.UseVisualStyleBackColor = true;
             this.btnCreateReport.Click += new System.EventHandler(this.btnCreateReport_Click);
             // 
-            // btnSelectExcelTestFile
+            // btnSelectOutputTemplate
             // 
-            this.btnSelectExcelTestFile.Font = new System.Drawing.Font("Arial", 9F);
-            this.btnSelectExcelTestFile.Location = new System.Drawing.Point(471, 122);
-            this.btnSelectExcelTestFile.Name = "btnSelectExcelTestFile";
-            this.btnSelectExcelTestFile.Size = new System.Drawing.Size(61, 23);
-            this.btnSelectExcelTestFile.TabIndex = 8;
-            this.btnSelectExcelTestFile.Text = "Select";
-            this.btnSelectExcelTestFile.UseVisualStyleBackColor = true;
-            this.btnSelectExcelTestFile.Click += new System.EventHandler(this.btnSelectExcelTestFile_Click);
+            this.btnSelectOutputTemplate.Font = new System.Drawing.Font("Arial", 9F);
+            this.btnSelectOutputTemplate.Location = new System.Drawing.Point(471, 122);
+            this.btnSelectOutputTemplate.Name = "btnSelectOutputTemplate";
+            this.btnSelectOutputTemplate.Size = new System.Drawing.Size(61, 23);
+            this.btnSelectOutputTemplate.TabIndex = 8;
+            this.btnSelectOutputTemplate.Text = "Select";
+            this.btnSelectOutputTemplate.UseVisualStyleBackColor = true;
+            this.btnSelectOutputTemplate.Click += new System.EventHandler(this.btnSelectOutputTemplate_Click);
             // 
-            // txtStandardTestReport
+            // txtOutputTemplate
             // 
-            this.txtStandardTestReport.Font = new System.Drawing.Font("Arial Narrow", 9F);
-            this.txtStandardTestReport.Location = new System.Drawing.Point(120, 124);
-            this.txtStandardTestReport.Name = "txtStandardTestReport";
-            this.txtStandardTestReport.ReadOnly = true;
-            this.txtStandardTestReport.Size = new System.Drawing.Size(345, 21);
-            this.txtStandardTestReport.TabIndex = 16;
-            this.txtStandardTestReport.TabStop = false;
+            this.txtOutputTemplate.Font = new System.Drawing.Font("Arial Narrow", 9F);
+            this.txtOutputTemplate.Location = new System.Drawing.Point(120, 124);
+            this.txtOutputTemplate.Name = "txtOutputTemplate";
+            this.txtOutputTemplate.ReadOnly = true;
+            this.txtOutputTemplate.Size = new System.Drawing.Size(345, 21);
+            this.txtOutputTemplate.TabIndex = 16;
+            this.txtOutputTemplate.TabStop = false;
             // 
             // label_2nd
             // 
@@ -194,9 +195,9 @@
             this.label_2nd.Font = new System.Drawing.Font("Arial", 9F);
             this.label_2nd.Location = new System.Drawing.Point(9, 126);
             this.label_2nd.Name = "label_2nd";
-            this.label_2nd.Size = new System.Drawing.Size(97, 15);
+            this.label_2nd.Size = new System.Drawing.Size(111, 15);
             this.label_2nd.TabIndex = 15;
-            this.label_2nd.Text = "Standard Report";
+            this.label_2nd.Text = "Testcase Template";
             // 
             // comboBoxReportSelect
             // 
@@ -273,8 +274,8 @@
             this.ClientSize = new System.Drawing.Size(544, 381);
             this.Controls.Add(this.tabInfomation);
             this.Controls.Add(this.comboBoxReportSelect);
-            this.Controls.Add(this.btnSelectExcelTestFile);
-            this.Controls.Add(this.txtStandardTestReport);
+            this.Controls.Add(this.btnSelectOutputTemplate);
+            this.Controls.Add(this.txtOutputTemplate);
             this.Controls.Add(this.label_2nd);
             this.Controls.Add(this.btnCreateReport);
             this.Controls.Add(this.label4);
@@ -313,8 +314,8 @@
         private System.Windows.Forms.Label label_1st;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnCreateReport;
-        private System.Windows.Forms.Button btnSelectExcelTestFile;
-        private System.Windows.Forms.TextBox txtStandardTestReport;
+        private System.Windows.Forms.Button btnSelectOutputTemplate;
+        private System.Windows.Forms.TextBox txtOutputTemplate;
         private System.Windows.Forms.Label label_2nd;
         private System.Windows.Forms.ComboBox comboBoxReportSelect;
         private System.Windows.Forms.TextBox MsgWindow;
