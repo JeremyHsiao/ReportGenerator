@@ -54,7 +54,7 @@ namespace ExcelReportApplication
             ReportType.TC_AutoCorrectReport_By_ExcelList, 
             //ReportType.ReadAllReportHeaderIntoExcel,
             //ReportType.WriteAllReportHeaderAccordingToExcel, 
-            ReportType.TC_GroupSummaryReport,
+            //ReportType.TC_GroupSummaryReport,
          };
 
         //public static ReportType[] ReportSelectableTable =
@@ -1225,11 +1225,11 @@ namespace ExcelReportApplication
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = @".\SampleData\More chapters_TestCaseID";
                     break;
-                case ReportType.FullIssueDescription_TC_report_judgement: // "1.Issue Description for TC"
+                case ReportType.FullIssueDescription_TC_report_judgement: // original adopted from "1.Issue Description for TC"
                     if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     if (!btnSelectOutputTemplate_Clicked)
-                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
                 case ReportType.TC_TestReportCreation:
                     if (!btnSelectOutputTemplate_Clicked) // source
@@ -1238,7 +1238,7 @@ namespace ExcelReportApplication
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_Default_Output_Path");
                     break;
                 case ReportType.TC_AutoCorrectReport_By_Filename:
-                    if (!btnSelectOutputTemplate_Clicked)
+                    if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     break;
                 case ReportType.TC_AutoCorrectReport_By_ExcelList:
