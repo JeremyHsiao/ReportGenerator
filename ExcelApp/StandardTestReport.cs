@@ -515,7 +515,7 @@ namespace ExcelReportApplication
                 ws = ExcelAction.Find_Worksheet(wb, current_sheet_name);
             }
             // and rename it (when the option is true)
-            if (KeywordReport.DefaultKeywordReportHeader.Update_Report_Sheetname)
+            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname)
             {
                 String new_sheet_name = TestPlan.GetSheetNameAccordingToFilename(destination_file);
                 ws.Name = new_sheet_name;

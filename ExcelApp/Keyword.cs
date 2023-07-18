@@ -285,6 +285,7 @@ namespace ExcelReportApplication
     public class KeywordReportHeader
     {
         public Boolean Report_C_Update_Full_Header = false;
+        public Boolean Report_C_Update_Report_Sheetname = true;
         public String Report_Title = "Report_Name";
         public String Report_SheetName = "Report_Sheet_Name";
         public String Model_Name = "Model Name";
@@ -304,7 +305,6 @@ namespace ExcelReportApplication
         public String Judgement = " ";
         public String Tested_by = " ";
         public String Approved_by = "Jeremy Hsiao";
-        public Boolean Update_Report_Sheetname = true;
         public Boolean Update_Report_Title_by_Sheetname = true;
         public Boolean Update_Model_Name = true;
         public Boolean Update_Part_No = true;
