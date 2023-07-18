@@ -304,6 +304,7 @@ namespace ExcelReportApplication
         public String Judgement = " ";
         public String Tested_by = " ";
         public String Approved_by = "Jeremy Hsiao";
+        public Boolean Update_Report_Sheetname = true;
         public Boolean Update_Report_Title_by_Sheetname = true;
         public Boolean Update_Model_Name = true;
         public Boolean Update_Part_No = true;

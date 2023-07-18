@@ -450,6 +450,7 @@ namespace ExcelReportApplication
             KeywordReport.DefaultKeywordReportHeader.Tested_by = XMLConfig.ReadAppSetting_String("Default_Tested_by");
             KeywordReport.DefaultKeywordReportHeader.Approved_by = XMLConfig.ReadAppSetting_String("Default_Approved_by");
 
+            KeywordReport.DefaultKeywordReportHeader.Update_Report_Sheetname = XMLConfig.ReadAppSetting_Boolean("Update_Report_Sheetname");
             KeywordReport.DefaultKeywordReportHeader.Update_Report_Title_by_Sheetname = XMLConfig.ReadAppSetting_Boolean("Update_Report_Title_by_Sheetname");
             KeywordReport.DefaultKeywordReportHeader.Update_Model_Name = XMLConfig.ReadAppSetting_Boolean("Update_Model_Name");
             KeywordReport.DefaultKeywordReportHeader.Update_Part_No = XMLConfig.ReadAppSetting_Boolean("Update_Part_No");
