@@ -312,8 +312,8 @@ namespace ExcelReportApplication
             {
                 "Jira Bug File", 
                 "Jira TC File",
-                "Report Output Path",
-                "Report Source Path",
+                "Source Report Path",
+                "Output Report Path",
             },
             // "B.Auto-correct report header",
             new String[] 
@@ -1012,11 +1012,13 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         // based on tc, create report structure
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        String dest_dir = Storage.GetFullPath(txtReportFile.Text),
-                               src_dir = Storage.GetFullPath(txtOutputTemplate.Text);
+                        //String dest_dir = Storage.GetFullPath(txtReportFile.Text),
+                        //       src_dir = Storage.GetFullPath(txtOutputTemplate.Text);
+                        String src_dir = Storage.GetFullPath(txtReportFile.Text),
+                               dest_dir = Storage.GetFullPath(txtOutputTemplate.Text);
                         bRet = Execute_CreateTestReportbyTestCaseTask(src_dir, dest_dir);
                         // update report according to jira bug
-                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                        //if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         // to-be-implemented
 
                         // update judgement and header
