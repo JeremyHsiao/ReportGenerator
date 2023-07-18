@@ -815,13 +815,13 @@ namespace ExcelReportApplication
             String init_dir;
             switch (ReportTypeFromInt(report_index))
             {
-                case ReportType.FullIssueDescription_TC_report_judgement:
                 case ReportType.TC_TestReportCreation:
                     //case ReportType.FindAllKeywordInReport:
                     sel_file = false;  // Here select directory instead of file
                     init_dir = txtOutputTemplate.Text;
                     break;
                 default:
+                    // default is file selection here.
                     init_dir = Storage.GetFullPath(txtOutputTemplate.Text);
                     break;
             }
