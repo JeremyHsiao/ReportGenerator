@@ -265,7 +265,7 @@ namespace ExcelReportApplication
                 "Jira Bug File", 
                 "Jira TC File",
                 "Single Report",
-                "Main Test Plan",
+                "Output Template",
             },
             // "5.TC likely Pass",
             new String[] 
@@ -1206,8 +1206,8 @@ namespace ExcelReportApplication
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_StandardTestReport");
                     break;
                 case ReportType.KeywordIssue_Report_SingleFile:
-                    if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = @".\SampleData\A.1.1_OSD _All.xlsx";
+                    if (!btnSelectReportFile_Clicked)  
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_Single");
                     break;
                 case ReportType.KeywordIssue_Report_Directory:
                     if (!btnSelectReportFile_Clicked)
