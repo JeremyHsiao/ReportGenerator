@@ -597,7 +597,7 @@ namespace ExcelReportApplication
             List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
             foreach (TestPlanKeyword kw in keyword_list)
             {
-                if ((kw.Workbook == workbook) && (kw.Worksheet == worksheet))
+                if (((kw.Workbook == workbook)||(workbook == "")) && (kw.Worksheet == worksheet))
                 {
                     ret.Add(kw);
                 }

@@ -604,7 +604,8 @@ namespace ExcelReportApplication
             ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
 
             //            ReportGenerator.WriteBacktoTCJiraExcel(tc_file);
-            ReportGenerator.WriteBacktoTCJiraExcelV2(tc_file, template_file, judgement_report_dir);
+            //ReportGenerator.WriteBacktoTCJiraExcelV2(tc_file, template_file, judgement_report_dir);
+            ReportGenerator.WriteBacktoTCJiraExcelV3(tc_file, template_file, judgement_report_dir);
             return true;
         }
 
