@@ -505,7 +505,8 @@ namespace ExcelReportApplication
             string strCompTime = Properties.Resources.BuildDate, strBuildDate = "";
             if(!string.IsNullOrEmpty(strCompTime))
             {
-                strBuildDate = "(" + strCompTime.Substring(0, "2023/07/17".Length) + ")";
+                string[] subs = strCompTime.Split(' ', '/'); // use ' ' & '/' as separator
+                strBuildDate = "(" + subs[0]+subs[1]+subs[2] + ")";
             }
             ReportGeneratorVersionString = "ReportGenerator_V" + version + strBuildDate;
             this.Text = ReportGeneratorVersionString;
