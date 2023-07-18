@@ -281,7 +281,7 @@ namespace ExcelReportApplication
                 "Jira Bug File", 
                 "Jira TC File",
                 "Report Path",
-                "Main Test Plan",
+                "Output Template",
             },
             // "7.Keyword Issue - Directory",
             new String[] 
@@ -289,7 +289,7 @@ namespace ExcelReportApplication
                 "Jira Bug File", 
                 "Jira TC File",
                 "Test Report Path",
-                "Main Test Plan",
+                "Output Template",
             },
             // "8.Excel sheet name update tool",
             new String[] 
@@ -1218,7 +1218,7 @@ namespace ExcelReportApplication
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
                 case ReportType.FindAllKeywordInReport:
-                    if (!btnSelectOutputTemplate_Clicked)
+                    if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     break;
                 case ReportType.Excel_Sheet_Name_Update_Tool:
