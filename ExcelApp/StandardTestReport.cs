@@ -482,7 +482,7 @@ namespace ExcelReportApplication
             return file_has_been_updated;
         }
 
-        // Copy and update worksheet name & title -- to be used for starting a new project based on reports from anywhere
+        // Copy and update worksheet name & header & bug-result (configurable) -- to be used for starting a new project based on reports from anywhere
         static public bool AutoCorrectReport_SingleFile(String source_file, String destination_file, Boolean always_save = false)
         {
             Boolean file_has_been_updated = false;
@@ -514,7 +514,8 @@ namespace ExcelReportApplication
             {
                 ws = ExcelAction.Find_Worksheet(wb, current_sheet_name);
             }
-            // and rename it (when the option is true)
+
+            // Update sheetname (when the option is true)
             if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname)
             {
                 String new_sheet_name = TestPlan.GetSheetNameAccordingToFilename(destination_file);
@@ -530,6 +531,15 @@ namespace ExcelReportApplication
                 // sheet-name is not defined as part of header --> it should be part of excel report (eg. filename, sheetname)
                 //KeywordReport.DefaultKeywordReportHeader.Report_SheetName = new_sheet_name;
                 KeywordReport.UpdateKeywordReportHeader_full(ws,KeywordReport.DefaultKeywordReportHeader);
+                file_has_been_updated = true;
+            }
+
+            // Clear bug-list, bug-count, Pass/Fail/Conditional_Pass count, judgement
+            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result)
+            {
+                KeywordReport.ClearKeywordBugResult(source_file, ws);
+                KeywordReport.ClearReportBugCount(ws);
+                KeywordReport.ClearJudgement(ws);
                 file_has_been_updated = true;
             }
 

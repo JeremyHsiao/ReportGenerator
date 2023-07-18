@@ -256,6 +256,13 @@ namespace ExcelReportApplication
             return row_height;
         }
 
+        static public void Unhide_Row(Worksheet ws, int row, int count = 1)
+        {
+            Range hiddenRange = ws.Range[ws.Cells[row, 1], ws.Cells[row + count - 1, Get_Range_ColumnNumber(GetWorksheetAllRange(ws))]];
+            //     var hiddenRange = yourWorksheet.Range[yourWorksheet.Cells[firstRowToHide, firstColToHide], yourWorksheet.Cells[lastRowToHide, lastColToHide]];
+            hiddenRange.EntireRow.Hidden = false;
+        }
+
         static public void Hide_Row(Worksheet ws, int row, int count = 1)
         {
             Range hiddenRange = ws.Range[ws.Cells[row, 1], ws.Cells[row + count - 1, Get_Range_ColumnNumber(GetWorksheetAllRange(ws))]];

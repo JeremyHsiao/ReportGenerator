@@ -286,6 +286,7 @@ namespace ExcelReportApplication
     {
         public Boolean Report_C_Update_Full_Header = false;
         public Boolean Report_C_Update_Report_Sheetname = true;
+        public Boolean Report_C_Clear_Keyword_Result = true;
         public String Report_Title = "Report_Name";
         public String Report_SheetName = "Report_Sheet_Name";
         public String Model_Name = "Model Name";
@@ -598,7 +599,7 @@ namespace ExcelReportApplication
             List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
             foreach (TestPlanKeyword kw in keyword_list)
             {
-                if (((kw.Workbook == workbook)||(workbook == "")) && (kw.Worksheet == worksheet))
+                if (((kw.Workbook == workbook) || (workbook == "")) && (kw.Worksheet == worksheet))
                 {
                     ret.Add(kw);
                 }
@@ -1570,6 +1571,55 @@ namespace ExcelReportApplication
         //    }
         //    return true;
         //}
+
+        static public Boolean ClearKeywordBugResult(String excel_filename, Worksheet ws)
+        {
+            Boolean b_ret = false;
+            try
+            {
+                TestPlan tp = TestPlan.CreateTempPlanFromFile(excel_filename);
+                tp.TestPlanWorksheet = ws;
+                tp.ExcelSheet = ws.Name;
+                List<TestPlanKeyword> keyword_list = ListKeyword_SingleReport(tp);
+                foreach(TestPlanKeyword keyword in keyword_list)
+                {
+                    ExcelAction.SetCellValue(ws, keyword.ResultListAtRow, keyword.ResultListAtColumn, " ");
+                    int temp_col = keyword.BugStatusAtColumn;
+                    ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
+                    ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
+                    ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
+                    ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
+                    ExcelAction.SetCellValue(ws, keyword.BugListAtRow, keyword.BugListAtColumn, " ");
+                    double new_row_height = 28 + 0.2;
+                    //ExcelAction.Unhide_Row(ws, keyword.BugListAtRow);
+                    ExcelAction.Set_Row_Height(ws, keyword.BugListAtRow, new_row_height);
+                }
+
+                b_ret = true;
+            }
+            catch (Exception ex)
+            {
+            }
+            return b_ret;
+        }
+
+
+        static public Boolean ClearReportBugCount(Worksheet ws)
+        {
+            Boolean b_ret = false;
+            try
+            {
+                ExcelAction.SetCellValue(ws, PassCnt_at_row, PassCnt_at_col, " ");
+                ExcelAction.SetCellValue(ws, FailCnt_at_row, FailCnt_at_col, " ");
+                ExcelAction.SetCellValue(ws, ConditionalPass_string_at_row, ConditionalPass_string_at_col, CONDITIONAL_PASS_str + ":");
+                ExcelAction.SetCellValue(ws, ConditionalPassCnt_at_row, ConditionalPassCnt_at_col, " ");
+                b_ret = true;
+            }
+            catch (Exception ex)
+            {
+            }
+            return b_ret;
+        }
 
         static public Boolean ClearJudgement(Worksheet ws)
         {

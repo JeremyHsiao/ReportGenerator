@@ -18,6 +18,7 @@ namespace ExcelReportApplication
             @"workbook_TC_Template",                    @".\SampleData\TC_Jira_Template.xlsx",
             @"Report_C_Update_Report_Sheetname",        @"true",
             @"Report_C_Update_Full_Header",             @"false",
+            @"Report_C_Clear_Keyword_Result",           @"true",
             @"Default_Model_Name",                      @"Model Name",
             @"Default_Part_No",                         @"Part_No",
             @"Default_Panel_Module",                    @"Panel_Module",
