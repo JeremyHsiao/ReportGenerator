@@ -241,47 +241,47 @@ namespace ExcelReportApplication
                 "Jira Bug File", 
                 "Jira TC File",
                 "Test Report Path",
-                "Output Template",
+                "TC Template File",
             },
             // "2.Issue Description for Summary",
             new String[] 
             {
                 "Jira Bug File", 
                 "Jira TC File",
-                "Output Template",
-                "Main Test Plan",
+                "Test Report Path",
+                "TC Template File",
             },
             // "3.Standard Test Report Creator",
             new String[] 
             {
                 "Jira Bug File", 
                 "Jira TC File",
-                "Output Template",
-                "Main Test Plant",
+                "Main Test Plan",
+                "TC Template File",
             },
             // "4.Keyword Issue - Single File",
             new String[] 
             {
                 "Jira Bug File", 
                 "Jira TC File",
-                "Single Report",
-                "Output Template",
+                "Single Test Report",
+                "TC Template File",
             },
             // "5.TC likely Pass",
             new String[] 
             {
                 "Jira Bug File", 
                 "Jira TC File",
-                "Output Template",
-                "Main Test Plan",
+                "Test Report Path",
+                "TC Template File",
             },
             // "6.List Keywords of all detailed reports",
             new String[] 
             {
                 "Jira Bug File", 
                 "Jira TC File",
-                "Report Path",
-                "Output Template",
+                "Test Report Path",
+                "TC Template File",
             },
             // "7.Keyword Issue - Directory",
             new String[] 
@@ -289,15 +289,15 @@ namespace ExcelReportApplication
                 "Jira Bug File", 
                 "Jira TC File",
                 "Test Report Path",
-                "Output Template",
+                "TC Template File",
             },
             // "8.Excel sheet name update tool",
             new String[] 
             {
                 "Jira Bug File", 
                 "Jira TC File",
-                "Output Template",
-                "Main Test Plan",
+                "Test Report Path",
+                "TC Template File",
             },
             // "9.TC issue/judgement",
             new String[] 
@@ -305,7 +305,7 @@ namespace ExcelReportApplication
                 "Jira Bug File", 
                 "Jira TC File",
                 "Test Report Path",
-                "Output Template",
+                "TC Template File",
             },
             // "A.Jira Test Report Creator",
             new String[] 
@@ -320,15 +320,15 @@ namespace ExcelReportApplication
             {
                 "Jira Bug File", 
                 "Jira TC File",
-                "Check Report Path",
-                "Report Source Path",
+                "Source Report Path",
+                "Output Report Path",
             },
             // "C.Create New Model Report",
             new String[] 
             {
                 "Jira Bug File", 
                 "Jira TC File",
-                "Report Output Path",
+                "Test Report Path",
                 "Input Excel File",
             },
             //"D.Read All Report Header",
@@ -336,7 +336,7 @@ namespace ExcelReportApplication
             {
                 "Jira Bug File", 
                 "Jira TC File",
-                "Report Path",
+                "Test Report Path",
                 "Output Excel File",
             },
             //"E.Write All Report Header",
@@ -344,7 +344,7 @@ namespace ExcelReportApplication
             {
                 "Jira Bug File", 
                 "Jira TC File",
-                "Report Path",
+                "Test Report Path",
                 "Input Excel File",
             },
             // "A.Jira Test Report Creator",
