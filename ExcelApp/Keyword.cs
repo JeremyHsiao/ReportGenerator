@@ -1293,7 +1293,8 @@ namespace ExcelReportApplication
                         else
                         {
                             // Hide bug list row only when there isn't any non-closed issue at all (all issues must be closed)
-                            ExcelAction.Hide_Row(result_worksheet, keyword.BugListAtRow);
+                            ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, 1);
+                            //ExcelAction.Hide_Row(result_worksheet, keyword.BugListAtRow);
                         }
                         //ExcelAction.CellTextAlignLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
                         ExcelAction.CellTextAlignUpperLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
