@@ -284,6 +284,7 @@ namespace ExcelReportApplication
 
     public class KeywordReportHeader
     {
+        public Boolean Report_C_CopyFileOnly = false;
         public Boolean Report_C_Update_Full_Header = false;
         public Boolean Report_C_Update_Report_Sheetname = true;
         public Boolean Report_C_Clear_Keyword_Result = true;

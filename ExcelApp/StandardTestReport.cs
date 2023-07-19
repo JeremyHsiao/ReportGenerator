@@ -141,7 +141,7 @@ namespace ExcelReportApplication
             {
                 String dst = out_root + @"\" + tp.ExcelFile;
                 String dst_dir = Storage.GetDirectoryName(dst);
-                if (!Storage.DirectoryExists(dst_dir))
+                if (Storage.DirectoryExists(dst_dir) == false)
                 {
                     Storage.CreateDirectory(dst_dir);
                 }
@@ -410,7 +410,7 @@ namespace ExcelReportApplication
                 {
                     String dest_file = src_dest_file_list[src_file];
                     string dest_path = Storage.GetDirectoryName(dest_file);
-                    if (!Storage.DirectoryExists(dest_path))
+                    if (Storage.DirectoryExists(dest_path) == false)
                     {
                         Storage.CreateDirectory(dest_path, auto_parent_dir: true);
                     }
@@ -548,7 +548,10 @@ namespace ExcelReportApplication
                 // Something has been updated or always save (ex: to copy file & update) ==> save to excel file
                 String destination_dir = Storage.GetDirectoryName(destination_file);
                 // if parent directory does not exist, create recursively all parents
-                Storage.CreateDirectory(destination_dir, auto_parent_dir: true);
+                if (Storage.DirectoryExists(destination_dir) == false)
+                {
+                    Storage.CreateDirectory(destination_dir, auto_parent_dir: true);
+                }
                 ExcelAction.SaveExcelWorkbook(wb, filename: destination_file);
             }
             else
@@ -688,8 +691,25 @@ namespace ExcelReportApplication
             for (int index = 0; index < report_to_be_copied_list_src.Count; index++)
             {
                 String src = report_to_be_copied_list_src[index],
-                        dest = report_to_be_copied_list_dest[index];
-                if (AutoCorrectReport_SingleFile(source_file: src, destination_file: dest, always_save: true))
+                       dest = report_to_be_copied_list_dest[index];
+                Boolean success = false;
+
+                if (KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly)
+                {
+                    String source_file = src, destination_file = dest;
+                    String destination_dir = Storage.GetDirectoryName(destination_file);
+                    // if parent directory does not exist, create recursively all parents
+                    if (Storage.DirectoryExists(destination_dir)==false)
+                    {
+                        Storage.CreateDirectory(destination_dir, auto_parent_dir: true);
+                    }
+                    success = Storage.Copy(source_file, destination_file, overwrite: true);
+                }
+                else
+                {
+                    success = AutoCorrectReport_SingleFile(source_file: src, destination_file: dest, always_save: true);
+                }
+                if (success)
                 {
                     report_actually_copied_list_src.Add(src);
                     report_actually_copied_list_dest.Add(dest);
