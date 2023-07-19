@@ -808,6 +808,30 @@ namespace ExcelReportApplication
             }
         }
 
+        // default is to select directory
+        private void btnSelectReportFile_Click(object sender, EventArgs e)
+        {
+            int report_index = Get_comboBoxReportSelect_SelectedIndex();
+            bool sel_file = false;
+            String init_dir;
+            switch (ReportTypeFromInt(report_index))
+            {
+                case ReportType.KeywordIssue_Report_SingleFile:
+                    init_dir = Storage.GetFullPath(txtReportFile.Text);
+                    sel_file = true;  // Here select file instead of directory
+                    break;
+                default:
+                    init_dir = txtReportFile.Text;
+                    break;
+            }
+            String ret_str = SelectDirectoryOrFile(init_dir, sel_file);
+            if (ret_str != "")
+            {
+                txtReportFile.Text = ret_str;
+                btnSelectReportFile_Clicked = true;
+            }
+        }
+
         private void btnSelectOutputTemplate_Click(object sender, EventArgs e)
         {
             int report_index = Get_comboBoxReportSelect_SelectedIndex();
@@ -831,32 +855,6 @@ namespace ExcelReportApplication
             {
                 txtOutputTemplate.Text = ret_str;
                 btnSelectOutputTemplate_Clicked = true;
-            }
-        }
-
-        private void btnSelectReportFile_Click(object sender, EventArgs e)
-        {
-            int report_index = Get_comboBoxReportSelect_SelectedIndex();
-            bool sel_file = true;
-            String init_dir;
-            switch (ReportTypeFromInt(report_index))
-            {
-                case ReportType.KeywordIssue_Report_Directory:
-                case ReportType.FindAllKeywordInReport:
-                case ReportType.TC_TestReportCreation:
-                case ReportType.TC_AutoCorrectReport_By_Filename:
-                    init_dir = txtReportFile.Text;
-                    sel_file = false;  // Here select directory instead of file
-                    break;
-                default:
-                    init_dir = Storage.GetFullPath(txtReportFile.Text);
-                    break;
-            }
-            String ret_str = SelectDirectoryOrFile(init_dir, sel_file);
-            if (ret_str != "")
-            {
-                txtReportFile.Text = ret_str;
-                btnSelectReportFile_Clicked = true;
             }
         }
 
