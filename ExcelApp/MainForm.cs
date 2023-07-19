@@ -256,8 +256,8 @@ namespace ExcelReportApplication
             {
                 "Jira Bug File", 
                 "Jira TC File",
+                "Test Report Path",
                 "Main Test Plan",
-                "TC Template File",
             },
             // "4.Keyword Issue - Single File",
             new String[] 
@@ -353,7 +353,7 @@ namespace ExcelReportApplication
                 "Jira Bug File", 
                 "Jira TC File",
                 "Test Report Path",
-                "Output Template",
+                "TC Template File",
             },
         };
 
@@ -757,7 +757,7 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            TestReport.AutoCorrectReport_by_Folder(report_root, Storage.GenerateDirectoryNameWithDateTime(report_root));
+            TestReport.AutoCorrectReport_by_Folder(report_root: report_root, Output_dir: Storage.GenerateDirectoryNameWithDateTime(report_root));
 
             return true;
         }
@@ -952,14 +952,14 @@ namespace ExcelReportApplication
                     case ReportType.FullIssueDescription_Summary:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
-                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        bRet = Execute_WriteIssueDescriptionToSummary(txtReportFile.Text);
+                        bRet = Execute_WriteIssueDescriptionToSummary(template_file: txtOutputTemplate.Text);
                         break;
                     case ReportType.StandardTestReportCreation:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
-                        bRet = Execute_CreateStandardTestReportTask(txtOutputTemplate.Text);
+                        bRet = Execute_CreateStandardTestReportTask(main_file: txtOutputTemplate.Text);
                         break;
                     case ReportType.KeywordIssue_Report_SingleFile:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
@@ -1113,8 +1113,8 @@ namespace ExcelReportApplication
                 case ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(true);
-                    SetEnable_ReportFile(true);
-                    SetEnable_OutputTemplate(false);
+                    SetEnable_ReportFile(false);
+                    SetEnable_OutputTemplate(true);
                     break;
                 case ReportType.StandardTestReportCreation:
                     SetEnable_IssueFile(false);
@@ -1137,8 +1137,8 @@ namespace ExcelReportApplication
                 case ReportType.TC_Likely_Passed:
                     SetEnable_IssueFile(true);
                     SetEnable_TCFile(true);
-                    SetEnable_ReportFile(true);
-                    SetEnable_OutputTemplate(false);
+                    SetEnable_ReportFile(false);
+                    SetEnable_OutputTemplate(true);
                     break;
                 case ReportType.FindAllKeywordInReport:
                     SetEnable_IssueFile(false);
@@ -1197,8 +1197,8 @@ namespace ExcelReportApplication
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
                 case ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
-                    if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_Summary");
+                    if (!btnSelectOutputTemplate_Clicked)
+                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_Summary");
                     break;
                 case ReportType.StandardTestReportCreation:
                     if (!btnSelectOutputTemplate_Clicked)
@@ -1213,8 +1213,8 @@ namespace ExcelReportApplication
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     break;
                 case ReportType.TC_Likely_Passed:
-                    if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
+                    if (!btnSelectOutputTemplate_Clicked)
+                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
                 case ReportType.FindAllKeywordInReport:
                     if (!btnSelectReportFile_Clicked)
