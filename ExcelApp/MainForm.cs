@@ -224,7 +224,7 @@ namespace ExcelReportApplication
                 "Input:",  "  Report Path & Excel file containing header value of reports under Report Path",
                 "Output:", "  Updated reports (according to header value listed on Excel",
             },
-            // "F.Jira Group Summary Report Update",
+            // "F.Update Test Group Summary Report",
             new String[] 
             {
                 "Update Jira Group Summary Report (x.0)", 
@@ -347,7 +347,7 @@ namespace ExcelReportApplication
                 "Test Report Path",
                 "Input Excel File",
             },
-            // "A.Jira Test Report Creator",
+            // "F.Update Test Group Summary Report",
             new String[] 
             {
                 "Jira Bug File", 
@@ -775,6 +775,19 @@ namespace ExcelReportApplication
             return true;
         }
 
+        private bool Execute_UpdaetGroupSummaryReport_Task(String report_path)
+        {
+            if (!Storage.DirectoryExists(report_path))
+            {
+                // protection check
+                return false;
+            }
+
+            TestReport.Update_Group_Summary(report_path);
+
+            return true;
+        }
+
         // If filename has been changed, don't change it to default at report type change afterward.
         Boolean btnSelectBugFile_Clicked = false;
         Boolean btnSelectTCFile_Clicked = false;
@@ -1028,11 +1041,19 @@ namespace ExcelReportApplication
                         bRet = Execute_AutoCorrectTestReportByFilename_Task(report_root: Storage.GetFullPath(txtReportFile.Text));
                         break;
                     case ReportType.TC_AutoCorrectReport_By_ExcelList:
-                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         // to-be-updated
                         bRet = Execute_AutoCorrectTestReportByExcel_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
                         break;
-                    default:
+                    case ReportType.TC_GroupSummaryReport:
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                        if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+                        bRet = Execute_UpdaetGroupSummaryReport_Task(report_path: txtReportFile.Text);
+                        break;
+                    default:  
                         // shouldn't be here.
                         break;
                 }
@@ -1177,6 +1198,12 @@ namespace ExcelReportApplication
                     SetEnable_ReportFile(false);
                     SetEnable_OutputTemplate(true);
                     break;
+                case ReportType.TC_GroupSummaryReport:
+                    SetEnable_IssueFile(true);
+                    SetEnable_TCFile(true);
+                    SetEnable_ReportFile(true);
+                    SetEnable_OutputTemplate(false);
+                    break;
                 default:
                     // Shouldn't be here
                     break;
@@ -1242,7 +1269,7 @@ namespace ExcelReportApplication
                     break;
                 case ReportType.TC_AutoCorrectReport_By_ExcelList:
                     if (!btnSelectOutputTemplate_Clicked)
-                        txtOutputTemplate.Text = @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Copy_Report_Excel_List.xlsx";
+                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_C_Default_Excel");
                     break;
                 case ReportType.ReadAllReportHeaderIntoExcel:
                     if (!btnSelectOutputTemplate_Clicked)
@@ -1254,7 +1281,11 @@ namespace ExcelReportApplication
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Header_Excel_List.xlsx";
                     break;
-                default:
+                case ReportType.TC_GroupSummaryReport:  
+                    if (!btnSelectReportFile_Clicked)
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                    break;
+                default: 
                     break;
             }
         }

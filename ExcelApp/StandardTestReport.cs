@@ -563,55 +563,15 @@ namespace ExcelReportApplication
 
             return file_has_been_updated;
         }
-        //
-        //public enum InputExcelIndex
-        //{
-        //    SRC_PATH = 0,
-        //    SRC_ASSIGNEE,
-        //    SEVERITY,
-        //    COMMENT,
-        //    STATUS,
-        //    REPORTER,
-        //    ASSIGNEE,
-        //    DUEDATE,
-        //    TESTCASEID,
-        //    BUGTYPE,
-        //    SWVERSION,
-        //    HWVERSION,
-        //    LINKEDISSUE,
-        //    ADDITIONALINFO,
-        //}
 
-        //public static int IssueListMemberCount = Enum.GetNames(typeof(IssueListMemberIndex)).Length;
+        // Code for Report F
+        static public bool Update_Group_Summary(String report_path)
+        {
+            Boolean b_ret = false;
 
-
-        //public const string col_SRC_PATH = "Source Path";
-        //public const string col_SRC_ASSIGNEE = "Source Assignee";
-        //public const string col_SRC_GROUP = "Source Report";
-        //public const string col_SRC_REPORT = "Source Report";
-        //public const string col_DEST_PATH = "Destination Path";
-        //public const string col_DEST_ASSIGNEE = "Destination Assignee";
-        //public const string col_DEST_GROUP = "Destination Group";
-        //public const string col_DEST_REPORT = "Destination Report";
-
-        //// The sequence of this String[] must be aligned with enum IssueListMemberIndex (except no need to have string for MAX_NO)
-        //static String[] IssueListMemberColumnName = 
-        //{ 
-        //    col_Key,
-        //    col_Summary,
-        //    col_Severity,
-        //    col_RD_Comment,
-        //    col_Status,
-        //    col_Reporter,
-        //    col_Assignee,
-        //    col_DueDate,
-        //    col_TestCaseID,
-        //    col_BugType,
-        //    col_SWVersion,
-        //    col_HWVersion,
-        //    col_LinkedIssue,
-        //    col_AdditionalInfo
-        //};
+            b_ret = true;
+            return b_ret;
+        }
 
         // Code for Report C
         static public bool AutoCorrectReport_by_Excel(String input_excel_file)
