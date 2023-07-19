@@ -947,7 +947,7 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        bRet = Execute_WriteIssueDescriptionToTC(txtTCFile.Text, txtOutputTemplate.Text);
+                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text);
                         break;
                     case ReportType.FullIssueDescription_Summary:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
@@ -965,21 +965,21 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);    // File path here
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                        bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: false);
+                        bRet = Execute_KeywordIssueGenerationTask(FileOrDirectoryName: txtReportFile.Text, IsDirectory: false);
                         break;
                     case ReportType.KeywordIssue_Report_Directory:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                         UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);     // Directory path here
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                        bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: true);
+                        bRet = Execute_KeywordIssueGenerationTask(FileOrDirectoryName: txtReportFile.Text, IsDirectory: true);
                         break;
                     case ReportType.TC_Likely_Passed:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
-                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        bRet = Execute_FindFailTCLinkedIssueAllClosed(txtTCFile.Text, txtReportFile.Text);
+                        bRet = Execute_FindFailTCLinkedIssueAllClosed(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text);
                         break;
                     case ReportType.FindAllKeywordInReport:
                         UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
@@ -988,7 +988,7 @@ namespace ExcelReportApplication
                         //String file_dir = Storage.GetDirectoryName(main_file);
                         String output_filename = "";//use default in config file
                         String report_root_dir = Storage.GetFullPath(txtReportFile.Text);
-                        bRet = Execute_ListAllDetailedTestPlanKeywordTask(report_root_dir, output_filename);
+                        bRet = Execute_ListAllDetailedTestPlanKeywordTask(report_root: report_root_dir, output_file: output_filename);
                         break;
                     case ReportType.Excel_Sheet_Name_Update_Tool:
                         UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);     // Directory path here
@@ -1002,7 +1002,7 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        bRet = Execute_WriteIssueDescriptionToTC(txtTCFile.Text, txtReportFile.Text, txtOutputTemplate.Text);
+                        bRet = Execute_WriteIssueDescriptionToTC( tc_file: txtTCFile.Text, judgement_report_dir: txtReportFile.Text, template_file: txtOutputTemplate.Text);
                         break;
                     case ReportType.TC_TestReportCreation:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
@@ -1015,7 +1015,7 @@ namespace ExcelReportApplication
                         //       src_dir = Storage.GetFullPath(txtOutputTemplate.Text);
                         String src_dir = Storage.GetFullPath(txtReportFile.Text),
                                dest_dir = Storage.GetFullPath(txtOutputTemplate.Text);
-                        bRet = Execute_CreateTestReportbyTestCaseTask(src_dir, dest_dir);
+                        bRet = Execute_CreateTestReportbyTestCaseTask(report_src_dir: src_dir, output_report_dir: dest_dir);
                         // update report according to jira bug
                         //if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         // to-be-implemented
@@ -1025,12 +1025,12 @@ namespace ExcelReportApplication
                         break;
                     case ReportType.TC_AutoCorrectReport_By_Filename:
                         UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
-                        bRet = Execute_AutoCorrectTestReportByFilename_Task(Storage.GetFullPath(txtReportFile.Text));
+                        bRet = Execute_AutoCorrectTestReportByFilename_Task(report_root: Storage.GetFullPath(txtReportFile.Text));
                         break;
                     case ReportType.TC_AutoCorrectReport_By_ExcelList:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                         // to-be-updated
-                        bRet = Execute_AutoCorrectTestReportByExcel_Task(Storage.GetFullPath(txtOutputTemplate.Text));
+                        bRet = Execute_AutoCorrectTestReportByExcel_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
                         break;
                     default:
                         // shouldn't be here.
