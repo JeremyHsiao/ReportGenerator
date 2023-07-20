@@ -567,9 +567,97 @@ namespace ExcelReportApplication
         }
 
         // Code for Report F
+        public static int GroupSummary_Title_No_Row = 25, GroupSummary_Title_No_Col = 'D' - 'A' + 1;
+        public static int GroupSummary_Title_TestItem_Row = 25, GroupSummary_Title_TestItem_Col = 'E' - 'A' + 1;
+        public static int GroupSummary_Title_Result_Row = 25, GroupSummary_Title_Result_Col = 'H' - 'A' + 1;
+        public static int GroupSummary_Title_Note_Row = 25, GroupSummary_Title_Note_Col = 'J' - 'A' + 1;
+        public static String GroupSummary_Title_No_str = "No";
+        public static String GroupSummary_Title_TestItem_str = "Test Item";
+        public static String GroupSummary_Title_Result_str = "Result";
+        public static String GroupSummary_Title_Note_str = "Note";
         static public bool Update_Group_Summary(String report_path)
         {
             Boolean b_ret = false;
+            String destination_path = Storage.GenerateDirectoryNameWithDateTime(report_path);
+
+            // 1. List excel under report_path
+            // 2. keep only "x.0" on the file list
+            List<String> group_file_list = Storage.ListCandidateGroupSummaryFilesUnderDirectory(report_path);
+            
+            foreach (String group_file in group_file_list)
+            {
+                // 3. open
+                // open standard test report
+                Workbook wb_report = ExcelAction.OpenExcelWorkbook(group_file);
+                if (wb_report == null)
+                {
+                    Console.WriteLine("OpenExcelWorkbook failed in Update_Group_Summary()");
+                    continue;
+                }
+
+                String sheet_name = TestPlan.GetSheetNameAccordingToFilename(group_file);
+                // Select and read work-sheet
+                Worksheet ws_report = ExcelAction.Find_Worksheet(wb_report, sheet_name);
+                if (ws_report == null)
+                {
+                    Console.WriteLine("Find_Worksheet (" + sheet_name + ") failed in Update_Group_Summary()");
+                    ExcelAction.CloseExcelWorkbook(wb_report);
+                    continue;
+                }
+
+                // 4. check content of title row, if not valid content, go to next
+                if ((ExcelAction.GetCellTrimmedString(ws_report, GroupSummary_Title_No_Row, GroupSummary_Title_No_Col) != GroupSummary_Title_No_str) ||
+                    (ExcelAction.GetCellTrimmedString(ws_report, GroupSummary_Title_TestItem_Row, GroupSummary_Title_TestItem_Col) != GroupSummary_Title_TestItem_str) ||
+                    (ExcelAction.GetCellTrimmedString(ws_report, GroupSummary_Title_Result_Row, GroupSummary_Title_Result_Col) != GroupSummary_Title_Result_str) ||
+                    (ExcelAction.GetCellTrimmedString(ws_report, GroupSummary_Title_Note_Row, GroupSummary_Title_Note_Col) != GroupSummary_Title_Note_str))
+                {
+                    ExcelAction.CloseExcelWorkbook(wb_report);
+                    continue;
+                }
+
+                // 6. adjust table rows according to the number of TC summary within this gruop
+                // count tc case in this group
+                int tc_count = 0;
+                if (tc_count == 0)
+                {
+                    ExcelAction.CloseExcelWorkbook(wb_report);
+                    continue;
+                }
+
+                // find table lower boundary
+                int row_index = GroupSummary_Title_No_Row + 1;
+                int row_end = ExcelAction.Get_Range_RowNumber(ExcelAction.GetWorksheetAllRange(ws_report));
+                Boolean row_found = false;
+                while (!row_found && (row_index<=row_end))
+                {
+                    if (ExcelAction.GetCellTrimmedString(ws_report, row_index, GroupSummary_Title_No_Col) == "")
+                    {
+                        row_found = true;
+                        row_index--;
+                    }
+                    else
+                    {
+                        row_index++;
+                    }
+                }
+
+                // adjust row number
+
+                
+                // 7. Fill each row with (1) sheetname (2) summary after sheetname (3) TC result (4) linked issue on TC
+                // for each tc item
+                int current_row = 111;
+
+                ExcelAction.SetCellValue(ws_report, current_row, GroupSummary_Title_No_Col, "NO");
+                ExcelAction.SetCellValue(ws_report, current_row, GroupSummary_Title_TestItem_Col, "name");
+                ExcelAction.SetCellValue(ws_report, current_row, GroupSummary_Title_Result_Col, "judgement");
+                ExcelAction.SetCellValue(ws_report, current_row, GroupSummary_Title_Note_Col, "linked issue");
+
+                // 8. save and close and go to next report
+                String output_filename = group_file.Replace(report_path, destination_path);
+                ExcelAction.SaveExcelWorkbook(wb_report, output_filename);
+                ExcelAction.CloseExcelWorkbook(wb_report);
+            }
 
             b_ret = true;
             return b_ret;

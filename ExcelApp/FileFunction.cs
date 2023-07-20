@@ -338,6 +338,23 @@ namespace ExcelReportApplication
             return ret_list;
         }
 
+        static public List<String> ListCandidateGroupSummaryFilesUnderDirectory(string targetDirectory)
+        {
+            List<String> ret_list = new List<String>();
+
+            // Get the list of files found in the directory.
+            string[] fileEntries = Directory.GetFiles(targetDirectory);
+            ret_list.AddRange(FilterGroupSummaryFilename(fileEntries.ToList()));
+
+            // Recurse into subdirectories of this directory.
+            string[] subdirectoryEntries = Directory.GetDirectories(targetDirectory);
+            foreach (string subdirectory in subdirectoryEntries)
+            {
+                ret_list.AddRange(ListCandidateReportFilesUnderDirectory(subdirectory));
+            }
+            return ret_list;
+        }
+
         // Check if filename looks like an test report excel file
         // need to filter out filename not in format of A.xx.xx_*_All.xlsx
 
@@ -350,10 +367,13 @@ namespace ExcelReportApplication
         // 2. one or more pairs of (. + digits)
         // 3. at lease one "_" and allowable chars (including _) follow until ".xlsx"
         // 4. ".xlsx" is case-insensitive
-        static public string regexString = @"^(Other|[A-Za-z0-9]+)(\.[A-Za-z0-9]+)+_[\w\(\)\-_+&. ]+\.(?i:xlsx)$";
-        static RegexStringValidator myRegexValidator = new RegexStringValidator(regexString);
+        
+
         static public bool IsReportFilename(String input_name)
         {
+            string regexString = @"^(Other|[A-Za-z0-9]+)(\.[A-Za-z0-9]+)+_[\w\(\)\-_+&. ]+\.(?i:xlsx)$";
+            RegexStringValidator myRegexValidator = new RegexStringValidator(regexString);
+            
             bool bret = false;
             String filename = Storage.GetFileName(input_name);
 
@@ -379,6 +399,43 @@ namespace ExcelReportApplication
             foreach (String filename in filelist)
             {
                 if (IsReportFilename(filename))
+                {
+                    out_list.Add(filename);
+                }
+            }
+            return out_list;
+        }
+
+        static public bool IsGroupSummaryReportFilename(String input_name)
+        {
+            string regexString = @"^(Other|[A-Za-z0-9]+)(\.0)(_[\w\(\)\-_+&. ]+)*\.(?i:xlsx)$";
+            RegexStringValidator myRegexValidator = new RegexStringValidator(regexString);
+            
+            bool bret = false;
+            String filename = Storage.GetFileName(input_name);
+
+            try
+            {
+                // Attempt validation.
+                myRegexValidator.Validate(filename);
+                bret = true; // validation ok so no exception
+            }
+            catch (ArgumentException e)
+            {
+                // Validation failed.
+                // so keep return "false"
+                bret = false;
+            }
+
+            return bret;
+        }
+
+        static public List<String> FilterGroupSummaryFilename(List<String> filelist)
+        {
+            List<String> out_list = new List<String>();
+            foreach (String filename in filelist)
+            {
+                if (IsGroupSummaryReportFilename(filename))
                 {
                     out_list.Add(filename);
                 }
