@@ -791,6 +791,12 @@ namespace ExcelReportApplication
             Dst.PasteSpecial(Paste: XlPasteType.xlPasteFormats);
         }
 
+        static public void SetFontColorToWhite(Worksheet worksheet, int ul_row, int ul_col, int br_row, int br_col)
+        {
+            Range range = worksheet.Range[worksheet.Cells[ul_row, ul_col], worksheet.Cells[br_row, br_col]];
+            range.Characters.Font.Color = System.Drawing.Color.White; ;
+        }
+
         // Copy value2 of Test-Case Excel (tc_data) to Test-Case-Template Excel.
         // Result: Test-Case Excel data shown in the format of Test-Case-Template
         static public bool CopyTestCaseIntoTemplate()

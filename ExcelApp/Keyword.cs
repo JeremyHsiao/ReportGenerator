@@ -1398,6 +1398,7 @@ namespace ExcelReportApplication
                 if (KeywordReport.DefaultKeywordReportHeader.Update_Report_Title_by_Sheetname)
                 {
                     ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Title_at_row, KeywordReportHeader.Title_at_col, header.Report_Title);
+                    ExcelAction.SetFontColorToWhite(report_worksheet, 1, 1, 1, 1);  // A1 only
                 }
 
                 //@"Update_Model_Name",                       @"true",
