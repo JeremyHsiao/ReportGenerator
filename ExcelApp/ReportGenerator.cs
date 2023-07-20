@@ -365,6 +365,8 @@ namespace ExcelReportApplication
                 // Make sure Key of TC contains KeyPrefix
                 String key = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, key_col, IsTemplate: true);
                 if (key.Contains(TestCase.KeyPrefix) == false) { break; } // If not a TC key in this row, go to next row
+                String report_name = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, summary_col, IsTemplate: true);
+                if (report_name == "") { break; } // 2nd protection to prevent not a TC row
 
                 // 4.1 Extend bug key string (if not empty) into long string with font settings
                 String links = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, links_col, IsTemplate: true);
@@ -377,7 +379,6 @@ namespace ExcelReportApplication
 
                 // 4.2 update Status (if it is Finished) according to judgement report (if report is available)
                 String current_status = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, status_col, IsTemplate: true);
-                String report_name = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, summary_col, IsTemplate: true);
                 String judgement_str;
                 Boolean update_status = false;
                 update_status = WriteBacktoTCJiraExcel_NeedStatusUpdateValueAccordingToJudgement(current_status, report_name, report_list, out judgement_str);
