@@ -505,6 +505,7 @@ namespace ExcelReportApplication
 
             // If valid sheet_name does not exist, use first worksheet .
             String current_sheet_name = TestPlan.GetSheetNameAccordingToFilename(source_file);
+            KeywordReport.DefaultKeywordReportHeader.Report_SheetName = current_sheet_name;
             Worksheet ws;
             if (ExcelAction.WorksheetExist(wb, current_sheet_name) == false)
             {
@@ -520,6 +521,7 @@ namespace ExcelReportApplication
             {
                 String new_sheet_name = TestPlan.GetSheetNameAccordingToFilename(destination_file);
                 ws.Name = new_sheet_name;
+                KeywordReport.DefaultKeywordReportHeader.Report_SheetName = new_sheet_name;
                 file_has_been_updated = true;
             }
 
