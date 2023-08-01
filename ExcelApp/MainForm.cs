@@ -36,6 +36,9 @@ namespace ExcelReportApplication
             ReadAllReportHeaderIntoExcel,
             WriteAllReportHeaderAccordingToExcel,
             TC_GroupSummaryReport,
+            Update_Report_Linked_Issue,
+            Update_Keyword_and_TC_Report,
+            Man_Power_Processing,
         }
 
         public static ReportType[] ReportSelectableTable =
@@ -55,6 +58,9 @@ namespace ExcelReportApplication
             //ReportType.ReadAllReportHeaderIntoExcel,
             //ReportType.WriteAllReportHeaderAccordingToExcel, 
             //ReportType.TC_GroupSummaryReport,
+            //ReportType.Update_Report_Linked_Issue,
+            //ReportType.Update_Keyword_and_TC_Report,
+            //Man_Power_Processing,
          };
 
         //public static ReportType[] ReportSelectableTable =
@@ -74,6 +80,9 @@ namespace ExcelReportApplication
         //    ReportType.ReadAllReportHeaderIntoExcel,
         //    ReportType.WriteAllReportHeaderAccordingToExcel, 
         //    ReportType.TC_GroupSummaryReport,
+        //    Update_Report_Linked_Issue,
+        //    Update_Keyword_and_TC_Report,
+        //    Man_Power_Processing,
         //};
 
         public static int ReportTypeToInt(ReportType type)
@@ -121,6 +130,9 @@ namespace ExcelReportApplication
             "D.Read All Report Header",
             "E.Write All Report Header",
             "F.Update Test Group Summary Report",
+            "G.Update Report Linked Issue",
+            "H.Update Keyword Rerpot and TC summary (7+9)",
+            "I.Man-Power Processing",
        };
 
         // Must be updated if new report type added #NewReportType
@@ -230,6 +242,27 @@ namespace ExcelReportApplication
                 "Update Jira Group Summary Report (x.0)", 
                 "Input:",  "  Jira Test Case File & root-directory of group summary report",
                 "Output:", "  Updated reports under directories (under root-directory-plus-datetime)",
+            },
+            // "G.Update Report Linked Issue",
+            new String[] 
+            {
+                "Update Linked Issue field in each Report", 
+                "Input:",  "  Jira Bug & TC file, root-directory of reports to be updated",
+                "Output:", "  Updated reports under directories (named by root-directory-plus-datetime)",
+            },
+            // "H.Update Keyword Rerpot and TC summary (7+9)",
+            new String[] 
+            {
+                "Update keyword report and TC Linked Issue", 
+                "Input:",  "  Jira Bug & TC file, Template (for Test case output), and root-directory of reports to be updated",
+                "Output:", "  Updated reports under directories (named by root-directory-plus-datetime) and TC summary with Linked issues",
+            },
+            // "I.Man-Power Processing",
+            new String[] 
+            {
+                "Turn exported CVS file into excel file", 
+                "Input:",  "  CSV exported from man-task",
+                "Output:", "  Excel version of CSV file with spanning date and average effort under it",
             },
         };
 
@@ -355,6 +388,9 @@ namespace ExcelReportApplication
                 "Test Report Path",
                 "TC Template File",
             },
+            // "G.Update Report Linked Issue",
+            // "H.Update Keyword Rerpot and TC summary (7+9)",
+            // "I.Man-Power Processing",
         };
 
         public static String GetReportDescription(int type_index)
@@ -1076,6 +1112,24 @@ namespace ExcelReportApplication
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
                         bRet = Execute_UpdaetGroupSummaryReport_Task(report_path: txtReportFile.Text);
                         break;
+                    case ReportType.Update_Report_Linked_Issue:
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
+                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                        if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+                        //bRet = Execute_CreateTestReportbyTestCaseTask(report_src_dir: src_dir, output_report_dir: dest_dir);
+                        break;
+                    case ReportType.Update_Keyword_and_TC_Report:
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
+                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                        if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+                        //bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: txtReportFile.Text, template_file: txtOutputTemplate.Text);
+                        break;
                     default:  
                         // shouldn't be here.
                         break;
@@ -1092,7 +1146,7 @@ namespace ExcelReportApplication
             UpdateUIDuringExecution(report_index: report_index, executing: false);
         }
 
-        private void SetEnable_IssueFile(bool value)
+        private void SetEnable_BugFile(bool value)
         {
             txtBugFile.Enabled = value;
             btnSelectBugFile.Enabled = value;
@@ -1135,7 +1189,7 @@ namespace ExcelReportApplication
             }
             else
             {
-                SetEnable_IssueFile(false);
+                SetEnable_BugFile(false);
                 SetEnable_TCFile(false);
                 SetEnable_ReportFile(false);
                 SetEnable_OutputTemplate(false);
@@ -1149,83 +1203,95 @@ namespace ExcelReportApplication
             switch (ReportTypeFromInt(ReportIndex))
             {
                 case ReportType.FullIssueDescription_TC: // "1.Issue Description for TC"
-                    SetEnable_IssueFile(true);
+                    SetEnable_BugFile(true);
                     SetEnable_TCFile(true);
                     SetEnable_ReportFile(false);
                     SetEnable_OutputTemplate(true);
                     break;
                 case ReportType.FullIssueDescription_Summary: // "2.Issue Description for Summary"
-                    SetEnable_IssueFile(true);
+                    SetEnable_BugFile(true);
                     SetEnable_TCFile(true);
                     SetEnable_ReportFile(false);
                     SetEnable_OutputTemplate(true);
                     break;
                 case ReportType.StandardTestReportCreation:
-                    SetEnable_IssueFile(false);
+                    SetEnable_BugFile(false);
                     SetEnable_TCFile(false);
                     SetEnable_ReportFile(false);
                     SetEnable_OutputTemplate(true);
                     break;
                 case ReportType.KeywordIssue_Report_SingleFile:
-                    SetEnable_IssueFile(true);
+                    SetEnable_BugFile(true);
                     SetEnable_TCFile(false);
                     SetEnable_ReportFile(true);
                     SetEnable_OutputTemplate(false);
                     break;
                 case ReportType.KeywordIssue_Report_Directory:
-                    SetEnable_IssueFile(true);
+                    SetEnable_BugFile(true);
                     SetEnable_TCFile(false);
                     SetEnable_ReportFile(true);
                     SetEnable_OutputTemplate(false);
                     break;
                 case ReportType.TC_Likely_Passed:
-                    SetEnable_IssueFile(true);
+                    SetEnable_BugFile(true);
                     SetEnable_TCFile(true);
                     SetEnable_ReportFile(false);
                     SetEnable_OutputTemplate(true);
                     break;
                 case ReportType.FindAllKeywordInReport:
-                    SetEnable_IssueFile(false);
+                    SetEnable_BugFile(false);
                     SetEnable_TCFile(false);
                     SetEnable_ReportFile(true);
                     SetEnable_OutputTemplate(false);
                     break;
                 case ReportType.Excel_Sheet_Name_Update_Tool:
-                    SetEnable_IssueFile(false);
+                    SetEnable_BugFile(false);
                     SetEnable_TCFile(false);
                     SetEnable_ReportFile(true);
                     SetEnable_OutputTemplate(false);
                     break;
                 case ReportType.FullIssueDescription_TC_report_judgement: // "1.Issue Description for TC"
-                    SetEnable_IssueFile(true);
+                    SetEnable_BugFile(true);
                     SetEnable_TCFile(true);
                     SetEnable_ReportFile(true);
                     SetEnable_OutputTemplate(true);
                     break;
                 case ReportType.TC_TestReportCreation:
                     // need to rework
-                    SetEnable_IssueFile(false);
+                    SetEnable_BugFile(false);
                     SetEnable_TCFile(true);
                     SetEnable_ReportFile(true);
                     SetEnable_OutputTemplate(true);
                     break;
                 case ReportType.TC_AutoCorrectReport_By_Filename:
-                    SetEnable_IssueFile(false);
+                    SetEnable_BugFile(false);
                     SetEnable_TCFile(false);
                     SetEnable_ReportFile(true);
                     SetEnable_OutputTemplate(false);
                     break;
                 case ReportType.TC_AutoCorrectReport_By_ExcelList:
-                    SetEnable_IssueFile(false);
+                    SetEnable_BugFile(false);
                     SetEnable_TCFile(false);
                     SetEnable_ReportFile(false);
                     SetEnable_OutputTemplate(true);
                     break;
                 case ReportType.TC_GroupSummaryReport:
-                    SetEnable_IssueFile(true);
+                    SetEnable_BugFile(true);
                     SetEnable_TCFile(true);
                     SetEnable_ReportFile(true);
                     SetEnable_OutputTemplate(false);
+                    break;
+                case ReportType.Update_Report_Linked_Issue:
+                    SetEnable_BugFile(true);
+                    SetEnable_TCFile(true);
+                    SetEnable_ReportFile(true);
+                    SetEnable_OutputTemplate(true);
+                    break;
+                case ReportType.Update_Keyword_and_TC_Report: 
+                    SetEnable_BugFile(true);
+                    SetEnable_TCFile(true);
+                    SetEnable_ReportFile(true);
+                    SetEnable_OutputTemplate(true);
                     break;
                 default:
                     // Shouldn't be here
@@ -1307,6 +1373,18 @@ namespace ExcelReportApplication
                 case ReportType.TC_GroupSummaryReport:  
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                    break;
+                case ReportType.Update_Report_Linked_Issue: 
+                    if (!btnSelectReportFile_Clicked)
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                    if (!btnSelectOutputTemplate_Clicked)
+                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
+                    break;
+                case ReportType.Update_Keyword_and_TC_Report: // original adopted from report 9
+                    if (!btnSelectReportFile_Clicked)
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                    if (!btnSelectOutputTemplate_Clicked)
+                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
                 default: 
                     break;
