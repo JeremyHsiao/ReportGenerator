@@ -80,8 +80,8 @@ namespace ExcelReportApplication
         //    ReportType.ReadAllReportHeaderIntoExcel,
         //    ReportType.WriteAllReportHeaderAccordingToExcel, 
         //    ReportType.TC_GroupSummaryReport,
-        //    Update_Report_Linked_Issue,
-        //    Update_Keyword_and_TC_Report,
+        //    ReportType.Update_Report_Linked_Issue,
+        //    ReportType.Update_Keyword_and_TC_Report,
         //    Man_Power_Processing,
         //};
 
@@ -99,12 +99,21 @@ namespace ExcelReportApplication
 
         public static String GetReportName(ReportType type)
         {
-            return GetReportName(ReportTypeToInt(type));
+            int type_index = ReportTypeToInt(type);
+            return GetReportName(type_index);
         }
 
         public static String GetReportName(int type_index)
         {
-            return ReportName[type_index];
+            // prevent out of boundary
+            if (type_index < Enum.GetNames(typeof(ReportType)).Length)
+            {
+                return ReportName[type_index];
+            }
+            else
+            {
+                return "GetReportName_issue";
+            }
         }
 
         public static List<String> ReportNameToList()
@@ -389,8 +398,29 @@ namespace ExcelReportApplication
                 "TC Template File",
             },
             // "G.Update Report Linked Issue",
+            new String[] 
+            {
+                "Jira Bug File", 
+                "Jira TC File",
+                "Test Report Path",
+                "TC Template File",
+            },
             // "H.Update Keyword Rerpot and TC summary (7+9)",
+            new String[] 
+            {
+                "Jira Bug File", 
+                "Jira TC File",
+                "Test Report Path",
+                "TC Template File",
+            },
             // "I.Man-Power Processing",
+            new String[] 
+            {
+                "Jira Bug File", 
+                "Jira TC File",
+                "Test Report Path",
+                "TC Template File",
+            },
         };
 
         public static String GetReportDescription(int type_index)
