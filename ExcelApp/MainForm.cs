@@ -669,6 +669,8 @@ namespace ExcelReportApplication
             {
                 MsgWindow.AppendText("Processing bug_list:" + buglist_filename + ".\n");
                 ReportGenerator.global_issue_list = Issue.GenerateIssueList(buglist_filename);
+                ReportGenerator.lookup_BugList = Issue.UpdateIssueListLUT(ReportGenerator.global_issue_list);
+                // update LUT
                 MsgWindow.AppendText("bug_list finished!\n");
                 return true;
             }
@@ -706,6 +708,7 @@ namespace ExcelReportApplication
         private void ClearIssueList()
         {
             ReportGenerator.global_issue_list.Clear();
+            ReportGenerator.lookup_BugList.Clear();
         }
 
         private bool LoadTCListIfEmpty(String filename)

@@ -20,15 +20,18 @@ namespace ExcelReportApplication
         static public List<String> fileter_status_list = new List<String>();
         static public List<ReportFileRecord> excel_not_report_log = new List<ReportFileRecord>();
 
-        private static List<String> GetGlobalIssueKey(List<Issue> issue_list)
-        {
-            List<String> key_list = new List<String>();
-            foreach (Issue issue in issue_list)
-            {
-                key_list.Add(issue.Key);
-            }
-            return key_list;
-        }
+        static public Dictionary<string, Issue> lookup_BugList = new Dictionary<string, Issue>();
+        static public Dictionary<string, TestCase> lookup_TestCase = new Dictionary<string, TestCase>();
+
+        //private static List<String> GetGlobalIssueKey(List<Issue> issue_list)
+        //{
+        //    List<String> key_list = new List<String>();
+        //    foreach (Issue issue in issue_list)
+        //    {
+        //        key_list.Add(issue.Key);
+        //    }
+        //    return key_list;
+        //}
 
         // 
         // This demo open Test Case Excel and replace Issue ID on Linked Issue column with ID+Summary+Severity+RD_Comment
@@ -144,7 +147,8 @@ namespace ExcelReportApplication
                     // To remove closed issue & not-in-Jira-exported-data issue
                     // 1. prepare an empty list
                     List<String> final_id_list = new List<String>();
-                    List<String> global_issue_key_list = GetGlobalIssueKey(global_issue_list);
+                    //List<String> global_issue_key_list = GetGlobalIssueKey(global_issue_list);
+                    List<String> global_issue_key_list = lookup_BugList.Keys.ToList<String>();
                     // 2. Loop throught all global issues, add key of this issue into final_id_list if:
                     //     (1) key of this issue exists on linked_issue_key_list
                     //     (2) status of this issue is NOT the same as defined in "filter-status"
@@ -271,7 +275,8 @@ namespace ExcelReportApplication
                 // To remove closed issue & not-in-Jira-exported-data issue
                 // 1. prepare an empty list
                 List<String> final_id_list = new List<String>();
-                List<String> global_issue_key_list = GetGlobalIssueKey(global_issue_list);
+                //List<String> global_issue_key_list = GetGlobalIssueKey(global_issue_list);
+                List<String> global_issue_key_list = lookup_BugList.Keys.ToList<String>();
                 // 2. Loop throught all global issues, add key of this issue into final_id_list if:
                 //     (1) key of this issue exists on linked_issue_key_list
                 //     (2) status of this issue is NOT the same as defined in "filter-status"

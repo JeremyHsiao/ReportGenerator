@@ -416,6 +416,16 @@ namespace ExcelReportApplication
             return ret_issue_list;
         }
 
+        static public Dictionary<string, Issue> UpdateIssueListLUT(List<Issue> issue_list)
+        {
+            Dictionary<string, Issue> ret_lut = new Dictionary<string, Issue>();
+            foreach (Issue issue in issue_list)
+            {
+                ret_lut.Add(issue.Key, issue);
+            }
+            return ret_lut;
+        }
+
         static public Color descrption_color_issue = Color.Red;
         static public Color descrption_color_comment = Color.Blue;
 
