@@ -404,15 +404,21 @@ namespace ExcelReportApplication
                 if (ws_keyword_list.Count > 0)
                 {
                     List<StyleString> str_list = new List<StyleString>();
+                    StyleString new_line_str = new StyleString("\n");
                     foreach (TestPlanKeyword keyword in ws_keyword_list)
                     {
                         // Only write to keyword on currently open sheet
                         //if (keyword.Worksheet == sheet_name)
                         {
-                            // write issue description list
-                            str_list.AddRange(keyword.IssueDescriptionList);
+                            if (keyword.IssueDescriptionList.Count > 0)
+                            {
+                                // write issue description list
+                                str_list.AddRange(keyword.IssueDescriptionList);
+                                str_list.Add(new_line_str);
+                            }
                         }
                     }
+                    if (str_list.Count > 0) { str_list.RemoveAt(str_list.Count - 1); } // remove last '\n'
                     ExcelAction.TestCase_WriteStyleString(excel_row_index, (col_end+2), str_list, IsTemplate: true);
                 }
             }
