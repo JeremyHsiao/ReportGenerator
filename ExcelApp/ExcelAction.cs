@@ -105,7 +105,8 @@ namespace ExcelReportApplication
             excel_app.DisplayAlerts = false;
             if (SaveChanges)
             {
-                if (AsFilename != "")
+                if(String.IsNullOrWhiteSpace(AsFilename)==false)
+                //if (AsFilename != "")
                 {
                     workbook.Close(SaveChanges: true, Filename: AsFilename);
                 }
