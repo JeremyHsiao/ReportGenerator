@@ -259,12 +259,13 @@ namespace ExcelReportApplication
             return report_list;
         }
 
-        static public Boolean WriteBacktoTCJiraExcel_GetLinkedIssueResult(String links, out List<StyleString> Link_Issue_Detail)
+        static public Boolean ConvertBugID_to_BugDescription(String links, out List<StyleString> Link_Issue_Detail)
         {
             Boolean ret = false;
             Link_Issue_Detail = new List<StyleString>();
 
-            if (links != "")
+            //if (links != "")
+            if(String.IsNullOrWhiteSpace(links)==false)
             {
                 List<String> linked_issue_key_list = TestCase.Convert_LinksString_To_ListOfString(links);
                 // To remove closed issue & not-in-Jira-exported-data issue
@@ -276,13 +277,13 @@ namespace ExcelReportApplication
                 //     (2) status of this issue is NOT the same as defined in "filter-status"
                 foreach (Issue issue in global_issue_list)
                 {
-                    // not on the list, go the next issue
-                    if (linked_issue_key_list.IndexOf(issue.Key) < 0)
+                    // status the same as one of those defined in "filter-status" (mostly closed issue), go to next issue
+                    if (fileter_status_list.IndexOf(issue.Status) >= 0)
                     {
                         continue;
                     }
-                    // status the same as one of those defined in "filter-status", go to next issue
-                    if (fileter_status_list.IndexOf(issue.Status) >= 0)
+                    // if bug id not on the list, go the next bug
+                    if (linked_issue_key_list.IndexOf(issue.Key) < 0)
                     {
                         continue;
                     }
@@ -329,6 +330,21 @@ namespace ExcelReportApplication
             return ret;
         }
 
+        static public void UpdateTCLinkedIssueList()
+        {
+            foreach (TestCase tc in global_testcase_list) // looping
+            {
+                String links = tc.Links;
+                //if (links != "")
+                if(String.IsNullOrWhiteSpace(links)==false)
+                {
+                    List<StyleString> str_list;
+                    ConvertBugID_to_BugDescription(links, out str_list);
+                    tc.LinkedIssueList = str_list;
+                }
+            }
+        }
+
         // Split some part of V2 into sub-functions 
         static public void WriteBacktoTCJiraExcelV3(String tclist_filename, String template_filename, String judgement_report_dir = "")
         {
@@ -370,10 +386,11 @@ namespace ExcelReportApplication
 
                 // 4.1 Extend bug key string (if not empty) into long string with font settings
                 String links = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, links_col, IsTemplate: true);
-                if (links != "")
+                //if (links != "")
+                if(String.IsNullOrWhiteSpace(links)==false)
                 {
                     List<StyleString> str_list;
-                    WriteBacktoTCJiraExcel_GetLinkedIssueResult(links, out str_list);
+                    ConvertBugID_to_BugDescription(links, out str_list);
                     ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
                 }
 

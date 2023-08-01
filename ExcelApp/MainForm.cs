@@ -738,6 +738,8 @@ namespace ExcelReportApplication
             // This full issue description is needed for report purpose
             ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
 
+            ReportGenerator.UpdateTCLinkedIssueList();
+
             //            ReportGenerator.WriteBacktoTCJiraExcel(tc_file);
             //ReportGenerator.WriteBacktoTCJiraExcelV2(tc_file, template_file, judgement_report_dir);
             ReportGenerator.WriteBacktoTCJiraExcelV3(tc_file, template_file, judgement_report_dir);
@@ -1119,7 +1121,7 @@ namespace ExcelReportApplication
                         // bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: true);
                         bRet = true;
                         break;
-                    case ReportType.FullIssueDescription_TC_report_judgement:
+                    case ReportType.FullIssueDescription_TC_report_judgement:           // Report 9
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
