@@ -27,12 +27,12 @@ namespace ExcelReportApplication
             KeywordIssue_Report_SingleFile,
             TC_Likely_Passed,
             FindAllKeywordInReport,
-            KeywordIssue_Report_Directory,
+            KeywordIssue_Report_Directory,                  // Report 7
             Excel_Sheet_Name_Update_Tool,
-            FullIssueDescription_TC_report_judgement,
+            FullIssueDescription_TC_report_judgement,       // Report 9
             TC_TestReportCreation,
             TC_AutoCorrectReport_By_Filename,
-            TC_AutoCorrectReport_By_ExcelList,
+            TC_AutoCorrectReport_By_ExcelList,              // Report C
             ReadAllReportHeaderIntoExcel,
             WriteAllReportHeaderAccordingToExcel,
             TC_GroupSummaryReport,
@@ -59,7 +59,7 @@ namespace ExcelReportApplication
             //ReportType.WriteAllReportHeaderAccordingToExcel, 
             //ReportType.TC_GroupSummaryReport,
             //ReportType.Update_Report_Linked_Issue,
-            //ReportType.Update_Keyword_and_TC_Report,
+            ReportType.Update_Keyword_and_TC_Report,
             //Man_Power_Processing,
          };
 
@@ -1128,7 +1128,8 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        //bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: txtReportFile.Text, template_file: txtOutputTemplate.Text);
+                        bRet = Execute_KeywordIssueGenerationTask(FileOrDirectoryName: txtReportFile.Text, IsDirectory: true);
+                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: txtReportFile.Text, template_file: txtOutputTemplate.Text);
                         break;
                     default:  
                         // shouldn't be here.
