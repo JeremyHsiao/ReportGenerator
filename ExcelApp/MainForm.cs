@@ -427,16 +427,38 @@ namespace ExcelReportApplication
         {
             String ret_str = "";
             ret_str += ReportGeneratorVersionString + "\r\n";
-            foreach (String str in ReportDescription[type_index])
+            // prevent out of boundary
+            if (type_index < Enum.GetNames(typeof(ReportType)).Length)
             {
-                ret_str += str + "\r\n";
+                foreach (String str in ReportDescription[type_index])
+                {
+                    ret_str += str + "\r\n";
+                }
+                return ret_str;
             }
-            return ret_str;
+            else
+            {
+                return "GetReportDescriptione_issue";
+            }
         }
 
         public static String[] GetLabelTextArray(int type_index)
         {
-            return UI_Label[type_index];
+            if (type_index < Enum.GetNames(typeof(ReportType)).Length)
+            {
+                return UI_Label[type_index];
+            }
+            else
+            {
+                String []error_message = new String[] 
+                {
+                    "GetLabelTextArray_issue", 
+                    "GetLabelTextArray_issue", 
+                    "GetLabelTextArray_issue", 
+                    "GetLabelTextArray_issue", 
+                };
+                return error_message;
+            }
         }
 
         public static String GetReportDescription(ReportType type)
