@@ -397,6 +397,8 @@ namespace ExcelReportApplication
         public static String regexBugStatusString = @"^(?i)\s*Bug Status\s*$";
         public static String regexBugListString = @"^(?i)\s*Bug List\s*$";
 
+        static public List<String> fileter_status_list = new List<String>();
+
         public static String PASS_str = "Pass";
         public static String CONDITIONAL_PASS_str = "Conditional Pass";
         public static String FAIL_str = "Fail";
@@ -1189,6 +1191,11 @@ namespace ExcelReportApplication
                 String keyword_str = keyword.Keyword;
                 foreach (Issue issue in ReportGenerator.global_issue_list)
                 {
+                    // if status meets filter condition (mostly Closed_0), skip to next issue)
+                    if (fileter_status_list.IndexOf(issue.Status) >= 0)
+                    {
+                        continue;
+                    }
                     if (issue.ContainKeyword(keyword_str))
                     {
                         id_list.Add(issue.Key);

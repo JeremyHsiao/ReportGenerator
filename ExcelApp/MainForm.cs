@@ -379,6 +379,26 @@ namespace ExcelReportApplication
         }
         // END
 
+        private static List<String> SplitCommaSeparatedStringIntoList(String input_string)
+        {
+            List<String> ret_list = new List<String>();
+            String[] separators = { "," };
+            if (String.IsNullOrWhiteSpace(input_string)==false)
+            {
+                // Separate keys into string[]
+                String[] issues = input_string.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                if (issues != null)
+                {
+                    // string[] to List<String> (trimmed) and return
+                    foreach (String str in issues)
+                    {
+                        ret_list.Add(str.Trim());
+                    }
+                }
+            }
+            return ret_list;
+        }
+
         public void LoadConfigAll()
         {
             // config for default filename at MainForm
@@ -404,23 +424,26 @@ namespace ExcelReportApplication
 
             // Status string to decompose into list of string
             // Begin
-            List<String> ret_list = new List<String>();
+            //List<String> ret_list = new List<String>();
+            //String links = XMLConfig.ReadAppSetting_String("LinkIssueFilterStatusString");
+            //if ((links != null) && (links != ""))
+            //{
+            //    // Separate keys into string[]
+            //    String[] issues = links.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            //    if (issues != null)
+            //    {
+            //        // string[] to List<String> (trimmed) and return
+            //        foreach (String str in issues)
+            //        {
+            //            ret_list.Add(str.Trim());
+            //        }
+            //    }
+            //}
+            //ReportGenerator.fileter_status_list = ret_list;
             String links = XMLConfig.ReadAppSetting_String("LinkIssueFilterStatusString");
-            String[] separators = { "," };
-            if ((links != null) && (links != ""))
-            {
-                // Separate keys into string[]
-                String[] issues = links.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-                if (issues != null)
-                {
-                    // string[] to List<String> (trimmed) and return
-                    foreach (String str in issues)
-                    {
-                        ret_list.Add(str.Trim());
-                    }
-                }
-            }
-            ReportGenerator.fileter_status_list = ret_list;
+            ReportGenerator.fileter_status_list = SplitCommaSeparatedStringIntoList(links);
+            links = XMLConfig.ReadAppSetting_String("TestReport_FilterStatusString");
+            KeywordReport.fileter_status_list = SplitCommaSeparatedStringIntoList(links);
             // End
 
             // config for default parameters used in Test Plan / Test Report

@@ -77,6 +77,8 @@ namespace ExcelReportApplication
             @"TestReport_BugList_Titlle_Offset_Row",    @"2",
             @"TestReport_BugList_Titlle_Offset_Col",    @"1",
             @"TestReport_Default_Output_Dir",           @"",
+            @"TestReport_Default_Source_Path",          @"",
+            @"TestReport_FilterStatusString",           @"Close (0)",
             @"default_report_Font",                     @"Calibri",
             @"default_report_FontSize",                 @"10",
             @"default_report_FontColor",                @"Black",
