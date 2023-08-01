@@ -56,6 +56,7 @@ namespace ExcelReportApplication
             @"Update_Judgement",                        @"true",
             @"Update_Tested_by",                        @"true",
             @"Update_Approved_by",                      @"true",
+            @"Report_C_ReadHeaderItem",                 @"false",
             @"Excel_Visible",                           @"true",
             @"Issue_Key_Prefix",                        @"-",
             @"Issue_SheetName",                         @"general_report",

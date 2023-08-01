@@ -482,10 +482,17 @@ namespace ExcelReportApplication
             return file_has_been_updated;
         }
 
-        // Copy and update worksheet name & header & bug-result (configurable) -- to be used for starting a new project based on reports from anywhere
         static public bool AutoCorrectReport_SingleFile(String source_file, String destination_file, Boolean always_save = false)
         {
+           KeywordReportHeader out_header; // not used for this version of API.
+           return AutoCorrectReport_SingleFile(source_file, destination_file, out out_header, always_save );
+        }
+        
+        // Copy and update worksheet name & header & bug-result (configurable) -- to be used for starting a new project based on reports from anywhere
+        static public bool AutoCorrectReport_SingleFile(String source_file, String destination_file, out KeywordReportHeader out_header, Boolean always_save = false)
+        {
             Boolean file_has_been_updated = false;
+            out_header = new KeywordReportHeader();
 
             destination_file = Storage.GetFullPath(destination_file);
             if (Storage.IsReportFilename(destination_file) == false)
@@ -744,6 +751,7 @@ namespace ExcelReportApplication
                        dest = report_to_be_copied_list_dest[index];
                 Boolean success = false;
 
+                // if only copying files, no need to open excel
                 if (KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly)
                 {
                     String source_file = src, destination_file = dest;
@@ -755,10 +763,11 @@ namespace ExcelReportApplication
                     }
                     success = Storage.Copy(source_file, destination_file, overwrite: true);
                 }
-                else
+                else // modifying contents so need to open excel
                 {
                     success = AutoCorrectReport_SingleFile(source_file: src, destination_file: dest, always_save: true);
                 }
+
                 if (success)
                 {
                     report_actually_copied_list_src.Add(src);
