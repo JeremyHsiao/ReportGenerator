@@ -23,6 +23,9 @@ namespace ExcelReportApplication
         private String testcaseid;          
         private String stepstoreproduce;
         private String created;
+        // generated-data
+        private List<StyleString> linked_issue_list;
+        private List<StyleString> keyword_issue_list;
 
         public String Key   // property
         {
@@ -118,6 +121,18 @@ namespace ExcelReportApplication
         {
             get { return created; }   // get method
             set { created = value; }  // set method
+        }
+
+        public List<StyleString> LinkedIssueList   // property
+        {
+            get { return linked_issue_list; }   // get method
+            set { linked_issue_list = value; }  // set method
+        }
+
+        public List<StyleString> KeywordIssueList   // property
+        {
+            get { return keyword_issue_list; }   // get method
+            set { keyword_issue_list = value; }  // set method
         }
 
         public const string col_Key = "Key";
