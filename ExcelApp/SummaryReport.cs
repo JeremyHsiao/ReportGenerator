@@ -20,7 +20,8 @@ namespace ExcelReportApplication
             foreach (TestCase tc in ReportGenerator.global_testcase_list)
             {
                 String key = tc.Summary;
-                if (key != "")
+                //if (key != "")
+                if (String.IsNullOrWhiteSpace(key) == false)
                 {
                     group_note_issue.Add(key, tc.Links);
                 }
