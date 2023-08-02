@@ -558,6 +558,7 @@ namespace ExcelReportApplication
             Issue.B_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_B_Issue_Color");
             Issue.C_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_C_Issue_Color");
             Issue.D_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_D_Issue_Color");
+            KeywordReport.Replace_Conclusion = XMLConfig.ReadAppSetting_Boolean("Keyword_report_replace_conclusion");
             KeywordReport.Auto_Correct_Sheetname = XMLConfig.ReadAppSetting_Boolean("Keyword_Auto_Correct_Worksheet");
 
             // config for report C

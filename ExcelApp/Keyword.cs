@@ -404,6 +404,7 @@ namespace ExcelReportApplication
         public static String FAIL_str = "Fail";
         public static String WAIVED_str = "Waived";
 
+        public static Boolean Replace_Conclusion = false;
         public static Boolean Auto_Correct_Sheetname = false;
 
         public static KeywordReportHeader DefaultKeywordReportHeader = new KeywordReportHeader();
@@ -416,6 +417,11 @@ namespace ExcelReportApplication
 
         private static List<TestPlanKeyword> global_keyword_list = new List<TestPlanKeyword>();
         private static Boolean global_keyword_available;
+        public static void SetGlobalKeywordList(List<TestPlanKeyword> keyword_list)
+        {
+            global_keyword_list = keyword_list;
+            global_keyword_available = true;
+        }
         public static List<TestPlanKeyword> GetGlobalKeywordList()
         {
             if (global_keyword_available)
@@ -433,6 +439,7 @@ namespace ExcelReportApplication
             global_keyword_list.Clear();
         }
 
+        // Visit report content and find out all keywords
         static public List<TestPlanKeyword> ListKeyword_SingleReport(TestPlan plan)
         {
             //
@@ -531,6 +538,7 @@ namespace ExcelReportApplication
             return ret;
         }
 
+        // Visit all reports and find out all keywords -- make use of ListKeyword_SingleReport()
         static public List<TestPlanKeyword> ListAllKeyword(List<TestPlan> DoPlan)
         {
             List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
@@ -597,46 +605,47 @@ namespace ExcelReportApplication
             return ret;
         }
 
-        static public List<TestPlanKeyword> FilterSingleReportKeyword(List<TestPlanKeyword> keyword_list, String workbook, String worksheet)
-        {
-            List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
-            foreach (TestPlanKeyword kw in keyword_list)
-            {
-                if (((kw.Workbook == workbook) || (workbook == "")) && (kw.Worksheet == worksheet))
-                {
-                    ret.Add(kw);
-                }
-            }
-            return ret;
-        }
+        //static public List<TestPlanKeyword> FilterSingleReportKeyword(List<TestPlanKeyword> keyword_list, String workbook, String worksheet)
+        //{
+        //    List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
+        //    foreach (TestPlanKeyword kw in keyword_list)
+        //    {
+        //        if (((kw.Workbook == workbook) || (workbook == "")) && (kw.Worksheet == worksheet))
+        //        {
+        //            ret.Add(kw);
+        //        }
+        //    }
+        //    return ret;
+        //}
 
-        static public List<TestPlanKeyword> FilterSingleReportKeyword_check_only_worksheet(List<TestPlanKeyword> keyword_list, String worksheet)
-        {
-            List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
-            foreach (TestPlanKeyword kw in keyword_list)
-            {
-                if ((kw.Worksheet == worksheet))
-                {
-                    ret.Add(kw);
-                }
-            }
-            return ret;
-        }
+        //static public List<TestPlanKeyword> FilterSingleReportKeyword_check_only_worksheet(List<TestPlanKeyword> keyword_list, String worksheet)
+        //{
+        //    List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
+        //    foreach (TestPlanKeyword kw in keyword_list)
+        //    {
+        //        if ((kw.Worksheet == worksheet))
+        //        {
+        //            ret.Add(kw);
+        //        }
+        //    }
+        //    return ret;
+        //}
 
-        static public Boolean IsAnyKeywordInReport(List<TestPlanKeyword> keyword_list, String workbook, String worksheet)
-        {
-            Boolean b_ret = false;
-            foreach (TestPlanKeyword kw in keyword_list)
-            {
-                if ((kw.Workbook == workbook) && (kw.Worksheet == worksheet))
-                {
-                    b_ret = true;
-                    break;
-                }
-            }
-            return b_ret;
-        }
+        //static public Boolean IsAnyKeywordInReport(List<TestPlanKeyword> keyword_list, String workbook, String worksheet)
+        //{
+        //    Boolean b_ret = false;
+        //    foreach (TestPlanKeyword kw in keyword_list)
+        //    {
+        //        if ((kw.Workbook == workbook) && (kw.Worksheet == worksheet))
+        //        {
+        //            b_ret = true;
+        //            break;
+        //        }
+        //    }
+        //    return b_ret;
+        //}
 
+        // List all duplicated keywords based on complete keyword-list
         static public List<TestPlanKeyword> ListAllDuplicatedKeyword(List<TestPlanKeyword> keyword_list)
         {
             Dictionary<String, TestPlanKeyword> for_checking_duplicated = new Dictionary<String, TestPlanKeyword>();
@@ -676,6 +685,7 @@ namespace ExcelReportApplication
             return ret_dup_kw_list;
         }
 
+        // List all duplicated keywords based on complete keyword-list
         static public List<String> ListDuplicatedKeywordString(List<TestPlanKeyword> keyword_list)
         {
             SortedSet<String> check_duplicated_keyword = new SortedSet<String>();
@@ -1128,6 +1138,25 @@ namespace ExcelReportApplication
             ExcelAction.SetCellValue(result_worksheet, keyword.ResultListAtRow, keyword.ResultListAtColumn, pass_fail_str);
         }
 
+        static public Boolean ReplaceConclusionWithBugList(Worksheet ws, List<StyleString> bug_list_description)
+        {
+            // find conclusion, if not found, row 21/22 as default
+            int conclusion_start_row = 19, conclusion_end_row = 22;
+            for (int row_index = conclusion_start_row; row_index <= conclusion_end_row; row_index++)
+            {
+                String text = ExcelAction.GetCellTrimmedString(ws, row_index, 2);
+                if (String.Compare(text, "Conclusion:", true) == 0)
+                {
+                    // replace "conclusion:" with "Bug List:"
+                    ExcelAction.SetCellValue(ws, row_index, 2, "Bug List:");
+                    ExcelAction.ClearContent(ws, row_index, 3, row_index, ('J' - 'A' + 1));
+                    // output linked issue at C2
+                    StyleString.WriteStyleString(ws, row_index + 1, 3, bug_list_description);
+                }
+            }
+            return true;
+        }
+
         static public bool KeywordIssueGenerationTaskV4(List<String> file_list, String src_dir, String dest_dir = "")
         {
             // Clear keyword log report data-table
@@ -1214,8 +1243,10 @@ namespace ExcelReportApplication
             //KeyWordListReport.OutputKeywordLog(out_dir, keyword_list, ReportGenerator.excel_not_report_log, output_keyword_issue: false);
 
             // Load global_keyword_list here
-            global_keyword_list = keyword_list;
-            global_keyword_available = true;
+            //global_keyword_list = keyword_list;
+            //global_keyword_available = true;
+            SetGlobalKeywordList(keyword_list);
+            Dictionary<String, List<TestPlanKeyword>> keyword_lut_by_sheetname = GenerateKeywordLUT_by_Sheetname(keyword_list);
 
             //
             // 3. Go throught each report excel and generate keyword report for each one.
@@ -1227,8 +1258,9 @@ namespace ExcelReportApplication
 
                 // 3.0 if there isn't any keyword in this plan, just continue to next plan
                 //     
-                List<TestPlanKeyword> ws_keyword_list = FilterSingleReportKeyword(keyword_list, full_filename, sheet_name);
-                if (ws_keyword_list.Count <= 0)
+                //List<TestPlanKeyword> ws_keyword_list = FilterSingleReportKeyword(keyword_list, full_filename, sheet_name);
+                //if (ws_keyword_list.Count <= 0)
+                if (keyword_lut_by_sheetname.ContainsKey(sheet_name) == false)
                 {
                     continue;
                 }
@@ -1259,13 +1291,16 @@ namespace ExcelReportApplication
                 //       also count how many "Pass" or how many "Fail"
                 int pass_count = 0, fail_count = 0, conditional_pass_count = 0;
                 //foreach (TestPlanKeyword keyword in keyword_list)
-                foreach (TestPlanKeyword keyword in ws_keyword_list)
+                //foreach (TestPlanKeyword keyword in ws_keyword_list)
+                List<StyleString> keyword_issue_description_on_this_report = new List<StyleString>();
+                foreach (TestPlanKeyword keyword in keyword_lut_by_sheetname[sheet_name])
                 {
                     // Only write to keyword on currently open sheet
                     //if (keyword.Worksheet == sheet_name)
                     {
                         // write issue description list
                         StyleString.WriteStyleString(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn, keyword.IssueDescriptionList);
+                        keyword_issue_description_on_this_report.AddRange(keyword.IssueDescriptionList);
 
                         // write issue count of each severity
                         IssueCount severity_count = keyword.Calculate_Issue();
@@ -1331,10 +1366,20 @@ namespace ExcelReportApplication
                     // pass
                     judgement_str = PASS_str;
                 }
-                ExcelAction.SetCellValue(result_worksheet, PassCnt_at_row, PassCnt_at_col, pass_count);
-                ExcelAction.SetCellValue(result_worksheet, FailCnt_at_row, FailCnt_at_col, fail_count);
-                ExcelAction.SetCellValue(result_worksheet, ConditionalPass_string_at_row, ConditionalPass_string_at_col, CONDITIONAL_PASS_str + ":");
-                ExcelAction.SetCellValue(result_worksheet, ConditionalPassCnt_at_row, ConditionalPassCnt_at_col, conditional_pass_count);
+
+                if(Replace_Conclusion)
+                {
+                    // Add: replace conclusion with Bug-list
+                    ReplaceConclusionWithBugList(result_worksheet, keyword_issue_description_on_this_report); // should be linked issue in the future
+                }
+                else
+                {
+                    ExcelAction.SetCellValue(result_worksheet, PassCnt_at_row, PassCnt_at_col, pass_count);
+                    ExcelAction.SetCellValue(result_worksheet, FailCnt_at_row, FailCnt_at_col, fail_count);
+                    ExcelAction.SetCellValue(result_worksheet, ConditionalPass_string_at_row, ConditionalPass_string_at_col, CONDITIONAL_PASS_str + ":");
+                    ExcelAction.SetCellValue(result_worksheet, ConditionalPassCnt_at_row, ConditionalPassCnt_at_col, conditional_pass_count);
+                }
+
                 ExcelAction.SetCellValue(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, judgement_str);
                 // always update Test End Period to today
                 String end_date = DateTime.Now.ToString("yyyy/MM/dd");
@@ -1695,7 +1740,7 @@ namespace ExcelReportApplication
                 tp.TestPlanWorksheet = ws;
                 tp.ExcelSheet = ws.Name;
                 List<TestPlanKeyword> keyword_list = ListKeyword_SingleReport(tp);
-                foreach(TestPlanKeyword keyword in keyword_list)
+                foreach (TestPlanKeyword keyword in keyword_list)
                 {
                     ExcelAction.SetCellValue(ws, keyword.ResultListAtRow, keyword.ResultListAtColumn, " ");
                     int temp_col = keyword.BugStatusAtColumn;
@@ -1968,7 +2013,7 @@ namespace ExcelReportApplication
             foreach (TestPlanKeyword tpk in keyword_list)
             {
                 String sheet = tpk.Worksheet;
-                if(ret_dic.ContainsKey(sheet)==false)
+                if (ret_dic.ContainsKey(sheet) == false)
                 //if (sheetname_list.Contains(sheet) == false)
                 {
                     //sheetname_list.Add(sheet);
