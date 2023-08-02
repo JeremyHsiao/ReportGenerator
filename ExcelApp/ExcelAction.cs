@@ -1239,5 +1239,13 @@ namespace ExcelReportApplication
             WriteTableObjectToExcel(ws_not_keyword_file, table_object, start_row, start_col, with_title,
                                     left_alignment_col, center_alignment_col, auto_fit_col);
         }
+
+        static public void ClearContent(Worksheet worksheet, int start_row, int start_col, int end_row, int end_col)
+        {
+            Range table_range = worksheet.Range[worksheet.Cells[start_row, start_col], worksheet.Cells[end_row, end_col]];
+            table_range.Value = " ";
+            table_range.Interior.ColorIndex = 0;
+            table_range.Characters.Font.Color = StyleString.default_color;
+        }
     }
 }
