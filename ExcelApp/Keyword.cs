@@ -1717,7 +1717,6 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
-
         static public Boolean ClearReportBugCount(Worksheet ws)
         {
             Boolean b_ret = false;
@@ -1855,7 +1854,6 @@ namespace ExcelReportApplication
         //    return b_ret;
         //}
 
-
         static public String DecideDestinationFilename(String src_dir, String dest_dir, String full_filename)
         {
             String ret_str;
@@ -1962,5 +1960,23 @@ namespace ExcelReportApplication
             return keyword_list;
         }
 
+        static public Dictionary<String, List<TestPlanKeyword>> GenerateKeywordLUT_by_Sheetname(List<TestPlanKeyword> keyword_list)
+        {
+            Dictionary<String, List<TestPlanKeyword>> ret_dic = new Dictionary<String, List<TestPlanKeyword>>();
+            List<String> sheetname_list = new List<string>();
+
+            foreach (TestPlanKeyword tpk in keyword_list)
+            {
+                String sheet = tpk.Worksheet;
+                if(ret_dic.ContainsKey(sheet)==false)
+                //if (sheetname_list.Contains(sheet) == false)
+                {
+                    //sheetname_list.Add(sheet);
+                    ret_dic.Add(sheet, new List<TestPlanKeyword>());
+                }
+                ret_dic[sheet].Add(tpk);
+            }
+            return ret_dic;
+        }
     }
 }
