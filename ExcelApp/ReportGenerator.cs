@@ -240,7 +240,8 @@ namespace ExcelReportApplication
 
             if (judgement_report_dir != "")
             {
-                List<String> file_list = Storage.ListFilesUnderDirectory(judgement_report_dir);
+                List<String> all_file_list = Storage.ListFilesUnderDirectory(judgement_report_dir);
+                List<String> file_list = Storage.FilterFilename(all_file_list);
                 foreach (String name in file_list)
                 {
                     // File existing check protection (it is better also checked and giving warning before entering this function)
@@ -269,7 +270,7 @@ namespace ExcelReportApplication
             Link_Issue_Detail = new List<StyleString>();
 
             //if (links != "")
-            if(String.IsNullOrWhiteSpace(links)==false)
+            if (String.IsNullOrWhiteSpace(links) == false)
             {
                 List<String> linked_issue_key_list = TestCase.Convert_LinksString_To_ListOfString(links);
                 // To remove closed issue & not-in-Jira-exported-data issue
@@ -303,24 +304,17 @@ namespace ExcelReportApplication
         }
 
         static public Boolean WriteBacktoTCJiraExcel_NeedStatusUpdateValueAccordingToJudgement
-                (String status, String report_name, Dictionary<String, String> report_list, out String judgement_string)
+                (String status, String worksheet_name, String workbook_filename, out String judgement_string)
         {
             Boolean ret = false;
-            
-            // if report is available, get judgement string
-            String summary = report_name;
-            String worksheet_name = TestPlan.GetSheetNameAccordingToSummary(summary);
+
             judgement_string = ""; // empty if cannot get judgement value
-            if (report_list.ContainsKey(worksheet_name))
+            // If current_status is "Finished" in excel report, it will be updated according to judgement of corresponding test report.
+            String judgement_str;
+            // If judgement value is available, update it.
+            if (KeywordReport.GetJudgementValue(workbook_filename, worksheet_name, out judgement_str))
             {
-                // If current_status is "Finished" in excel report, it will be updated according to judgement of corresponding test report.
-                String workbook_filename = report_list[worksheet_name];
-                String judgement_str;
-                // If judgement value is available, update it.
-                if (KeywordReport.GetJudgementValue(workbook_filename, worksheet_name, out judgement_str))
-                {
-                    judgement_string = judgement_str;
-                }
+                judgement_string = judgement_str;
             }
 
             if (status == TestCase.STR_FINISHED)
@@ -341,7 +335,7 @@ namespace ExcelReportApplication
             {
                 String links = tc.Links;
                 //if (links != "")
-                if(String.IsNullOrWhiteSpace(links)==false)
+                if (String.IsNullOrWhiteSpace(links) == false)
                 {
                     List<StyleString> str_list;
                     ConvertBugID_to_BugDescription(links, out str_list);
@@ -363,9 +357,9 @@ namespace ExcelReportApplication
                 return; // to-be-checked if here
             }
 
-            // 2. Get report_list under judgement_report_dir
-            Dictionary<String, String> report_list = new Dictionary<String, String>();
-            report_list = WriteBacktoTCJiraExcel_GetReportList(judgement_report_dir);
+            // 2. Get report_list under judgement_report_dir -- (sheetname, fullname)
+            Dictionary<String, String> report_filelist_by_sheetname = new Dictionary<String, String>();
+            report_filelist_by_sheetname = WriteBacktoTCJiraExcel_GetReportList(judgement_report_dir);
 
             // 3. Copy test case data into template excel -- both will have the same row/col and (almost) same data
             ExcelAction.CopyTestCaseIntoTemplate_v2();
@@ -380,75 +374,81 @@ namespace ExcelReportApplication
             // for 4.3 & 4.4
             int col_end = ExcelAction.GetTestCaseExcelRange_Col(IsTemplate: true);
             List<TestPlanKeyword> keyword_list = KeywordReport.GetGlobalKeywordList();
+            Dictionary<String, List<TestPlanKeyword>> keyword_lut_by_Sheetname = KeywordReport.GenerateKeywordLUT_by_Sheetname(keyword_list);
             // Visit all rows and replace Bug-ID at Linked Issue with long description of Bug.
             for (int excel_row_index = TestCase.DataBeginRow; excel_row_index <= last_row; excel_row_index++)
             {
                 // Make sure Key of TC contains KeyPrefix
-                String key = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, key_col, IsTemplate: true);
-                if (key.Contains(TestCase.KeyPrefix) == false) { break; } // If not a TC key in this row, go to next row
+                String tc_key = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, key_col, IsTemplate: true);
+                //if (tc_key.Contains(TestCase.KeyPrefix) == false) { break; } // If not a TC key in this row, go to next row
+                if (lookup_TestCase.ContainsKey(tc_key) == false) { break; } // If TC key in this row does not exist in database, go to next row
                 String report_name = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, summary_col, IsTemplate: true);
-                if (report_name == "") { break; } // 2nd protection to prevent not a TC row
+                String worksheet_name = TestPlan.GetSheetNameAccordingToSummary(report_name);
+                //if (report_name == "") { break; } // 2nd protection to prevent not a TC row
+                if (String.IsNullOrWhiteSpace(report_name) == true) { continue; } // 2nd protection to prevent not a TC row
 
                 // 4.1 Extend bug key string (if not empty) into long string with font settings
                 String links = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, links_col, IsTemplate: true);
                 //if (links != "")
-                if(String.IsNullOrWhiteSpace(links)==false)
+                if (String.IsNullOrWhiteSpace(links) == false)
                 {
                     List<StyleString> str_list;
                     ConvertBugID_to_BugDescription(links, out str_list);
                     ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
                 }
 
-                // 4.2 update Status (if it is Finished) according to judgement report (if report is available)
-                String current_status = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, status_col, IsTemplate: true);
-                String judgement_str;
-                Boolean update_status = false;
-                update_status = WriteBacktoTCJiraExcel_NeedStatusUpdateValueAccordingToJudgement(current_status, report_name, report_list, out judgement_str);
-                if (update_status)
+                // check if report is availablea, if yes, use report to update judgement & list keyword issue of this report
+                if (report_filelist_by_sheetname.ContainsKey(worksheet_name) == true)
                 {
-                    // update only of judgement_string is available.
-                    if (judgement_str != "")
+                    // 4.2 update Status (if it is Finished) according to judgement report (if report is available)
+
+                    String current_status = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, status_col, IsTemplate: true);
+                    String judgement_str;
+                    Boolean update_status = false;
+                    String workbook_filename = report_filelist_by_sheetname[worksheet_name];
+                    update_status = WriteBacktoTCJiraExcel_NeedStatusUpdateValueAccordingToJudgement(current_status, worksheet_name, workbook_filename, out judgement_str);
+                    if (update_status)
                     {
-                        ExcelAction.SetTestCaseCell(excel_row_index, status_col, judgement_str, IsTemplate: true);
-                    }
-                }
-
-                // 4.3 always fill judgement value for reference outside report border.
-                ExcelAction.SetTestCaseCell(excel_row_index, (col_end+1), judgement_str, IsTemplate: true);
-
-                // 4.4 
-                // get buglist from keyword report and show it.
-                String worksheet_name = TestPlan.GetSheetNameAccordingToSummary(report_name);
-                String workbook_name = report_name;
-                // check only worksheet because original workbook full name can't be recover here
-                List<TestPlanKeyword> ws_keyword_list = KeywordReport.FilterSingleReportKeyword(keyword_list, "", worksheet_name); 
-
-                if (ws_keyword_list.Count > 0)
-                {
-                    List<StyleString> str_list = new List<StyleString>();
-                    StyleString new_line_str = new StyleString("\n");
-                    foreach (TestPlanKeyword keyword in ws_keyword_list)
-                    {
-                        // Only write to keyword on currently open sheet
-                        //if (keyword.Worksheet == sheet_name)
+                        // update only of judgement_string is available.
+                        if (judgement_str != "")
                         {
-                            if (keyword.IssueDescriptionList.Count > 0)
-                            {
-                                // write issue description list
-                                str_list.AddRange(keyword.IssueDescriptionList);
-                                str_list.Add(new_line_str);
-                            }
+                            ExcelAction.SetTestCaseCell(excel_row_index, status_col, judgement_str, IsTemplate: true);
                         }
                     }
-                    if (str_list.Count > 0) { str_list.RemoveAt(str_list.Count - 1); } // remove last '\n'
-                    ExcelAction.TestCase_WriteStyleString(excel_row_index, (col_end+2), str_list, IsTemplate: true);
+
+                    // 4.3 always fill judgement value for reference outside report border (if report is available)
+                    ExcelAction.SetTestCaseCell(excel_row_index, (col_end + 1), judgement_str, IsTemplate: true);
+
+                    // 4.4 
+                    // get buglist from keyword report and show it.
+                    List<TestPlanKeyword> ws_keyword_list = keyword_lut_by_Sheetname[worksheet_name];
+                    if (ws_keyword_list.Count > 0)
+                    {
+                        List<StyleString> str_list = new List<StyleString>();
+                        StyleString new_line_str = new StyleString("\n");
+                        foreach (TestPlanKeyword keyword in ws_keyword_list)
+                        {
+                            // Only write to keyword on currently open sheet
+                            //if (keyword.Worksheet == sheet_name)
+                            {
+                                if (keyword.IssueDescriptionList.Count > 0)
+                                {
+                                    // write issue description list
+                                    str_list.AddRange(keyword.IssueDescriptionList);
+                                    str_list.Add(new_line_str);
+                                }
+                            }
+                        }
+                        if (str_list.Count > 0) { str_list.RemoveAt(str_list.Count - 1); } // remove last '\n'
+                        ExcelAction.TestCase_WriteStyleString(excel_row_index, (col_end + 2), str_list, IsTemplate: true);
+                    }
                 }
             }
 
             // 5. auto-fit-height of column links
             ExcelAction.TestCase_AutoFit_Column(links_col, IsTemplate: true);
 
-            // 6. Write to another filename with datetime
+            // 6. Write to another filename with datetime (and close template file)
             string dest_filename = Storage.GenerateFilenameWithDateTime(tclist_filename, FileExt: ".xlsx");
             ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
 
@@ -509,7 +509,7 @@ namespace ExcelReportApplication
                 {
                     tc_none.Add(tc.Key);
                 }
-                else if (tc.Links.Trim() == "") // fail but empty linked issue
+                else if (String.IsNullOrWhiteSpace(tc.Links)) // fail but empty linked issue
                 {
                     tc_blocked_empty_link_issue.Add(tc.Key);
                 }

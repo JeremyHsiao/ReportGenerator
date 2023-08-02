@@ -688,6 +688,7 @@ namespace ExcelReportApplication
             {
                 MsgWindow.AppendText("Processing tc_list:" + tclist_filename + ".\n");
                 ReportGenerator.global_testcase_list = TestCase.GenerateTestCaseList(tclist_filename);
+                ReportGenerator.lookup_TestCase = TestCase.UpdateTCListLUT(ReportGenerator.global_testcase_list);
                 MsgWindow.AppendText("tc_list finished!\n");
                 return true;
             }
@@ -709,6 +710,7 @@ namespace ExcelReportApplication
         {
             ReportGenerator.global_issue_list.Clear();
             ReportGenerator.lookup_BugList.Clear();
+            KeywordReport.ClearGlobalKeywordList();
         }
 
         private bool LoadTCListIfEmpty(String filename)
@@ -726,6 +728,8 @@ namespace ExcelReportApplication
         private void ClearTCList()
         {
             ReportGenerator.global_testcase_list.Clear();
+            ReportGenerator.lookup_TestCase.Clear();
+            KeywordReport.ClearGlobalKeywordList();
         }
 
         private bool Execute_WriteIssueDescriptionToTC(String tc_file, String template_file, String judgement_report_dir = "")
@@ -735,6 +739,7 @@ namespace ExcelReportApplication
                 || ((judgement_report_dir != "") && !Storage.DirectoryExists(judgement_report_dir)))
             {
                 // protection check
+                // Bug/TC files must have been loaded
                 return false;
             }
 
@@ -791,8 +796,15 @@ namespace ExcelReportApplication
 
         private bool Execute_KeywordIssueGenerationTask(String FileOrDirectoryName, Boolean IsDirectory = false)
         {
+            String output_report_path;
+            return Execute_KeywordIssueGenerationTask(FileOrDirectoryName, IsDirectory, out output_report_path); 
+        }
+        
+        private bool Execute_KeywordIssueGenerationTask(String FileOrDirectoryName, Boolean IsDirectory, out String output_report_path)
+        {
             List<String> file_list = new List<String>();
             String source_dir;
+            output_report_path = "";
             if (IsDirectory == false)
             {
                 if ((ReportGenerator.global_issue_list.Count == 0) || (!Storage.FileExists(FileOrDirectoryName)))
@@ -827,12 +839,13 @@ namespace ExcelReportApplication
             String out_dir = KeywordReport.TestReport_Default_Output_Dir;
             if ((out_dir != "") && Storage.DirectoryExists(out_dir))
             {
-                KeywordReport.KeywordIssueGenerationTaskV4(report_list, source_dir, KeywordReport.TestReport_Default_Output_Dir);
+                output_report_path = KeywordReport.TestReport_Default_Output_Dir;
             }
             else
             {
-                KeywordReport.KeywordIssueGenerationTaskV4(report_list, source_dir, Storage.GenerateDirectoryNameWithDateTime(source_dir));
+                output_report_path = Storage.GenerateDirectoryNameWithDateTime(source_dir);
             }
+            KeywordReport.KeywordIssueGenerationTaskV4(report_list, source_dir, output_report_path);
             return true;
         }
 
@@ -1094,7 +1107,7 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);    // File path here
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                        bRet = Execute_KeywordIssueGenerationTask(FileOrDirectoryName: txtReportFile.Text, IsDirectory: false);
+                        bRet = Execute_KeywordIssueGenerationTask(FileOrDirectoryName: txtReportFile.Text, IsDirectory: true);
                         break;
                     case ReportType.KeywordIssue_Report_Directory:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
@@ -1185,8 +1198,9 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        bRet = Execute_KeywordIssueGenerationTask(FileOrDirectoryName: txtReportFile.Text, IsDirectory: true);
-                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: txtReportFile.Text, template_file: txtOutputTemplate.Text);
+                        String report_output_path;
+                        bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, true, out report_output_path);
+                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_output_path, template_file: txtOutputTemplate.Text);
                         break;
                     default:  
                         // shouldn't be here.
