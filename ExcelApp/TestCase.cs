@@ -319,5 +319,17 @@ namespace ExcelReportApplication
 
             return ret_tc_list;
         }
+
+        static public Dictionary<string, TestCase> UpdateTCListLUT(List<TestCase> TC_list)
+        {
+            Dictionary<string, TestCase> ret_lut = new Dictionary<string, TestCase>();
+            foreach (TestCase tc in TC_list)
+            {
+                ret_lut.Add(tc.Key, tc);
+            }
+            return ret_lut;
+        }
+
+
     }
 }
