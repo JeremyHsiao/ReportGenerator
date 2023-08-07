@@ -39,9 +39,78 @@ namespace ExcelReportApplication
         public String Total_IC;
         public String Man_hour;
 
+        // calculated data
+        public String Average_ManHour;
+
         static public String Caption_Line;
 
         public ManPower() { Hierarchy = ""; }
+
+        public ManPower(List<String> elements)
+        {
+            int index_count = elements.Count();
+            if (index_count <= 0)
+            {
+                Hierarchy = "";
+                return;
+            }
+            int index = 0;
+            if (index < index_count)
+                Hierarchy = elements[index++];
+            if (index < index_count)
+                Title = elements[index++];
+            if (index < index_count)
+                Project = elements[index++];
+            if (index < index_count)
+                Releases = elements[index++];
+            if (index < index_count)
+                Team = elements[index++];
+            if (index < index_count)
+                Assignee = elements[index++];
+            if (index < index_count)
+                Sprint = elements[index++];
+            if (index < index_count)
+                Target_start_date = elements[index++];
+            if (index < index_count)
+                Target_end_date = elements[index++];
+            if (index < index_count)
+                Due_date = elements[index++];
+            if (index < index_count)
+                Estimates = elements[index++];
+            if (index < index_count)
+                Parent = elements[index++];
+            if (index < index_count)
+                Priority = elements[index++];
+            if (index < index_count)
+                Labels = elements[index++];
+            if (index < index_count)
+                Components = elements[index++];
+            if (index < index_count)
+                Issue_key = elements[index++];
+            if (index < index_count)
+                Issue_status = elements[index++];
+            if (index < index_count)
+                Progress = elements[index++];
+            if (index < index_count)
+                Progress_completed = elements[index++];
+            if (index < index_count)
+                Progress_remaining = elements[index++];
+            if (index < index_count)
+                Progress_issue_count_IC = elements[index++];
+            if (index < index_count)
+                To_do_IC = elements[index++];
+            if (index < index_count)
+                In_progress_IC = elements[index++];
+            if (index < index_count)
+                Done_IC = elements[index++];
+            if (index < index_count)
+                Total_IC = elements[index++];
+            if (index < index_count)
+                Man_hour = elements[index++];
+
+
+        }
+
         static public String AddComma(String item)
         {
             String return_string = item + ',';
@@ -204,8 +273,7 @@ namespace ExcelReportApplication
         static public List<ManPower> ReadManPowerTaskCSV(String csv_filename)
         {
             List<ManPower> ret_manpower_list = new List<ManPower>();
-            ManPower manpower;
-            using (TextFieldParser csvParser = new TextFieldParser(csv_filename))
+           using (TextFieldParser csvParser = new TextFieldParser(csv_filename))
             {
                 csvParser.CommentTokens = new string[] { "#" };
                 csvParser.SetDelimiters(new string[] { "," });
@@ -216,66 +284,10 @@ namespace ExcelReportApplication
 
                 while (!csvParser.EndOfData)
                 {
-                    manpower = new ManPower();
                     // Read current line fields, pointer moves to the next line.
-                    string[] fields = csvParser.ReadFields();
-                    int index_count = fields.Count();
-                    int index = 0;
-                    if (index_count <= 0)
-                        continue;
-                    if (index < index_count)
-                        manpower.Hierarchy = fields[index++];
-                    if (index < index_count)
-                        manpower.Title = fields[index++];
-                    if (index < index_count)
-                        manpower.Project = fields[index++];
-                    if (index < index_count)
-                        manpower.Releases = fields[index++];
-                    if (index < index_count)
-                        manpower.Team = fields[index++];
-                    if (index < index_count)
-                        manpower.Assignee = fields[index++];
-                    if (index < index_count)
-                        manpower.Sprint = fields[index++];
-                    if (index < index_count)
-                        manpower.Target_start_date = fields[index++];
-                    if (index < index_count)
-                        manpower.Target_end_date = fields[index++];
-                    if (index < index_count)
-                        manpower.Due_date = fields[index++];
-                    if (index < index_count)
-                        manpower.Estimates = fields[index++];
-                    if (index < index_count)
-                        manpower.Parent = fields[index++];
-                    if (index < index_count)
-                        manpower.Priority = fields[index++];
-                    if (index < index_count)
-                        manpower.Labels = fields[index++];
-                    if (index < index_count)
-                        manpower.Components = fields[index++];
-                    if (index < index_count)
-                        manpower.Issue_key = fields[index++];
-                    if (index < index_count)
-                        manpower.Issue_status = fields[index++];
-                    if (index < index_count)
-                        manpower.Progress = fields[index++];
-                    if (index < index_count)
-                        manpower.Progress_completed = fields[index++];
-                    if (index < index_count)
-                        manpower.Progress_remaining = fields[index++];
-                    if (index < index_count)
-                        manpower.Progress_issue_count_IC = fields[index++];
-                    if (index < index_count)
-                        manpower.To_do_IC = fields[index++];
-                    if (index < index_count)
-                        manpower.In_progress_IC = fields[index++];
-                    if (index < index_count)
-                        manpower.Done_IC = fields[index++];
-                    if (index < index_count)
-                        manpower.Total_IC = fields[index++];
-                    if (index < index_count)
-                        manpower.Man_hour = fields[index++];
-
+                    List<String> elements = new List<String>();
+                    elements.AddRange(csvParser.ReadFields());
+                    ManPower manpower = new ManPower(elements);
                     ret_manpower_list.Add(manpower);
                 }
             }
