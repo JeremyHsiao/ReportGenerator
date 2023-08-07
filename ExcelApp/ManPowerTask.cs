@@ -106,9 +106,39 @@ namespace ExcelReportApplication
             if (index < index_count)
                 Total_IC = elements[index++];
             if (index < index_count)
+            {
                 Man_hour = elements[index++];
+                if(Hierarchy=="Manpower")   // only man-power to calculate average man-hour
+                {
+                    Calculate_Average_ManHour();
+                }
+            }
+        }
 
-
+        public void Calculate_Average_ManHour()
+        {
+            if ((String.IsNullOrWhiteSpace(Man_hour) == false) && (String.IsNullOrWhiteSpace(Target_start_date) == false) &&
+                (String.IsNullOrWhiteSpace(Target_end_date) == false))
+            {
+                DateTime start = Convert.ToDateTime(Target_start_date, ManPowerTask.datetime_culture);
+                DateTime end = Convert.ToDateTime(Target_end_date, ManPowerTask.datetime_culture);
+                Double man_hour = Convert.ToDouble(Man_hour);
+                int workday_count = ManPowerTask.BusinessDaysUntil(start, end);
+                if (workday_count > 0)
+                {
+                    Double average_man_hour = Math.Round(man_hour / workday_count, 1);
+                    String pSpecifier = "F1";   // floating-point with one digit after decimal
+                    Average_ManHour = average_man_hour.ToString(pSpecifier);
+                }
+                else
+                {
+                    // to check:
+                }
+            }
+            else
+            {
+                // to check:
+            }
         }
 
         static public String AddComma(String item)
@@ -131,8 +161,7 @@ namespace ExcelReportApplication
             return return_string;
         }
 
-        public String ToString()
-
+        public override String ToString()
         {
             String return_string;
 
@@ -216,8 +245,10 @@ namespace ExcelReportApplication
             return ret;
         }
 
-        static public int BusinessDaysUntil(this DateTime firstDay, DateTime lastDay, params DateTime[] bankHolidays)
+        //static public int BusinessDaysUntil(this DateTime firstDay, DateTime lastDay, params DateTime[] bankHolidays)
+        static public int BusinessDaysUntil(this DateTime firstDay, DateTime lastDay)
         {
+            DateTime[] bankHolidays = HolidaysSince2023;
             firstDay = firstDay.Date;
             lastDay = lastDay.Date;
             if (firstDay > lastDay)
@@ -273,7 +304,7 @@ namespace ExcelReportApplication
         static public List<ManPower> ReadManPowerTaskCSV(String csv_filename)
         {
             List<ManPower> ret_manpower_list = new List<ManPower>();
-           using (TextFieldParser csvParser = new TextFieldParser(csv_filename))
+            using (TextFieldParser csvParser = new TextFieldParser(csv_filename))
             {
                 csvParser.CommentTokens = new string[] { "#" };
                 csvParser.SetDelimiters(new string[] { "," });
@@ -451,7 +482,7 @@ namespace ExcelReportApplication
                 var newLine = mp.ToString();
                 csv.AppendLine(newLine);
             }
-          
+
             //after your loop
             File.WriteAllText(Storage.GenerateFilenameWithDateTime(manpower_csv, ".csv"), csv.ToString(), Encoding.UTF8);
         }
