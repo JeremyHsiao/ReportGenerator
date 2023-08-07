@@ -39,6 +39,8 @@ namespace ExcelReportApplication
         public String Total_IC;
         public String Man_hour;
 
+        static public String Caption_Line;
+
         public ManPower() { Hierarchy = ""; }
         static public String AddComma(String item)
         {
@@ -210,7 +212,7 @@ namespace ExcelReportApplication
                 csvParser.HasFieldsEnclosedInQuotes = true;
 
                 // Skip the row with the column names
-                csvParser.ReadLine();
+                ManPower.Caption_Line = csvParser.ReadLine();
 
                 while (!csvParser.EndOfData)
                 {
@@ -428,6 +430,8 @@ namespace ExcelReportApplication
 
             //before your loop
             var csv = new StringBuilder();
+
+            csv.AppendLine(ManPower.Caption_Line);
 
             //in your loop
             foreach (ManPower mp in manpower_list)
