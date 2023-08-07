@@ -206,24 +206,32 @@ namespace ExcelReportApplication
         static public DateTime[] HolidaysSince2023 = 
         {
             // National Holiday 
-            new DateTime(2023,  1,  1, 0, 0, 0),
-            new DateTime(2023,  1, 21, 0, 0, 0),
-            new DateTime(2023,  1, 22, 0, 0, 0),
-            new DateTime(2023,  1, 23, 0, 0, 0),
-            new DateTime(2023,  1, 24, 0, 0, 0),
-            new DateTime(2023,  2, 28, 0, 0, 0),
-            new DateTime(2023,  4,  4, 0, 0, 0),
-            new DateTime(2023,  4,  5, 0, 0, 0),
-            new DateTime(2023,  5,  1, 0, 0, 0),
-            new DateTime(2023,  6, 22, 0, 0, 0),
-            new DateTime(2023,  9, 29, 0, 0, 0),
-            new DateTime(2023, 10, 10, 0, 0, 0),
+            new DateTime(2023,  1,  1, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2023,  1, 21, 0, 0, 0),    // CNY
+            new DateTime(2023,  1, 22, 0, 0, 0),    // CNY
+            new DateTime(2023,  1, 23, 0, 0, 0),    // CNY
+            new DateTime(2023,  1, 24, 0, 0, 0),    // CNY
+            new DateTime(2023,  2, 28, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2023,  4,  4, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2023,  4,  5, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2023,  5,  1, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2023,  6, 22, 0, 0, 0),    // dragon-boat
+            new DateTime(2023,  9, 29, 0, 0, 0),    // mid-autumn
+            new DateTime(2023, 10, 10, 0, 0, 0),    // fixed-date holiday
+
+            new DateTime(2024,  1,  1, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2024,  2, 28, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2024,  4,  4, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2024,  4,  5, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2024,  5,  1, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2024, 10, 10, 0, 0, 0),    // fixed-date holiday
             // National Holiday on weekend -- shifted off
-            new DateTime(2023,  1,  2, 0, 0, 0),
-            new DateTime(2023,  1, 25, 0, 0, 0),
-            new DateTime(2023,  1, 26, 0, 0, 0),
+            new DateTime(2023,  1,  2, 0, 0, 0),    // CNY
+            new DateTime(2023,  1, 25, 0, 0, 0),    // CNY
+            new DateTime(2023,  1, 26, 0, 0, 0),    // CNY
             // Typhoon off
             new DateTime(2023,  8,  3, 0, 0, 0),
+
         };
 
         static public Boolean IsHoliday(DateTime datetime)
@@ -286,8 +294,14 @@ namespace ExcelReportApplication
             foreach (DateTime bankHoliday in bankHolidays)
             {
                 DateTime bh = bankHoliday.Date;
-                if (firstDay <= bh && bh <= lastDay)
-                    --businessDays;
+                int day_of_week = (int)bh.DayOfWeek;
+
+                if ((day_of_week > (int)DayOfWeek.Sunday) && (day_of_week < (int)DayOfWeek.Saturday))
+                {
+                    // reduce one working day if holiday within (firstDay,lastDay) is not on weekend
+                    if (firstDay <= bh && bh <= lastDay)
+                        --businessDays;
+                }
             }
 
             return businessDays;
