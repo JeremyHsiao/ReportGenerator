@@ -89,6 +89,34 @@ namespace ExcelReportApplication
         }
 
         // Sigle-file selection, so return just String
+        static public String UsesrSelectCSVFilename(String init_dir)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Multiselect = false;
+            dialog.Title = "Select a file";
+
+            String default_dir = GetDirectoryName(GetFullPath(init_dir));
+            if (DirectoryExists(default_dir))
+            {
+                dialog.InitialDirectory = default_dir;
+            }
+            else
+            {
+                dialog.InitialDirectory = GetCurrentDirectory();
+            }
+
+            dialog.Filter = "CSV files (*.csv)|*.csv";
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                var files = dialog.FileNames.ToArray();
+                return files[0];
+            }
+            else
+            {
+                return "";
+            }
+        }
+
         static public String UsesrSelectFilename()
         {
             return UsesrSelectFilename(init_dir: GetCurrentDirectory());
