@@ -78,14 +78,14 @@ namespace ExcelReportApplication
                 try_openXML = true;
             }
 
-            if(!try_openXML)
+            if (!try_openXML)
             {
                 return ret_workbook;
             }
 
             try
             {
-                ret_workbook = excel_app.Workbooks.OpenXML(Filename:filename, LoadOption: XlXmlLoadOption.xlXmlLoadOpenXml);
+                ret_workbook = excel_app.Workbooks.OpenXML(Filename: filename, LoadOption: XlXmlLoadOption.xlXmlLoadOpenXml);
             }
             catch (Exception ex)
             {
@@ -105,7 +105,7 @@ namespace ExcelReportApplication
             excel_app.DisplayAlerts = false;
             if (SaveChanges)
             {
-                if(String.IsNullOrWhiteSpace(AsFilename)==false)
+                if (String.IsNullOrWhiteSpace(AsFilename) == false)
                 //if (AsFilename != "")
                 {
                     workbook.Close(SaveChanges: true, Filename: AsFilename);
@@ -190,7 +190,7 @@ namespace ExcelReportApplication
         {
             // For XlSpecialCellsValue,
             // please refer to https://learn.microsoft.com/en-us/dotnet/api/microsoft.office.interop.excel.xlspecialcellsvalue?view=excel-pia
-            Range ret_range = ws.Range["A1"].SpecialCells(XlCellType.xlCellTypeLastCell,(XlSpecialCellsValue)(1+2+4+16));
+            Range ret_range = ws.Range["A1"].SpecialCells(XlCellType.xlCellTypeLastCell, (XlSpecialCellsValue)(1 + 2 + 4 + 16));
             return ret_range;
         }
 
@@ -314,7 +314,7 @@ namespace ExcelReportApplication
 
         // Code for operations on specific Excel File
 
-        public enum ExcelStatus  
+        public enum ExcelStatus
         {
             OK = 0,
             INIT_STATE,
@@ -358,8 +358,8 @@ namespace ExcelReportApplication
 
         //static public int GetIssueListMaxRow()
         //{
-            //int max_row = GetWorksheetAllRange(ws_issuelist).Row;
-            //if(max_row
+        //int max_row = GetWorksheetAllRange(ws_issuelist).Row;
+        //if(max_row
         //}
 
         static public Object GetIssueListCell(int row, int col)
@@ -528,7 +528,7 @@ namespace ExcelReportApplication
 
         static public Dictionary<string, int> CreateTestCaseColumnIndex(bool IsTemplate = false)
         {
-            return CreateTableColumnIndex(((IsTemplate)?ws_tc_template:ws_testcase), TestCase.NameDefinitionRow);
+            return CreateTableColumnIndex(((IsTemplate) ? ws_tc_template : ws_testcase), TestCase.NameDefinitionRow);
         }
 
         static public int GetTestCaseExcelRange_Col(bool IsTemplate = false)
@@ -802,7 +802,7 @@ namespace ExcelReportApplication
         // Result: Test-Case Excel data shown in the format of Test-Case-Template
         static public bool CopyTestCaseIntoTemplate()
         {
-            Worksheet tc_data     = ws_testcase,
+            Worksheet tc_data = ws_testcase,
                       tc_template = ws_tc_template;
 
             // Protection
@@ -843,7 +843,7 @@ namespace ExcelReportApplication
             CopyValue2(ws_Src, ws_Dst, 3, 1);
 
             // Copy row 4 (Column Name) from tc to template
-            CopyValue2(ws_Src, ws_Dst, TestCase.NameDefinitionRow, 1, TestCase.NameDefinitionRow, Src_last_col );
+            CopyValue2(ws_Src, ws_Dst, TestCase.NameDefinitionRow, 1, TestCase.NameDefinitionRow, Src_last_col);
 
             // Copy [Src_last_row,1] from tc to template
             CopyValue2(ws_Src, ws_Dst, Src_last_row, 1);
@@ -910,7 +910,7 @@ namespace ExcelReportApplication
 
             // use LUT of column index for mapping the same column_name of SRC/DST
             Dictionary<string, int> src_col_name_list = ExcelAction.CreateTestCaseColumnIndex();
-            Dictionary<string, int> dst_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate:true);
+            Dictionary<string, int> dst_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate: true);
             int row_begin = TestCase.DataBeginRow, row_end = Src_last_row;
             foreach (string col_name in dst_col_name_list.Keys)
             {
@@ -1013,7 +1013,7 @@ namespace ExcelReportApplication
 
             excel_app.SheetsInNewWorkbook = 2;
 
-            Workbook wb =  excel_app.Workbooks.Add(Missing.Value);
+            Workbook wb = excel_app.Workbooks.Add(Missing.Value);
             workbook_new_keyword_list = wb;
 
             ws_keyword_list = workbook_new_keyword_list.Sheets.Item[1];
@@ -1071,9 +1071,9 @@ namespace ExcelReportApplication
         static public String default_table_font_name = "Mabry Pro";
         static public int default_table_font_size = 12;
         static public Color default_table_font_color = Color.Black;
-        static public FontStyle default_table_font_style =  FontStyle.Regular;
+        static public FontStyle default_table_font_style = FontStyle.Regular;
 
-        static public void WriteTableObjectToExcel(Worksheet worksheet, List<List<Object>> table_object, 
+        static public void WriteTableObjectToExcel(Worksheet worksheet, List<List<Object>> table_object,
                             int start_row = 1, int start_col = 1, Boolean with_title = true,
                             List<int> left_alignment_col = null, List<int> center_alignment_col = null,
                             List<int> auto_fit_col = null)
@@ -1165,14 +1165,14 @@ namespace ExcelReportApplication
                     col_range.HorizontalAlignment = XlHAlign.xlHAlignCenter;
                 }
             }
-       }
+        }
 
         static public void WriteTableToKeywordList(List<List<Object>> table_object)
         {
-            List<int> left_alignment_col = new List<int> ();
-            List<int> center_alignment_col = new List<int> ();
+            List<int> left_alignment_col = new List<int>();
+            List<int> center_alignment_col = new List<int>();
             List<int> auto_fit_col = new List<int>();
-            int start_row = KeyWordListReport.keyword_list_title_row, 
+            int start_row = KeyWordListReport.keyword_list_title_row,
                 start_col = KeyWordListReport.keyword_list_title_col_start;
             Boolean with_title = true;
 
@@ -1191,8 +1191,8 @@ namespace ExcelReportApplication
 
         static public void WriteTableToNotKeywordFile(List<List<Object>> table_object)
         {
-            List<int> left_alignment_col = new List<int> ();
-            List<int> center_alignment_col = new List<int> ();
+            List<int> left_alignment_col = new List<int>();
+            List<int> center_alignment_col = new List<int>();
             List<int> auto_fit_col = new List<int>();
             int start_row = KeyWordListReport.not_keyword_file_title_row,
                 start_col = KeyWordListReport.not_keyword_file_title_col_start;
@@ -1247,5 +1247,57 @@ namespace ExcelReportApplication
             table_range.Interior.ColorIndex = 0;
             table_range.Characters.Font.Color = StyleString.default_color;
         }
+
+        //static public Workbook OpenCSV(String filename)
+        //{
+        //    Workbook ret_workbook = null;
+        //    // Protection-check: file must exist.
+        //    if (!Storage.FileExists(filename))
+        //    {
+        //        return ret_workbook;
+        //    }
+
+        //    try
+        //    {
+        //        ret_workbook = excel_app.Workbooks.Open(
+        //            filename,               // Filename
+        //            Type.Missing, Type.Missing,
+        //            XlFileFormat.xlCSV,   // Format
+        //            Type.Missing, Type.Missing, Type.Missing, Type.Missing, 
+        //            ",",          // Delimiter
+        //            Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // 
+        //    }
+
+        //    return ret_workbook;
+        //}
+
+        //static public void CloseCSV_SaveAsExcel(Workbook workbook, bool SaveChanges = false, String AsFilename = "")
+        //{
+        //    excel_app.DisplayAlerts = false;
+        //    if (SaveChanges)
+        //    {
+        //        if (String.IsNullOrWhiteSpace(AsFilename) == false)
+        //        if (AsFilename != "")
+        //        {
+        //            workbook.SaveAs(AsFilename, Type.Missing,
+        //                Type.Missing, Type.Missing, Type.Missing, Type.Missing, Excel.XlSaveAsAccessMode.xlNoChange,
+        //             Type.Missing, Type.Missing, Type.Missing, true, Type.Missing);
+        //            workbook.Close(SaveChanges: false);
+        //        }
+        //        else
+        //        {
+        //            workbook.Save();
+        //            workbook.Close(SaveChanges: false);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        workbook.Close(SaveChanges: false);
+        //    }
+        //}
     }
 }
