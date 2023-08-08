@@ -286,8 +286,10 @@ namespace ExcelReportApplication
     {
         public Boolean Report_C_CopyFileOnly = false;
         public Boolean Report_C_Update_Full_Header = false;
+        public Boolean Report_C_Replace_Conclusion = false;
         public Boolean Report_C_Update_Report_Sheetname = true;
         public Boolean Report_C_Clear_Keyword_Result = true;
+        public Boolean Report_C_Hide_Keyword_Result_Bug_Row = false;
         public String Report_Title = "Report_Name";
         public String Report_SheetName = "Report_Sheet_Name";
         public String Model_Name = "Model Name";
@@ -1731,6 +1733,31 @@ namespace ExcelReportApplication
         //    return true;
         //}
 
+        static public Boolean HideKeywordResultBugRow(String excel_filename, Worksheet ws)
+        {
+            // Clear Keyword bug result and hide 2 rows (only Item row left)
+            Boolean b_ret = false;
+            try
+            {
+                TestPlan tp = TestPlan.CreateTempPlanFromFile(excel_filename);
+                tp.TestPlanWorksheet = ws;
+                tp.ExcelSheet = ws.Name;
+                List<TestPlanKeyword> keyword_list = ListKeyword_SingleReport(tp);
+                foreach (TestPlanKeyword keyword in keyword_list)
+                {
+                    double new_row_height = 0.2;
+                    ExcelAction.Set_Row_Height(ws, keyword.BugListAtRow, new_row_height);
+                    ExcelAction.Set_Row_Height(ws, keyword.BugStatusAtRow, new_row_height);
+                }
+
+                b_ret = true;
+            }
+            catch (Exception ex)
+            {
+            }
+            return b_ret;
+        }
+
         static public Boolean ClearKeywordBugResult(String excel_filename, Worksheet ws)
         {
             Boolean b_ret = false;
@@ -1748,10 +1775,12 @@ namespace ExcelReportApplication
                     ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
                     ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
                     ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
+                    ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
                     ExcelAction.SetCellValue(ws, keyword.BugListAtRow, keyword.BugListAtColumn, " ");
                     double new_row_height = 28 + 0.2;
                     //ExcelAction.Unhide_Row(ws, keyword.BugListAtRow);
                     ExcelAction.Set_Row_Height(ws, keyword.BugListAtRow, new_row_height);
+                    ExcelAction.Set_Row_Height(ws, keyword.BugStatusAtRow, new_row_height);
                 }
 
                 b_ret = true;

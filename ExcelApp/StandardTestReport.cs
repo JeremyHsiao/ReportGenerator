@@ -543,12 +543,26 @@ namespace ExcelReportApplication
                 file_has_been_updated = true;
             }
 
+            //Report_C_Replace_Conclusion
+            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion == true)
+            {
+                KeywordReport.ReplaceConclusionWithBugList(ws, new List<StyleString>()); 
+                file_has_been_updated = true;
+            }
+
             // Clear bug-list, bug-count, Pass/Fail/Conditional_Pass count, judgement
             if (KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result)
             {
                 KeywordReport.ClearKeywordBugResult(source_file, ws);
                 KeywordReport.ClearReportBugCount(ws);
                 KeywordReport.ClearJudgement(ws);
+                file_has_been_updated = true;
+            }
+
+            // Hide keyword result/bug-list row -- after clear because it is un-hide after clear
+            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row)
+            {
+                KeywordReport.HideKeywordResultBugRow(source_file, ws);
                 file_has_been_updated = true;
             }
 
