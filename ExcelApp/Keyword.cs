@@ -407,6 +407,8 @@ namespace ExcelReportApplication
         public static String WAIVED_str = "Waived";
 
         public static Boolean Replace_Conclusion = false;
+        public static Boolean Hide_Keyword_Result_Bug = false;
+       
         public static Boolean Auto_Correct_Sheetname = false;
 
         public static KeywordReportHeader DefaultKeywordReportHeader = new KeywordReportHeader();
@@ -1344,6 +1346,13 @@ namespace ExcelReportApplication
                         }
                         //ExcelAction.CellTextAlignLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
                         ExcelAction.CellTextAlignUpperLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
+
+                        if (Hide_Keyword_Result_Bug)
+                        {
+                            double new_row_height = 0.2;
+                            ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, new_row_height);
+                            ExcelAction.Set_Row_Height(result_worksheet, keyword.BugStatusAtRow, new_row_height);
+                        }
                     }
                 }
 
