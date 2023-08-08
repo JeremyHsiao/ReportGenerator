@@ -60,7 +60,7 @@ namespace ExcelReportApplication
             //ReportType.TC_GroupSummaryReport,
             //ReportType.Update_Report_Linked_Issue,
             ReportType.Update_Keyword_and_TC_Report,
-            //Man_Power_Processing,
+            //ReportType.Man_Power_Processing,
          };
 
         //public static ReportType[] ReportSelectableTable =
@@ -82,7 +82,7 @@ namespace ExcelReportApplication
         //    ReportType.TC_GroupSummaryReport,
         //    ReportType.Update_Report_Linked_Issue,
         //    ReportType.Update_Keyword_and_TC_Report,
-        //    Man_Power_Processing,
+        //    ReportType.Man_Power_Processing,
         //};
 
         public static int ReportTypeToInt(ReportType type)
@@ -450,7 +450,7 @@ namespace ExcelReportApplication
             }
             else
             {
-                String []error_message = new String[] 
+                String[] error_message = new String[] 
                 {
                     "GetLabelTextArray_issue", 
                     "GetLabelTextArray_issue", 
@@ -471,7 +471,7 @@ namespace ExcelReportApplication
         {
             List<String> ret_list = new List<String>();
             String[] separators = { "," };
-            if (String.IsNullOrWhiteSpace(input_string)==false)
+            if (String.IsNullOrWhiteSpace(input_string) == false)
             {
                 // Separate keys into string[]
                 String[] issues = input_string.Split(separators, StringSplitOptions.RemoveEmptyEntries);
@@ -638,10 +638,10 @@ namespace ExcelReportApplication
             //this.Text = "Report Generator " + version + "   build:" + DateTime.Now.ToString("yyMMddHHmm"); ;
             //ReportGeneratorVersionString = "ReportGenerator_V" + version + DateTime.Now.ToString("(yyyyMMdd)");
             string strCompTime = Properties.Resources.BuildDate, strBuildDate = "";
-            if(!string.IsNullOrEmpty(strCompTime))
+            if (!string.IsNullOrEmpty(strCompTime))
             {
                 string[] subs = strCompTime.Split(' ', '/'); // use ' ' & '/' as separator
-                strBuildDate = "(" + subs[0]+subs[1]+subs[2] + ")";
+                strBuildDate = "(" + subs[0] + subs[1] + subs[2] + ")";
             }
             ReportGeneratorVersionString = "ReportGenerator_V" + version + strBuildDate;
             this.Text = ReportGeneratorVersionString;
@@ -798,9 +798,9 @@ namespace ExcelReportApplication
         private bool Execute_KeywordIssueGenerationTask(String FileOrDirectoryName, Boolean IsDirectory = false)
         {
             String output_report_path;
-            return Execute_KeywordIssueGenerationTask(FileOrDirectoryName, IsDirectory, out output_report_path); 
+            return Execute_KeywordIssueGenerationTask(FileOrDirectoryName, IsDirectory, out output_report_path);
         }
-        
+
         private bool Execute_KeywordIssueGenerationTask(String FileOrDirectoryName, Boolean IsDirectory, out String output_report_path)
         {
             List<String> file_list = new List<String>();
@@ -905,6 +905,19 @@ namespace ExcelReportApplication
             return true;
         }
 
+        private bool Execute_Man_Power_Processing_Task(String excel_input_file)
+        {
+            if (!Storage.FileExists(excel_input_file))
+            {
+                // protection check
+                return false;
+            }
+
+            ManPowerTask.ProcessManPowerPlan(excel_input_file);
+
+            return true;
+        }
+
         private bool Execute_UpdaetGroupSummaryReport_Task(String report_path)
         {
             if (!Storage.DirectoryExists(report_path))
@@ -994,12 +1007,25 @@ namespace ExcelReportApplication
                     break;
             }
 
-            String ret_str = SelectDirectoryOrFile(init_dir, sel_file);
-            if (ret_str != "")
+            if (ReportTypeFromInt(report_index) == ReportType.Man_Power_Processing)
             {
-                txtOutputTemplate.Text = ret_str;
-                btnSelectOutputTemplate_Clicked = true;
+                String ret_str = Storage.UsesrSelectCSVFilename(init_dir);
+                if (ret_str != "")
+                {
+                    txtOutputTemplate.Text = ret_str;
+                    btnSelectOutputTemplate_Clicked = true;
+                }
             }
+            else
+            {
+                String ret_str = SelectDirectoryOrFile(init_dir, sel_file);
+                if (ret_str != "")
+                {
+                    txtOutputTemplate.Text = ret_str;
+                    btnSelectOutputTemplate_Clicked = true;
+                }
+            }
+
         }
 
         private String SelectDirectoryOrFile(String init_text, bool sel_file = true)
@@ -1145,7 +1171,7 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        bRet = Execute_WriteIssueDescriptionToTC( tc_file: txtTCFile.Text, judgement_report_dir: txtReportFile.Text, template_file: txtOutputTemplate.Text);
+                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: txtReportFile.Text, template_file: txtOutputTemplate.Text);
                         break;
                     case ReportType.TC_TestReportCreation:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
@@ -1203,7 +1229,12 @@ namespace ExcelReportApplication
                         bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, true, out report_output_path);
                         bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_output_path, template_file: txtOutputTemplate.Text);
                         break;
-                    default:  
+                    case ReportType.Man_Power_Processing:
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
+                        // to-be-updated
+                        bRet = Execute_Man_Power_Processing_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
+                        break;
+                    default:
                         // shouldn't be here.
                         break;
                 }
@@ -1360,10 +1391,16 @@ namespace ExcelReportApplication
                     SetEnable_ReportFile(true);
                     SetEnable_OutputTemplate(true);
                     break;
-                case ReportType.Update_Keyword_and_TC_Report: 
+                case ReportType.Update_Keyword_and_TC_Report:
                     SetEnable_BugFile(true);
                     SetEnable_TCFile(true);
                     SetEnable_ReportFile(true);
+                    SetEnable_OutputTemplate(true);
+                    break;
+                case ReportType.Man_Power_Processing:
+                    SetEnable_BugFile(false);
+                    SetEnable_TCFile(false);
+                    SetEnable_ReportFile(false);
                     SetEnable_OutputTemplate(true);
                     break;
                 default:
@@ -1394,7 +1431,7 @@ namespace ExcelReportApplication
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_StandardTestReport");
                     break;
                 case ReportType.KeywordIssue_Report_SingleFile:
-                    if (!btnSelectReportFile_Clicked)  
+                    if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_Single");
                     break;
                 case ReportType.KeywordIssue_Report_Directory:
@@ -1443,11 +1480,11 @@ namespace ExcelReportApplication
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Header_Excel_List.xlsx";
                     break;
-                case ReportType.TC_GroupSummaryReport:  
+                case ReportType.TC_GroupSummaryReport:
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     break;
-                case ReportType.Update_Report_Linked_Issue: 
+                case ReportType.Update_Report_Linked_Issue:
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     if (!btnSelectOutputTemplate_Clicked)
@@ -1459,7 +1496,11 @@ namespace ExcelReportApplication
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
-                default: 
+                case ReportType.Man_Power_Processing:
+                    if (!btnSelectOutputTemplate_Clicked)
+                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_C_Default_Excel");
+                    break;
+                default:
                     break;
             }
         }
