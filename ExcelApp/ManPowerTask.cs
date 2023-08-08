@@ -70,16 +70,17 @@ namespace ExcelReportApplication
         public String Total_IC;
         public String Man_hour;
 
-        // calculated data
+        // generated data for each "Manpower" task
+        public DateTime Task_Start_Date, Task_End_Date; // Generate according to Target_start_date & Target_end_date;
         public String Average_ManHour;
-
-        // generated data
-        public List<String> Daily_ManHour_List;
-        static public String Title_StartDate_to_EndDate;
-
+        public String Daily_ManHour_String;
+ 
         // global data
         static public String Caption_Line;              // reading from CSV
         static public DateTime Start_Date, End_Date;      // search all CSV
+        static public String Title_StartDate_to_EndDate;  // Generated according to Start_Date, End_Date
+
+        static public String hierachy_string = "Manpower";
 
         public ManPower() { this.SetMemberByString(new List<String>()); }
 
@@ -124,21 +125,49 @@ namespace ExcelReportApplication
             Done_IC = members[index++];
             Total_IC = members[index++];
             Man_hour = members[index++];
-            if (Hierarchy == "Manpower")   // only man-power to calculate average man-hour
+            if (Hierarchy == hierachy_string)   // only man-power to calculate average man-hour
             {
-                Calculate_Average_ManHour();
+                Generate_Average_ManHour();
             }
         }
 
-        public void Calculate_Average_ManHour()
+        public void Generate_Average_ManHour()
         {
-            if ((String.IsNullOrWhiteSpace(Man_hour) == false) && (String.IsNullOrWhiteSpace(Target_start_date) == false) &&
-                (String.IsNullOrWhiteSpace(Target_end_date) == false))
+            Boolean can_be_calculated = true;
+            Double man_hour = 0.0;
+
+            if (String.IsNullOrWhiteSpace(Target_start_date))
             {
-                DateTime start = Convert.ToDateTime(Target_start_date, ManPowerTask.datetime_culture);
-                DateTime end = Convert.ToDateTime(Target_end_date, ManPowerTask.datetime_culture);
-                Double man_hour = Convert.ToDouble(Man_hour);
-                int workday_count = ManPowerTask.BusinessDaysUntil(start, end);
+                can_be_calculated = false;
+            }
+            else
+            {
+                Task_Start_Date = Convert.ToDateTime(Target_start_date, DateOnly.datetime_culture).Date;
+            }
+
+            if (String.IsNullOrWhiteSpace(Target_end_date))
+            {
+                can_be_calculated = false;
+            }
+            else
+            {
+                Task_End_Date = Convert.ToDateTime(Target_end_date, DateOnly.datetime_culture).Date;
+            }
+
+            if (String.IsNullOrWhiteSpace(Man_hour))
+            {
+                can_be_calculated = false;
+            }
+            else
+            {
+                man_hour = Convert.ToDouble(Man_hour);
+            }
+
+            if (can_be_calculated)
+            {
+                DateTime start = Task_Start_Date;
+                DateTime end = Task_End_Date;
+                int workday_count = DateOnly.BusinessDaysUntil(start, end);
                 if (workday_count > 0)
                 {
                     Double average_man_hour = Math.Round(man_hour / workday_count, 1);
@@ -170,10 +199,108 @@ namespace ExcelReportApplication
             return return_string;
         }
 
-        public String AddQuoteWithComma(String item)
+        static public String AddQuoteWithComma(String item)
         {
             String return_string = AddComma(AddQuote(item));
             return return_string;
+        }
+
+        // this function is static
+        static public String GenerateDateTitle(DateTime start, DateTime end)
+        {
+            String ret_str = "";
+            if (start > end)
+            {
+                // to-check: shouldn't be here
+            }
+            else
+            {
+                // At least one date (start_date)
+                DateTime dt = start.Date;
+                ret_str = dt.ToString("d", DateOnly.datetime_culture);
+                dt = dt.AddDays(1.0);
+                // add "," + next-date till next-date is the end-date
+                while (dt <= end.Date)
+                {
+                    ret_str += "," + dt.ToString("d", DateOnly.datetime_culture);
+                    dt = dt.AddDays(1.0);
+                }
+                // reaching here when the next-date is after the end-date
+            }
+            return ret_str;
+        }
+
+        // this function is working properly when title start/end date are set up correctly.
+        public String GenerateManPowerDailyEffortString()
+        {
+            String ret_str = "";
+
+            // check if start/end date is not correct
+            if ((this.Hierarchy != hierachy_string) || (this.Task_Start_Date > this.Task_End_Date) || (ManPower.Start_Date > ManPower.End_Date))
+            {
+                // to-check: shouldn't be here
+                return ret_str;
+            }
+
+            // Find overlay with Task_Start/Task_End -- by default
+            DateTime overlay_start = ManPower.Start_Date, overlay_end = ManPower.End_Date;
+
+            // check 1: Task start is later than Man Power Start or not? later one will be the new overlay start_date
+            if (this.Task_Start_Date > overlay_start)
+            {
+                overlay_start = this.Task_Start_Date;
+            }
+
+            // check 2: Task end date is earlier than Man Power End date or not? earlier one will be the new overlay end_date
+            if (this.Task_End_Date < overlay_end)
+            {
+                overlay_end = this.Task_End_Date;
+            }
+
+            DateTime filling_Date = ManPower.Start_Date;
+
+            // 1st date is already overlay-date?
+            if (filling_Date == overlay_start)
+            {
+                ret_str += this.Average_ManHour;    // if yes, output average manhour
+            }
+            else
+            {
+                ret_str += "0";
+            }
+            filling_Date = filling_Date.AddDays(1.0);
+            
+            // before overlay
+            while(filling_Date < overlay_start) 
+            {
+                ret_str += ", 0";
+                filling_Date = filling_Date.AddDays(1.0);
+            }
+
+            // during overlay -- output average man-hour
+            while(filling_Date <= overlay_end)
+            {
+                ret_str += ", ";
+                if (DateOnly.IsHoliday(filling_Date))
+                {
+                    ret_str += "0";
+                }
+                else
+                {
+                    ret_str += this.Average_ManHour; 
+                }
+                filling_Date = filling_Date.AddDays(1.0);
+            }
+
+            // after overlay
+            while (filling_Date <= ManPower.End_Date)
+            {
+                ret_str += ", 0";
+                filling_Date = filling_Date.AddDays(1.0);
+            }
+
+            this.Daily_ManHour_String = ret_str;
+            return ret_str;
         }
 
         public override String ToString()
@@ -205,7 +332,7 @@ namespace ExcelReportApplication
             return_string += AddComma(this.In_progress_IC);
             return_string += AddComma(this.Done_IC);
             return_string += AddComma(this.Total_IC);
-            return_string += this.Man_hour;
+            return_string += this.Man_hour;  // no need to output comma
 
             return return_string;
         }
@@ -213,12 +340,145 @@ namespace ExcelReportApplication
 
     static public class ManPowerTask
     {
+
+        //static public void ReadManPowerTaskCSV(String csv_filename)
+        //{
+        //    Excel.Workbook wb;
+        //    String new_filename = Storage.GenerateFilenameWithDateTime(Filename: csv_filename, FileExt: ".xlsx");
+        //    wb = ExcelAction.OpenCSV(csv_filename);
+        //    ExcelAction.CloseCSV_SaveAsExcel(workbook: wb, SaveChanges: true, AsFilename: new_filename);
+        //}
+
+        static public List<ManPower> ReadManPowerTaskCSV(String csv_filename)
+        {
+            List<ManPower> ret_manpower_list = new List<ManPower>();
+            using (TextFieldParser csvParser = new TextFieldParser(csv_filename))
+            {
+                csvParser.CommentTokens = new string[] { "#" };
+                csvParser.SetDelimiters(new string[] { "," });
+                csvParser.HasFieldsEnclosedInQuotes = true;
+
+                // Skip the row with the column names
+                ManPower.Caption_Line = csvParser.ReadLine();
+
+                while (!csvParser.EndOfData)
+                {
+                    // Read current line fields, pointer moves to the next line.
+                    List<String> elements = new List<String>();
+                    elements.AddRange(csvParser.ReadFields());
+                    ManPower manpower = new ManPower(elements);
+                    ret_manpower_list.Add(manpower);
+                }
+            }
+
+            // Generated data
+            ManPower.Start_Date = DateOnly.FindEearliestTargetStartDate(ret_manpower_list);
+            ManPower.End_Date = DateOnly.FindLatestTargetEndDate(ret_manpower_list);
+            ManPower.Title_StartDate_to_EndDate = ManPower.GenerateDateTitle(ManPower.Start_Date, ManPower.End_Date);
+
+            // Generated data for each task
+            foreach (ManPower mp in ret_manpower_list)
+            {
+                mp.GenerateManPowerDailyEffortString();
+            }
+
+            return ret_manpower_list;
+        }
+
+        //static public Boolean OutputManPowerTaskCSV(String csv_output)
+        //{
+        //    Boolean ret = false;
+
+        //    //before your loop
+        //    var csv = new StringBuilder();
+
+        //    //in your loop
+        //    var first = reader[0].ToString();
+        //    var second = image.ToString();
+        //    //Suggestion made by KyleMit
+        //    var newLine = string.Format("{0},{1}", first, second);
+        //    csv.AppendLine(newLine);
+
+        //    //after your loop
+        //    File.WriteAllText(csv_output, csv.ToString());
+        //    return ret;
+        //}
+
+        /*
+        //// return: 
+        //// (1) earliest & latest Target start date
+        //// (2) earliest & latest Target end date
+        //// (3) earliest & latest Target due date
+        //static private List<DateTime> GatherDateInfo(List<ManPower> manpower)
+        //{
+        //    DateTime earliest_target_start_date = DateTime_Latest; // default when no earliest date found
+        //    DateTime latest_target_start_date = DateTime_Earliest; // default when no latest date found
+
+        //    foreach (ManPower mp in manpower)
+        //    {
+        //        // for target_start_Date
+        //        DateTime target_start_date = Convert.ToDateTime(mp.Target_start_date);
+        //        // find earliest
+        //        if (target_start_date < earliest_dt)
+        //        {
+        //            earliest_dt = target_start_date;
+        //        }
+        //        // find latest
+        //        if (target_start_date > latest_dt)
+        //        {
+        //            latest_dt = target_start_date;
+        //        }
+
+        //        // for target_end_Date
+        //        DateTime target_end_date = Convert.ToDateTime(mp.Target_end_date);
+        //        // find earliest
+        //        if (target_end_date < earliest_dt)
+        //        {
+        //            earliest_dt = target_start_date;
+        //        }
+        //        // find latest
+        //        if (target_start_date > latest_dt)
+        //        {
+        //            latest_dt = target_start_date;
+        //        }
+
+        //    }
+        //    return earliest_dt;
+        //}
+        */
+
+        static public void ProcessManPowerPlan(String manpower_csv)
+        {
+            List<ManPower> manpower_list = ReadManPowerTaskCSV(manpower_csv);
+            //DateTime manpower_due_date = FindLatestDueDate(manpower_list);
+
+            //before your loop
+            var csv = new StringBuilder();
+
+            //csv.AppendLine(ManPower.Caption_Line);
+            csv.AppendLine(ManPower.Caption_Line + "," + ManPower.Title_StartDate_to_EndDate);
+
+            //in your loop
+            foreach (ManPower mp in manpower_list)
+            {
+                //var newLine = mp.ToString();
+                var newLine = mp.ToString() + "," + mp.Daily_ManHour_String;
+                csv.AppendLine(newLine);
+            }
+
+            //after your loop
+            File.WriteAllText(Storage.GenerateFilenameWithDateTime(manpower_csv, ".csv"), csv.ToString(), Encoding.UTF8);
+        }
+    }
+
+    static public class DateOnly
+    {
         static public DateTime DateTime_Earliest = new DateTime(1900, 1, 1);
         static public DateTime DateTime_Latest = new DateTime(9999, 12, 31);
-        static public String cultureName = "en-US";// { "en-US", "ru-RU", "ja-JP" };
+        static private String cultureName = "en-US";// { "en-US", "ru-RU", "ja-JP" };
         static public CultureInfo datetime_culture = new CultureInfo(cultureName);
 
-        static public DateTime[] HolidaysSince2023 = 
+        static private DateTime[] HolidaysSince2023 = 
         {
             // National Holiday 
             new DateTime(2023,  1,  1, 0, 0, 0),    // fixed-date holiday
@@ -322,198 +582,95 @@ namespace ExcelReportApplication
             return businessDays;
         }
 
-        //static public void ReadManPowerTaskCSV(String csv_filename)
-        //{
-        //    Excel.Workbook wb;
-        //    String new_filename = Storage.GenerateFilenameWithDateTime(Filename: csv_filename, FileExt: ".xlsx");
-        //    wb = ExcelAction.OpenCSV(csv_filename);
-        //    ExcelAction.CloseCSV_SaveAsExcel(workbook: wb, SaveChanges: true, AsFilename: new_filename);
-        //}
-
-        static public List<ManPower> ReadManPowerTaskCSV(String csv_filename)
-        {
-            List<ManPower> ret_manpower_list = new List<ManPower>();
-            using (TextFieldParser csvParser = new TextFieldParser(csv_filename))
-            {
-                csvParser.CommentTokens = new string[] { "#" };
-                csvParser.SetDelimiters(new string[] { "," });
-                csvParser.HasFieldsEnclosedInQuotes = true;
-
-                // Skip the row with the column names
-                ManPower.Caption_Line = csvParser.ReadLine();
-
-                while (!csvParser.EndOfData)
-                {
-                    // Read current line fields, pointer moves to the next line.
-                    List<String> elements = new List<String>();
-                    elements.AddRange(csvParser.ReadFields());
-                    ManPower manpower = new ManPower(elements);
-                    ret_manpower_list.Add(manpower);
-                }
-            }
-            return ret_manpower_list;
-        }
-
-        //static public Boolean OutputManPowerTaskCSV(String csv_output)
-        //{
-        //    Boolean ret = false;
-
-        //    //before your loop
-        //    var csv = new StringBuilder();
-
-        //    //in your loop
-        //    var first = reader[0].ToString();
-        //    var second = image.ToString();
-        //    //Suggestion made by KyleMit
-        //    var newLine = string.Format("{0},{1}", first, second);
-        //    csv.AppendLine(newLine);
-
-        //    //after your loop
-        //    File.WriteAllText(csv_output, csv.ToString());
-        //    return ret;
-        //}
-
-        /*
-        //// return: 
-        //// (1) earliest & latest Target start date
-        //// (2) earliest & latest Target end date
-        //// (3) earliest & latest Target due date
-        //static private List<DateTime> GatherDateInfo(List<ManPower> manpower)
-        //{
-        //    DateTime earliest_target_start_date = DateTime_Latest; // default when no earliest date found
-        //    DateTime latest_target_start_date = DateTime_Earliest; // default when no latest date found
-
-        //    foreach (ManPower mp in manpower)
-        //    {
-        //        // for target_start_Date
-        //        DateTime target_start_date = Convert.ToDateTime(mp.Target_start_date);
-        //        // find earliest
-        //        if (target_start_date < earliest_dt)
-        //        {
-        //            earliest_dt = target_start_date;
-        //        }
-        //        // find latest
-        //        if (target_start_date > latest_dt)
-        //        {
-        //            latest_dt = target_start_date;
-        //        }
-
-        //        // for target_end_Date
-        //        DateTime target_end_date = Convert.ToDateTime(mp.Target_end_date);
-        //        // find earliest
-        //        if (target_end_date < earliest_dt)
-        //        {
-        //            earliest_dt = target_start_date;
-        //        }
-        //        // find latest
-        //        if (target_start_date > latest_dt)
-        //        {
-        //            latest_dt = target_start_date;
-        //        }
-
-        //    }
-        //    return earliest_dt;
-        //}
-        */
-
+        
         // Get the datetime which is earlier
-        static private DateTime ReturnEarlierDateTime(DateTime datetime, String datetime_str)
+        static public DateTime ReturnEarlierDateTime(DateTime datetime, String datetime_str)
         {
             if (String.IsNullOrWhiteSpace(datetime_str))
             {
-                return datetime;
+                return datetime.Date;
             }
 
             try
             {
-                DateTime dt = Convert.ToDateTime(datetime_str, datetime_culture);
-                if (dt < datetime)
+                DateTime dt = Convert.ToDateTime(datetime_str, datetime_culture).Date;
+                if (dt < datetime.Date)
                 {
-                    datetime = dt;
+                    datetime = dt.Date;
                 }
             }
             catch (Exception ex)
             {
             }
-            return datetime;
+            return datetime.Date;
         }
 
         // Get the datetime which is later
-        static private DateTime ReturnLaterDateTime(DateTime datetime, String datetime_str)
+        static public DateTime ReturnLaterDate(DateTime datetime, String datetime_str)
         {
             if (String.IsNullOrWhiteSpace(datetime_str))
             {
-                return datetime;
+                return datetime.Date;
             }
 
             try
             {
-                DateTime dt = Convert.ToDateTime(datetime_str, datetime_culture);
-                if (dt > datetime)
+                DateTime dt = Convert.ToDateTime(datetime_str, datetime_culture).Date;
+                if (dt > datetime.Date)
                 {
-                    datetime = dt;
+                    datetime = dt.Date;
                 }
             }
             catch (Exception ex)
             {
             }
-            return datetime;
+            return datetime.Date;
         }
 
-        static private DateTime FindEearliestTargetStartDate(List<ManPower> manpower)
+        static public DateTime FindEearliestTargetStartDate(List<ManPower> manpower)
         {
             //Target_start_date
-            DateTime earliest_dt = DateTime_Latest;  // default for no earliest date
+            DateTime earliest_dt = DateTime_Latest.Date;  // default for no earliest date
             foreach (ManPower mp in manpower)
             {
                 earliest_dt = ReturnEarlierDateTime(earliest_dt, mp.Target_start_date);
             }
-            return earliest_dt;
+            return earliest_dt.Date;
         }
 
-        static private DateTime FindLatestTargetEndDate(List<ManPower> manpower)
+        static public DateTime FindLatestTargetEndDate(List<ManPower> manpower)
         {
             //Target_end_date
-            DateTime latest_dt = DateTime_Earliest;  // default for no latest date
+            DateTime latest_dt = DateTime_Earliest.Date;  // default for no latest date
             foreach (ManPower mp in manpower)
             {
-                latest_dt = ReturnLaterDateTime(latest_dt, mp.Target_end_date);
+                latest_dt = ReturnLaterDate(latest_dt, mp.Target_end_date);
             }
-            return latest_dt;
+            return latest_dt.Date;
         }
 
         static private DateTime FindLatestDueDate(List<ManPower> manpower)
         {
             //Target_end_date
-            DateTime latest_dt = DateTime_Earliest;  // default for no latest date
+            DateTime latest_dt = DateTime_Earliest.Date;  // default for no latest date
             foreach (ManPower mp in manpower)
             {
-                latest_dt = ReturnLaterDateTime(latest_dt, mp.Due_date);
+                latest_dt = ReturnLaterDate(latest_dt, mp.Due_date);
             }
-            return latest_dt;
+            return latest_dt.Date;
         }
 
-        static public void ProcessManPowerPlan(String manpower_csv)
+        static public Boolean IsBetween(DateTime date_checked, DateTime from, DateTime to)
         {
-            List<ManPower> manpower_list = ReadManPowerTaskCSV(manpower_csv);
-            DateTime manpower_earliest_target_start_date = FindEearliestTargetStartDate(manpower_list);
-            DateTime manpower_latest_target_end_date = FindLatestTargetEndDate(manpower_list);
-            //DateTime manpower_due_date = FindLatestDueDate(manpower_list);
+            Boolean b_ret = false;
 
-            //before your loop
-            var csv = new StringBuilder();
-
-            csv.AppendLine(ManPower.Caption_Line);
-
-            //in your loop
-            foreach (ManPower mp in manpower_list)
+            if((date_checked.Date>=from.Date)&&(date_checked.Date<=to.Date))
             {
-                var newLine = mp.ToString();
-                csv.AppendLine(newLine);
+                b_ret = true;
             }
 
-            //after your loop
-            File.WriteAllText(Storage.GenerateFilenameWithDateTime(manpower_csv, ".csv"), csv.ToString(), Encoding.UTF8);
+            return b_ret;
         }
     }
+
 }
