@@ -10,6 +10,37 @@ using System.IO;
 
 namespace ExcelReportApplication
 {
+    public enum ManPowerMemberIndex
+    {
+        Hierarchy = 0,
+        Title,
+        Project,
+        Releases,
+        Team,
+        Assignee,
+        Sprint,
+        Target_start_date,
+        Target_end_date,
+        Due_date,
+        Estimates,
+        Parent,
+        Priority,
+        Labels,
+        Components,
+        Issue_key,
+        Issue_status,
+        Progress,
+        Progress_completed,
+        Progress_remaining,
+        Progress_issue_count_IC,
+        To_do_IC,
+        In_progress_IC,
+        Done_IC,
+        Total_IC,
+        Man_hour,
+        COUNT,
+    };
+
     public class ManPower
     {
         public String Hierarchy;
@@ -42,76 +73,60 @@ namespace ExcelReportApplication
         // calculated data
         public String Average_ManHour;
 
-        static public String Caption_Line;
+        // generated data
+        public List<String> Daily_ManHour_List;
+        static public String Title_StartDate_to_EndDate;
 
-        public ManPower() { Hierarchy = ""; }
+        // global data
+        static public String Caption_Line;              // reading from CSV
+        static public DateTime Start_Date, End_Date;      // search all CSV
+
+        public ManPower() { this.SetMemberByString(new List<String>()); }
 
         public ManPower(List<String> elements)
         {
-            int index_count = elements.Count();
-            if (index_count <= 0)
+            this.SetMemberByString(elements);
+        }
+
+        public void SetMemberByString(List<String> members)
+        {
+            int index_count = members.Count();
+            if (index_count <= (int)ManPowerMemberIndex.COUNT)
             {
-                Hierarchy = "";
-                return;
+                String[] empty_str = new String[(int)ManPowerMemberIndex.COUNT - index_count];
+                members.AddRange(empty_str);
             }
+
             int index = 0;
-            if (index < index_count)
-                Hierarchy = elements[index++];
-            if (index < index_count)
-                Title = elements[index++];
-            if (index < index_count)
-                Project = elements[index++];
-            if (index < index_count)
-                Releases = elements[index++];
-            if (index < index_count)
-                Team = elements[index++];
-            if (index < index_count)
-                Assignee = elements[index++];
-            if (index < index_count)
-                Sprint = elements[index++];
-            if (index < index_count)
-                Target_start_date = elements[index++];
-            if (index < index_count)
-                Target_end_date = elements[index++];
-            if (index < index_count)
-                Due_date = elements[index++];
-            if (index < index_count)
-                Estimates = elements[index++];
-            if (index < index_count)
-                Parent = elements[index++];
-            if (index < index_count)
-                Priority = elements[index++];
-            if (index < index_count)
-                Labels = elements[index++];
-            if (index < index_count)
-                Components = elements[index++];
-            if (index < index_count)
-                Issue_key = elements[index++];
-            if (index < index_count)
-                Issue_status = elements[index++];
-            if (index < index_count)
-                Progress = elements[index++];
-            if (index < index_count)
-                Progress_completed = elements[index++];
-            if (index < index_count)
-                Progress_remaining = elements[index++];
-            if (index < index_count)
-                Progress_issue_count_IC = elements[index++];
-            if (index < index_count)
-                To_do_IC = elements[index++];
-            if (index < index_count)
-                In_progress_IC = elements[index++];
-            if (index < index_count)
-                Done_IC = elements[index++];
-            if (index < index_count)
-                Total_IC = elements[index++];
-            if (index < index_count)
+            Hierarchy = members[index++];
+            Title = members[index++];
+            Project = members[index++];
+            Releases = members[index++];
+            Team = members[index++];
+            Assignee = members[index++];
+            Sprint = members[index++];
+            Target_start_date = members[index++];
+            Target_end_date = members[index++];
+            Due_date = members[index++];
+            Estimates = members[index++];
+            Parent = members[index++];
+            Priority = members[index++];
+            Labels = members[index++];
+            Components = members[index++];
+            Issue_key = members[index++];
+            Issue_status = members[index++];
+            Progress = members[index++];
+            Progress_completed = members[index++];
+            Progress_remaining = members[index++];
+            Progress_issue_count_IC = members[index++];
+            To_do_IC = members[index++];
+            In_progress_IC = members[index++];
+            Done_IC = members[index++];
+            Total_IC = members[index++];
+            Man_hour = members[index++];
+            if (Hierarchy == "Manpower")   // only man-power to calculate average man-hour
             {
-                Man_hour = elements[index++];
-                if(Hierarchy=="Manpower")   // only man-power to calculate average man-hour
-                {
-                    Calculate_Average_ManHour();
-                }
+                Calculate_Average_ManHour();
             }
         }
 
