@@ -78,6 +78,7 @@ namespace ExcelReportApplication
         // global data
         static public String Caption_Line;              // reading from CSV
         static public DateTime Start_Date, End_Date;      // search all CSV
+        static public List<Boolean> IsWorkingDay = new List<Boolean>();
         static public String Title_StartDate_to_EndDate;  // Generated according to Start_Date, End_Date
 
         static public String hierachy_string = "Manpower";
@@ -257,47 +258,87 @@ namespace ExcelReportApplication
                 overlay_end = this.Task_End_Date;
             }
 
-            DateTime filling_Date = ManPower.Start_Date;
+            int overlay_start_index = (int)(overlay_start - ManPower.Start_Date).TotalDays,
+                overlay_end_index = (int)(overlay_end - ManPower.Start_Date).TotalDays,
+                total_end_index = (int)(ManPower.End_Date - ManPower.Start_Date).TotalDays;
 
-            // 1st date is already overlay-date?
-            if (filling_Date == overlay_start)
+            // 1st day is already overlay-date or not? if yes, average-manhour for working day or "0" for holiday
+            // if 1st day is not-yet an overlay-date, fill "0"
+            if (overlay_start_index == 0)     
             {
-                ret_str += this.Average_ManHour;    // if yes, output average manhour
+                ret_str += (ManPower.IsWorkingDay[0]) ? this.Average_ManHour : "0";
             }
             else
             {
                 ret_str += "0";
             }
-            filling_Date = filling_Date.AddDays(1.0);
-            
+
+            int date_index = 1;
+
             // before overlay
-            while(filling_Date < overlay_start) 
+            while (date_index < overlay_start_index)
             {
                 ret_str += ", 0";
-                filling_Date = filling_Date.AddDays(1.0);
+                date_index++;
             }
 
             // during overlay -- output average man-hour
-            while(filling_Date <= overlay_end)
+            while (date_index <= overlay_end_index)
             {
                 ret_str += ", ";
-                if (DateOnly.IsHoliday(filling_Date))
-                {
-                    ret_str += "0";
-                }
-                else
-                {
-                    ret_str += this.Average_ManHour; 
-                }
-                filling_Date = filling_Date.AddDays(1.0);
+                ret_str += (ManPower.IsWorkingDay[date_index]) ? this.Average_ManHour : "0";
+                date_index++;
             }
 
             // after overlay
-            while (filling_Date <= ManPower.End_Date)
+            while (date_index <= total_end_index)
             {
                 ret_str += ", 0";
-                filling_Date = filling_Date.AddDays(1.0);
+                date_index++;
             }
+
+
+            //DateTime filling_Date = ManPower.Start_Date;
+
+            //// 1st date is already overlay-date?
+            //if (filling_Date == overlay_start)
+            //{
+            //    ret_str += this.Average_ManHour;    // if yes, output average manhour
+            //}
+            //else
+            //{
+            //    ret_str += "0";
+            //}
+            //filling_Date = filling_Date.AddDays(1.0);
+            
+            //// before overlay
+            //while(filling_Date < overlay_start) 
+            //{
+            //    ret_str += ", 0";
+            //    filling_Date = filling_Date.AddDays(1.0);
+            //}
+
+            //// during overlay -- output average man-hour
+            //while(filling_Date <= overlay_end)
+            //{
+            //    ret_str += ", ";
+            //    if (DateOnly.IsHoliday(filling_Date))
+            //    {
+            //        ret_str += "0";
+            //    }
+            //    else
+            //    {
+            //        ret_str += this.Average_ManHour; 
+            //    }
+            //    filling_Date = filling_Date.AddDays(1.0);
+            //}
+
+            //// after overlay
+            //while (filling_Date <= ManPower.End_Date)
+            //{
+            //    ret_str += ", 0";
+            //    filling_Date = filling_Date.AddDays(1.0);
+            //}
 
             this.Daily_ManHour_String = ret_str;
             return ret_str;
@@ -375,6 +416,19 @@ namespace ExcelReportApplication
             ManPower.Start_Date = DateOnly.FindEearliestTargetStartDate(ret_manpower_list);
             ManPower.End_Date = DateOnly.FindLatestTargetEndDate(ret_manpower_list);
             ManPower.Title_StartDate_to_EndDate = ManPower.GenerateDateTitle(ManPower.Start_Date, ManPower.End_Date);
+
+            ManPower.IsWorkingDay.Clear();
+            for (DateTime dt = ManPower.Start_Date.Date; dt <= ManPower.End_Date.Date; dt = dt.AddDays(1.0))
+            {
+                if (DateOnly.IsHoliday(dt))
+                {
+                    ManPower.IsWorkingDay.Add(false);       // a holiday --> not a working day
+                }
+                else
+                {
+                    ManPower.IsWorkingDay.Add(true);
+                }
+            }
 
             // Generated data for each task
             foreach (ManPower mp in ret_manpower_list)
@@ -501,9 +555,16 @@ namespace ExcelReportApplication
             new DateTime(2024,  5,  1, 0, 0, 0),    // fixed-date holiday
             new DateTime(2024, 10, 10, 0, 0, 0),    // fixed-date holiday
             // National Holiday on weekend -- shifted off
-            new DateTime(2023,  1,  2, 0, 0, 0),    // CNY
+            new DateTime(2023,  1,  2, 0, 0, 0),    // NY
             new DateTime(2023,  1, 25, 0, 0, 0),    // CNY
             new DateTime(2023,  1, 26, 0, 0, 0),    // CNY
+            // Company shift off
+            new DateTime(2023,  1, 20, 0, 0, 0),    // CNY
+            new DateTime(2023,  1, 27, 0, 0, 0),    // CNY
+            new DateTime(2023,  2, 27, 0, 0, 0),    // 228
+            new DateTime(2023,  4,  3, 0, 0, 0),    // 44&45
+            new DateTime(2023,  6, 23, 0, 0, 0),    // dragon-boat
+            new DateTime(2022, 10,  9, 0, 0, 0),    // 10*2
             // Typhoon off
             new DateTime(2023,  8,  3, 0, 0, 0),
 
@@ -513,18 +574,25 @@ namespace ExcelReportApplication
         {
             Boolean ret = false;
 
-            foreach (DateTime holiday in HolidaysSince2023)
+            if ((datetime.DayOfWeek == DayOfWeek.Saturday) || (datetime.DayOfWeek == DayOfWeek.Sunday))
             {
-                if (holiday == datetime)
+                // Weekend as holiday by default
+                ret = true;
+            }
+            else 
+            {
+                // if it is a weekday, then check if it is a holiday which is not on weekend
+                foreach (DateTime holiday in HolidaysSince2023)
                 {
-                    ret = true;
-                    break;
-                }
-                else if (holiday > datetime)
-                {
-                    break;
+                   if (holiday.Date == datetime.Date)
+                    {
+                        // holiday found, stop checking
+                        ret = true;
+                        break;
+                    }
                 }
             }
+
             return ret;
         }
 
