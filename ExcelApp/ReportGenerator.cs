@@ -74,6 +74,7 @@ namespace ExcelReportApplication
         //}
 
         // This version open Test Case Excel and copy content into template file and replace Issue ID on Linked Issue column with ID+Summary+Severity+RD_Comment
+        /*
         static public void WriteBacktoTCJiraExcelV2(String tclist_filename, String template_filename, String judgement_report_dir = "")
         {
             // Open original excel (read-only & corrupt-load) and write to another filename when closed
@@ -213,6 +214,7 @@ namespace ExcelReportApplication
             // Close Test Case Excel
             ExcelAction.CloseTestCaseExcel();
         }
+        */
 
         static public ExcelAction.ExcelStatus WriteBacktoTCJiraExcel_OpenExcel(String tclist_filename, String template_filename)
         {
