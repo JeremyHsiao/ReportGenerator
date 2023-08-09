@@ -82,6 +82,7 @@ namespace ExcelReportApplication
         static public String Title_StartDate_to_EndDate;  // Generated according to Start_Date, End_Date
 
         static public String hierachy_string = "Manpower";
+        static public String empty_average_manhour = " ";
 
         public ManPower() { this.SetMemberByString(new List<String>()); }
 
@@ -103,7 +104,7 @@ namespace ExcelReportApplication
             Hierarchy = members[index++];
             Title = members[index++];
             Project = members[index++];
-            Releases = members[index++];
+            Releases = members[index++]; 
             Team = members[index++];
             Assignee = members[index++];
             Sprint = members[index++];
@@ -155,13 +156,18 @@ namespace ExcelReportApplication
                 Task_End_Date = Convert.ToDateTime(Target_end_date, DateOnly.datetime_culture).Date;
             }
 
-            if (String.IsNullOrWhiteSpace(Man_hour))
+            //if (String.IsNullOrWhiteSpace(Man_hour))
+            //{
+            //    can_be_calculated = false;
+            //}
+            //else
+            //{
+            //    man_hour = Convert.ToDouble(Man_hour);
+            //}
+
+            if (Double.TryParse(Man_hour, out man_hour) == false)
             {
                 can_be_calculated = false;
-            }
-            else
-            {
-                man_hour = Convert.ToDouble(Man_hour);
             }
 
             if (can_be_calculated)
@@ -178,11 +184,13 @@ namespace ExcelReportApplication
                 else
                 {
                     // to check:
+                    Average_ManHour = empty_average_manhour;
                 }
             }
             else
             {
-                // to check:
+                // man-power plan needs to be updated.
+                Average_ManHour = empty_average_manhour;
             }
         }
 
@@ -236,8 +244,9 @@ namespace ExcelReportApplication
         {
             String ret_str = "";
 
-            // check if start/end date is not correct
-            if ((this.Hierarchy != hierachy_string) || (this.Task_Start_Date > this.Task_End_Date) || (ManPower.Start_Date > ManPower.End_Date))
+            // check if (1) a man-power item (2) Average ManHour is not empty (3) start/end date is not correct
+            if ((this.Hierarchy != hierachy_string) || (this.Average_ManHour == empty_average_manhour) ||
+                (this.Task_Start_Date > this.Task_End_Date) || (ManPower.Start_Date > ManPower.End_Date))
             {
                 // to-check: shouldn't be here
                 return ret_str;
