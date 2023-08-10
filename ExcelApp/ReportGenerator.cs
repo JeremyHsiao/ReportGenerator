@@ -369,7 +369,9 @@ namespace ExcelReportApplication
                 // Make sure Key of TC contains KeyPrefix
                 String tc_key = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, key_col, IsTemplate: true);
                 //if (tc_key.Contains(TestCase.KeyPrefix) == false) { break; } // If not a TC key in this row, go to next row
-                if (lookup_TestCase.ContainsKey(tc_key) == false) { break; } // If TC key in this row does not exist in database, go to next row
+                if (tc_key.Length < TestCase.KeyPrefix.Length) { continue; } // If not a TC key in this row, go to next row
+                if (String.Compare(tc_key, 0, TestCase.KeyPrefix, 0, TestCase.KeyPrefix.Length) != 0) { continue; } 
+                if (lookup_TestCase.ContainsKey(tc_key) == false) { continue; } 
                 String report_name = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, summary_col, IsTemplate: true);
                 if (String.IsNullOrWhiteSpace(report_name) == true) { continue; } // 2nd protection to prevent not a TC row
                 //if (report_name == "") { break; } // 2nd protection to prevent not a TC row
