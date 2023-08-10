@@ -305,12 +305,9 @@ namespace ExcelReportApplication
         //    return ret;
         //}
 
-        static public Boolean WriteBacktoTCJiraExcel_NeedStatusUpdateValueAccordingToJudgement
-                (String status, String worksheet_name, String workbook_filename, out String judgement_string)
+        static public String WriteBacktoTCJiraExcel_GetJudgementString(String worksheet_name, String workbook_filename)
         {
-            Boolean ret = false;
-
-            judgement_string = ""; // empty if cannot get judgement value
+            String judgement_string = ""; // empty if cannot get judgement value
             // If current_status is "Finished" in excel report, it will be updated according to judgement of corresponding test report.
             String judgement_str;
             // If judgement value is available, update it.
@@ -319,16 +316,7 @@ namespace ExcelReportApplication
                 judgement_string = judgement_str;
             }
 
-            if (status == TestCase.STR_FINISHED)
-            {
-                ret = true;
-            }
-            else
-            {
-                ret = false;
-            }
-
-            return ret;
+            return judgement_string;
         }
 
         // Split some part of V2 into sub-functions 
@@ -396,8 +384,15 @@ namespace ExcelReportApplication
                     String judgement_str;
                     Boolean update_status = false;
                     String workbook_filename = report_filelist_by_sheetname[worksheet_name];
-                    update_status = WriteBacktoTCJiraExcel_NeedStatusUpdateValueAccordingToJudgement(current_status, worksheet_name, workbook_filename, out judgement_str);
-                    if (update_status)
+                    if (KeywordReport.CheckLookupReportJudgementResultExist())
+                    {
+                        judgement_str = KeywordReport.LookupReportJudgementResult(workbook_filename);
+                    }
+                    else
+                    {
+                        judgement_str = WriteBacktoTCJiraExcel_GetJudgementString(worksheet_name, workbook_filename);
+                    }
+                    if (current_status == TestCase.STR_FINISHED)
                     {
                         // update only of judgement_string is available.
                         //if (judgement_str != "")

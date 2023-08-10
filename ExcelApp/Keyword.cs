@@ -408,7 +408,7 @@ namespace ExcelReportApplication
 
         public static Boolean Replace_Conclusion = false;
         public static Boolean Hide_Keyword_Result_Bug = false;
-       
+
         public static Boolean Auto_Correct_Sheetname = false;
 
         public static KeywordReportHeader DefaultKeywordReportHeader = new KeywordReportHeader();
@@ -445,6 +445,21 @@ namespace ExcelReportApplication
         {
             global_keyword_available = false;
             global_keyword_list.Clear();
+        }
+
+        private static Dictionary<String, String> global_report_judgement_result = new Dictionary<String, String>();
+        public static Boolean CheckLookupReportJudgementResultExist()
+        {
+            return (global_report_judgement_result.Count > 0);
+        }
+        public static String LookupReportJudgementResult(String full_report_path)
+        {
+            String ret_str = "";
+            if (global_report_judgement_result.ContainsKey(full_report_path))
+            {
+                ret_str = global_report_judgement_result[full_report_path];
+            }
+            return ret_str;
         }
 
         // Visit report content and find out all keywords
@@ -1197,6 +1212,7 @@ namespace ExcelReportApplication
 
             // 1.2 Create a temporary test plan to includes all files listed in List<String> report_filename
             do_plan = TestPlan.CreateTempPlanFromFileList(report_filename);
+            global_report_judgement_result.Clear();
 
             //
             // 2. Search keywords within all selected file (2.1) and use those keywords to find out issues containing keywords.
@@ -1383,7 +1399,7 @@ namespace ExcelReportApplication
                     judgement_str = PASS_str;
                 }
 
-                if(Replace_Conclusion)
+                if (Replace_Conclusion)
                 {
                     // Add: replace conclusion with Bug-list
                     ReplaceConclusionWithBugList(result_worksheet, keyword_issue_description_on_this_report); // should be linked issue in the future
@@ -1413,6 +1429,8 @@ namespace ExcelReportApplication
                 // if parent directory does not exist, create recursively all parents
                 Storage.CreateDirectory(dest_filename_dir, auto_parent_dir: true);
                 ExcelAction.CloseExcelWorkbook(wb_keyword_issue, SaveChanges: true, AsFilename: dest_filename);
+
+                global_report_judgement_result.Add(dest_filename, judgement_str);
             }
 
             // Output updated report with recommended sheetname.
