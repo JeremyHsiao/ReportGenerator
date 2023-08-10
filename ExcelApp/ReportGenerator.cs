@@ -13,14 +13,14 @@ namespace ExcelReportApplication
     static class ReportGenerator
     {
         static public List<Issue> global_issue_list = new List<Issue>();
-        static public Dictionary<string, List<StyleString>> global_full_issue_description_list = new Dictionary<string, List<StyleString>>();
-        static public Dictionary<string, List<StyleString>> global_issue_description_list = new Dictionary<string, List<StyleString>>();
-        static public Dictionary<string, List<StyleString>> global_issue_description_list_severity = new Dictionary<string, List<StyleString>>();
+        //static public Dictionary<string, List<StyleString>> global_full_issue_description_list = new Dictionary<string, List<StyleString>>();  // SaveIssueToSummaryReport
+        //static public Dictionary<string, List<StyleString>> global_issue_description_list = new Dictionary<string, List<StyleString>>(); // TC-related
+        //static public Dictionary<string, List<StyleString>> global_issue_description_list_severity = new Dictionary<string, List<StyleString>>(); //keyword-related
         static public List<TestCase> global_testcase_list = new List<TestCase>();
         static public List<String> fileter_status_list = new List<String>();
         static public List<ReportFileRecord> excel_not_report_log = new List<ReportFileRecord>();
 
-        static public Dictionary<string, Issue> lookup_BugList = new Dictionary<string, Issue>();
+        //static public Dictionary<string, Issue> lookup_BugList = new Dictionary<string, Issue>();
         static public Dictionary<string, TestCase> lookup_TestCase = new Dictionary<string, TestCase>();
 
         //private static List<String> GetGlobalIssueKey(List<Issue> issue_list)
@@ -266,44 +266,44 @@ namespace ExcelReportApplication
             return report_list;
         }
 
-        static public Boolean ConvertBugID_to_BugDescription(String links, out List<StyleString> Link_Issue_Detail)
-        {
-            Boolean ret = false;
-            Link_Issue_Detail = new List<StyleString>();
+        //static public Boolean ConvertBugID_to_BugDescription(String links, out List<StyleString> Link_Issue_Detail)
+        //{
+        //    Boolean ret = false;
+        //    Link_Issue_Detail = new List<StyleString>();
 
-            //if (links != "")
-            if (String.IsNullOrWhiteSpace(links) == false)
-            {
-                List<String> linked_issue_key_list = TestCase.Convert_LinksString_To_ListOfString(links);
-                // To remove closed issue & not-in-Jira-exported-data issue
-                // 1. prepare an empty list
-                List<String> final_id_list = new List<String>();
-                //List<String> global_issue_key_list = GetGlobalIssueKey(global_issue_list);
-                List<String> global_issue_key_list = lookup_BugList.Keys.ToList<String>();
-                // 2. Loop throught all global issues, add key of this issue into final_id_list if:
-                //     (1) key of this issue exists on linked_issue_key_list
-                //     (2) status of this issue is NOT the same as defined in "filter-status"
-                foreach (Issue issue in global_issue_list)
-                {
-                    // status the same as one of those defined in "filter-status" (mostly closed issue), go to next issue
-                    if (fileter_status_list.IndexOf(issue.Status) >= 0)
-                    {
-                        continue;
-                    }
-                    // if bug id not on the list, go the next bug
-                    if (linked_issue_key_list.IndexOf(issue.Key) < 0)
-                    {
-                        continue;
-                    }
-                    // 2 checks are passed, add into final_id_list.Add
-                    final_id_list.Add(issue.Key);
-                }
-                // 
-                Link_Issue_Detail = StyleString.ExtendIssueDescription(final_id_list, global_issue_description_list);
-                ret = true;
-            }
-            return ret;
-        }
+        //    //if (links != "")
+        //    if (String.IsNullOrWhiteSpace(links) == false)
+        //    {
+        //        List<String> linked_issue_key_list = TestCase.Convert_LinksString_To_ListOfString(links);
+        //        // To remove closed issue & not-in-Jira-exported-data issue
+        //        // 1. prepare an empty list
+        //        List<String> final_id_list = new List<String>();
+        //        //List<String> global_issue_key_list = GetGlobalIssueKey(global_issue_list);
+        //        List<String> global_issue_key_list = lookup_BugList.Keys.ToList<String>();
+        //        // 2. Loop throught all global issues, add key of this issue into final_id_list if:
+        //        //     (1) key of this issue exists on linked_issue_key_list
+        //        //     (2) status of this issue is NOT the same as defined in "filter-status"
+        //        foreach (Issue issue in global_issue_list)
+        //        {
+        //            // status the same as one of those defined in "filter-status" (mostly closed issue), go to next issue
+        //            if (fileter_status_list.IndexOf(issue.Status) >= 0)
+        //            {
+        //                continue;
+        //            }
+        //            // if bug id not on the list, go the next bug
+        //            if (linked_issue_key_list.IndexOf(issue.Key) < 0)
+        //            {
+        //                continue;
+        //            }
+        //            // 2 checks are passed, add into final_id_list.Add
+        //            final_id_list.Add(issue.Key);
+        //        }
+        //        // 
+        //        Link_Issue_Detail = StyleString.ExtendIssueDescription(final_id_list, global_issue_description_list);
+        //        ret = true;
+        //    }
+        //    return ret;
+        //}
 
         static public Boolean WriteBacktoTCJiraExcel_NeedStatusUpdateValueAccordingToJudgement
                 (String status, String worksheet_name, String workbook_filename, out String judgement_string)
@@ -331,23 +331,9 @@ namespace ExcelReportApplication
             return ret;
         }
 
-        static public void UpdateTCLinkedIssueList()
-        {
-            foreach (TestCase tc in global_testcase_list) // looping
-            {
-                String links = tc.Links;
-                //if (links != "")
-                if (String.IsNullOrWhiteSpace(links) == false)
-                {
-                    List<StyleString> str_list;
-                    ConvertBugID_to_BugDescription(links, out str_list);
-                    tc.LinkedIssueList = str_list;
-                }
-            }
-        }
-
         // Split some part of V2 into sub-functions 
-        static public void WriteBacktoTCJiraExcelV3(String tclist_filename, String template_filename, String judgement_report_dir = "")
+        static public void WriteBacktoTCJiraExcelV3(String tclist_filename, String template_filename, List<Issue> bug_list,
+            Dictionary<string, List<StyleString>> bug_description_list, String judgement_report_dir = "")
         {
             // Open original excel (read-only & corrupt-load) and write to another filename when closed
             ExcelAction.ExcelStatus status;
@@ -395,7 +381,7 @@ namespace ExcelReportApplication
                 if (String.IsNullOrWhiteSpace(links) == false)
                 {
                     List<StyleString> str_list;
-                    ConvertBugID_to_BugDescription(links, out str_list);
+                    str_list = StyleString.FilteredBugID_to_BugDescription(links, bug_list, bug_description_list);
                     ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
                 }
 
@@ -412,7 +398,8 @@ namespace ExcelReportApplication
                     if (update_status)
                     {
                         // update only of judgement_string is available.
-                        if (judgement_str != "")
+                        //if (judgement_str != "")
+                        if(String.IsNullOrWhiteSpace(judgement_str))
                         {
                             ExcelAction.SetTestCaseCell(excel_row_index, status_col, judgement_str, IsTemplate: true);
                         }
@@ -471,11 +458,11 @@ namespace ExcelReportApplication
         // This demo finds out Test-case whose status is fail but all linked issues are closed (other issues are hidden)
         //
         static String[] CloseStatusString = { Issue.STR_CLOSE };
-        static public void FindFailTCLinkedIssueAllClosed(String tclist_filename, String template_filename)
+        static public void FindFailTCLinkedIssueAllClosed(String tclist_filename, String template_filename, List<Issue> bug_list)
         {
             // Prepare a list of key whose status is closed (waived treated as non-closed at the moment)
             List<String> ClosedIssueKey = new List<String>();
-            foreach (Issue issue in global_issue_list)
+            foreach (Issue issue in bug_list)
             {
                 foreach (String str in CloseStatusString)
                 {
@@ -517,7 +504,7 @@ namespace ExcelReportApplication
                 }
                 else
                 {
-                    List<String> LinkedIssueKey = TestCase.Convert_LinksString_To_ListOfString(tc.Links);
+                    List<String> LinkedIssueKey = Issue.Convert_LinksString_To_ListOfString(tc.Links);
                     IEnumerable<String> LinkIssue_CloseIssue_intersect = ClosedIssueKey.Intersect(LinkedIssueKey);
                     if (LinkIssue_CloseIssue_intersect.Count() != LinkedIssueKey.Count())
                     {

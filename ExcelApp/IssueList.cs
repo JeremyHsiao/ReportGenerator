@@ -426,158 +426,40 @@ namespace ExcelReportApplication
             return ret_lut;
         }
 
-        static public Color descrption_color_issue = Color.Red;
-        static public Color descrption_color_comment = Color.Blue;
-
-        static public Dictionary<string, List<StyleString>> GenerateFullIssueDescription(List<Issue> issuelist)
+        static public List<Issue> GenerateIssueListFromKeyString(String issues_key_string, List<Issue> issue_list_source)
         {
-            Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
-
-            foreach (Issue issue in issuelist)
+            List<Issue> ret_list = new List<Issue>();
+            List<String> issue_id_list = Issue.Convert_LinksString_To_ListOfString(issues_key_string);
+            foreach (Issue issue in issue_list_source)
             {
-                List<StyleString> value_style_str = new List<StyleString>();
-                String key = issue.Key, rd_comment_str = issue.comment;
-
-                if (key != "")
+                if (issue_id_list.IndexOf(issue.Key) >= 0)
                 {
-                    String str = key + issue.Summary + "(" + issue.Severity + ")";
-                    StyleString style_str = new StyleString(str, descrption_color_issue);
-                    value_style_str.Add(style_str);
-
-                    // Keep portion of string before first "\n"; if no "\n", keep whole string otherwise.
-                    String short_comment = "";
-                    if (rd_comment_str.Contains("\n"))
-                    {
-                        short_comment = rd_comment_str.Substring(0, rd_comment_str.IndexOf("\n"));
-                    }
-                    else
-                    {
-                        short_comment = rd_comment_str;
-                    }
-                    if (short_comment != "")
-                    {
-                        str = " --> " + short_comment;
-                        style_str = new StyleString(str, descrption_color_comment);
-                        value_style_str.Add(style_str);
-                    }
-
-                    // Add whole string into return_list
-                    ret_list.Add(key, value_style_str);
+                    // issue found & added
+                    ret_list.Add(issue);
                 }
             }
             return ret_list;
         }
 
-        // create key/rich-text-issue-description pair.
-        // 
-        // Format: KEY+SUMMARY+(+SEVERITY+)
-        //
-        // For example: BENSE27105-99[OSD]Menu scenario-Color Gamut value incorrect Without Metadata when Sub screen(B)
-        //
-        static public Dictionary<string, List<StyleString>> GenerateIssueDescription(List<Issue> issuelist)
+        static public List<String> GenerateKeyListFromIssueList(List<Issue> issue_list_source)
         {
-            Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
-
-            foreach (Issue issue in issuelist)
+            List<String> key_list = new List<String>();
+            foreach (Issue issue in issue_list_source)
             {
-                List<StyleString> value_style_str = new List<StyleString>();
-                String key = issue.Key, rd_comment_str = issue.comment;
-
-                if (key != "")
-                {
-                    Boolean is_waived = false;
-                    if (issue.Status == Issue.STR_WAIVE)
-                    {
-                        is_waived = true;
-                    }
-
-                    String str = key + issue.Summary + "(" + issue.Severity + ")";
-                    if (is_waived)
-                    {
-                        str += "(" + KeywordReport.WAIVED_str + ")";
-                    }
-                    StyleString style_str = new StyleString(str, descrption_color_issue);
-                    value_style_str.Add(style_str);
-                    /*
-                    // Keep portion of string before first "\n"; if no "\n", keep whole string otherwise.
-                    String short_comment = "";
-                    if (rd_comment_str.Contains("\n"))
-                    {
-                        short_comment = rd_comment_str.Substring(0, rd_comment_str.IndexOf("\n"));
-                    }
-                    else
-                    {
-                        short_comment = rd_comment_str;
-                    }
-                    if (short_comment != "")
-                    {
-                        str = " --> " + short_comment;
-                        style_str = new StyleString(str, descrption_color_comment);
-                        value_style_str.Add(style_str);
-                    }
-                    */
-                    // Add whole string into return_list
-                    ret_list.Add(key, value_style_str);
-                }
+                key_list.Add(issue.Key);
             }
-            return ret_list;
+            return key_list;
         }
 
-        static public Dictionary<string, List<StyleString>> GenerateIssueDescription_Severity_by_Colors(List<Issue> issuelist)
+        static public List<Issue> FilterIssueByStatus(List<Issue> issues_to_be_filtered, List<String> filter_list)
         {
-            Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
-
-            foreach (Issue issue in issuelist)
+            List<Issue> ret_list = new List<Issue>();
+            foreach (Issue issue in issues_to_be_filtered)
             {
-                List<StyleString> value_style_str = new List<StyleString>();
-                String key = issue.Key;  // rd_comment_str = issue.comment;
-                Boolean is_waived = false;
-
-                if (key != "")
+                if (filter_list.IndexOf(issue.Status) < 0)
                 {
-                    Color color_by_severity = Issue.ISSUE_DEFAULT_COLOR;
-                    if (issue.Status == Issue.STR_CLOSE)
-                    {
-                        color_by_severity = Issue.CLOSED_ISSUE_COLOR;
-                    }
-                    else if (issue.Status == Issue.STR_WAIVE)
-                    {
-                        color_by_severity = Issue.WAIVED_ISSUE_COLOR;
-                        is_waived = true;
-                    }
-                    else // if ((issue.Status != Issue.STR_CLOSE) && (issue.Status != Issue.STR_WAIVE))
-                    {
-                        switch (issue.Severity[0])
-                        {
-                            case 'A':
-                                color_by_severity = Issue.A_ISSUE_COLOR;
-                                break;
-                            case 'B':
-                                color_by_severity = Issue.B_ISSUE_COLOR;
-                                break;
-                            case 'C':
-                                color_by_severity = Issue.C_ISSUE_COLOR;
-                                break;
-                            case 'D':
-                                color_by_severity = Issue.D_ISSUE_COLOR;
-                                break;
-                            default:
-                                // Use Default
-                               break;
-                        }
-
-                    }
-
-                    String str;
-                    str = key + issue.Summary + "(" + issue.Severity + ")";
-                    if (is_waived)
-                    {
-                        str += "(" + KeywordReport.WAIVED_str + ")";
-                    }
-                    StyleString style_str = new StyleString(str, color_by_severity);
-                    value_style_str.Add(style_str);
-                    // Add whole string into return_list
-                    ret_list.Add(key, value_style_str);
+                    // not filtered status
+                    ret_list.Add(issue);
                 }
             }
             return ret_list;
@@ -609,5 +491,41 @@ namespace ExcelReportApplication
             }
             return b_ret;
         }
+
+        static private String[] separators = { "," };
+
+        static public List<String> Convert_LinksString_To_ListOfString(String links)
+        {
+            List<String> ret_list = new List<String>();
+            // protection
+            if ((links == null) || (links == "")) return ret_list;   // return empty new object
+            // Separate keys into string[]
+            String[] issues = links.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            if (issues == null) return ret_list;
+            // string[] to List<String> (trimmed) and return
+            foreach (String str in issues)
+            {
+                ret_list.Add(str.Trim());
+            }
+            return ret_list;
+        }
+
+        static public String Convert_ListOfString_To_LinkString(List<String> list)
+        {
+            String ret = "";
+            // protection
+            if (list == null) return ret;
+            if (list.Count == 0) return ret;
+            foreach (String str in list)
+            {
+                ret += str + separators[0] + " ";
+            }
+            ret.Trim(); // remove " " at beginning & end
+            if (ret[ret.Length - 1] == ',') { ret.Remove(ret.Length - 1); }// remove last "," 
+            return ret;
+        }
+
+
+    
     }
 }

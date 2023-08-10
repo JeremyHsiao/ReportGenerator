@@ -1161,7 +1161,8 @@ namespace ExcelReportApplication
             return true;
         }
 
-        static public bool KeywordIssueGenerationTaskV4(List<String> file_list, String src_dir, String dest_dir = "")
+        static public bool KeywordIssueGenerationTaskV4(List<String> file_list, Dictionary<string, List<StyleString>> bug_description_list,
+                                                String src_dir, String dest_dir = "")
         {
             // Clear keyword log report data-table
             ReportGenerator.excel_not_report_log.Clear();
@@ -1237,7 +1238,7 @@ namespace ExcelReportApplication
                     }
                 }
                 keyword.IssueList = id_list;
-                description_list = StyleString.ExtendIssueDescription(id_list, ReportGenerator.global_issue_description_list_severity);
+                description_list = StyleString.ExtendIssueDescription(id_list, bug_description_list);
                 keyword.IssueDescriptionList = description_list;
             }
 

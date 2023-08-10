@@ -60,7 +60,7 @@ namespace ExcelReportApplication
             //ReportType.TC_GroupSummaryReport,
             //ReportType.Update_Report_Linked_Issue,
             ReportType.Update_Keyword_and_TC_Report,
-            //ReportType.Man_Power_Processing,
+            ReportType.Man_Power_Processing,
          };
 
         //public static ReportType[] ReportSelectableTable =
@@ -470,11 +470,11 @@ namespace ExcelReportApplication
         private static List<String> SplitCommaSeparatedStringIntoList(String input_string)
         {
             List<String> ret_list = new List<String>();
-            String[] separators = { "," };
+            String[] csv_separators = { "," };
             if (String.IsNullOrWhiteSpace(input_string) == false)
             {
                 // Separate keys into string[]
-                String[] issues = input_string.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                String[] issues = input_string.Split(csv_separators, StringSplitOptions.RemoveEmptyEntries);
                 if (issues != null)
                 {
                     // string[] to List<String> (trimmed) and return
@@ -674,7 +674,7 @@ namespace ExcelReportApplication
             {
                 MsgWindow.AppendText("Processing bug_list:" + buglist_filename + ".\n");
                 ReportGenerator.global_issue_list = Issue.GenerateIssueList(buglist_filename);
-                ReportGenerator.lookup_BugList = Issue.UpdateIssueListLUT(ReportGenerator.global_issue_list);
+                //ReportGenerator.lookup_BugList = Issue.UpdateIssueListLUT(ReportGenerator.global_issue_list);
                 // update LUT
                 MsgWindow.AppendText("bug_list finished!\n");
                 return true;
@@ -714,7 +714,7 @@ namespace ExcelReportApplication
         private void ClearIssueList()
         {
             ReportGenerator.global_issue_list.Clear();
-            ReportGenerator.lookup_BugList.Clear();
+            //ReportGenerator.lookup_BugList.Clear();
             KeywordReport.ClearGlobalKeywordList();
         }
 
@@ -749,13 +749,15 @@ namespace ExcelReportApplication
             }
 
             // This full issue description is needed for report purpose
-            ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
-
-            ReportGenerator.UpdateTCLinkedIssueList();
+            //Dictionary<string, List<StyleString>> global_issue_description_list = StyleString.GenerateIssueDescription(ReportGenerator.global_issue_list);
+            Dictionary<string, List<StyleString>> global_issue_description_list_severity = 
+                        StyleString.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.global_issue_list);
+            ReportGenerator.global_testcase_list =
+                    TestCase.UpdateTCLinkedIssueList(ReportGenerator.global_testcase_list, ReportGenerator.global_issue_list, global_issue_description_list_severity);
 
             //            ReportGenerator.WriteBacktoTCJiraExcel(tc_file);
             //ReportGenerator.WriteBacktoTCJiraExcelV2(tc_file, template_file, judgement_report_dir);
-            ReportGenerator.WriteBacktoTCJiraExcelV3(tc_file, template_file, judgement_report_dir);
+            ReportGenerator.WriteBacktoTCJiraExcelV3(tc_file, template_file, ReportGenerator.global_issue_list, global_issue_description_list_severity, judgement_report_dir);
             return true;
         }
 
@@ -769,9 +771,10 @@ namespace ExcelReportApplication
             }
 
             // This full issue description is needed for report purpose
-            ReportGenerator.global_full_issue_description_list = Issue.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
+            Dictionary<string, List<StyleString>> global_full_issue_description_list = 
+                                        StyleString.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
 
-            SummaryReport.SaveIssueToSummaryReport(template_file);
+            SummaryReport.SaveIssueToSummaryReport(template_file, global_full_issue_description_list);
 
             return true;
         }
@@ -840,7 +843,8 @@ namespace ExcelReportApplication
 
             // This issue description is needed for report purpose
             //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
-            ReportGenerator.global_issue_description_list_severity = Issue.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.global_issue_list);
+            Dictionary<string, List<StyleString>> global_issue_description_list_severity = 
+                                StyleString.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.global_issue_list);
             String out_dir = KeywordReport.TestReport_Default_Output_Dir;
             if ((out_dir != "") && Storage.DirectoryExists(out_dir))
             {
@@ -850,7 +854,7 @@ namespace ExcelReportApplication
             {
                 output_report_path = Storage.GenerateDirectoryNameWithDateTime(source_dir);
             }
-            KeywordReport.KeywordIssueGenerationTaskV4(report_list, source_dir, output_report_path);
+            KeywordReport.KeywordIssueGenerationTaskV4(report_list, global_issue_description_list_severity, source_dir, output_report_path);
             return true;
         }
 
@@ -864,9 +868,9 @@ namespace ExcelReportApplication
             }
 
             // This issue description is needed for report purpose
-            ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
+            Dictionary<string, List<StyleString>> global_issue_description_list = StyleString.GenerateIssueDescription(ReportGenerator.global_issue_list);
 
-            ReportGenerator.FindFailTCLinkedIssueAllClosed(tc_file, template_file);
+            ReportGenerator.FindFailTCLinkedIssueAllClosed(tc_file, template_file, ReportGenerator.global_issue_list);
             return true;
         }
 

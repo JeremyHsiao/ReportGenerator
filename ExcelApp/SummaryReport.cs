@@ -13,7 +13,7 @@ namespace ExcelReportApplication
         // This demo open Summary Report Excel and write to Notes with all issues beloging to this test group (issue written in ID+Summary+Severity+RD_Comment)
         //
         static public string sheet_Report_Result = "Result";
-        static public void SaveIssueToSummaryReport(string report_filename)
+        static public void SaveIssueToSummaryReport(string report_filename, Dictionary<string, List<StyleString>> bug_description_list)
         {
             // Re-arrange test-case list into dictionary of summary/links pair
             Dictionary<String, String> group_note_issue = new Dictionary<String, String>();
@@ -68,7 +68,7 @@ namespace ExcelReportApplication
                             // issue --> Fail
                             ExcelAction.SetCellValue(result_worksheet, index, col_result, "Fail");
                             // Fill "Note" 
-                            str_list = StyleString.ExtendIssueDescription(note, ReportGenerator.global_full_issue_description_list);
+                            str_list = StyleString.ExtendIssueDescription(note, bug_description_list);
                             StyleString.WriteStyleString(result_worksheet, index, col_issue, str_list);
                         }
                         else

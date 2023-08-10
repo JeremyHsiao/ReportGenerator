@@ -234,38 +234,6 @@ namespace ExcelReportApplication
         static public string SheetName = "general_report";
         static public string KeyPrefix = "TCBEN";
 
-        static private String[] separators = { "," };
-        static public List<String> Convert_LinksString_To_ListOfString(String links)
-        {
-            List<String> ret_list = new List<String> ();
-            // protection
-            if ((links == null)||(links =="")) return ret_list;   // return empty new object
-            // Separate keys into string[]
-            String[] issues = links.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-            if (issues == null) return ret_list;
-            // string[] to List<String> (trimmed) and return
-            foreach(String str in issues)
-            {
-                ret_list.Add(str.Trim());
-            }
-            return ret_list;
-        }
-
-        static public String Convert_ListOfString_To_LinkString(List<String> list)
-        {
-            String ret = "";
-            // protection
-            if (list == null) return ret;
-            if (list.Count == 0) return ret;
-            foreach (String str in list)
-            {
-                ret += str + ", ";
-            }
-            ret.Trim(); // remove " " at beginning & end
-            if (ret[ret.Length-1] == ',') { ret.Remove(ret.Length - 1); }// remove last "," 
-            return ret;
-        }
-
         static public List<TestCase> GenerateTestCaseList(string tclist_filename)
         {
             List<TestCase> ret_tc_list = new List<TestCase>();
@@ -328,6 +296,24 @@ namespace ExcelReportApplication
                 ret_lut.Add(tc.Key, tc);
             }
             return ret_lut;
+        }
+
+        static public List<TestCase> UpdateTCLinkedIssueList(List<TestCase> tc_to_be_updated, List<Issue> issue_list_source,
+                                                Dictionary<string, List<StyleString>> bug_description_list)
+        {
+            List<TestCase> updated_tc = tc_to_be_updated;
+            foreach (TestCase tc in updated_tc) // looping
+            {
+                String links = tc.Links;
+                //if (links != "")
+                if (String.IsNullOrWhiteSpace(links) == false)
+                {
+                    List<StyleString> str_list;
+                    str_list = StyleString.FilteredBugID_to_BugDescription(links, issue_list_source, bug_description_list);
+                    tc.LinkedIssueList = str_list;
+                }
+            }
+            return updated_tc;
         }
 
 
