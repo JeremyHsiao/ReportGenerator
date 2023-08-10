@@ -421,6 +421,10 @@ namespace ExcelReportApplication
 
         private static List<TestPlanKeyword> global_keyword_list = new List<TestPlanKeyword>();
         private static Boolean global_keyword_available;
+        public static Boolean CheckGlobalKeywordListExist()
+        {
+            return global_keyword_available;
+        }
         public static void SetGlobalKeywordList(List<TestPlanKeyword> keyword_list)
         {
             global_keyword_list = keyword_list;
