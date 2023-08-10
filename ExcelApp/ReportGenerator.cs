@@ -371,9 +371,9 @@ namespace ExcelReportApplication
                 //if (tc_key.Contains(TestCase.KeyPrefix) == false) { break; } // If not a TC key in this row, go to next row
                 if (lookup_TestCase.ContainsKey(tc_key) == false) { break; } // If TC key in this row does not exist in database, go to next row
                 String report_name = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, summary_col, IsTemplate: true);
-                String worksheet_name = TestPlan.GetSheetNameAccordingToSummary(report_name);
-                //if (report_name == "") { break; } // 2nd protection to prevent not a TC row
                 if (String.IsNullOrWhiteSpace(report_name) == true) { continue; } // 2nd protection to prevent not a TC row
+                //if (report_name == "") { break; } // 2nd protection to prevent not a TC row
+                String worksheet_name = TestPlan.GetSheetNameAccordingToSummary(report_name);
 
                 // 4.1 Extend bug key string (if not empty) into long string with font settings
                 String links = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, links_col, IsTemplate: true);
@@ -399,37 +399,40 @@ namespace ExcelReportApplication
                     {
                         // update only of judgement_string is available.
                         //if (judgement_str != "")
-                        if(String.IsNullOrWhiteSpace(judgement_str))
+                        if(String.IsNullOrWhiteSpace(judgement_str)==false)
                         {
                             ExcelAction.SetTestCaseCell(excel_row_index, status_col, judgement_str, IsTemplate: true);
                         }
                     }
 
-                    // 4.3 always fill judgement value for reference outside report border (if report is available)
-                    ExcelAction.SetTestCaseCell(excel_row_index, (col_end + 1), judgement_str, IsTemplate: true);
-
-                    // 4.4 
-                    // get buglist from keyword report and show it.
-                    List<TestPlanKeyword> ws_keyword_list = keyword_lut_by_Sheetname[worksheet_name];
-                    if (ws_keyword_list.Count > 0)
+                    if (KeywordReport.CheckGlobalKeywordListExist())
                     {
-                        List<StyleString> str_list = new List<StyleString>();
-                        StyleString new_line_str = new StyleString("\n");
-                        foreach (TestPlanKeyword keyword in ws_keyword_list)
+                        // 4.3 always fill judgement value for reference outside report border (if report is available)
+                        ExcelAction.SetTestCaseCell(excel_row_index, (col_end + 1), judgement_str, IsTemplate: true);
+
+                        // 4.4 
+                        // get buglist from keyword report and show it.
+                        List<TestPlanKeyword> ws_keyword_list = keyword_lut_by_Sheetname[worksheet_name];
+                        if (ws_keyword_list.Count > 0)
                         {
-                            // Only write to keyword on currently open sheet
-                            //if (keyword.Worksheet == sheet_name)
+                            List<StyleString> str_list = new List<StyleString>();
+                            StyleString new_line_str = new StyleString("\n");
+                            foreach (TestPlanKeyword keyword in ws_keyword_list)
                             {
-                                if (keyword.IssueDescriptionList.Count > 0)
+                                // Only write to keyword on currently open sheet
+                                //if (keyword.Worksheet == sheet_name)
                                 {
-                                    // write issue description list
-                                    str_list.AddRange(keyword.IssueDescriptionList);
-                                    str_list.Add(new_line_str);
+                                    if (keyword.IssueDescriptionList.Count > 0)
+                                    {
+                                        // write issue description list
+                                        str_list.AddRange(keyword.IssueDescriptionList);
+                                        str_list.Add(new_line_str);
+                                    }
                                 }
                             }
+                            if (str_list.Count > 0) { str_list.RemoveAt(str_list.Count - 1); } // remove last '\n'
+                            ExcelAction.TestCase_WriteStyleString(excel_row_index, (col_end + 2), str_list, IsTemplate: true);
                         }
-                        if (str_list.Count > 0) { str_list.RemoveAt(str_list.Count - 1); } // remove last '\n'
-                        ExcelAction.TestCase_WriteStyleString(excel_row_index, (col_end + 2), str_list, IsTemplate: true);
                     }
                 }
             }
