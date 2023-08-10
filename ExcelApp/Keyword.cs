@@ -1172,7 +1172,7 @@ namespace ExcelReportApplication
                 {
                     // replace "conclusion:" with "Bug List:"
                     ExcelAction.SetCellValue(ws, row_index, 2, "Bug List:");
-                    ExcelAction.ClearContent(ws, row_index, 3, row_index, ('J' - 'A' + 1));
+                    ExcelAction.ClearContent(ws, row_index, 3, row_index+1, ('J' - 'A' + 1));
                     // output linked issue at C2
                     StyleString.WriteStyleString(ws, row_index + 1, 3, bug_list_description);
                 }
@@ -1402,7 +1402,18 @@ namespace ExcelReportApplication
                 if (Replace_Conclusion)
                 {
                     // Add: replace conclusion with Bug-list
-                    ReplaceConclusionWithBugList(result_worksheet, keyword_issue_description_on_this_report); // should be linked issue in the future
+                    //ReplaceConclusionWithBugList(result_worksheet, keyword_issue_description_on_this_report); // should be linked issue in the future
+                    // Find the TC meets the sheet-name
+                    if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(sheet_name))
+                    {
+                        String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].Links;
+                        keyword_issue_description_on_this_report = StyleString.ExtendIssueDescription(links, bug_description_list);
+                    }
+                    else
+                    {
+                        keyword_issue_description_on_this_report.Clear();
+                    }
+                    ReplaceConclusionWithBugList(result_worksheet, keyword_issue_description_on_this_report); 
                 }
                 else
                 {

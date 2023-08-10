@@ -732,7 +732,8 @@ namespace ExcelReportApplication
         private void ClearTCList()
         {
             ReportGenerator.ClearGlobalTestcaseList();
-            ReportGenerator.ClearTestcaseLUT();
+            ReportGenerator.ClearTestcaseLUT_by_Key();
+            ReportGenerator.ClearTestcaseLUT_by_Sheetname();
             KeywordReport.ClearGlobalKeywordList();
         }
 
@@ -1283,6 +1284,8 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+
+
                         String report_output_path;
                         bRet = Execute_KeywordIssueGenerationTask_returning_report_path(txtReportFile.Text, true, out report_output_path);
                         bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_output_path, template_file: txtOutputTemplate.Text);

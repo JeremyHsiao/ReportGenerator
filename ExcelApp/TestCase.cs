@@ -234,6 +234,19 @@ namespace ExcelReportApplication
         static public string SheetName = "general_report";
         static public string KeyPrefix = "TCBEN";
 
+        static public Boolean CheckValidTC_By_Key_Summary(String tc_key, String tc_summary)
+        {
+            Boolean ret = false;
+            if ((tc_key.Length > TestCase.KeyPrefix.Length) &&
+                (String.Compare(tc_key, 0, TestCase.KeyPrefix, 0, TestCase.KeyPrefix.Length) == 0) &&
+                (String.IsNullOrWhiteSpace(tc_summary) == false))
+            {
+                ret = true;
+            }
+
+            return ret;
+        }
+
         static public List<TestCase> GenerateTestCaseList(string tclist_filename)
         {
             List<TestCase> ret_tc_list = new List<TestCase>();
@@ -264,8 +277,15 @@ namespace ExcelReportApplication
                         }
                         members.Add(str);
                     }
+                    String tc_key = members[(int)TestCaseMemberIndex.KEY];
+                    String summary = members[(int)TestCaseMemberIndex.SUMMARY];
                     // Add issue only if key contains KeyPrefix (very likely a valid key value)
-                    if (members[(int)TestCaseMemberIndex.KEY].Contains(KeyPrefix))
+                    //if (tc_key.Length < KeyPrefix.Length) { continue; } // If not a TC key in this row, go to next row
+                    //if (String.Compare(tc_key, 0, KeyPrefix, 0, KeyPrefix.Length) != 0) { continue; }
+                    //if (String.IsNullOrWhiteSpace(summary) == true) { continue; } // 2nd protection to prevent not a TC row
+
+                    //if (members[(int)TestCaseMemberIndex.KEY].Contains(KeyPrefix))
+                    if (CheckValidTC_By_Key_Summary(tc_key, summary))
                     {
                         ret_tc_list.Add(new TestCase(members));
                     }
@@ -286,16 +306,35 @@ namespace ExcelReportApplication
             }
 
             ReportGenerator.WriteGlobalTestcaseList(ret_tc_list);
-            ReportGenerator.SetTestcaseLUT(TestCase.UpdateTCListLUT(ret_tc_list));
+            ReportGenerator.SetTestcaseLUT_by_Key(TestCase.UpdateTCListLUT_by_Key(ret_tc_list));
+            ReportGenerator.SetTestcaseLUT_by_Sheetname(TestCase.UpdateTCListLUT_by_Sheetname(ret_tc_list));
             return ret_tc_list;
         }
 
-        static public Dictionary<string, TestCase> UpdateTCListLUT(List<TestCase> TC_list)
+        static public Dictionary<string, TestCase> UpdateTCListLUT_by_Key(List<TestCase> TC_list)
         {
             Dictionary<string, TestCase> ret_lut = new Dictionary<string, TestCase>();
             foreach (TestCase tc in TC_list)
             {
                 ret_lut.Add(tc.Key, tc);
+            }
+            return ret_lut;
+        }
+
+        static public Dictionary<string, TestCase> UpdateTCListLUT_by_Sheetname(List<TestCase> TC_list)
+        {
+            Dictionary<string, TestCase> ret_lut = new Dictionary<string, TestCase>();
+            foreach (TestCase tc in TC_list)
+            {
+                String sheetname = TestPlan.GetSheetNameAccordingToSummary(tc.Summary);
+                if (ret_lut.ContainsKey(sheetname))
+                {
+                    // shouldn't be here. Excel needs to be fixed
+                }
+                else
+                {
+                    ret_lut.Add(sheetname, tc);
+                }
             }
             return ret_lut;
         }
