@@ -673,7 +673,7 @@ namespace ExcelReportApplication
             else
             {
                 MsgWindow.AppendText("Processing bug_list:" + buglist_filename + ".\n");
-                ReportGenerator.global_issue_list = Issue.GenerateIssueList(buglist_filename);
+                ReportGenerator.WriteGlobalIssueList(Issue.GenerateIssueList(buglist_filename));
                 //ReportGenerator.lookup_BugList = Issue.UpdateIssueListLUT(ReportGenerator.global_issue_list);
                 // update LUT
                 MsgWindow.AppendText("bug_list finished!\n");
@@ -692,8 +692,7 @@ namespace ExcelReportApplication
             else
             {
                 MsgWindow.AppendText("Processing tc_list:" + tclist_filename + ".\n");
-                ReportGenerator.global_testcase_list = TestCase.GenerateTestCaseList(tclist_filename);
-                ReportGenerator.lookup_TestCase = TestCase.UpdateTCListLUT(ReportGenerator.global_testcase_list);
+                List<TestCase> new_tc_list = TestCase.GenerateTestCaseList(tclist_filename);
                 MsgWindow.AppendText("tc_list finished!\n");
                 return true;
             }
@@ -701,7 +700,7 @@ namespace ExcelReportApplication
 
         private bool LoadIssueListIfEmpty(String filename)
         {
-            if (ReportGenerator.global_issue_list.Count == 0)
+            if (ReportGenerator.IsGlobalIssueListEmpty())
             {
                 return ReadGlobalIssueListTask(filename);
             }
@@ -713,14 +712,14 @@ namespace ExcelReportApplication
 
         private void ClearIssueList()
         {
-            ReportGenerator.global_issue_list.Clear();
+            ReportGenerator.ClearGlobalIssueList();
             //ReportGenerator.lookup_BugList.Clear();
             KeywordReport.ClearGlobalKeywordList();
         }
 
         private bool LoadTCListIfEmpty(String filename)
         {
-            if (ReportGenerator.global_testcase_list.Count == 0)
+            if (ReportGenerator.IsGlobalTestcaseListEmpty())
             {
                 return ReadGlobalTCListTask(filename);
             }
@@ -732,14 +731,14 @@ namespace ExcelReportApplication
 
         private void ClearTCList()
         {
-            ReportGenerator.global_testcase_list.Clear();
+            ReportGenerator.ClearGlobalTestcaseList();
             ReportGenerator.lookup_TestCase.Clear();
             KeywordReport.ClearGlobalKeywordList();
         }
 
         private bool Execute_WriteIssueDescriptionToTC(String tc_file, String template_file, String judgement_report_dir = "")
         {
-            if ((ReportGenerator.global_issue_list.Count == 0) || (ReportGenerator.global_testcase_list.Count == 0) ||
+            if ((ReportGenerator.IsGlobalIssueListEmpty()) || (ReportGenerator.IsGlobalTestcaseListEmpty()) ||
                 (!Storage.FileExists(tc_file)) || (!Storage.FileExists(template_file))
                 || ((judgement_report_dir != "") && !Storage.DirectoryExists(judgement_report_dir)))
             {
@@ -751,19 +750,20 @@ namespace ExcelReportApplication
             // This full issue description is needed for report purpose
             //Dictionary<string, List<StyleString>> global_issue_description_list = StyleString.GenerateIssueDescription(ReportGenerator.global_issue_list);
             Dictionary<string, List<StyleString>> global_issue_description_list_severity = 
-                        StyleString.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.global_issue_list);
-            ReportGenerator.global_testcase_list =
-                    TestCase.UpdateTCLinkedIssueList(ReportGenerator.global_testcase_list, ReportGenerator.global_issue_list, global_issue_description_list_severity);
+                        StyleString.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.ReadGlobalIssueList());
+            List<TestCase> before = ReportGenerator.ReadGlobalTestcaseList();
+            List<TestCase> after = TestCase.UpdateTCLinkedIssueList(before, ReportGenerator.ReadGlobalIssueList(), global_issue_description_list_severity);
+            ReportGenerator.WriteGlobalTestcaseList(after);
 
             //            ReportGenerator.WriteBacktoTCJiraExcel(tc_file);
             //ReportGenerator.WriteBacktoTCJiraExcelV2(tc_file, template_file, judgement_report_dir);
-            ReportGenerator.WriteBacktoTCJiraExcelV3(tc_file, template_file, ReportGenerator.global_issue_list, global_issue_description_list_severity, judgement_report_dir);
+            ReportGenerator.WriteBacktoTCJiraExcelV3(tc_file, template_file, ReportGenerator.ReadGlobalIssueList(), global_issue_description_list_severity, judgement_report_dir);
             return true;
         }
 
         private bool Execute_WriteIssueDescriptionToSummary(String template_file)
         {
-            if ((ReportGenerator.global_issue_list.Count == 0) || (ReportGenerator.global_testcase_list.Count == 0) ||
+            if ((ReportGenerator.IsGlobalIssueListEmpty()) || (ReportGenerator.IsGlobalTestcaseListEmpty()) ||
                 (!Storage.FileExists(template_file)))
             {
                 // protection check
@@ -771,8 +771,8 @@ namespace ExcelReportApplication
             }
 
             // This full issue description is needed for report purpose
-            Dictionary<string, List<StyleString>> global_full_issue_description_list = 
-                                        StyleString.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
+            Dictionary<string, List<StyleString>> global_full_issue_description_list =
+                                        StyleString.GenerateFullIssueDescription(ReportGenerator.ReadGlobalIssueList());
 
             SummaryReport.SaveIssueToSummaryReport(template_file, global_full_issue_description_list);
 
@@ -815,7 +815,7 @@ namespace ExcelReportApplication
             output_report_path = "";
             if (IsDirectory == false)
             {
-                if ((ReportGenerator.global_issue_list.Count == 0) || (!Storage.FileExists(FileOrDirectoryName)))
+                if ((ReportGenerator.IsGlobalIssueListEmpty()) || (!Storage.FileExists(FileOrDirectoryName)))
                 {
                     // protection check
                     return false;
@@ -825,7 +825,7 @@ namespace ExcelReportApplication
             }
             else
             {
-                if ((ReportGenerator.global_issue_list.Count == 0) || (!Storage.DirectoryExists(FileOrDirectoryName)))
+                if ((ReportGenerator.IsGlobalIssueListEmpty()) || (!Storage.DirectoryExists(FileOrDirectoryName)))
                 {
                     // protection check
                     return false;
@@ -843,8 +843,58 @@ namespace ExcelReportApplication
 
             // This issue description is needed for report purpose
             //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
-            Dictionary<string, List<StyleString>> global_issue_description_list_severity = 
-                                StyleString.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.global_issue_list);
+            Dictionary<string, List<StyleString>> global_issue_description_list_severity =
+                                StyleString.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.ReadGlobalIssueList());
+            String out_dir = KeywordReport.TestReport_Default_Output_Dir;
+            if ((out_dir != "") && Storage.DirectoryExists(out_dir))
+            {
+                output_report_path = KeywordReport.TestReport_Default_Output_Dir;
+            }
+            else
+            {
+                output_report_path = Storage.GenerateDirectoryNameWithDateTime(source_dir);
+            }
+            KeywordReport.KeywordIssueGenerationTaskV4(report_list, global_issue_description_list_severity, source_dir, output_report_path);
+            return true;
+        }
+
+        private bool Execute_KeywordIssueGenerationTask_returning_report_path_update_bug_list(String FileOrDirectoryName, Boolean IsDirectory,  out String output_report_path)
+        {
+            List<String> file_list = new List<String>();
+            String source_dir;
+            output_report_path = "";
+            if (IsDirectory == false)
+            {
+                if ((ReportGenerator.IsGlobalIssueListEmpty()) || (!Storage.FileExists(FileOrDirectoryName)))
+                {
+                    // protection check
+                    return false;
+                }
+                file_list.Add(FileOrDirectoryName);
+                source_dir = Storage.GetDirectoryName(FileOrDirectoryName);
+            }
+            else
+            {
+                if ((ReportGenerator.IsGlobalIssueListEmpty()) || (!Storage.DirectoryExists(FileOrDirectoryName)))
+                {
+                    // protection check
+                    return false;
+                }
+                file_list = Storage.ListFilesUnderDirectory(FileOrDirectoryName);
+                //MsgWindow.AppendText("File found under directory " + FileOrDirectoryName + "\n");
+                //foreach (String filename in file_list)
+                //    MsgWindow.AppendText(filename + "\n");
+                source_dir = FileOrDirectoryName;
+            }
+            // filename check to exclude non-report files.
+            //List<String> report_list = Storage.FilterFilename(file_list);
+            // NOTE: FilterFilename() execution is now relocated within KeywordIssueGenerationTaskV4()
+            List<String> report_list = file_list;
+
+            // This issue description is needed for report purpose
+            //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
+            Dictionary<string, List<StyleString>> global_issue_description_list_severity =
+                                StyleString.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.ReadGlobalIssueList());
             String out_dir = KeywordReport.TestReport_Default_Output_Dir;
             if ((out_dir != "") && Storage.DirectoryExists(out_dir))
             {
@@ -860,7 +910,7 @@ namespace ExcelReportApplication
 
         private bool Execute_FindFailTCLinkedIssueAllClosed(String tc_file, String template_file)
         {
-            if ((ReportGenerator.global_issue_list.Count == 0) || (ReportGenerator.global_testcase_list.Count == 0) ||
+            if ((ReportGenerator.IsGlobalIssueListEmpty()) || (ReportGenerator.IsGlobalTestcaseListEmpty()) ||
                 (!Storage.FileExists(tc_file)) || (!Storage.FileExists(template_file)))
             {
                 // protection check
@@ -868,9 +918,9 @@ namespace ExcelReportApplication
             }
 
             // This issue description is needed for report purpose
-            Dictionary<string, List<StyleString>> global_issue_description_list = StyleString.GenerateIssueDescription(ReportGenerator.global_issue_list);
+            Dictionary<string, List<StyleString>> global_issue_description_list = StyleString.GenerateIssueDescription(ReportGenerator.ReadGlobalIssueList());
 
-            ReportGenerator.FindFailTCLinkedIssueAllClosed(tc_file, template_file, ReportGenerator.global_issue_list);
+            ReportGenerator.FindFailTCLinkedIssueAllClosed(tc_file, template_file, ReportGenerator.ReadGlobalIssueList());
             return true;
         }
 

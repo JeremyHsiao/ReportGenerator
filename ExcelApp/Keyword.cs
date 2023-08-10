@@ -1233,7 +1233,7 @@ namespace ExcelReportApplication
             //
             //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);//done outside in advance
             Dictionary<String, List<String>> KeywordIssueIDList = new Dictionary<String, List<String>>();
-            foreach (Issue issue in ReportGenerator.global_issue_list)
+            foreach (Issue issue in ReportGenerator.ReadGlobalIssueList())
             {
                 issue.KeywordList.Clear();
             }
@@ -1243,7 +1243,7 @@ namespace ExcelReportApplication
                 List<StyleString> description_list;
                 List<String> id_list = new List<String>();
                 String keyword_str = keyword.Keyword;
-                foreach (Issue issue in ReportGenerator.global_issue_list)
+                foreach (Issue issue in ReportGenerator.ReadGlobalIssueList())
                 {
                     // if status meets filter condition (mostly Closed_0), skip to next issue)
                     if (fileter_status_list.IndexOf(issue.Status) >= 0)

@@ -12,16 +12,56 @@ namespace ExcelReportApplication
 {
     static class ReportGenerator
     {
-        static public List<Issue> global_issue_list = new List<Issue>();
+        static private List<Issue> global_issue_list = new List<Issue>();
         //static public Dictionary<string, List<StyleString>> global_full_issue_description_list = new Dictionary<string, List<StyleString>>();  // SaveIssueToSummaryReport
         //static public Dictionary<string, List<StyleString>> global_issue_description_list = new Dictionary<string, List<StyleString>>(); // TC-related
         //static public Dictionary<string, List<StyleString>> global_issue_description_list_severity = new Dictionary<string, List<StyleString>>(); //keyword-related
-        static public List<TestCase> global_testcase_list = new List<TestCase>();
+        static private List<TestCase> global_testcase_list = new List<TestCase>();
         static public List<String> fileter_status_list = new List<String>();
         static public List<ReportFileRecord> excel_not_report_log = new List<ReportFileRecord>();
 
         //static public Dictionary<string, Issue> lookup_BugList = new Dictionary<string, Issue>();
         static public Dictionary<string, TestCase> lookup_TestCase = new Dictionary<string, TestCase>();
+
+        static public List<Issue> ReadGlobalIssueList()
+        {
+            return global_issue_list;
+        }
+
+        static public void WriteGlobalIssueList(List<Issue> new_issue_list)
+        {
+            global_issue_list = new_issue_list;
+        }
+
+        static public Boolean IsGlobalIssueListEmpty()
+        {
+            return (global_issue_list.Count <= 0);
+        }
+
+        static public void ClearGlobalIssueList()
+        {
+            global_issue_list.Clear();
+        }
+
+        static public List<TestCase> ReadGlobalTestcaseList()
+        {
+            return global_testcase_list;
+        }
+
+        static public void WriteGlobalTestcaseList(List<TestCase> new_tc_list)
+        {
+            global_testcase_list = new_tc_list;
+        }
+
+        static public Boolean IsGlobalTestcaseListEmpty()
+        {
+            return (global_testcase_list.Count <= 0);
+        }
+
+        static public void ClearGlobalTestcaseList()
+        {
+            global_testcase_list.Clear();
+        }
 
         //private static List<String> GetGlobalIssueKey(List<Issue> issue_list)
         //{
@@ -382,7 +422,7 @@ namespace ExcelReportApplication
 
                     String current_status = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, status_col, IsTemplate: true);
                     String judgement_str;
-                    Boolean update_status = false;
+                    //Boolean update_status = false;
                     String workbook_filename = report_filelist_by_sheetname[worksheet_name];
                     if (KeywordReport.CheckLookupReportJudgementResultExist())
                     {
@@ -484,7 +524,7 @@ namespace ExcelReportApplication
             List<String> tc_blocked_all_closed = new List<String>();           // TC Status is Blocked AND Links are all closed
 
             // looping all TC where links are not empty
-            foreach (TestCase tc in global_testcase_list) // looping
+            foreach (TestCase tc in ReadGlobalTestcaseList()) // looping
             {
                 if (tc.Status == TestCase.STR_FINISHED)
                 {

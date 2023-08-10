@@ -351,7 +351,7 @@ namespace ExcelReportApplication
 
             // Generating SET B (src_report_list)
             // Because A is also available, we can use it to generate A&B (check if this B is also in A) and B-A&B (check if this B is NOT in A)
-            foreach (TestCase tc in ReportGenerator.global_testcase_list)
+            foreach (TestCase tc in ReportGenerator.ReadGlobalTestcaseList())
             {
                 // go through all test-case and copy report files.
                 String path = tc.Group, filename = tc.Summary + ".xlsx";

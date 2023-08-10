@@ -17,7 +17,7 @@ namespace ExcelReportApplication
         {
             // Re-arrange test-case list into dictionary of summary/links pair
             Dictionary<String, String> group_note_issue = new Dictionary<String, String>();
-            foreach (TestCase tc in ReportGenerator.global_testcase_list)
+            foreach (TestCase tc in ReportGenerator.ReadGlobalTestcaseList())
             {
                 String key = tc.Summary;
                 //if (key != "")
