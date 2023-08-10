@@ -804,11 +804,11 @@ namespace ExcelReportApplication
 
         private bool Execute_KeywordIssueGenerationTask(String FileOrDirectoryName, Boolean IsDirectory = false)
         {
-            String output_report_path;
-            return Execute_KeywordIssueGenerationTask(FileOrDirectoryName, IsDirectory, out output_report_path);
+            String output_report_path;  // not used for this task
+            return Execute_KeywordIssueGenerationTask_returning_report_path(FileOrDirectoryName, IsDirectory, out output_report_path);
         }
 
-        private bool Execute_KeywordIssueGenerationTask(String FileOrDirectoryName, Boolean IsDirectory, out String output_report_path)
+        private bool Execute_KeywordIssueGenerationTask_returning_report_path(String FileOrDirectoryName, Boolean IsDirectory, out String output_report_path)
         {
             List<String> file_list = new List<String>();
             String source_dir;
@@ -1234,7 +1234,7 @@ namespace ExcelReportApplication
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
                         String report_output_path;
-                        bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, true, out report_output_path);
+                        bRet = Execute_KeywordIssueGenerationTask_returning_report_path(txtReportFile.Text, true, out report_output_path);
                         bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_output_path, template_file: txtOutputTemplate.Text);
                         break;
                     case ReportType.Man_Power_Processing:
