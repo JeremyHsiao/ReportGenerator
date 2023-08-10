@@ -21,7 +21,22 @@ namespace ExcelReportApplication
         static public List<ReportFileRecord> excel_not_report_log = new List<ReportFileRecord>();
 
         //static public Dictionary<string, Issue> lookup_BugList = new Dictionary<string, Issue>();
-        static public Dictionary<string, TestCase> lookup_TestCase = new Dictionary<string, TestCase>();
+        static private Dictionary<string, TestCase> lookup_TestCase = new Dictionary<string, TestCase>();
+
+        static public Dictionary<string, TestCase> GetTestcaseLUT()
+        {
+            return lookup_TestCase;
+        }
+
+        static public void SetTestcaseLUT(Dictionary<string, TestCase> new_tc_lut)
+        {
+            lookup_TestCase = new_tc_lut;
+        }
+
+        static public void ClearTestcaseLUT()
+        {
+            lookup_TestCase.Clear();
+        }
 
         static public List<Issue> ReadGlobalIssueList()
         {
@@ -399,7 +414,7 @@ namespace ExcelReportApplication
                 //if (tc_key.Contains(TestCase.KeyPrefix) == false) { break; } // If not a TC key in this row, go to next row
                 if (tc_key.Length < TestCase.KeyPrefix.Length) { continue; } // If not a TC key in this row, go to next row
                 if (String.Compare(tc_key, 0, TestCase.KeyPrefix, 0, TestCase.KeyPrefix.Length) != 0) { continue; } 
-                if (lookup_TestCase.ContainsKey(tc_key) == false) { continue; } 
+                if (ReportGenerator.GetTestcaseLUT().ContainsKey(tc_key) == false) { continue; } 
                 String report_name = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, summary_col, IsTemplate: true);
                 if (String.IsNullOrWhiteSpace(report_name) == true) { continue; } // 2nd protection to prevent not a TC row
                 //if (report_name == "") { break; } // 2nd protection to prevent not a TC row

@@ -732,7 +732,7 @@ namespace ExcelReportApplication
         private void ClearTCList()
         {
             ReportGenerator.ClearGlobalTestcaseList();
-            ReportGenerator.lookup_TestCase.Clear();
+            ReportGenerator.ClearTestcaseLUT();
             KeywordReport.ClearGlobalKeywordList();
         }
 

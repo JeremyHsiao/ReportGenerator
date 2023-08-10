@@ -286,7 +286,7 @@ namespace ExcelReportApplication
             }
 
             ReportGenerator.WriteGlobalTestcaseList(ret_tc_list);
-            ReportGenerator.lookup_TestCase = TestCase.UpdateTCListLUT(ret_tc_list);
+            ReportGenerator.SetTestcaseLUT(TestCase.UpdateTCListLUT(ret_tc_list));
             return ret_tc_list;
         }
 
