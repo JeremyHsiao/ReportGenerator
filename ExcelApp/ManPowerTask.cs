@@ -72,17 +72,23 @@ namespace ExcelReportApplication
 
         // generated data for each "Manpower" task
         public DateTime Task_Start_Date, Task_End_Date; // Generate according to Target_start_date & Target_end_date;
-        public String Average_ManHour;
+        public DateTime Task_Start_Week, Task_End_Week; 
+        public String Daily_Average_ManHour;
+        public Double daily_average_manhour_value;
         public String Daily_ManHour_String;
+        public String Weekly_ManHour_String;
  
         // global data
         static public String Caption_Line;              // reading from CSV
-        static public DateTime Start_Date, End_Date;      // search all CSV
+        static public DateTime Start_Date, End_Date;    // search all CSV
+        static public DateTime Start_Week, End_Week;    // search all CSV
         static public List<Boolean> IsWorkingDay = new List<Boolean>();
         static public String Title_StartDate_to_EndDate;  // Generated according to Start_Date, End_Date
+        static public String Title_StartWeek_to_EndWeek;  // Generated according to Start_Date, End_Date
 
         static public String hierachy_string = "Manpower";
         static public String empty_average_manhour = " ";
+        static public Double empty_average_manhour_value = -1.0;
 
         public ManPower() { this.SetMemberByString(new List<String>()); }
 
@@ -179,18 +185,21 @@ namespace ExcelReportApplication
                 {
                     Double average_man_hour = Math.Round(man_hour / workday_count, 1);
                     String pSpecifier = "F1";   // floating-point with one digit after decimal
-                    Average_ManHour = average_man_hour.ToString(pSpecifier);
+                    Daily_Average_ManHour = average_man_hour.ToString(pSpecifier);
+                    daily_average_manhour_value = average_man_hour;
                 }
                 else
                 {
                     // to check:
-                    Average_ManHour = empty_average_manhour;
+                    Daily_Average_ManHour = empty_average_manhour;
+                    daily_average_manhour_value = empty_average_manhour_value;
                 }
             }
             else
             {
                 // man-power plan needs to be updated.
-                Average_ManHour = empty_average_manhour;
+                Daily_Average_ManHour = empty_average_manhour;
+                daily_average_manhour_value = empty_average_manhour_value;
             }
         }
 
@@ -239,13 +248,38 @@ namespace ExcelReportApplication
             return ret_str;
         }
 
+        static public String GenerateWeekOfYearTitle(DateTime start, DateTime end)
+        {
+            String ret_str = "";
+            if (start > end)
+            {
+                // to-check: shouldn't be here
+            }
+            else
+            {
+                // At least one date (start_date)
+                DateTime dt = start.Date;
+
+                ret_str = dt.ToString("yyyy", DateOnly.datetime_culture).Substring(3,1) + DateOnly.GetYearAndWeekOfYear(dt).ToString();
+                dt = dt.AddDays(7.0);
+                // add "," + next-date till next-date is the end-date
+                while (dt <= end.Date)
+                {
+                    ret_str += "," + dt.ToString("yyyy", DateOnly.datetime_culture).Substring(3, 1) + DateOnly.GetYearAndWeekOfYear(dt).ToString();
+                    dt = dt.AddDays(7.0);
+                }
+                // reaching here when the next-date is after the end-date
+            }
+            return ret_str;
+        }
+
         // this function is working properly when title start/end date are set up correctly.
         public String GenerateManPowerDailyEffortString()
         {
             String ret_str = "";
 
             // check if (1) a man-power item (2) Average ManHour is not empty (3) start/end date is not correct
-            if ((this.Hierarchy != hierachy_string) || (this.Average_ManHour == empty_average_manhour) ||
+            if ((this.Hierarchy != hierachy_string) || (this.Daily_Average_ManHour == empty_average_manhour) ||
                 (this.Task_Start_Date > this.Task_End_Date) || (ManPower.Start_Date > ManPower.End_Date))
             {
                 // to-check: shouldn't be here
@@ -275,7 +309,7 @@ namespace ExcelReportApplication
             // if 1st day is not-yet an overlay-date, fill "0"
             if (overlay_start_index == 0)     
             {
-                ret_str += (ManPower.IsWorkingDay[0]) ? this.Average_ManHour : "0";
+                ret_str += (ManPower.IsWorkingDay[0]) ? this.Daily_Average_ManHour : "0";
             }
             else
             {
@@ -295,7 +329,7 @@ namespace ExcelReportApplication
             while (date_index <= overlay_end_index)
             {
                 ret_str += ", ";
-                ret_str += (ManPower.IsWorkingDay[date_index]) ? this.Average_ManHour : "0";
+                ret_str += (ManPower.IsWorkingDay[date_index]) ? this.Daily_Average_ManHour : "0";
                 date_index++;
             }
 
@@ -401,6 +435,8 @@ namespace ExcelReportApplication
 
         static public List<ManPower> ReadManPowerTaskCSV(String csv_filename)
         {
+            DateOnly.SortHoliday();
+
             List<ManPower> ret_manpower_list = new List<ManPower>();
             using (TextFieldParser csvParser = new TextFieldParser(csv_filename))
             {
@@ -424,7 +460,9 @@ namespace ExcelReportApplication
             // Generated data
             ManPower.Start_Date = DateOnly.FindEearliestTargetStartDate(ret_manpower_list);
             ManPower.End_Date = DateOnly.FindLatestTargetEndDate(ret_manpower_list);
+            DateOnly.Update_Holiday_Range(ManPower.Start_Date, ManPower.End_Date);
             ManPower.Title_StartDate_to_EndDate = ManPower.GenerateDateTitle(ManPower.Start_Date, ManPower.End_Date);
+            ManPower.Title_StartWeek_to_EndWeek = ManPower.GenerateWeekOfYearTitle(ManPower.Start_Date, ManPower.End_Date);
 
             ManPower.IsWorkingDay.Clear();
             for (DateTime dt = ManPower.Start_Date.Date; dt <= ManPower.End_Date.Date; dt = dt.AddDays(1.0))
@@ -541,6 +579,7 @@ namespace ExcelReportApplication
         static private String cultureName = "en-US";// { "en-US", "ru-RU", "ja-JP" };
         static public CultureInfo datetime_culture = new CultureInfo(cultureName);
 
+        static private DateTime[] active_holiday;
         static private DateTime[] HolidaysSince2023 = 
         {
             // National Holiday 
@@ -579,6 +618,33 @@ namespace ExcelReportApplication
 
         };
 
+        static public void SortHoliday()
+        {
+            Array.Sort<DateTime>(HolidaysSince2023);
+            active_holiday = HolidaysSince2023;
+        }
+
+        static public T[] SubArray<T>(this T[] data, int index, int length)
+        {
+            T[] result = new T[length];
+            Array.Copy(data, index, result, 0, length);
+            return result;
+        }
+
+        static public void Update_Holiday_Range(DateTime start, DateTime end)
+        {
+            int start_index = 0;
+            int length = HolidaysSince2023.Count();
+
+            start_index = Array.BinarySearch<DateTime>(HolidaysSince2023, start);
+            start_index = (start_index >= 0) ? start_index : ~start_index;
+            int search_end = Array.BinarySearch<DateTime>(HolidaysSince2023, end);
+            search_end = (search_end >= 0) ? search_end : ((~search_end) - 1);
+            length = search_end - start_index + 1;
+
+            active_holiday = HolidaysSince2023.SubArray(start_index, length);
+        }
+
         static public Boolean IsHoliday(DateTime datetime)
         {
             Boolean ret = false;
@@ -591,24 +657,35 @@ namespace ExcelReportApplication
             else 
             {
                 // if it is a weekday, then check if it is a holiday which is not on weekend
-                foreach (DateTime holiday in HolidaysSince2023)
+                //foreach (DateTime holiday in HolidaysSince2023)
+                //{
+                //   if (holiday.Date == datetime.Date)
+                //    {
+                //        // holiday found, stop checking
+                //        ret = true;
+                //        break;
+                //    }
+                //}
+                if(Array.BinarySearch<DateTime>(active_holiday,datetime)>=0)
                 {
-                   if (holiday.Date == datetime.Date)
-                    {
-                        // holiday found, stop checking
-                        ret = true;
-                        break;
-                    }
+                    ret = true;
                 }
             }
 
             return ret;
         }
 
+        static public int GetYearAndWeekOfYear(DateTime datetime)
+        {
+            Calendar my_calendar = datetime_culture.Calendar;
+            int ret = my_calendar.GetWeekOfYear(datetime, datetime_culture.DateTimeFormat.CalendarWeekRule, datetime_culture.DateTimeFormat.FirstDayOfWeek);
+            return ret;
+        }
+
         //static public int BusinessDaysUntil(this DateTime firstDay, DateTime lastDay, params DateTime[] bankHolidays)
         static public int BusinessDaysUntil(this DateTime firstDay, DateTime lastDay)
         {
-            DateTime[] bankHolidays = HolidaysSince2023;
+            DateTime[] bankHolidays = active_holiday;
             firstDay = firstDay.Date;
             lastDay = lastDay.Date;
             if (firstDay > lastDay)
