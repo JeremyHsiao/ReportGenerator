@@ -320,11 +320,11 @@ Returns or sets the type of underline applied to the font.
             WriteStyleString(ref input_range, sytle_string_list);
         }
 
-        static public Color descrption_color_issue = Color.Red;
-        static public Color descrption_color_comment = Color.Blue;
-
         static public Dictionary<string, List<StyleString>> GenerateFullIssueDescription(List<Issue> issuelist)
         {
+           Color descrption_color_issue = Color.Red;
+           Color descrption_color_comment = Color.Blue;
+
             Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
 
             foreach (Issue issue in issuelist)
@@ -390,7 +390,7 @@ Returns or sets the type of underline applied to the font.
                     {
                         str += "(" + KeywordReport.WAIVED_str + ")";
                     }
-                    StyleString style_str = new StyleString(str, descrption_color_issue);
+                    StyleString style_str = new StyleString(str, StyleString.default_color);
                     value_style_str.Add(style_str);
                     /*
                     // Keep portion of string before first "\n"; if no "\n", keep whole string otherwise.

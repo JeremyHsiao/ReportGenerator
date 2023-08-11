@@ -546,7 +546,7 @@ namespace ExcelReportApplication
             // config for default output directory of test report (keyword report)
             KeywordReport.TestReport_Default_Output_Dir = XMLConfig.ReadAppSetting_String("TestReport_Default_Output_Dir");
 
-            // config for excel report output
+            // config for excel report output (also linked issue)
             StyleString.default_font = XMLConfig.ReadAppSetting_String("default_report_Font");
             StyleString.default_size = XMLConfig.ReadAppSetting_int("default_report_FontSize");
             StyleString.default_color = XMLConfig.ReadAppSetting_Color("default_report_FontColor");
