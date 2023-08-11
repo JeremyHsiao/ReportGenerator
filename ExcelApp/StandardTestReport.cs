@@ -566,6 +566,28 @@ namespace ExcelReportApplication
                 file_has_been_updated = true;
             }
 
+            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal)
+            {
+                String sheet_name_to_keep = ws.Name;
+                if (wb.Sheets.Count > 1)
+                {
+                    // work-sheet can be deleted only when there are two or more sheets
+                    for (int sheet_index = wb.Sheets.Count; sheet_index > 0; sheet_index--)
+                    {
+                        String temp_sheet_name = wb.Sheets[sheet_index].Name;
+                        if (temp_sheet_name.Length >= sheet_name_to_keep.Length)
+                        {
+                            if (temp_sheet_name.Substring(0, sheet_name_to_keep.Length) == sheet_name_to_keep)
+                            {
+                                continue;
+                            }
+                        }
+                        wb.Sheets[sheet_index].Delete();
+                        file_has_been_updated = true;
+                    }
+                }
+            }
+
             if ((file_has_been_updated) || (always_save))
             {
                 // Something has been updated or always save (ex: to copy file & update) ==> save to excel file

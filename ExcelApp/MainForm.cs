@@ -33,8 +33,8 @@ namespace ExcelReportApplication
             TC_TestReportCreation,
             TC_AutoCorrectReport_By_Filename,
             TC_AutoCorrectReport_By_ExcelList,              // Report C
-            CopyReportOnly,
-            WriteAllReportHeaderAccordingToExcel,
+            CopyReportOnly,                                 // Report D -- copy only version of report C
+            RemoveInternalSheet,                            // Report E -- remove internalsheet version of report C
             TC_GroupSummaryReport,
             Update_Report_Linked_Issue,
             Update_Keyword_and_TC_Report,
@@ -56,7 +56,7 @@ namespace ExcelReportApplication
             //ReportType.TC_AutoCorrectReport_By_Filename,
             ReportType.TC_AutoCorrectReport_By_ExcelList, 
             ReportType.CopyReportOnly,
-            //ReportType.WriteAllReportHeaderAccordingToExcel, 
+            ReportType.RemoveInternalSheet, 
             //ReportType.TC_GroupSummaryReport,
             //ReportType.Update_Report_Linked_Issue,
             ReportType.Update_Keyword_and_TC_Report,
@@ -78,7 +78,7 @@ namespace ExcelReportApplication
         //    ReportType.TC_AutoCorrectReport_By_Filename,
         //    ReportType.TC_AutoCorrectReport_By_ExcelList,
         //    ReportType.CopyReportOnly,
-        //    ReportType.WriteAllReportHeaderAccordingToExcel, 
+        //    ReportType.RemoveInternalSheet, 
         //    ReportType.TC_GroupSummaryReport,
         //    ReportType.Update_Report_Linked_Issue,
         //    ReportType.Update_Keyword_and_TC_Report,
@@ -137,7 +137,7 @@ namespace ExcelReportApplication
             "B.Auto-correct report header",
             "C.Create New Model Report",
             "D.Copy Report Only",
-            "E.Write All Report Header",
+            "E.Remove Internal Sheets from Report",
             "F.Update Test Group Summary Report",
             "G.Update Report Linked Issue",
             "H.Update Keyword Rerpot and TC summary (7+9)",
@@ -238,12 +238,12 @@ namespace ExcelReportApplication
                 "Input:",  "  Report Path",
                 "Output:", "  Reports copied to destination.",
             },
-            // "E.Write All Report Header",
+            // "E.Remove Internal Sheets from Report",
             new String[] 
             {
-                "Open all Repoorts and update header information according to value listed on Excel", 
-                "Input:",  "  Report Path & Excel file containing header value of reports under Report Path",
-                "Output:", "  Updated reports (according to header value listed on Excel",
+                "Reports' internal sheets are removed and saved to destination.", 
+                "Input:",  "  Report Path",
+                "Output:", "  Reports saved to destination.",
             },
             // "F.Update Test Group Summary Report",
             new String[] 
@@ -373,15 +373,15 @@ namespace ExcelReportApplication
                 "Test Report Path",
                 "Input Excel File",
             },
-            //"D.Read All Report Header",
+            // "D.Copy Report Only",
             new String[] 
             {
                 "Jira Bug File", 
                 "Jira TC File",
                 "Test Report Path",
-                "Output Excel File",
+                "Input Excel File",
             },
-            //"E.Write All Report Header",
+            // "E.Remove Internal Sheets from Report",
             new String[] 
             {
                 "Jira Bug File", 
@@ -564,6 +564,7 @@ namespace ExcelReportApplication
 
             // config for report C
             KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = XMLConfig.ReadAppSetting_Boolean("Report_C_CopyFileOnly");
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = XMLConfig.ReadAppSetting_Boolean("Report_C_Remove_AUO_Internal");
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Full_Header");
             KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = XMLConfig.ReadAppSetting_Boolean("Report_C_Replace_Conclusion");
             
@@ -1165,6 +1166,7 @@ namespace ExcelReportApplication
             Boolean open_excel_ok = ExcelAction.OpenExcelApp();
             if (open_excel_ok)
             {
+                Stack<Boolean> temp_bool = new Stack<Boolean>();
 
                 // Must be updated if new report type added #NewReportType
                 switch (ReportTypeFromInt(report_index))
@@ -1264,10 +1266,36 @@ namespace ExcelReportApplication
                     case ReportType.CopyReportOnly:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         // copy files only
-                        Boolean temp_bool = KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly;
+                        temp_bool.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly);
                         KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = true;
                         bRet = Execute_AutoCorrectTestReportByExcel_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = temp_bool;
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = temp_bool.Pop();
+                        break;
+                    case ReportType.RemoveInternalSheet:
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
+                        // copy files only
+                        temp_bool.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly);
+                        temp_bool.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal);
+                        temp_bool.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname);
+                        temp_bool.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result);
+                        temp_bool.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row);
+                        temp_bool.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion);
+                        temp_bool.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header);
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = false;
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = true;
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = false;
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = false;
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = false;
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = false;
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = false;
+                        bRet = Execute_AutoCorrectTestReportByExcel_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = temp_bool.Pop();
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = temp_bool.Pop();
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = temp_bool.Pop();
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = temp_bool.Pop();
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = temp_bool.Pop();
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = temp_bool.Pop();
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = temp_bool.Pop();
                         break;
                     case ReportType.TC_GroupSummaryReport:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
@@ -1456,6 +1484,12 @@ namespace ExcelReportApplication
                     SetEnable_ReportFile(false);
                     SetEnable_OutputTemplate(true);
                     break;
+                case ReportType.RemoveInternalSheet:
+                    SetEnable_BugFile(false);
+                    SetEnable_TCFile(false);
+                    SetEnable_ReportFile(false);
+                    SetEnable_OutputTemplate(true);
+                    break;
                 case ReportType.TC_GroupSummaryReport:
                     SetEnable_BugFile(true);
                     SetEnable_TCFile(true);
@@ -1551,9 +1585,9 @@ namespace ExcelReportApplication
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_D_Copy_Only_Default_Excel");
                     break;
-                case ReportType.WriteAllReportHeaderAccordingToExcel:
+                case ReportType.RemoveInternalSheet:
                     if (!btnSelectOutputTemplate_Clicked)
-                        txtOutputTemplate.Text = @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Header_Excel_List.xlsx";
+                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_E_Remove_AUO_Sheet_Default_Excel");
                     break;
                 case ReportType.TC_GroupSummaryReport:
                     if (!btnSelectReportFile_Clicked)
