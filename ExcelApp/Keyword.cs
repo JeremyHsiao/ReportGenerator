@@ -1171,7 +1171,7 @@ namespace ExcelReportApplication
                 if (String.Compare(text, "Conclusion:", true) == 0)
                 {
                     // replace "conclusion:" with "Bug List:"
-                    ExcelAction.SetCellValue(ws, row_index, 2, "Bug List:");
+                    //ExcelAction.SetCellValue(ws, row_index, 2, "Bug List:");
                     ExcelAction.ClearContent(ws, row_index, 3, row_index+1, ('J' - 'A' + 1));
                     // output linked issue at C2
                     StyleString.WriteStyleString(ws, row_index + 1, 3, bug_list_description);
