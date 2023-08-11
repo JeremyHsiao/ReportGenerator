@@ -16,6 +16,7 @@ namespace ExcelReportApplication
             @"workbook_TC_Jira",                        @".\SampleData\TC_Jira 2022-09-03T11_07.xls",
             @"Keyword_default_report_dir",              @".\SampleData\EVT_Winnie_Keyword2.5_keyword\All function",
             @"workbook_TC_Template",                    @".\SampleData\TC_Jira_Template.xlsx",
+            @"Report_D_Copy_Only_Default_Excel",        @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Copy_Report_Excel_List.xlsx",
             @"Report_C_Default_Excel",                  @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Copy_Report_Excel_List.xlsx",
             @"Report_C_CopyFileOnly",                   @"false",
             @"Report_C_Update_Report_Sheetname",        @"true",

@@ -391,7 +391,7 @@ namespace ExcelReportApplication
         }
 
         // Split some part of V2 into sub-functions 
-        static public void WriteBacktoTCJiraExcelV3(String tclist_filename, String template_filename, List<Issue> bug_list,
+        static public void WriteBacktoTCJiraExcelV3(String tclist_filename, String template_filename, String bug_filename, List<Issue> bug_list,
             Dictionary<string, List<StyleString>> bug_description_list, String judgement_report_dir = "")
         {
             // Open original excel (read-only & corrupt-load) and write to another filename when closed
@@ -403,6 +403,13 @@ namespace ExcelReportApplication
             {
                 return; // to-be-checked if here
             }
+
+            // 1.1 rename tc_template sheetname
+            // 1.2 copy Jira and rename
+            // 1.3 open bug and rename
+            // 5.2 copy jira & tc worksheet
+            //bug_filename
+            //tclist_filename
 
             // 2. Get report_list under judgement_report_dir -- (sheetname, fullname)
             Dictionary<String, String> report_filelist_by_sheetname = new Dictionary<String, String>();

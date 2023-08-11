@@ -33,7 +33,7 @@ namespace ExcelReportApplication
             TC_TestReportCreation,
             TC_AutoCorrectReport_By_Filename,
             TC_AutoCorrectReport_By_ExcelList,              // Report C
-            ReadAllReportHeaderIntoExcel,
+            CopyReportOnly,
             WriteAllReportHeaderAccordingToExcel,
             TC_GroupSummaryReport,
             Update_Report_Linked_Issue,
@@ -55,12 +55,12 @@ namespace ExcelReportApplication
             ReportType.TC_TestReportCreation,
             //ReportType.TC_AutoCorrectReport_By_Filename,
             ReportType.TC_AutoCorrectReport_By_ExcelList, 
-            //ReportType.ReadAllReportHeaderIntoExcel,
+            ReportType.CopyReportOnly,
             //ReportType.WriteAllReportHeaderAccordingToExcel, 
             //ReportType.TC_GroupSummaryReport,
             //ReportType.Update_Report_Linked_Issue,
             ReportType.Update_Keyword_and_TC_Report,
-            ReportType.Man_Power_Processing,
+            //ReportType.Man_Power_Processing,
          };
 
         //public static ReportType[] ReportSelectableTable =
@@ -77,7 +77,7 @@ namespace ExcelReportApplication
         //    ReportType.TC_TestReportCreation,
         //    ReportType.TC_AutoCorrectReport_By_Filename,
         //    ReportType.TC_AutoCorrectReport_By_ExcelList,
-        //    ReportType.ReadAllReportHeaderIntoExcel,
+        //    ReportType.CopyReportOnly,
         //    ReportType.WriteAllReportHeaderAccordingToExcel, 
         //    ReportType.TC_GroupSummaryReport,
         //    ReportType.Update_Report_Linked_Issue,
@@ -136,7 +136,7 @@ namespace ExcelReportApplication
             "A.Jira Test Report Creator",
             "B.Auto-correct report header",
             "C.Create New Model Report",
-            "D.Read All Report Header",
+            "D.Copy Report Only",
             "E.Write All Report Header",
             "F.Update Test Group Summary Report",
             "G.Update Report Linked Issue",
@@ -231,12 +231,12 @@ namespace ExcelReportApplication
                 "Input:",  "  Input excel file",
                 "Output:", "  Reports copied and renamed (filename / worksheet name) according to input excel file",
             },
-            // "D.Read All Report Header",
+            // "D.Copy Report Only",
             new String[] 
             {
-                "Open all Repoorts and collect header information into one Excel", 
+                "Reports copied to destination. Copy files only so that contents are not touched", 
                 "Input:",  "  Report Path",
-                "Output:", "  Excel file containing header value of reports under Report Path",
+                "Output:", "  Reports copied to destination.",
             },
             // "E.Write All Report Header",
             new String[] 
@@ -737,7 +737,7 @@ namespace ExcelReportApplication
             KeywordReport.ClearGlobalKeywordList();
         }
 
-        private bool Execute_WriteIssueDescriptionToTC(String tc_file, String template_file, String judgement_report_dir = "")
+        private bool Execute_WriteIssueDescriptionToTC(String tc_file, String template_file, String bug_file, String judgement_report_dir = "")
         {
             if ((ReportGenerator.IsGlobalIssueListEmpty()) || (ReportGenerator.IsGlobalTestcaseListEmpty()) ||
                 (!Storage.FileExists(tc_file)) || (!Storage.FileExists(template_file))
@@ -758,7 +758,7 @@ namespace ExcelReportApplication
 
             //            ReportGenerator.WriteBacktoTCJiraExcel(tc_file);
             //ReportGenerator.WriteBacktoTCJiraExcelV2(tc_file, template_file, judgement_report_dir);
-            ReportGenerator.WriteBacktoTCJiraExcelV3(tc_file, template_file, ReportGenerator.ReadGlobalIssueList(), global_issue_description_list_severity, judgement_report_dir);
+            ReportGenerator.WriteBacktoTCJiraExcelV3(tc_file, template_file, bug_file, ReportGenerator.ReadGlobalIssueList(), global_issue_description_list_severity, judgement_report_dir);
             return true;
         }
 
@@ -1175,7 +1175,7 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text);
+                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, bug_file: txtBugFile.Text);
                         break;
                     case ReportType.FullIssueDescription_Summary:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
@@ -1230,7 +1230,8 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: txtReportFile.Text, template_file: txtOutputTemplate.Text);
+                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: txtReportFile.Text, template_file: txtOutputTemplate.Text
+                                , bug_file: txtBugFile.Text);
                         break;
                     case ReportType.TC_TestReportCreation:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
@@ -1260,6 +1261,14 @@ namespace ExcelReportApplication
                         // to-be-updated
                         bRet = Execute_AutoCorrectTestReportByExcel_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
                         break;
+                    case ReportType.CopyReportOnly:
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
+                        // copy files only
+                        Boolean temp_bool = KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly;
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = true;
+                        bRet = Execute_AutoCorrectTestReportByExcel_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = temp_bool;
+                        break;
                     case ReportType.TC_GroupSummaryReport:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
@@ -1288,7 +1297,8 @@ namespace ExcelReportApplication
 
                         String report_output_path;
                         bRet = Execute_KeywordIssueGenerationTask_returning_report_path(txtReportFile.Text, true, out report_output_path);
-                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_output_path, template_file: txtOutputTemplate.Text);
+                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, bug_file: txtBugFile.Text, judgement_report_dir: report_output_path, 
+                                            template_file: txtOutputTemplate.Text);
                         break;
                     case ReportType.Man_Power_Processing:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
@@ -1440,6 +1450,12 @@ namespace ExcelReportApplication
                     SetEnable_ReportFile(false);
                     SetEnable_OutputTemplate(true);
                     break;
+                case ReportType.CopyReportOnly:
+                    SetEnable_BugFile(false);
+                    SetEnable_TCFile(false);
+                    SetEnable_ReportFile(false);
+                    SetEnable_OutputTemplate(true);
+                    break;
                 case ReportType.TC_GroupSummaryReport:
                     SetEnable_BugFile(true);
                     SetEnable_TCFile(true);
@@ -1531,11 +1547,9 @@ namespace ExcelReportApplication
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_C_Default_Excel");
                     break;
-                case ReportType.ReadAllReportHeaderIntoExcel:
+                case ReportType.CopyReportOnly:
                     if (!btnSelectOutputTemplate_Clicked)
-                        txtOutputTemplate.Text = @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Header_Excel_List.xlsx";
-                    if (!btnSelectReportFile_Clicked) // destination
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_Default_Output_Path");
+                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_D_Copy_Only_Default_Excel");
                     break;
                 case ReportType.WriteAllReportHeaderAccordingToExcel:
                     if (!btnSelectOutputTemplate_Clicked)
