@@ -103,7 +103,7 @@ Returns or sets the type of underline applied to the font.
         }
 
         static public string default_font = "Gill Sans MT";
-        static public int default_size = 10;
+        static public int default_size = 12;
         static public Color default_color = System.Drawing.Color.Black;
         static public FontStyle default_fontstyle = FontStyle.Regular;
 
@@ -154,6 +154,13 @@ Returns or sets the type of underline applied to the font.
         static public String StyleStringToString(StyleString stylestring)
         {
             return stylestring.text;
+        }
+
+        public List<StyleString> ConvertToList()
+        {
+            List<StyleString> ret_list = new List<StyleString>();
+            ret_list.Add(this);
+            return ret_list;
         }
 
         //

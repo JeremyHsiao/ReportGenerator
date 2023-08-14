@@ -542,11 +542,13 @@ namespace ExcelReportApplication
                 KeywordReport.UpdateKeywordReportHeader_full(ws,KeywordReport.DefaultKeywordReportHeader);
                 file_has_been_updated = true;
             }
-
+            
             //Report_C_Replace_Conclusion
             if (KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion == true)
             {
-                KeywordReport.ReplaceConclusionWithBugList(ws, new List<StyleString>()); 
+                //StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
+                StyleString blank_space = new StyleString(" ", StyleString.default_color, "Gill Sans MT", StyleString.default_size);
+                KeywordReport.ReplaceConclusionWithBugList(ws, blank_space.ConvertToList());
                 file_has_been_updated = true;
             }
 

@@ -1192,7 +1192,19 @@ namespace ExcelReportApplication
                     //ExcelAction.SetCellValue(ws, row_index, 2, "Bug List:");
                     ExcelAction.ClearContent(ws, row_index, 3, row_index + 1, ('J' - 'A' + 1));
                     // output linked issue at C2
+                    String temp_font = StyleString.default_font;
+                    StyleString.default_font = "Gill Sans MT";
                     StyleString.WriteStyleString(ws, row_index + 1, 3, bug_list_description);
+                   int line_count = 1; // at least one line, add one if "\n" encountered
+                    foreach (StyleString style_string in bug_list_description)
+                    {
+                        if (style_string.Text.Contains("\n"))
+                        {
+                            line_count++;
+                        }
+                    }
+                    ExcelAction.Set_Row_Height(ws, row_index + 1, (StyleString.default_size + 1) * 2 * line_count * 0.75);
+                    StyleString.default_font = temp_font;
                 }
             }
             return true;
@@ -1448,14 +1460,15 @@ namespace ExcelReportApplication
                             int issue_count = severity_count.NotClosedCount();
                             if (issue_count > 0)
                             {
-                                double single_row_height = ExcelAction.Get_Row_Height(result_worksheet, keyword.BugListAtRow);
-                                double new_row_height = single_row_height * issue_count * 0.8 + 0.2;
+                                double single_row_height = (StyleString.default_size + 1) * 2 * 0.75;
+                                double new_row_height = single_row_height * issue_count;
                                 ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, new_row_height);
                             }
                             else
                             {
                                 // Hide bug list row only when there isn't any non-closed issue at all (all issues must be closed)
-                                ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, 1);
+                                double new_row_height = 0.2;
+                                ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, new_row_height);
                                 //ExcelAction.Hide_Row(result_worksheet, keyword.BugListAtRow);
                             }
                             //ExcelAction.CellTextAlignLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
@@ -1538,6 +1551,8 @@ namespace ExcelReportApplication
                     else
                     {
                         linked_issue_description_on_this_report.Clear();
+                        StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
+                        linked_issue_description_on_this_report.Add(blank_space);
                     }
                     ReplaceConclusionWithBugList(result_worksheet, linked_issue_description_on_this_report);
                     //
@@ -1940,7 +1955,7 @@ namespace ExcelReportApplication
                     ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
                     ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
                     ExcelAction.SetCellValue(ws, keyword.BugListAtRow, keyword.BugListAtColumn, " ");
-                    double new_row_height = 28 + 0.2;
+                    double new_row_height = (StyleString.default_size + 1) * 2 * 0.75;
                     //ExcelAction.Unhide_Row(ws, keyword.BugListAtRow);
                     ExcelAction.Set_Row_Height(ws, keyword.BugListAtRow, new_row_height);
                     ExcelAction.Set_Row_Height(ws, keyword.BugStatusAtRow, new_row_height);
