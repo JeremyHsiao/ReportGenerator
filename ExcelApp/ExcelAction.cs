@@ -305,7 +305,16 @@ namespace ExcelReportApplication
             for (int col_index = 1; col_index <= col_end; col_index++)
             {
                 String cell_value2 = GetCellTrimmedString(ws, naming_row, col_index);
-                if (cell_value2 == "") { continue; }
+                //if (cell_value2 == "") { continue; }
+                if (String.IsNullOrWhiteSpace(cell_value2)) 
+                {
+                    continue;               // column header is empty. shouldn't be here
+                }
+
+                if(col_name_list.ContainsKey(cell_value2))
+                {
+                    continue;               // column header is repeated. shouldn't be here
+                }
                 col_name_list.Add(cell_value2.ToString(), col_index);
             }
 
