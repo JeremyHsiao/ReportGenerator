@@ -583,7 +583,7 @@ namespace ExcelReportApplication
                 }
                 else
                 {
-                    List<String> LinkedIssueKey = Issue.Convert_LinksString_To_ListOfString(tc.Links);
+                    List<String> LinkedIssueKey = Issue.Split_String_To_ListOfString(tc.Links);
                     IEnumerable<String> LinkIssue_CloseIssue_intersect = ClosedIssueKey.Intersect(LinkedIssueKey);
                     if (LinkIssue_CloseIssue_intersect.Count() != LinkedIssueKey.Count())
                     {

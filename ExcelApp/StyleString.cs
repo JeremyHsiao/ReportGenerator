@@ -182,7 +182,7 @@ Returns or sets the type of underline applied to the font.
             // protection
             if ((links_str == null) || (bug_description_list == null)) return null;
 
-            List<String> id_list = Issue.Convert_LinksString_To_ListOfString(links_str);
+            List<String> id_list = Issue.Split_String_To_ListOfString(links_str);
             extended_str = ExtendIssueDescription(id_list, bug_description_list);
             return extended_str;
         }
@@ -235,10 +235,10 @@ Returns or sets the type of underline applied to the font.
             if (String.IsNullOrWhiteSpace(links) == false)
             {
                 // filtered out issues whose key is not in links string
-                List<Issue> key_issue_list = Issue.GenerateIssueListFromKeyString(links,issue_list_source);
+                List<Issue> key_issue_list = Issue.KeyStringToListOfIssue(links,issue_list_source);
                 // To remove closed issue
                 List<Issue> filtered_issue_list = Issue.FilterIssueByStatus(key_issue_list, ReportGenerator.fileter_status_list);
-                List<String> filtered_issue_key_list = Issue.GenerateKeyListFromIssueList(filtered_issue_list);
+                List<String> filtered_issue_key_list = Issue.ListOfIssueToListOfIssueKey(filtered_issue_list);
                 Link_Issue_Detail = ExtendIssueDescription(filtered_issue_key_list, bug_description_list);
             }
             return Link_Issue_Detail;

@@ -138,6 +138,71 @@ namespace ExcelReportApplication
             }
             return total_count;
         }
+
+        static public IssueCount IssueListStatistic(List<Issue> issue_lust)
+        {
+            IssueCount ret_ic = new IssueCount();
+            foreach (Issue issue in issue_lust)
+            {
+                if (issue.Status == Issue.STR_CLOSE)
+                {
+                    switch (issue.Severity[0])
+                    {
+                        case 'A':
+                            ret_ic.Closed_A++;
+                            break;
+                        case 'B':
+                            ret_ic.Closed_B++;
+                            break;
+                        case 'C':
+                            ret_ic.Closed_C++;
+                            break;
+                        case 'D':
+                            ret_ic.Closed_D++;
+                            break;
+                    }
+                }
+                else if (issue.Status == Issue.STR_WAIVE)
+                {
+                    switch (issue.Severity[0])
+                    {
+                        case 'A':
+                            ret_ic.Waived_A++;
+                            break;
+                        case 'B':
+                            ret_ic.Waived_B++;
+                            break;
+                        case 'C':
+                            ret_ic.Waived_C++;
+                            break;
+                        case 'D':
+                            ret_ic.Waived_D++;
+                            break;
+                    }
+                }
+                else // if ((issue.Status != Issue.STR_CLOSE) && (issue.Status != Issue.STR_WAIVE))
+                {
+                    switch (issue.Severity[0])
+                    {
+                        case 'A':
+                            ret_ic.Severity_A++;
+                            break;
+                        case 'B':
+                            ret_ic.Severity_B++;
+                            break;
+                        case 'C':
+                            ret_ic.Severity_C++;
+                            break;
+                        case 'D':
+                            ret_ic.Severity_D++;
+                            break;
+                    }
+
+                }
+            }
+            return ret_ic;
+        }
+
     }
 
     public class Issue
@@ -426,10 +491,10 @@ namespace ExcelReportApplication
             return ret_lut;
         }
 
-        static public List<Issue> GenerateIssueListFromKeyString(String issues_key_string, List<Issue> issue_list_source)
+        static public List<Issue> KeyStringToListOfIssue(String issues_key_string, List<Issue> issue_list_source)
         {
             List<Issue> ret_list = new List<Issue>();
-            List<String> issue_id_list = Issue.Convert_LinksString_To_ListOfString(issues_key_string);
+            List<String> issue_id_list = Issue.Split_String_To_ListOfString(issues_key_string);
             foreach (Issue issue in issue_list_source)
             {
                 if (issue_id_list.IndexOf(issue.Key) >= 0)
@@ -441,7 +506,7 @@ namespace ExcelReportApplication
             return ret_list;
         }
 
-        static public List<String> GenerateKeyListFromIssueList(List<Issue> issue_list_source)
+        static public List<String> ListOfIssueToListOfIssueKey(List<Issue> issue_list_source)
         {
             List<String> key_list = new List<String>();
             foreach (Issue issue in issue_list_source)
@@ -494,7 +559,7 @@ namespace ExcelReportApplication
 
         static private String[] separators = { "," };
 
-        static public List<String> Convert_LinksString_To_ListOfString(String links)
+        static public List<String> Split_String_To_ListOfString(String links)
         {
             List<String> ret_list = new List<String>();
             // protection
@@ -510,7 +575,7 @@ namespace ExcelReportApplication
             return ret_list;
         }
 
-        static public String Convert_ListOfString_To_LinkString(List<String> list)
+        static public String Combine_ListOfString_to_String(List<String> list)
         {
             String ret = "";
             // protection

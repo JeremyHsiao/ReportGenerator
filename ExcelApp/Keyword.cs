@@ -99,12 +99,12 @@ namespace ExcelReportApplication
             get { return at_column; }   // get method
             set { at_column = value; }  // set method
         }
-        public int ResultListAtRow   // propertyd
+        public int ResultAtRow   // propertyd
         {
             get { return result_at_row; }   // get method
             set { result_at_row = value; }  // set method
         }
-        public int ResultListAtColumn   // property
+        public int ResultAtColumn   // property
         {
             get { return result_at_column; }   // get method
             set { result_at_column = value; }  // set method
@@ -217,69 +217,69 @@ namespace ExcelReportApplication
         //    return ret_ic;
         //}
 
-        public IssueCount Calculate_Issue()
-        {
-            IssueCount ret_ic = new IssueCount();
-            foreach (Issue issue in this.KeywordIssues)
-            {
-                if (issue.Status == Issue.STR_CLOSE)
-                {
-                    switch (issue.Severity[0])
-                    {
-                        case 'A':
-                            ret_ic.Closed_A++;
-                            break;
-                        case 'B':
-                            ret_ic.Closed_B++;
-                            break;
-                        case 'C':
-                            ret_ic.Closed_C++;
-                            break;
-                        case 'D':
-                            ret_ic.Closed_D++;
-                            break;
-                    }
-                }
-                else if (issue.Status == Issue.STR_WAIVE)
-                {
-                    switch (issue.Severity[0])
-                    {
-                        case 'A':
-                            ret_ic.Waived_A++;
-                            break;
-                        case 'B':
-                            ret_ic.Waived_B++;
-                            break;
-                        case 'C':
-                            ret_ic.Waived_C++;
-                            break;
-                        case 'D':
-                            ret_ic.Waived_D++;
-                            break;
-                    }
-                }
-                else // if ((issue.Status != Issue.STR_CLOSE) && (issue.Status != Issue.STR_WAIVE))
-                {
-                    switch (issue.Severity[0])
-                    {
-                        case 'A':
-                            ret_ic.Severity_A++;
-                            break;
-                        case 'B':
-                            ret_ic.Severity_B++;
-                            break;
-                        case 'C':
-                            ret_ic.Severity_C++;
-                            break;
-                        case 'D':
-                            ret_ic.Severity_D++;
-                            break;
-                    }
+        //public IssueCount Calculate_Issue()
+        //{
+        //    IssueCount ret_ic = new IssueCount();
+        //    foreach (Issue issue in this.KeywordIssues)
+        //    {
+        //        if (issue.Status == Issue.STR_CLOSE)
+        //        {
+        //            switch (issue.Severity[0])
+        //            {
+        //                case 'A':
+        //                    ret_ic.Closed_A++;
+        //                    break;
+        //                case 'B':
+        //                    ret_ic.Closed_B++;
+        //                    break;
+        //                case 'C':
+        //                    ret_ic.Closed_C++;
+        //                    break;
+        //                case 'D':
+        //                    ret_ic.Closed_D++;
+        //                    break;
+        //            }
+        //        }
+        //        else if (issue.Status == Issue.STR_WAIVE)
+        //        {
+        //            switch (issue.Severity[0])
+        //            {
+        //                case 'A':
+        //                    ret_ic.Waived_A++;
+        //                    break;
+        //                case 'B':
+        //                    ret_ic.Waived_B++;
+        //                    break;
+        //                case 'C':
+        //                    ret_ic.Waived_C++;
+        //                    break;
+        //                case 'D':
+        //                    ret_ic.Waived_D++;
+        //                    break;
+        //            }
+        //        }
+        //        else // if ((issue.Status != Issue.STR_CLOSE) && (issue.Status != Issue.STR_WAIVE))
+        //        {
+        //            switch (issue.Severity[0])
+        //            {
+        //                case 'A':
+        //                    ret_ic.Severity_A++;
+        //                    break;
+        //                case 'B':
+        //                    ret_ic.Severity_B++;
+        //                    break;
+        //                case 'C':
+        //                    ret_ic.Severity_C++;
+        //                    break;
+        //                case 'D':
+        //                    ret_ic.Severity_D++;
+        //                    break;
+        //            }
 
-                }
-            }
-            return ret_ic;
-        }
+        //        }
+        //    }
+        //    return ret_ic;
+        //}
     }
 
     public class KeywordReportHeader
@@ -485,36 +485,38 @@ namespace ExcelReportApplication
             // Search keyword within printable area
             Dictionary<String, int> KeywordAtRow = new Dictionary<String, int>();
             RegexStringValidator identifier_keyword_Regex = new RegexStringValidator(regexKeywordString);
-            RegexStringValidator result_keyword_Regex = new RegexStringValidator(regexResultString);
-            RegexStringValidator bug_status_keyword_Regex = new RegexStringValidator(regexBugStatusString);
-            RegexStringValidator bug_list_keyword_Regex = new RegexStringValidator(regexBugListString);
+            //RegexStringValidator result_keyword_Regex = new RegexStringValidator(regexResultString);
+            //RegexStringValidator bug_status_keyword_Regex = new RegexStringValidator(regexBugStatusString);
+            //RegexStringValidator bug_list_keyword_Regex = new RegexStringValidator(regexBugListString);
             for (int row_index = row_test_detail_start; row_index <= row_end; row_index++)
             {
                 String identifier_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index, col_indentifier),
-                        result_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_result_title,
-                                                                            col_indentifier + col_offset_result_title),
-                        bug_status_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_bugstatus_title,
-                                                                            col_indentifier + col_offset_bugstatus_title),
-                        bug_list_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_buglist_title,
-                                                                            col_indentifier + col_offset_buglist_title),
+                    //result_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_result_title,
+                    //                                                    col_indentifier + col_offset_result_title),
+                    //bug_status_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_bugstatus_title,
+                    //                                                    col_indentifier + col_offset_bugstatus_title),
+                    //bug_list_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_buglist_title,
+                    //                                                    col_indentifier + col_offset_buglist_title),
                         keyword_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index, col_keyword);
                 int regex_step = 0;
                 try
                 {
                     // Attempt validation.
                     // regex false (not a keyword row) then jumping to catch(); 
+                    // if special string found at (row_index, col_indentifier)
                     identifier_keyword_Regex.Validate(identifier_text); regex_step++;
                     // regex true, next step is to check the rest of field to validate
                     // 1. Check "Result" title
-                    result_keyword_Regex.Validate(result_text); regex_step++;
-                    bug_status_keyword_Regex.Validate(bug_status_text); regex_step++;
-                    bug_list_keyword_Regex.Validate(bug_list_text); regex_step++;
+                    //result_keyword_Regex.Validate(result_text); regex_step++;
+                    //bug_status_keyword_Regex.Validate(bug_status_text); regex_step++;
+                    //bug_list_keyword_Regex.Validate(bug_list_text); regex_step++;
 
-                    if (keyword_text == "") { ConsoleWarning("Empty Keyword", row_index); continue; }
-                    if (KeywordAtRow.ContainsKey(keyword_text)) { ConsoleWarning("Duplicated Keyword in single report", row_index); continue; }
+                    //if (keyword_text == "") { ConsoleWarning("Empty Keyword", row_index); continue; }
+                    if (String.IsNullOrWhiteSpace(keyword_text)) { ConsoleWarning("Empty Keyword at row:", row_index); continue; }
+                    if (KeywordAtRow.ContainsKey(keyword_text)) { ConsoleWarning("Duplicated Keyword:" + keyword_text + " in single report", row_index); continue; }
                     KeywordAtRow.Add(keyword_text, row_index);
                 }
-                catch (ArgumentException e)
+                catch (ArgumentException ex)
                 {
                     // Validation failed.
                     // Not a key row
@@ -1135,31 +1137,46 @@ namespace ExcelReportApplication
             bug_status_string.Clear();
         }
 
-        static public void WriteKeywordConclusionOnKeywordReport(TestPlanKeyword keyword, Worksheet result_worksheet, IssueCount severity_count,
-                                    out Boolean pass, out Boolean fail, out Boolean conditional_pass)
+        static public void GetKeywordConclusionResult(IssueCount severity_count, out Boolean pass, out Boolean fail, out Boolean conditional_pass)
         {
-            String pass_fail_str;
             pass = fail = conditional_pass = false;
 
             if (severity_count.NotClosedCount() == 0)
             {
                 // all issue closed
-                pass_fail_str = PASS_str;
                 pass = true;
             }
             else if (severity_count.ABC_non_Wavied_IssueCount() > 0)
             {
                 // any issue of ABC, non-closed & non-waived issue 
-                pass_fail_str = FAIL_str;
                 fail = true;
             }
             else
             {
                 // only D or waived issue
-                pass_fail_str = CONDITIONAL_PASS_str;
                 conditional_pass = true;
             }
-            ExcelAction.SetCellValue(result_worksheet, keyword.ResultListAtRow, keyword.ResultListAtColumn, pass_fail_str);
+        }
+
+        static public void WriteKeywordConclusionOnKeywordReport(TestPlanKeyword keyword, Worksheet result_worksheet, IssueCount severity_count)
+        {
+            String pass_fail_str;
+            Boolean pass, fail, conditional_pass;
+            GetKeywordConclusionResult(severity_count, out pass, out fail, out conditional_pass);
+
+            if (pass == true)
+            {
+                pass_fail_str = PASS_str;
+            }
+            else if (fail == true)
+            {
+                pass_fail_str = FAIL_str;
+            }
+            else
+            {
+                pass_fail_str = CONDITIONAL_PASS_str;
+            }
+            ExcelAction.SetCellValue(result_worksheet, keyword.ResultAtRow, keyword.ResultAtColumn, pass_fail_str);
         }
 
         static public Boolean ReplaceConclusionWithBugList(Worksheet ws, List<StyleString> bug_list_description)
@@ -1173,12 +1190,69 @@ namespace ExcelReportApplication
                 {
                     // replace "conclusion:" with "Bug List:"
                     //ExcelAction.SetCellValue(ws, row_index, 2, "Bug List:");
-                    ExcelAction.ClearContent(ws, row_index, 3, row_index+1, ('J' - 'A' + 1));
+                    ExcelAction.ClearContent(ws, row_index, 3, row_index + 1, ('J' - 'A' + 1));
                     // output linked issue at C2
                     StyleString.WriteStyleString(ws, row_index + 1, 3, bug_list_description);
                 }
             }
             return true;
+        }
+
+        static private Boolean CheckIfStringMeetsKeywordIdentifierCondition(String text_to_check)
+        {
+            Boolean ret_bol = false;
+            return ret_bol;
+        }
+
+        static private Boolean CheckIfStringMeetsKeywordResultCondition(String text_to_check)
+        {
+            Boolean ret_bol;
+            RegexStringValidator result_keyword_Regex = new RegexStringValidator(regexResultString);
+            try
+            {
+                result_keyword_Regex.Validate(text_to_check);
+                ret_bol = true;
+            }
+            catch (ArgumentException ex)
+            {
+                // does not meet
+                ret_bol = false;
+            }
+            return ret_bol;
+        }
+
+        static private Boolean CheckIfStringMeetsKeywordBugStatusCondition(String text_to_check)
+        {
+            Boolean ret_bol;
+            RegexStringValidator bug_status_keyword_Regex = new RegexStringValidator(regexBugStatusString);
+            try
+            {
+                bug_status_keyword_Regex.Validate(text_to_check);
+                ret_bol = true;
+            }
+            catch (ArgumentException ex)
+            {
+                // does not meet
+                ret_bol = false;
+            }
+            return ret_bol;
+        }
+
+        static private Boolean CheckIfStringMeetsKeywordBugListCondition(String text_to_check)
+        {
+            Boolean ret_bol;
+            RegexStringValidator bug_list_keyword_Regex = new RegexStringValidator(regexBugListString);
+            try
+            {
+                bug_list_keyword_Regex.Validate(text_to_check);
+                ret_bol = true;
+            }
+            catch (ArgumentException ex)
+            {
+                // does not meet
+                ret_bol = false;
+            }
+            return ret_bol;
         }
 
         static public bool KeywordIssueGenerationTaskV4(List<String> file_list, Dictionary<string, List<StyleString>> bug_description_list,
@@ -1282,15 +1356,6 @@ namespace ExcelReportApplication
                 String full_filename = plan.ExcelFile;
                 String sheet_name = plan.ExcelSheet;
 
-                // 3.0 if there isn't any keyword in this plan, just continue to next plan
-                //     
-                //List<TestPlanKeyword> ws_keyword_list = FilterSingleReportKeyword(keyword_list, full_filename, sheet_name);
-                //if (ws_keyword_list.Count <= 0)
-                if (keyword_lut_by_sheetname.ContainsKey(sheet_name) == false)
-                {
-                    continue;
-                }
-
                 // 3.1. Open Excel and find the sheet
                 // File exist check is done outside
                 Workbook wb_keyword_issue = ExcelAction.OpenExcelWorkbook(full_filename);
@@ -1308,96 +1373,131 @@ namespace ExcelReportApplication
                     continue;
                 }
 
-                //
-                // 3.3. input:  IssueDescriptionList of Keyword
-                //    output: write color_description_list 
-                //         
-
-                // 3.3.2 Write keyword-related formatted issue descriptions 
-                //       also count how many "Pass" or how many "Fail"
-                int pass_count = 0, fail_count = 0, conditional_pass_count = 0;
-                //foreach (TestPlanKeyword keyword in keyword_list)
-                //foreach (TestPlanKeyword keyword in ws_keyword_list)
-                List<StyleString> keyword_issue_description_on_this_report = new List<StyleString>();
-                foreach (TestPlanKeyword keyword in keyword_lut_by_sheetname[sheet_name])
+                String judgement_str ="";
+                if (keyword_lut_by_sheetname.ContainsKey(sheet_name) == true)
                 {
-                    // Only write to keyword on currently open sheet
-                    //if (keyword.Worksheet == sheet_name)
+                    // if keyword exist, executing keyword-related part
+                    // 
+                    // 3.3. input:  IssueDescriptionList of Keyword
+                    //    output: write color_description_list 
+                    //         
+
+                    // 3.3.2 Write keyword-related formatted issue descriptions 
+                    //       also count how many "Pass" or how many "Fail"
+
+
+                    int pass_count = 0, fail_count = 0, conditional_pass_count = 0;
+                    //foreach (TestPlanKeyword keyword in keyword_list)
+                    //foreach (TestPlanKeyword keyword in ws_keyword_list)
+                    List<StyleString> keyword_issue_description_on_this_report = new List<StyleString>();
+                    foreach (TestPlanKeyword keyword in keyword_lut_by_sheetname[sheet_name])
                     {
-                        // write issue description list
-                        StyleString.WriteStyleString(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn, keyword.IssueDescriptionList);
-                        keyword_issue_description_on_this_report.AddRange(keyword.IssueDescriptionList);
+                        // Only write to keyword on currently open sheet
+                        //if (keyword.Worksheet == sheet_name)
+                        {
+                            // write issue description list
 
-                        // write issue count of each severity
-                        IssueCount severity_count = keyword.Calculate_Issue();
-                        WriteBugCountOnKeywordReport(keyword, result_worksheet, severity_count);
+                            // Because keyword condition is now relaxed and "Bug-List"..etc is no longer part of condition,
+                            // It needs to be checked here before content is written
+                            // Check BugList
+                            String text_to_check = ExcelAction.GetCellTrimmedString(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn - 1);
+                            if (CheckIfStringMeetsKeywordBugListCondition(text_to_check))
+                            {
+                                StyleString.WriteStyleString(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn, keyword.IssueDescriptionList);
+                                keyword_issue_description_on_this_report.AddRange(keyword.IssueDescriptionList);
+                            }
 
-                        // write conclusion of each keyword
-                        Boolean pass, fail, conditional_pass;
-                        WriteKeywordConclusionOnKeywordReport(keyword, result_worksheet, severity_count, out pass, out fail, out conditional_pass);
-                        if (pass)
-                        {
-                            pass_count++;
-                        }
-                        else if (fail)
-                        {
-                            fail_count++;
-                        }
-                        else
-                        {
-                            conditional_pass_count++;
-                        }
+                            // write issue count of each severity
+                            // IssueCount severity_count = keyword.Calculate_Issue(); 
+                            IssueCount severity_count = IssueCount.IssueListStatistic(keyword.KeywordIssues); 
+                            // Check bug_status
+                            text_to_check = ExcelAction.GetCellTrimmedString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn - 1);
+                            if (CheckIfStringMeetsKeywordBugStatusCondition(text_to_check))
+                            {
+                                WriteBugCountOnKeywordReport(keyword, result_worksheet, severity_count);
+                            }
 
-                        // auto-fit row-height
-                        ExcelAction.AutoFit_Row(result_worksheet, keyword.ResultListAtRow);
-                        ExcelAction.AutoFit_Row(result_worksheet, keyword.BugListAtRow);
-                        // issue_count = severity_count.Severity_A + severity_count.Severity_B + severity_count.Severity_C;
-                        //if (issue_count >= 1)
-                        int issue_count = severity_count.NotClosedCount();
-                        if (issue_count > 0)
-                        {
-                            double single_row_height = ExcelAction.Get_Row_Height(result_worksheet, keyword.BugListAtRow);
-                            double new_row_height = single_row_height * issue_count * 0.8 + 0.2;
-                            ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, new_row_height);
-                        }
-                        else
-                        {
-                            // Hide bug list row only when there isn't any non-closed issue at all (all issues must be closed)
-                            ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, 1);
-                            //ExcelAction.Hide_Row(result_worksheet, keyword.BugListAtRow);
-                        }
-                        //ExcelAction.CellTextAlignLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
-                        ExcelAction.CellTextAlignUpperLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
+                            // write conclusion of each keyword
+                            Boolean pass, fail, conditional_pass;
+                            GetKeywordConclusionResult(severity_count, out pass, out fail, out conditional_pass);
+                            // Check BugStatus
+                            text_to_check = ExcelAction.GetCellTrimmedString(result_worksheet, keyword.ResultAtRow, keyword.ResultAtColumn - 1);
+                            if (CheckIfStringMeetsKeywordResultCondition(text_to_check))
+                            {
+                                WriteKeywordConclusionOnKeywordReport(keyword, result_worksheet, severity_count);
+                            }
 
-                        if (Hide_Keyword_Result_Bug)
-                        {
-                            double new_row_height = 0.2;
-                            ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, new_row_height);
-                            ExcelAction.Set_Row_Height(result_worksheet, keyword.BugStatusAtRow, new_row_height);
+                            if (pass)
+                            {
+                                pass_count++;
+                            }
+                            else if (fail)
+                            {
+                                fail_count++;
+                            }
+                            else
+                            {
+                                conditional_pass_count++;
+                            }
+
+                            // auto-fit row-height
+                            ExcelAction.AutoFit_Row(result_worksheet, keyword.ResultAtRow);
+                            ExcelAction.AutoFit_Row(result_worksheet, keyword.BugListAtRow);
+                            // issue_count = severity_count.Severity_A + severity_count.Severity_B + severity_count.Severity_C;
+                            //if (issue_count >= 1)
+                            int issue_count = severity_count.NotClosedCount();
+                            if (issue_count > 0)
+                            {
+                                double single_row_height = ExcelAction.Get_Row_Height(result_worksheet, keyword.BugListAtRow);
+                                double new_row_height = single_row_height * issue_count * 0.8 + 0.2;
+                                ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, new_row_height);
+                            }
+                            else
+                            {
+                                // Hide bug list row only when there isn't any non-closed issue at all (all issues must be closed)
+                                ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, 1);
+                                //ExcelAction.Hide_Row(result_worksheet, keyword.BugListAtRow);
+                            }
+                            //ExcelAction.CellTextAlignLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
+                            ExcelAction.CellTextAlignUpperLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
+
+                            if (Hide_Keyword_Result_Bug)
+                            {
+                                double new_row_height = 0.2;
+                                ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, new_row_height);
+                                ExcelAction.Set_Row_Height(result_worksheet, keyword.BugStatusAtRow, new_row_height);
+                            }
                         }
                     }
-                }
 
-                // 3.3.3 Update Conclusion
-                //const int PassCnt_at_row = 21, PassCnt_at_col = 5;
-                //const int FailCnt_at_row = 21, FailCnt_at_col = 7;
-                //const int TotalCnt_at_row = 21, TotalCnt_at_col = 9;
-                //const int Judgement_at_row = 9, Judgement_at_col = 4;
-                String judgement_str;
-                if (fail_count > 0)
-                {
-                    // Fail
-                    judgement_str = FAIL_str;
-                }
-                else if (conditional_pass_count > 0)
-                {
-                    // conditional pass
-                    judgement_str = CONDITIONAL_PASS_str;
-                }
-                else
-                {
-                    // pass
-                    judgement_str = PASS_str;
+                    // 3.3.3 Update Conclusion
+                    //const int PassCnt_at_row = 21, PassCnt_at_col = 5;
+                    //const int FailCnt_at_row = 21, FailCnt_at_col = 7;
+                    //const int TotalCnt_at_row = 21, TotalCnt_at_col = 9;
+                    //const int Judgement_at_row = 9, Judgement_at_col = 4;
+                    if (fail_count > 0)
+                    {
+                        // Fail
+                        judgement_str = FAIL_str;
+                    }
+                    else if (conditional_pass_count > 0)
+                    {
+                        // conditional pass
+                        judgement_str = CONDITIONAL_PASS_str;
+                    }
+                    else
+                    {
+                        // pass
+                        judgement_str = PASS_str;
+                    }
+
+                    ExcelAction.SetCellValue(result_worksheet, PassCnt_at_row, PassCnt_at_col, pass_count);
+                    ExcelAction.SetCellValue(result_worksheet, FailCnt_at_row, FailCnt_at_col, fail_count);
+                    ExcelAction.SetCellValue(result_worksheet, ConditionalPass_string_at_row, ConditionalPass_string_at_col, CONDITIONAL_PASS_str + ":");
+                    ExcelAction.SetCellValue(result_worksheet, ConditionalPassCnt_at_row, ConditionalPassCnt_at_col, conditional_pass_count);
+                    ExcelAction.SetCellValue(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, judgement_str);
+
+                    // End of updating keyword result
                 }
 
                 if (Replace_Conclusion)
@@ -1405,26 +1505,37 @@ namespace ExcelReportApplication
                     // Add: replace conclusion with Bug-list
                     //ReplaceConclusionWithBugList(result_worksheet, keyword_issue_description_on_this_report); // should be linked issue in the future
                     // Find the TC meets the sheet-name
+                    List<StyleString> linked_issue_description_on_this_report = new List<StyleString>();
                     if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(sheet_name))
                     {
                         String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].Links;
-                        keyword_issue_description_on_this_report = StyleString.ExtendIssueDescription(links, bug_description_list);
+                        linked_issue_description_on_this_report = StyleString.ExtendIssueDescription(links, bug_description_list);
+                        List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links,ReportGenerator.ReadGlobalIssueList());
+                        IssueCount severity_count = IssueCount.IssueListStatistic(linked_issue_list);
+                        Boolean pass, fail, conditional_pass;
+                        GetKeywordConclusionResult(severity_count, out pass, out fail, out conditional_pass);
+                        if (fail)
+                        {
+                             judgement_str = FAIL_str;
+                        }
+                        else if (conditional_pass)
+                        {
+                            judgement_str = CONDITIONAL_PASS_str;
+                        }
+                        else
+                        {
+                            judgement_str = PASS_str;
+                        }
                     }
                     else
                     {
-                        keyword_issue_description_on_this_report.Clear();
+                        linked_issue_description_on_this_report.Clear();
                     }
-                    ReplaceConclusionWithBugList(result_worksheet, keyword_issue_description_on_this_report); 
-                }
-                else
-                {
-                    ExcelAction.SetCellValue(result_worksheet, PassCnt_at_row, PassCnt_at_col, pass_count);
-                    ExcelAction.SetCellValue(result_worksheet, FailCnt_at_row, FailCnt_at_col, fail_count);
-                    ExcelAction.SetCellValue(result_worksheet, ConditionalPass_string_at_row, ConditionalPass_string_at_col, CONDITIONAL_PASS_str + ":");
-                    ExcelAction.SetCellValue(result_worksheet, ConditionalPassCnt_at_row, ConditionalPassCnt_at_col, conditional_pass_count);
+                    ReplaceConclusionWithBugList(result_worksheet, linked_issue_description_on_this_report);
+                    //
+                    ExcelAction.SetCellValue(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, judgement_str);
                 }
 
-                ExcelAction.SetCellValue(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, judgement_str);
                 // always update Test End Period to today
                 String end_date = DateTime.Now.ToString("yyyy/MM/dd");
                 ExcelAction.SetCellValue(result_worksheet, KeywordReportHeader.Test_Period_End_at_row, KeywordReportHeader.Test_Period_End_at_col, end_date);
@@ -1813,7 +1924,7 @@ namespace ExcelReportApplication
                 List<TestPlanKeyword> keyword_list = ListKeyword_SingleReport(tp);
                 foreach (TestPlanKeyword keyword in keyword_list)
                 {
-                    ExcelAction.SetCellValue(ws, keyword.ResultListAtRow, keyword.ResultListAtColumn, " ");
+                    ExcelAction.SetCellValue(ws, keyword.ResultAtRow, keyword.ResultAtColumn, " ");
                     int temp_col = keyword.BugStatusAtColumn;
                     ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
                     ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
