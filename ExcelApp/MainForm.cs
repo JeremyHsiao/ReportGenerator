@@ -43,15 +43,15 @@ namespace ExcelReportApplication
 
         public static ReportType[] ReportSelectableTable =
         {
-            ReportType.FullIssueDescription_TC,
+            ReportType.FullIssueDescription_TC,                     // report 1
             //ReportType.FullIssueDescription_Summary,
             //ReportType.StandardTestReportCreation,
             ReportType.KeywordIssue_Report_SingleFile,
             //ReportType.TC_Likely_Passed,
             ReportType.FindAllKeywordInReport,
-            ReportType.KeywordIssue_Report_Directory,
+            ReportType.KeywordIssue_Report_Directory,               // report 7
             //ReportType.Excel_Sheet_Name_Update_Tool,
-            ReportType.FullIssueDescription_TC_report_judgement,
+            ReportType.FullIssueDescription_TC_report_judgement,    // report 9
             ReportType.TC_TestReportCreation,
             //ReportType.TC_AutoCorrectReport_By_Filename,
             ReportType.TC_AutoCorrectReport_By_ExcelList, 
