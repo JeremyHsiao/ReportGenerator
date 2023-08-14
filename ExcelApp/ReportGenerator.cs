@@ -488,6 +488,13 @@ namespace ExcelReportApplication
 
                         // 4.4 
                         // get buglist from keyword report and show it.
+                        
+                        // but if worksheetname is not in LUT, go fornext worksheet
+                        if (keyword_lut_by_Sheetname.ContainsKey(worksheet_name) == false)
+                        {
+                            continue;
+                        }
+
                         List<TestPlanKeyword> ws_keyword_list = keyword_lut_by_Sheetname[worksheet_name];
                         if (ws_keyword_list.Count > 0)
                         {
