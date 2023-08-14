@@ -297,6 +297,11 @@ namespace ExcelReportApplication
             ws.Cells[at_row, at_col].VerticalAlignment = XlVAlign.xlVAlignTop;
         }
 
+        static public void CellActivate(Worksheet ws, int at_row, int at_col)
+        {
+            ws.Cells[at_row, at_col].Activate();
+        }
+
         static public Dictionary<string, int> CreateTableColumnIndex(Worksheet ws, int naming_row)
         {
             Dictionary<string, int> col_name_list = new Dictionary<string, int>();
@@ -452,6 +457,12 @@ namespace ExcelReportApplication
             Object cell_value2 = GetCellValue(ws, row, col);
             if (cell_value2 == null) { return ""; }
             return cell_value2.ToString().Trim();
+        }
+
+        static public void TestCase_CellActivate(int at_row, int at_col, bool IsTemplate = false)
+        {
+            Worksheet ws = ((IsTemplate) ? ws_tc_template : ws_testcase);
+            CellActivate(ws, at_row, at_col);
         }
 
         static public void TestCase_AutoFit_Column(int col, bool IsTemplate = false)
