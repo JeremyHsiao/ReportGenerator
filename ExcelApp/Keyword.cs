@@ -1508,10 +1508,18 @@ namespace ExcelReportApplication
                     List<StyleString> linked_issue_description_on_this_report = new List<StyleString>();
                     if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(sheet_name))
                     {
+                        // key string of all linked issue
                         String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].Links;
-                        linked_issue_description_on_this_report = StyleString.ExtendIssueDescription(links, bug_description_list);
+                        // key string to List of Issue
                         List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links,ReportGenerator.ReadGlobalIssueList());
-                        IssueCount severity_count = IssueCount.IssueListStatistic(linked_issue_list);
+                        // List of Issue filtered by status
+                        List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.fileter_status_list);
+                        // list of key whose issue status passed the filter
+                        List<String> filtered_links = Issue.ListOfIssueToListOfIssueKey(filtered_linked_issue_list);
+                        // use list of key to get bug_description
+                        linked_issue_description_on_this_report = StyleString.ExtendIssueDescription(filtered_links, bug_description_list);
+                        // count of filtered issue
+                        IssueCount severity_count = IssueCount.IssueListStatistic(filtered_linked_issue_list);
                         Boolean pass, fail, conditional_pass;
                         GetKeywordConclusionResult(severity_count, out pass, out fail, out conditional_pass);
                         if (fail)
