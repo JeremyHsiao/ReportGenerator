@@ -316,6 +316,10 @@ namespace ExcelReportApplication
             Dictionary<string, TestCase> ret_lut = new Dictionary<string, TestCase>();
             foreach (TestCase tc in TC_list)
             {
+                if (ret_lut.ContainsKey(tc.Key) == true)
+                {
+                    continue;       // key already exists. shouldn't be here
+                }
                 ret_lut.Add(tc.Key, tc);
             }
             return ret_lut;

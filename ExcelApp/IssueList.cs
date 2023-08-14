@@ -486,6 +486,10 @@ namespace ExcelReportApplication
             Dictionary<string, Issue> ret_lut = new Dictionary<string, Issue>();
             foreach (Issue issue in issue_list)
             {
+                if (ret_lut.ContainsKey(issue.Key)==true)
+                {
+                    continue;           // key are repeated. shouldn't be here
+                }
                 ret_lut.Add(issue.Key, issue);
             }
             return ret_lut;
