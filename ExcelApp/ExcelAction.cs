@@ -1248,6 +1248,13 @@ namespace ExcelReportApplication
             table_range.Characters.Font.Color = StyleString.default_color;
         }
 
+        static public void SetBGColorRow(Worksheet worksheet, int start_row, int end_row, Color bg_color)
+        {
+            int countColumns = worksheet.UsedRange.Columns.Count;
+            Range table_range = worksheet.Range[worksheet.Cells[start_row, 1], worksheet.Cells[end_row, countColumns]];
+            table_range.Interior.Color = bg_color;
+        }
+
         //static public Workbook OpenCSV(String filename)
         //{
         //    Workbook ret_workbook = null;
