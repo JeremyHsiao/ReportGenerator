@@ -682,9 +682,9 @@ namespace ExcelReportApplication
                 String kw = keyword.Keyword;
                 if (for_checking_duplicated.ContainsKey(kw))
                 {
-                    // found duplicated item
+                    // found duplicated item ==> kw exists in for_checking_duplicated
                     // first to check if already duplicated before
-                    if (!dic_ret_kw_list.ContainsKey(kw))
+                    if (dic_ret_kw_list.ContainsKey(kw)==false)
                     {
                         // 1st time duplicated so that not available in dic_ret_kw_list
                         // then it is necessary to create a new item in dic_ret_kw_list
@@ -692,6 +692,7 @@ namespace ExcelReportApplication
                         new_duplicated_list.Add(for_checking_duplicated[kw]);
                         dic_ret_kw_list.Add(kw, new_duplicated_list);
                     }
+                    // kw exists in dic_ret_kw_list
                     //add duplicated item into dic_ret_kw_list[kw]
                     dic_ret_kw_list[kw].Add(keyword);
                 }
@@ -1556,6 +1557,7 @@ namespace ExcelReportApplication
                     }
                     ReplaceConclusionWithBugList(result_worksheet, linked_issue_description_on_this_report);
                     //
+                    ExcelAction.CellActivate(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
                     ExcelAction.SetCellValue(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, judgement_str);
                 }
 
@@ -2215,17 +2217,17 @@ namespace ExcelReportApplication
         static public Dictionary<String, List<TestPlanKeyword>> GenerateKeywordLUT_by_Sheetname(List<TestPlanKeyword> keyword_list)
         {
             Dictionary<String, List<TestPlanKeyword>> ret_dic = new Dictionary<String, List<TestPlanKeyword>>();
-            List<String> sheetname_list = new List<string>();
 
             foreach (TestPlanKeyword tpk in keyword_list)
             {
                 String sheet = tpk.Worksheet;
+                
+                // if key (current) exists in dictionary, add new dictionary pair (keyword, sheetname-list) with value is empty List.
                 if (ret_dic.ContainsKey(sheet) == false)
-                //if (sheetname_list.Contains(sheet) == false)
                 {
-                    //sheetname_list.Add(sheet);
                     ret_dic.Add(sheet, new List<TestPlanKeyword>());
                 }
+                // Add item (sheet) into the list of dictionary pair (keyword, sheetname-list)
                 ret_dic[sheet].Add(tpk);
             }
             return ret_dic;

@@ -478,6 +478,10 @@ Returns or sets the type of underline applied to the font.
                     StyleString style_str = new StyleString(str, color_by_severity);
                     value_style_str.Add(style_str);
                     // Add whole string into return_list
+                    if (ret_list.ContainsKey(key))
+                    {
+                        continue; // shouldn't be here.
+                    }
                     ret_list.Add(key, value_style_str);
                 }
             }

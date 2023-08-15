@@ -436,6 +436,7 @@ namespace ExcelReportApplication
             if (status == ExcelAction.ExcelStatus.OK)
             {
                 Dictionary<string, int> col_name_list = ExcelAction.CreateIssueListColumnIndex();
+                List<String> for_checking_repeated_key = new List<String>();
 
                 // Visit all rows and add content of IssueList
                 int ExcelLastRow = ExcelAction.GetIssueListAllRange().Row;
@@ -458,9 +459,12 @@ namespace ExcelReportApplication
                         members.Add(str);
                     }
                     // Add issue only if key contains KeyPrefix (very likely a valid key value)
-                    if (members[(int)IssueListMemberIndex.KEY].Contains(KeyPrefix))
+                    String key_str = members[(int)IssueListMemberIndex.KEY];
+                    //if (members[(int)IssueListMemberIndex.KEY].Contains(KeyPrefix))
+                    if((String.IsNullOrWhiteSpace(key_str)==false)&&(key_str.Contains(KeyPrefix))&&(for_checking_repeated_key.Contains(key_str)==false))
                     {
                         ret_issue_list.Add(new Issue(members));
+                        for_checking_repeated_key.Add(key_str);
                     }
                 }
                 ExcelAction.CloseIssueListExcel();
