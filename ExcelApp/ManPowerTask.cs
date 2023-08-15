@@ -70,25 +70,41 @@ namespace ExcelReportApplication
         public String Total_IC;
         public String Man_hour;
 
-        // generated data for each "Manpower" task
-        public DateTime Task_Start_Date, Task_End_Date; // Generate according to Target_start_date & Target_end_date;
-        public DateTime Task_Start_Week, Task_End_Week; 
+        // generated data for each "Manpower" task (hierachy_string == Manpower)
+        public String Task_Project_Name;
+        public String Task_Action_Name;
+        public String Task_Owner_Name;
+        public DateTime Task_Start_Date; // Generate according to Target_start_date & Target_end_date;
+        public DateTime Task_End_Date;
+        public DateTime Task_Due_Date;
+        public int Task_Start_Week;
+        public int Task_End_Week;
+        public Double ManHour;
         public String Daily_Average_ManHour;
         public Double daily_average_manhour_value;
         public String Daily_ManHour_String;
-        public String Weekly_ManHour_String;
- 
+        public String Project_Action_Owner_WeekOfYear_ManHour;
+
         // global data
         static public String Caption_Line;              // reading from CSV
         static public DateTime Start_Date, End_Date;    // search all CSV
-        static public DateTime Start_Week, End_Week;    // search all CSV
+        static public int Start_Week, End_Week;         // search all CSV
         static public List<Boolean> IsWorkingDay = new List<Boolean>();
         static public String Title_StartDate_to_EndDate;  // Generated according to Start_Date, End_Date
         static public String Title_StartWeek_to_EndWeek;  // Generated according to Start_Date, End_Date
+        static public String Title_Project_Action_Owner_WeekOfYear_ManHour;
+        static public Dictionary<int, int> WorkingDayInWeek = new Dictionary<int, int>();
+        static public List<int> WeekOfYearList = new List<int>();
 
-        static public String hierachy_string = "Manpower";
+        static public String hierarchy_string_for_project = "Task";
+        static public String hierarchy_string_for_action = "Manpower";
         static public String empty_average_manhour = " ";
         static public Double empty_average_manhour_value = -1.0;
+
+        static public String Recent_Task_Project_Name;
+
+        static public String pSpecifier = "F1";   // floating-point with one digit after decimal
+ 
 
         public ManPower() { this.SetMemberByString(new List<String>()); }
 
@@ -110,7 +126,7 @@ namespace ExcelReportApplication
             Hierarchy = members[index++];
             Title = members[index++];
             Project = members[index++];
-            Releases = members[index++]; 
+            Releases = members[index++];
             Team = members[index++];
             Assignee = members[index++];
             Sprint = members[index++];
@@ -133,59 +149,66 @@ namespace ExcelReportApplication
             Done_IC = members[index++];
             Total_IC = members[index++];
             Man_hour = members[index++];
-            if (Hierarchy == hierachy_string)   // only man-power to calculate average man-hour
+            if (Hierarchy == hierarchy_string_for_project)
             {
-                Generate_Average_ManHour();
+                ManPower.Recent_Task_Project_Name = Title;
+            }
+            else if (Hierarchy == hierarchy_string_for_action)   // only man-power to calculate average man-hour
+            {
+                Process_ManPower_Data();
             }
         }
+        //// generated data for each "Manpower" task (hierachy_string == Manpower)
+        //public String Task_Project_Name;
+        //public String Task_Item_Name;
+        //public String Task_Assignee_Name;
 
-        public void Generate_Average_ManHour()
+        public void Process_ManPower_Data()
         {
-            Boolean can_be_calculated = true;
-            Double man_hour = 0.0;
+            Boolean average_can_be_calculated = true;
+
+            Task_Project_Name = ManPower.Recent_Task_Project_Name;
+            Task_Action_Name = Title;
+            Task_Owner_Name = Assignee;
 
             if (String.IsNullOrWhiteSpace(Target_start_date))
             {
-                can_be_calculated = false;
+                average_can_be_calculated = false;
             }
             else
             {
                 Task_Start_Date = Convert.ToDateTime(Target_start_date, DateOnly.datetime_culture).Date;
+                Task_Start_Week = DateOnly.GetYearAndWeekOfYear(Task_Start_Date);
             }
 
             if (String.IsNullOrWhiteSpace(Target_end_date))
             {
-                can_be_calculated = false;
+                average_can_be_calculated = false;
             }
             else
             {
                 Task_End_Date = Convert.ToDateTime(Target_end_date, DateOnly.datetime_culture).Date;
+                Task_End_Week = DateOnly.GetYearAndWeekOfYear(Task_End_Date);
             }
 
-            //if (String.IsNullOrWhiteSpace(Man_hour))
-            //{
-            //    can_be_calculated = false;
-            //}
-            //else
-            //{
-            //    man_hour = Convert.ToDouble(Man_hour);
-            //}
-
-            if (Double.TryParse(Man_hour, out man_hour) == false)
+            if (Double.TryParse(Man_hour, out ManHour) == false)
             {
-                can_be_calculated = false;
+                average_can_be_calculated = false;
+            }
+            else
+            {
+                ManHour = 0;
             }
 
-            if (can_be_calculated)
+            if (average_can_be_calculated)
             {
                 DateTime start = Task_Start_Date;
                 DateTime end = Task_End_Date;
                 int workday_count = DateOnly.BusinessDaysUntil(start, end);
                 if (workday_count > 0)
                 {
-                    Double average_man_hour = Math.Round(man_hour / workday_count, 1);
-                    String pSpecifier = "F1";   // floating-point with one digit after decimal
-                    Daily_Average_ManHour = average_man_hour.ToString(pSpecifier);
+                    Double average_man_hour = Math.Round(ManHour / workday_count, 1);
+                    Daily_Average_ManHour = average_man_hour.ToString(ManPower.pSpecifier);
                     daily_average_manhour_value = average_man_hour;
                 }
                 else
@@ -197,7 +220,7 @@ namespace ExcelReportApplication
             }
             else
             {
-                // man-power plan needs to be updated.
+                // man-power plan needs to be checked and updated.
                 Daily_Average_ManHour = empty_average_manhour;
                 daily_average_manhour_value = empty_average_manhour_value;
             }
@@ -260,7 +283,7 @@ namespace ExcelReportApplication
                 // At least one date (start_date)
                 DateTime dt = start.Date;
 
-                ret_str = dt.ToString("yyyy", DateOnly.datetime_culture).Substring(3,1) + DateOnly.GetYearAndWeekOfYear(dt).ToString();
+                ret_str = dt.ToString("yyyy", DateOnly.datetime_culture).Substring(3, 1) + DateOnly.GetYearAndWeekOfYear(dt).ToString();
                 dt = dt.AddDays(7.0);
                 // add "," + next-date till next-date is the end-date
                 while (dt <= end.Date)
@@ -279,7 +302,7 @@ namespace ExcelReportApplication
             String ret_str = "";
 
             // check if (1) a man-power item (2) Average ManHour is not empty (3) start/end date is not correct
-            if ((this.Hierarchy != hierachy_string) || (this.Daily_Average_ManHour == empty_average_manhour) ||
+            if ((this.Hierarchy != hierarchy_string_for_action) || (this.Daily_Average_ManHour == empty_average_manhour) ||
                 (this.Task_Start_Date > this.Task_End_Date) || (ManPower.Start_Date > ManPower.End_Date))
             {
                 // to-check: shouldn't be here
@@ -307,7 +330,7 @@ namespace ExcelReportApplication
 
             // 1st day is already overlay-date or not? if yes, average-manhour for working day or "0" for holiday
             // if 1st day is not-yet an overlay-date, fill "0"
-            if (overlay_start_index == 0)     
+            if (overlay_start_index == 0)
             {
                 ret_str += (ManPower.IsWorkingDay[0]) ? this.Daily_Average_ManHour : "0";
             }
@@ -353,7 +376,7 @@ namespace ExcelReportApplication
             //    ret_str += "0";
             //}
             //filling_Date = filling_Date.AddDays(1.0);
-            
+
             //// before overlay
             //while(filling_Date < overlay_start) 
             //{
@@ -456,10 +479,20 @@ namespace ExcelReportApplication
                     ret_manpower_list.Add(manpower);
                 }
             }
+            return ret_manpower_list;
+        }
+
+        static public List<ManPower> Post_Processing(List<ManPower> original_manpower_list)
+        {
+            List<ManPower> ret_manpower_list = original_manpower_list;
 
             // Generated data
             ManPower.Start_Date = DateOnly.FindEearliestTargetStartDate(ret_manpower_list);
+            ManPower.Start_Week = DateOnly.GetYearAndWeekOfYear(ManPower.Start_Date);
+
             ManPower.End_Date = DateOnly.FindLatestTargetEndDate(ret_manpower_list);
+            ManPower.End_Week = DateOnly.GetYearAndWeekOfYear(ManPower.End_Date);
+
             DateOnly.Update_Holiday_Range(ManPower.Start_Date, ManPower.End_Date);
             ManPower.Title_StartDate_to_EndDate = ManPower.GenerateDateTitle(ManPower.Start_Date, ManPower.End_Date);
             ManPower.Title_StartWeek_to_EndWeek = ManPower.GenerateWeekOfYearTitle(ManPower.Start_Date, ManPower.End_Date);
@@ -481,6 +514,81 @@ namespace ExcelReportApplication
             foreach (ManPower mp in ret_manpower_list)
             {
                 mp.GenerateManPowerDailyEffortString();
+            }
+
+            return ret_manpower_list;
+        }
+
+        static public List<ManPower> Post_Processing_V2(List<ManPower> original_manpower_list)
+        {
+            // Update start/end-date and reduce holiday range to save searching time
+            ManPower.Start_Date = DateOnly.FindEearliestTargetStartDate(original_manpower_list);
+            ManPower.End_Date = DateOnly.FindLatestTargetEndDate(original_manpower_list);
+            DateOnly.Update_Holiday_Range(ManPower.Start_Date, ManPower.End_Date);
+
+            // Create a list of holiday_yes_or_no
+            // also calculate working day in a week and record it
+            ManPower.IsWorkingDay.Clear();
+            ManPower.WorkingDayInWeek.Clear();
+            int current_weekofyear = DateOnly.GetYearAndWeekOfYear(ManPower.Start_Date.Date);
+            int working_day_of_this_week =0;
+            for (DateTime dt = ManPower.Start_Date.Date; dt <= ManPower.End_Date.Date; dt = dt.AddDays(1.0))
+            {
+                switch (dt.DayOfWeek)
+                {
+                    case DayOfWeek.Sunday:
+                        ManPower.IsWorkingDay.Add(false);       // a holiday --> not a working day
+                        current_weekofyear = DateOnly.GetYearAndWeekOfYear(dt);
+                        working_day_of_this_week = 0;
+                        break;
+                    case DayOfWeek.Saturday:
+                        ManPower.IsWorkingDay.Add(false);       // a holiday --> not a working day
+                        ManPower.WorkingDayInWeek.Add(current_weekofyear,working_day_of_this_week);
+                        ManPower.WeekOfYearList.Add(current_weekofyear);
+                        working_day_of_this_week = 0;
+                        break;
+                    default:
+                        working_day_of_this_week++;
+                        ManPower.IsWorkingDay.Add(true);
+                        break;
+                 }
+            }
+
+            if(ManPower.End_Date.Date.DayOfWeek!=DayOfWeek.Saturday)
+            {
+                // Add the remaining days into week-list
+                ManPower.WorkingDayInWeek.Add(current_weekofyear,working_day_of_this_week);
+                ManPower.WeekOfYearList.Add(current_weekofyear);
+            }
+
+            // Setup Title line
+            ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour = "ProjectStage, TestAction, Owner, Week, ManHour,";
+            String Empty_Field_String = ",,,,,";
+
+            List<ManPower> ret_manpower_list = new List<ManPower>();
+
+            // add items in week of year
+            foreach (ManPower mp in original_manpower_list)
+            {
+                if (mp.Hierarchy == ManPower.hierarchy_string_for_project)
+                {
+                    mp.Project_Action_Owner_WeekOfYear_ManHour = Empty_Field_String;
+                }
+                else if (mp.Hierarchy == ManPower.hierarchy_string_for_action)   // only man-power to calculate average man-hour
+                {
+                    String Item_Field_String = mp.Task_Project_Name + "," + mp.Task_Action_Name + "," + mp.Task_Owner_Name + ",";
+                    int begin_wk_index = ManPower.WeekOfYearList.IndexOf(mp.Task_Start_Week);
+                    int end_wk_index = ManPower.WeekOfYearList.IndexOf(mp.Task_End_Week);
+                    int current_wk = begin_wk_index;
+                    while (current_wk <= end_wk_index)
+                    {
+                        mp.Project_Action_Owner_WeekOfYear_ManHour = Item_Field_String + current_wk.ToString() + ",";
+                        Double weekly_manhour = ManPower.WorkingDayInWeek[current_wk] * mp.daily_average_manhour_value;
+                        mp.Project_Action_Owner_WeekOfYear_ManHour += weekly_manhour.ToString(ManPower.pSpecifier) + ",";
+                        current_wk++;
+                    }
+                }
+                ret_manpower_list.Add(mp);
             }
 
             return ret_manpower_list;
@@ -550,7 +658,8 @@ namespace ExcelReportApplication
 
         static public void ProcessManPowerPlan(String manpower_csv)
         {
-            List<ManPower> manpower_list = ReadManPowerTaskCSV(manpower_csv);
+            List<ManPower> manpower_list_before = ReadManPowerTaskCSV(manpower_csv);
+            List<ManPower> manpower_list = Post_Processing(manpower_list_before);
             //DateTime manpower_due_date = FindLatestDueDate(manpower_list);
 
             //before your loop
@@ -564,6 +673,30 @@ namespace ExcelReportApplication
             {
                 //var newLine = mp.ToString();
                 var newLine = mp.ToString() + "," + mp.Daily_ManHour_String;
+                csv.AppendLine(newLine);
+            }
+
+            //after your loop
+            File.WriteAllText(Storage.GenerateFilenameWithDateTime(manpower_csv, ".csv"), csv.ToString(), Encoding.UTF8);
+        }
+
+        static public void ProcessManPowerPlan_V2(String manpower_csv)
+        {
+            List<ManPower> manpower_list_before = ReadManPowerTaskCSV(manpower_csv);
+            List<ManPower> manpower_list = Post_Processing_V2(manpower_list_before);
+            //DateTime manpower_due_date = FindLatestDueDate(manpower_list);
+
+            //before your loop
+            var csv = new StringBuilder();
+
+            //csv.AppendLine(ManPower.Caption_Line);
+            csv.AppendLine(ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour + "," + ManPower.Caption_Line);
+
+            //in your loop
+            foreach (ManPower mp in manpower_list)
+            {
+                //var newLine = mp.ToString();
+                var newLine = mp.Project_Action_Owner_WeekOfYear_ManHour + "," + mp.ToString();
                 csv.AppendLine(newLine);
             }
 
@@ -654,7 +787,7 @@ namespace ExcelReportApplication
                 // Weekend as holiday by default
                 ret = true;
             }
-            else 
+            else
             {
                 // if it is a weekday, then check if it is a holiday which is not on weekend
                 //foreach (DateTime holiday in HolidaysSince2023)
@@ -666,7 +799,7 @@ namespace ExcelReportApplication
                 //        break;
                 //    }
                 //}
-                if(Array.BinarySearch<DateTime>(active_holiday,datetime)>=0)
+                if (Array.BinarySearch<DateTime>(active_holiday, datetime) >= 0)
                 {
                     ret = true;
                 }
@@ -736,7 +869,7 @@ namespace ExcelReportApplication
             return businessDays;
         }
 
-        
+
         // Get the datetime which is earlier
         static public DateTime ReturnEarlierDateTime(DateTime datetime, String datetime_str)
         {
@@ -818,7 +951,7 @@ namespace ExcelReportApplication
         {
             Boolean b_ret = false;
 
-            if((date_checked.Date>=from.Date)&&(date_checked.Date<=to.Date))
+            if ((date_checked.Date >= from.Date) && (date_checked.Date <= to.Date))
             {
                 b_ret = true;
             }
