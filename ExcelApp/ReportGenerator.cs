@@ -471,6 +471,8 @@ namespace ExcelReportApplication
                     {
                         judgement_str = WriteBacktoTCJiraExcel_GetJudgementString(worksheet_name, workbook_filename);
                     }
+                    // Update focus to current status cell
+                    ExcelAction.TestCase_CellActivate(excel_row_index, status_col, IsTemplate: true);
                     if (current_status == TestCase.STR_FINISHED)
                     {
                         // update only of judgement_string is available.
