@@ -299,7 +299,7 @@ namespace ExcelReportApplication
 
         static public void CellActivate(Worksheet ws, int at_row, int at_col)
         {
-            ws.Cells[at_row, at_col].Activate();
+            ws.Cells[at_row, at_col].Select();
         }
 
         static public Dictionary<string, int> CreateTableColumnIndex(Worksheet ws, int naming_row)
