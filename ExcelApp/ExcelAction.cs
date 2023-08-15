@@ -106,9 +106,27 @@ namespace ExcelReportApplication
             if (SaveChanges)
             {
                 if (String.IsNullOrWhiteSpace(AsFilename) == false)
-                //if (AsFilename != "")
                 {
-                    workbook.Close(SaveChanges: true, Filename: AsFilename);
+                    // Try suggestion of https://stackoverflow.com/questions/5188527/how-to-deal-with-files-with-a-name-longer-than-259-characters
+                    String retry_filename = @"\\?\" + AsFilename, final_filename = " ";
+ 
+                    try
+                    {
+                        if (AsFilename.Length < 259)
+                        {
+                            workbook.Close(SaveChanges: true, Filename: AsFilename);
+                            final_filename = AsFilename;
+                        }
+                        else
+                        {
+                            workbook.Close(SaveChanges: true, Filename: retry_filename);
+                            final_filename = retry_filename;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        final_filename = final_filename; // here is for setting break-point
+                    }
                 }
                 else
                 {
