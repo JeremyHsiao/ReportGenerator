@@ -194,10 +194,11 @@ namespace ExcelReportApplication
             if (Double.TryParse(Man_hour, out ManHour) == false)
             {
                 average_can_be_calculated = false;
+                ManHour = 0;
             }
             else
             {
-                ManHour = 0;
+                // ManHour is valid.
             }
 
             if (average_can_be_calculated)
@@ -482,9 +483,9 @@ namespace ExcelReportApplication
             return ret_manpower_list;
         }
 
-        static public List<ManPower> Post_Processing(List<ManPower> original_manpower_list)
+        static public List<ManPower> Post_Processing(List<ManPower> list_before_post_processing)
         {
-            List<ManPower> ret_manpower_list = original_manpower_list;
+            List<ManPower> ret_manpower_list = list_before_post_processing;
 
             // Generated data
             ManPower.Start_Date = DateOnly.FindEearliestTargetStartDate(ret_manpower_list);
