@@ -394,39 +394,39 @@ namespace ExcelReportApplication
                 return false;
         }
 
-        public static Dictionary<String, String> CopyTestReport(List<String> src_list, List<String> dest_list)
-        {
-            var dic = src_list.Zip(dest_list, (k, v) => new { k, v }).ToDictionary(x => x.k, x => x.v);
-            Dictionary<String, String> Ret_copied_files = CopyTestReport(dic);
-            return Ret_copied_files;
-        }
+        //public static Dictionary<String, String> CopyTestReport(List<String> src_list, List<String> dest_list)
+        //{
+        //    var dic = src_list.Zip(dest_list, (k, v) => new { k, v }).ToDictionary(x => x.k, x => x.v);
+        //    Dictionary<String, String> Ret_copied_files = CopyTestReport(dic);
+        //    return Ret_copied_files;
+        //}
 
-        public static Dictionary<String, String> CopyTestReport(Dictionary<String, String> src_dest_file_list)
-        {
-            Dictionary<String, String> Ret_copied_files = new Dictionary<String, String>();
-            foreach (String src_file in src_dest_file_list.Keys)
-            {
-                if (Storage.FileExists(src_file))
-                {
-                    String dest_file = src_dest_file_list[src_file];
-                    string dest_path = Storage.GetDirectoryName(dest_file);
-                    if (Storage.DirectoryExists(dest_path) == false)
-                    {
-                        Storage.CreateDirectory(dest_path, auto_parent_dir: true);
-                    }
-                    if (Storage.Copy(src_file, dest_file, overwrite: true))
-                    {
-                        Ret_copied_files.Add(src_file, dest_file);
-                    }
-                }
-                else
-                {
-                    // file not exist
-                }
-            }
+        //public static Dictionary<String, String> CopyTestReport(Dictionary<String, String> src_dest_file_list)
+        //{
+        //    Dictionary<String, String> Ret_copied_files = new Dictionary<String, String>();
+        //    foreach (String src_file in src_dest_file_list.Keys)
+        //    {
+        //        if (Storage.FileExists(src_file))
+        //        {
+        //            String dest_file = src_dest_file_list[src_file];
+        //            string dest_path = Storage.GetDirectoryName(dest_file);
+        //            if (Storage.DirectoryExists(dest_path) == false)
+        //            {
+        //                Storage.CreateDirectory(dest_path, auto_parent_dir: true);
+        //            }
+        //            if (Storage.Copy(src_file, dest_file, overwrite: true))
+        //            {
+        //                Ret_copied_files.Add(src_file, dest_file);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            // file not exist
+        //        }
+        //    }
 
-            return Ret_copied_files;
-        }
+        //    return Ret_copied_files;
+        //}
 
         // Copy and Clear judgement -- to be used for copying part/full of report from existing projects
         static public bool CopyReportClearJudgement_SingleFile(String source_file, String destination_file = "")
@@ -781,6 +781,8 @@ namespace ExcelReportApplication
             // auto-correct report files.
             List<String> report_actually_copied_list_src = new List<String>();
             List<String> report_actually_copied_list_dest = new List<String>();
+            List<String> report_cannot_be_copied_list_src = new List<String>();
+            List<String> report_cannot_be_copied_list_dest = new List<String>();
             // use Auto Correct Function to copy and auto-correct.
 
             for (int index = 0; index < report_to_be_copied_list_src.Count; index++)
@@ -811,12 +813,17 @@ namespace ExcelReportApplication
                     report_actually_copied_list_src.Add(src);
                     report_actually_copied_list_dest.Add(dest);
                 }
+                else
+                {
+                    report_cannot_be_copied_list_src.Add(src);
+                    report_cannot_be_copied_list_dest.Add(dest);
+                }
             }
 
-            if (report_actually_copied_list_src.Count > 0)
-                return true;
+            if (report_cannot_be_copied_list_src.Count > 0)
+                return false;   // some can't be copied
             else
-                return false;
+                return true;
 
         }
 
