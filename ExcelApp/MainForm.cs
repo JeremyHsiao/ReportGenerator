@@ -553,11 +553,26 @@ namespace ExcelReportApplication
             StyleString.default_fontstyle = XMLConfig.ReadAppSetting_FontStyle("default_report_FontStyle");
             // end config for excel report output
 
+            // linked issue color
+            ReportGenerator.LinkIssue_report_Font = XMLConfig.ReadAppSetting_String("LinkIssue_report_Font");
+            ReportGenerator.LinkIssue_report_FontSize = XMLConfig.ReadAppSetting_int("LinkIssue_report_FontSize");
+            ReportGenerator.LinkIssue_report_FontColor = XMLConfig.ReadAppSetting_Color("LinkIssue_report_FontColor");
+            ReportGenerator.LinkIssue_report_FontStyle = XMLConfig.ReadAppSetting_FontStyle("LinkIssue_report_FontStyle");
+            ReportGenerator.LinkIssue_A_Issue_Color = XMLConfig.ReadAppSetting_Color("LinkIssue_A_Issue_Color");
+            ReportGenerator.LinkIssue_B_Issue_Color = XMLConfig.ReadAppSetting_Color("LinkIssue_B_Issue_Color");
+            ReportGenerator.LinkIssue_C_Issue_Color = XMLConfig.ReadAppSetting_Color("LinkIssue_C_Issue_Color");
+            ReportGenerator.LinkIssue_D_Issue_Color = XMLConfig.ReadAppSetting_Color("LinkIssue_D_Issue_Color");
+
             // config for keyword report
+            Issue.Keyword_report_Font = XMLConfig.ReadAppSetting_String("Keyword_report_Font");
+            Issue.Keyword_report_FontSize = XMLConfig.ReadAppSetting_int("Keyword_report_FontSize");
+            Issue.Keyword_report_FontColor = XMLConfig.ReadAppSetting_Color("Keyword_report_FontColor");
+            Issue.Keyword_report_FontStyle = XMLConfig.ReadAppSetting_FontStyle("Keyword_report_FontStyle");
             Issue.A_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_A_Issue_Color");
             Issue.B_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_B_Issue_Color");
             Issue.C_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_C_Issue_Color");
             Issue.D_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_D_Issue_Color");
+
             KeywordReport.Replace_Conclusion = XMLConfig.ReadAppSetting_Boolean("Keyword_report_replace_conclusion");
             KeywordReport.Hide_Keyword_Result_Bug = XMLConfig.ReadAppSetting_Boolean("Keyword_report_Hide_Keyword_Result_Bug");
             KeywordReport.Auto_Correct_Sheetname = XMLConfig.ReadAppSetting_Boolean("Keyword_Auto_Correct_Worksheet");
@@ -751,8 +766,8 @@ namespace ExcelReportApplication
 
             // This full issue description is needed for report purpose
             //Dictionary<string, List<StyleString>> global_issue_description_list = StyleString.GenerateIssueDescription(ReportGenerator.global_issue_list);
-            Dictionary<string, List<StyleString>> global_issue_description_list_severity = 
-                        StyleString.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.ReadGlobalIssueList());
+            Dictionary<string, List<StyleString>> global_issue_description_list_severity =
+                        StyleString.GenerateIssueDescription_Severity_by_Linked_Issue(ReportGenerator.ReadGlobalIssueList());
             List<TestCase> before = ReportGenerator.ReadGlobalTestcaseList();
             List<TestCase> after = TestCase.UpdateTCLinkedIssueList(before, ReportGenerator.ReadGlobalIssueList(), global_issue_description_list_severity);
             ReportGenerator.WriteGlobalTestcaseList(after);
@@ -846,7 +861,7 @@ namespace ExcelReportApplication
             // This issue description is needed for report purpose
             //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
             Dictionary<string, List<StyleString>> global_issue_description_list_severity =
-                                StyleString.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.ReadGlobalIssueList());
+                                StyleString.GenerateIssueDescription_Keyword_Issue(ReportGenerator.ReadGlobalIssueList());
             String out_dir = KeywordReport.TestReport_Default_Output_Dir;
             if ((out_dir != "") && Storage.DirectoryExists(out_dir))
             {
@@ -860,55 +875,55 @@ namespace ExcelReportApplication
             return true;
         }
 
-        private bool Execute_KeywordIssueGenerationTask_returning_report_path_update_bug_list(String FileOrDirectoryName, Boolean IsDirectory,  out String output_report_path)
-        {
-            List<String> file_list = new List<String>();
-            String source_dir;
-            output_report_path = "";
-            if (IsDirectory == false)
-            {
-                if ((ReportGenerator.IsGlobalIssueListEmpty()) || (!Storage.FileExists(FileOrDirectoryName)))
-                {
-                    // protection check
-                    return false;
-                }
-                file_list.Add(FileOrDirectoryName);
-                source_dir = Storage.GetDirectoryName(FileOrDirectoryName);
-            }
-            else
-            {
-                if ((ReportGenerator.IsGlobalIssueListEmpty()) || (!Storage.DirectoryExists(FileOrDirectoryName)))
-                {
-                    // protection check
-                    return false;
-                }
-                file_list = Storage.ListFilesUnderDirectory(FileOrDirectoryName);
-                //MsgWindow.AppendText("File found under directory " + FileOrDirectoryName + "\n");
-                //foreach (String filename in file_list)
-                //    MsgWindow.AppendText(filename + "\n");
-                source_dir = FileOrDirectoryName;
-            }
-            // filename check to exclude non-report files.
-            //List<String> report_list = Storage.FilterFilename(file_list);
-            // NOTE: FilterFilename() execution is now relocated within KeywordIssueGenerationTaskV4()
-            List<String> report_list = file_list;
+        //private bool Execute_KeywordIssueGenerationTask_returning_report_path_update_bug_list(String FileOrDirectoryName, Boolean IsDirectory,  out String output_report_path)
+        //{
+        //    List<String> file_list = new List<String>();
+        //    String source_dir;
+        //    output_report_path = "";
+        //    if (IsDirectory == false)
+        //    {
+        //        if ((ReportGenerator.IsGlobalIssueListEmpty()) || (!Storage.FileExists(FileOrDirectoryName)))
+        //        {
+        //            // protection check
+        //            return false;
+        //        }
+        //        file_list.Add(FileOrDirectoryName);
+        //        source_dir = Storage.GetDirectoryName(FileOrDirectoryName);
+        //    }
+        //    else
+        //    {
+        //        if ((ReportGenerator.IsGlobalIssueListEmpty()) || (!Storage.DirectoryExists(FileOrDirectoryName)))
+        //        {
+        //            // protection check
+        //            return false;
+        //        }
+        //        file_list = Storage.ListFilesUnderDirectory(FileOrDirectoryName);
+        //        //MsgWindow.AppendText("File found under directory " + FileOrDirectoryName + "\n");
+        //        //foreach (String filename in file_list)
+        //        //    MsgWindow.AppendText(filename + "\n");
+        //        source_dir = FileOrDirectoryName;
+        //    }
+        //    // filename check to exclude non-report files.
+        //    //List<String> report_list = Storage.FilterFilename(file_list);
+        //    // NOTE: FilterFilename() execution is now relocated within KeywordIssueGenerationTaskV4()
+        //    List<String> report_list = file_list;
 
-            // This issue description is needed for report purpose
-            //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
-            Dictionary<string, List<StyleString>> global_issue_description_list_severity =
-                                StyleString.GenerateIssueDescription_Severity_by_Colors(ReportGenerator.ReadGlobalIssueList());
-            String out_dir = KeywordReport.TestReport_Default_Output_Dir;
-            if ((out_dir != "") && Storage.DirectoryExists(out_dir))
-            {
-                output_report_path = KeywordReport.TestReport_Default_Output_Dir;
-            }
-            else
-            {
-                output_report_path = Storage.GenerateDirectoryNameWithDateTime(source_dir);
-            }
-            KeywordReport.KeywordIssueGenerationTaskV4(report_list, global_issue_description_list_severity, source_dir, output_report_path);
-            return true;
-        }
+        //    // This issue description is needed for report purpose
+        //    //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
+        //    Dictionary<string, List<StyleString>> global_issue_description_list_severity =
+        //                        StyleString.GenerateIssueDescription_Keyword_Issue(ReportGenerator.ReadGlobalIssueList());
+        //    String out_dir = KeywordReport.TestReport_Default_Output_Dir;
+        //    if ((out_dir != "") && Storage.DirectoryExists(out_dir))
+        //    {
+        //        output_report_path = KeywordReport.TestReport_Default_Output_Dir;
+        //    }
+        //    else
+        //    {
+        //        output_report_path = Storage.GenerateDirectoryNameWithDateTime(source_dir);
+        //    }
+        //    KeywordReport.KeywordIssueGenerationTaskV4(report_list, global_issue_description_list_severity, source_dir, output_report_path);
+        //    return true;
+        //}
 
         private bool Execute_FindFailTCLinkedIssueAllClosed(String tc_file, String template_file)
         {
