@@ -601,4 +601,45 @@ namespace ExcelReportApplication
 
     
     }
+
+    public class IssueList
+    {
+        private List<Issue> issue_list;
+        private Dictionary<String, Issue> issue_lut_by_key;                     // related by key in bug-list
+        private Dictionary<String, Issue> issue_lut_by_testcaseid;              // related by testcase id in bug-list
+        private Dictionary<String, Issue> issue_lut_by_linkedissue;             // related by linked issue in bug-list
+
+        public List<Issue> List   // property
+        {
+            get { return issue_list; }   // get method
+            set { issue_list = value; }  // set method
+        }
+
+        public List<String> GetKeys     // property
+        {
+            get { return issue_lut_by_key.Keys.ToList(); }   // get method
+        }
+
+        public List<Issue> GetValues     // property
+        {
+            get { return issue_lut_by_key.Values.ToList(); }   // get method
+        }
+
+        public IssueList()
+        {
+            this.issue_list = new List<Issue>();
+            this.issue_lut_by_key = new Dictionary<String, Issue>();
+            this.issue_lut_by_testcaseid = new Dictionary<String, Issue>();
+            this.issue_lut_by_linkedissue = new Dictionary<String, Issue>();
+        }
+
+        public void Clear()
+        {
+            this.issue_list.Clear();
+            this.issue_lut_by_key.Clear();
+            this.issue_lut_by_testcaseid.Clear();
+            this.issue_lut_by_linkedissue.Clear();
+        }
+    }
+
 }
