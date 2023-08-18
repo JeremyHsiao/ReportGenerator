@@ -973,7 +973,7 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            ManPowerTask.ProcessManPowerPlan(excel_input_file);
+            ManPowerTask.ProcessManPowerPlan_V2(excel_input_file);
 
             return true;
         }
