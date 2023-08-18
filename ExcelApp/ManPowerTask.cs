@@ -94,8 +94,6 @@ namespace ExcelReportApplication
         {
             ManPower other = (ManPower)this.MemberwiseClone();
             return other;
-
-            return (ManPower)this.MemberwiseClone();
         }
 
         // global data
