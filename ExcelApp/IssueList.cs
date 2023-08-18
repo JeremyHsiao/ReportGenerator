@@ -419,10 +419,14 @@ namespace ExcelReportApplication
         // Key value
         static public string KeyPrefix = "BENSE";
 
-        static public Color A_ISSUE_COLOR = Color.Red;
-        static public Color B_ISSUE_COLOR = Color.DarkOrange;
-        static public Color C_ISSUE_COLOR = Color.Black;
-        static public Color D_ISSUE_COLOR = Color.Black;
+        static public string Keyword_report_Font = "Gill Sans MT";
+        static public int Keyword_report_FontSize = 12;
+        static public Color Keyword_report_FontColor = System.Drawing.Color.Black;
+        static public FontStyle Keyword_report_FontStyle = FontStyle.Regular;
+        static public Color Keyword_A_ISSUE_COLOR = Color.Red;
+        static public Color Keyword_B_ISSUE_COLOR = Color.Black;
+        static public Color Keyword_C_ISSUE_COLOR = Color.Black;
+        static public Color Keyword_D_ISSUE_COLOR = Color.Black;
         static public Color WAIVED_ISSUE_COLOR = Color.Black;
         static public Color CLOSED_ISSUE_COLOR = Color.Black;
         static public Color ISSUE_DEFAULT_COLOR = Color.Black;

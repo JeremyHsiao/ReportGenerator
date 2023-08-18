@@ -24,6 +24,16 @@ namespace ExcelReportApplication
         static private Dictionary<string, TestCase> lookup_TestCase_by_Key = new Dictionary<string, TestCase>();
         static private Dictionary<string, TestCase> lookup_TestCase_by_Summary = new Dictionary<string, TestCase>();
 
+        static public string LinkIssue_report_Font = "Gill Sans MT";
+        static public int LinkIssue_report_FontSize = 12;
+        static public Color LinkIssue_report_FontColor = System.Drawing.Color.Black;
+        static public FontStyle LinkIssue_report_FontStyle = FontStyle.Regular;
+        static public Color LinkIssue_A_Issue_Color = Color.Red;
+        static public Color LinkIssue_B_Issue_Color = Color.Black;
+        static public Color LinkIssue_C_Issue_Color = Color.Black;
+        static public Color LinkIssue_D_Issue_Color = Color.Black;
+
+
         static public Dictionary<string, TestCase> GetTestcaseLUT_by_Sheetname()
         {
             return lookup_TestCase_by_Summary;

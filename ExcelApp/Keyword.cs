@@ -1076,7 +1076,7 @@ namespace ExcelReportApplication
             issue_count = severity_count.Severity_A;
             if (issue_count > 0)
             {
-                bug_status_string.Add(new StyleString(issue_count.ToString() + "A", Issue.A_ISSUE_COLOR));
+                bug_status_string.Add(new StyleString(issue_count.ToString() + "A", Issue.Keyword_A_ISSUE_COLOR));
             }
             else
             {
@@ -1089,7 +1089,7 @@ namespace ExcelReportApplication
             issue_count = severity_count.Severity_B;
             if (issue_count > 0)
             {
-                bug_status_string.Add(new StyleString(issue_count.ToString() + "B", Issue.B_ISSUE_COLOR));
+                bug_status_string.Add(new StyleString(issue_count.ToString() + "B", Issue.Keyword_B_ISSUE_COLOR));
             }
             else
             {
@@ -1102,7 +1102,7 @@ namespace ExcelReportApplication
             issue_count = severity_count.Severity_C;
             if (issue_count > 0)
             {
-                bug_status_string.Add(new StyleString(issue_count.ToString() + "C", Issue.C_ISSUE_COLOR));
+                bug_status_string.Add(new StyleString(issue_count.ToString() + "C", Issue.Keyword_C_ISSUE_COLOR));
             }
             else
             {
@@ -1114,7 +1114,7 @@ namespace ExcelReportApplication
             issue_count = severity_count.Severity_D;
             if (issue_count > 0)
             {
-                bug_status_string.Add(new StyleString(issue_count.ToString() + "D", Issue.D_ISSUE_COLOR));
+                bug_status_string.Add(new StyleString(issue_count.ToString() + "D", Issue.Keyword_D_ISSUE_COLOR));
             }
             else
             {
@@ -1193,10 +1193,8 @@ namespace ExcelReportApplication
                     //ExcelAction.SetCellValue(ws, row_index, 2, "Bug List:");
                     ExcelAction.ClearContent(ws, row_index, 3, row_index + 1, ('J' - 'A' + 1));
                     // output linked issue at C2
-                    String temp_font = StyleString.default_font;
-                    StyleString.default_font = "Gill Sans MT";
                     StyleString.WriteStyleString(ws, row_index + 1, 3, bug_list_description);
-                   int line_count = 1; // at least one line, add one if "\n" encountered
+                    int line_count = 1; // at least one line, add one if "\n" encountered
                     foreach (StyleString style_string in bug_list_description)
                     {
                         if (style_string.Text.Contains("\n"))
@@ -1205,7 +1203,6 @@ namespace ExcelReportApplication
                         }
                     }
                     ExcelAction.Set_Row_Height(ws, row_index + 1, (StyleString.default_size + 1) * 2 * line_count * 0.75);
-                    StyleString.default_font = temp_font;
                 }
             }
             return true;

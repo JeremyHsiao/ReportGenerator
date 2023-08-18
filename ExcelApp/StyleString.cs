@@ -151,6 +151,12 @@ Returns or sets the type of underline applied to the font.
             text = string_text;
         }
 
+        public StyleString(string string_text, Color string_color, string string_fontname, int string_fontsize, FontStyle string_fontstyle)
+        {
+            SetProperty(string_color, string_fontname, string_fontsize, string_fontstyle);
+            text = string_text;
+        }
+
         static public String StyleStringToString(StyleString stylestring)
         {
             return stylestring.text;
@@ -424,7 +430,7 @@ Returns or sets the type of underline applied to the font.
             return ret_list;
         }
 
-        static public Dictionary<string, List<StyleString>> GenerateIssueDescription_Severity_by_Colors(List<Issue> issuelist)
+        static public Dictionary<string, List<StyleString>> GenerateIssueDescription_Keyword_Issue(List<Issue> issuelist)
         {
             Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
 
@@ -451,16 +457,16 @@ Returns or sets the type of underline applied to the font.
                         switch (issue.Severity[0])
                         {
                             case 'A':
-                                color_by_severity = Issue.A_ISSUE_COLOR;
+                                color_by_severity = Issue.Keyword_A_ISSUE_COLOR;
                                 break;
                             case 'B':
-                                color_by_severity = Issue.B_ISSUE_COLOR;
+                                color_by_severity = Issue.Keyword_B_ISSUE_COLOR;
                                 break;
                             case 'C':
-                                color_by_severity = Issue.C_ISSUE_COLOR;
+                                color_by_severity = Issue.Keyword_C_ISSUE_COLOR;
                                 break;
                             case 'D':
-                                color_by_severity = Issue.D_ISSUE_COLOR;
+                                color_by_severity = Issue.Keyword_D_ISSUE_COLOR;
                                 break;
                             default:
                                 // Use Default
@@ -475,7 +481,73 @@ Returns or sets the type of underline applied to the font.
                     {
                         str += "(" + KeywordReport.WAIVED_str + ")";
                     }
-                    StyleString style_str = new StyleString(str, color_by_severity);
+                    StyleString style_str = new StyleString(str, color_by_severity, Issue.Keyword_report_Font,
+                                                Issue.Keyword_report_FontSize, Issue.Keyword_report_FontStyle);
+                    value_style_str.Add(style_str);
+                    // Add whole string into return_list
+                    if (ret_list.ContainsKey(key))
+                    {
+                        continue; // shouldn't be here.
+                    }
+                    ret_list.Add(key, value_style_str);
+                }
+            }
+            return ret_list;
+        }
+
+        static public Dictionary<string, List<StyleString>> GenerateIssueDescription_Severity_by_Linked_Issue(List<Issue> issuelist)
+        {
+            Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
+
+            foreach (Issue issue in issuelist)
+            {
+                List<StyleString> value_style_str = new List<StyleString>();
+                String key = issue.Key;  // rd_comment_str = issue.comment;
+                Boolean is_waived = false;
+
+                if (key != "")
+                {
+                    Color color_by_severity = Issue.ISSUE_DEFAULT_COLOR;
+                    if (issue.Status == Issue.STR_CLOSE)
+                    {
+                        color_by_severity = Issue.CLOSED_ISSUE_COLOR;
+                    }
+                    else if (issue.Status == Issue.STR_WAIVE)
+                    {
+                        color_by_severity = Issue.WAIVED_ISSUE_COLOR;
+                        is_waived = true;
+                    }
+                    else // if ((issue.Status != Issue.STR_CLOSE) && (issue.Status != Issue.STR_WAIVE))
+                    {
+                        switch (issue.Severity[0])
+                        {
+                            case 'A':
+                                color_by_severity = ReportGenerator.LinkIssue_A_Issue_Color;
+                                break;
+                            case 'B':
+                                color_by_severity = ReportGenerator.LinkIssue_B_Issue_Color;
+                                break;
+                            case 'C':
+                                color_by_severity = ReportGenerator.LinkIssue_C_Issue_Color;
+                                break;
+                            case 'D':
+                                color_by_severity = ReportGenerator.LinkIssue_D_Issue_Color;
+                                break;
+                            default:
+                                // Use Default
+                                break;
+                        }
+
+                    }
+
+                    String str;
+                    str = key + issue.Summary + "(" + issue.Severity + ")";
+                    if (is_waived)
+                    {
+                        str += "(" + KeywordReport.WAIVED_str + ")";
+                    }
+                    StyleString style_str = new StyleString(str, color_by_severity, ReportGenerator.LinkIssue_report_Font, 
+                                                ReportGenerator.LinkIssue_report_FontSize, ReportGenerator.LinkIssue_report_FontStyle);
                     value_style_str.Add(style_str);
                     // Add whole string into return_list
                     if (ret_list.ContainsKey(key))
