@@ -286,11 +286,12 @@ namespace ExcelReportApplication
     {
         public Boolean Report_C_CopyFileOnly = false;
         public Boolean Report_C_Remove_AUO_Internal = false;
-        public Boolean Report_C_Update_Full_Header = false;
         public Boolean Report_C_Replace_Conclusion = false;
         public Boolean Report_C_Update_Report_Sheetname = true;
         public Boolean Report_C_Clear_Keyword_Result = true;
         public Boolean Report_C_Hide_Keyword_Result_Bug_Row = false;
+        public Boolean Report_C_Update_Header_by_Template = false;
+        public Boolean Report_C_Update_Full_Header = false;
         public String Report_Title = "Report_Name";
         public String Report_SheetName = "Report_Sheet_Name";
         public String Model_Name = "Model Name";
