@@ -494,6 +494,12 @@ namespace ExcelReportApplication
             return cell_value2.ToString().Trim();
         }
 
+        static public Boolean CompareString(Worksheet ws, int row, int col, String to_compare)
+        {
+            String temp = GetCellTrimmedString(ws, row, col);
+            return (temp == to_compare);
+        }
+
         static public void TestCase_CellActivate(int at_row, int at_col, bool IsTemplate = false)
         {
             Worksheet ws = ((IsTemplate) ? ws_tc_template : ws_testcase);
