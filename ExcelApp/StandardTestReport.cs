@@ -44,7 +44,7 @@ namespace ExcelReportApplication
             Workbook wb_testplan = ExcelAction.OpenExcelWorkbook(report_filename);
             if (wb_testplan == null)
             {
-                Console.WriteLine("OpenExcelWorkbook failed in GenerateTestReportStructure()");
+                LogMessage.WriteLine("OpenExcelWorkbook failed in GenerateTestReportStructure()");
                 return ret_testplan;
             }
 
@@ -52,7 +52,7 @@ namespace ExcelReportApplication
             Worksheet result_ws = ExcelAction.Find_Worksheet(wb_testplan, SheetName_TestPlan);
             if (result_ws == null)
             {
-                Console.WriteLine("Find_Worksheet (TestPlan) failed in GenerateTestReportStructure()");
+                LogMessage.WriteLine("Find_Worksheet (TestPlan) failed in GenerateTestReportStructure()");
                 return ret_testplan;
             }
             ret_testplan = TestPlan.LoadTestPlanSheet(result_ws);
@@ -390,7 +390,7 @@ namespace ExcelReportApplication
             Workbook wb = ExcelAction.OpenExcelWorkbook(filename: source_file, ReadOnly: false);
             if (wb == null)
             {
-                ConsoleWarning("ERR: Open workbook in AutoCorrectReport_SingleFile(): " + source_file);
+                LogMessage.WriteLine("ERR: Open workbook in AutoCorrectReport_SingleFile(): " + source_file);
                 return false;
             }
 
@@ -450,7 +450,7 @@ namespace ExcelReportApplication
             Workbook wb = ExcelAction.OpenExcelWorkbook(filename: source_file, ReadOnly: false);
             if (wb == null)
             {
-                ConsoleWarning("ERR: Open workbook in AutoCorrectReport_SingleFile(): " + source_file);
+                LogMessage.WriteLine("ERR: Open workbook in AutoCorrectReport_SingleFile(): " + source_file);
                 return false;
             }
 
@@ -610,7 +610,7 @@ namespace ExcelReportApplication
                 Workbook wb_report = ExcelAction.OpenExcelWorkbook(group_file);
                 if (wb_report == null)
                 {
-                    Console.WriteLine("OpenExcelWorkbook failed in Update_Group_Summary()");
+                    LogMessage.WriteLine("OpenExcelWorkbook failed in Update_Group_Summary()");
                     continue;
                 }
 
@@ -619,7 +619,7 @@ namespace ExcelReportApplication
                 Worksheet ws_report = ExcelAction.Find_Worksheet(wb_report, sheet_name);
                 if (ws_report == null)
                 {
-                    Console.WriteLine("Find_Worksheet (" + sheet_name + ") failed in Update_Group_Summary()");
+                    LogMessage.WriteLine("Find_Worksheet (" + sheet_name + ") failed in Update_Group_Summary()");
                     ExcelAction.CloseExcelWorkbook(wb_report);
                     continue;
                 }
@@ -696,146 +696,6 @@ namespace ExcelReportApplication
             Boolean b_ret = false;
 
             return b_ret;
-        }
-
-        // Code for Report C
-        static public bool AutoCorrectReport_by_Excel(String input_excel_file)
-        {
-            // open excel and read and close excel
-            // Open Excel workbook
-            Workbook wb = ExcelAction.OpenExcelWorkbook(filename: input_excel_file, ReadOnly: true);
-            if (wb == null)
-            {
-                ConsoleWarning("ERR: Open workbook in AutoCorrectReport_by_Excel(): " + input_excel_file);
-                return false;
-            }
-
-            Worksheet ws;
-            if (ExcelAction.WorksheetExist(wb, HeaderTemplate.SheetName_ReportList))
-            {
-                ws = ExcelAction.Find_Worksheet(wb, HeaderTemplate.SheetName_ReportList);
-            }
-            else
-            {
-                ws = wb.ActiveSheet;
-            }
-
-            //public String source_path;
-            //public String source_folder;
-            //public String source_group;
-            //public String source_filename;
-            //public String destination_path;
-            //public String destination_folder;
-            //public String destination_group;
-            //public String destination_filename;
-            Boolean bStillReadingExcel = true;
-            // check title row
-            int row_index = 1, col_index = 1;
-            // TBD
-            row_index++;
-            col_index = 1;
-            List<CopyTestReport> report_list = new List<CopyTestReport>();
-            do
-            {
-                CopyTestReport ctp = new CopyTestReport();
-                ctp.source_path = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
-                //if (ctp.source_path != "")
-                if (String.IsNullOrWhiteSpace(ctp.source_path)==false)
-                {
-                    ctp.source_folder = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
-                    ctp.source_group = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
-                    ctp.source_filename = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
-                    ctp.destination_path = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
-                    ctp.destination_folder = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
-                    ctp.destination_group = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
-                    ctp.destination_filename = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
-                    ctp.destination_assignee = ExcelAction.GetCellTrimmedString(ws, row_index, col_index);
-                    report_list.Add(ctp);
-                    row_index++;
-                    col_index = 1;
-                }
-                else
-                {
-                    bStillReadingExcel = false;
-                }
-            }
-            while (bStillReadingExcel);
-            // Close later because excel is now also template for updating header so it will be used later
-            //// Close Excel
-            //ExcelAction.CloseExcelWorkbook(wb);
-
-            // create list of source and destination
-            Dictionary<String, String> copy_list = new Dictionary<String, String>();
-            List<String> report_to_be_copied_list_src = new List<String>();
-            List<String> report_to_be_copied_list_dest = new List<String>();
-            List<String> report_to_be_copied_list_assignee = new List<String>();
-            foreach (CopyTestReport copy_report in report_list)
-            {
-                String src_path = copy_report.Get_SRC_Directory();
-                String src_fullfilename = copy_report.Get_SRC_FullFilePath();
-                if (!Storage.FileExists(src_fullfilename))
-                    continue;
-
-                String dest_path = copy_report.Get_DEST_Directory();
-                String dest_fullfilename = copy_report.Get_DEST_FullFilePath();
-                report_to_be_copied_list_src.Add(src_fullfilename);
-                report_to_be_copied_list_dest.Add(dest_fullfilename);
-                report_to_be_copied_list_assignee.Add(copy_report.destination_assignee);
-            }
-
-            // auto-correct report files.
-            List<String> report_actually_copied_list_src = new List<String>();
-            List<String> report_actually_copied_list_dest = new List<String>();
-            List<String> report_cannot_be_copied_list_src = new List<String>();
-            List<String> report_cannot_be_copied_list_dest = new List<String>();
-            // use Auto Correct Function to copy and auto-correct.
-
-            for (int index = 0; index < report_to_be_copied_list_src.Count; index++)
-            {
-                String src = report_to_be_copied_list_src[index],
-                       dest = report_to_be_copied_list_dest[index],
-                       assignee = report_to_be_copied_list_assignee[index];
-                Boolean success = false;
-
-                // if only copying files, no need to open excel
-                if (KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly)
-                {
-                    String source_file = src, destination_file = dest;
-                    String destination_dir = Storage.GetDirectoryName(destination_file);
-                    // if parent directory does not exist, create recursively all parents
-                    if (Storage.DirectoryExists(destination_dir)==false)
-                    {
-                        Storage.CreateDirectory(destination_dir, auto_parent_dir: true);
-                    }
-                    success = Storage.Copy(source_file, destination_file, overwrite: true);
-                }
-                else // modifying contents so need to open excel
-                {
-                    String today = DateTime.Now.ToString("yyyy/MM/dd");
-                    HeaderTemplate.UpdateVariables(today: today, assignee: assignee, LinkedIssue: StyleString.StringToListOfStyleString(" "));
-                    success = AutoCorrectReport_SingleFile(source_file: src, destination_file: dest, wb_template: wb, always_save: true);
-                }
-
-                if (success)
-                {
-                    report_actually_copied_list_src.Add(src);
-                    report_actually_copied_list_dest.Add(dest);
-                }
-                else
-                {
-                    report_cannot_be_copied_list_src.Add(src);
-                    report_cannot_be_copied_list_dest.Add(dest);
-                }
-            }
-
-            // Close Excel
-            ExcelAction.CloseExcelWorkbook(wb);
-
-            if (report_cannot_be_copied_list_src.Count > 0)
-                return false;   // some can't be copied
-            else
-                return true;
-
         }
 
         static public bool AutoCorrectReport_by_Folder(String report_root, String Output_dir)
@@ -933,13 +793,5 @@ namespace ExcelReportApplication
         //{
         //}
 
-        static private void ConsoleWarning(String function, int row)
-        {
-            Console.WriteLine("Warning: please check " + function + " at line " + row.ToString());
-        }
-        static private void ConsoleWarning(String function)
-        {
-            Console.WriteLine("Warning: please check " + function);
-        }
     }
 }

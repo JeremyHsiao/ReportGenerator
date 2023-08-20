@@ -81,6 +81,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LogMessage.cs" />
     <Compile Include="ManPowerTask.cs" />
     <Compile Include="KeyWordListReport.cs" />
     <Compile Include="InputExcel.cs" />

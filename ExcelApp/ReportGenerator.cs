@@ -339,7 +339,7 @@ namespace ExcelReportApplication
                     }
                     catch (ArgumentException)
                     {
-                        Console.WriteLine("Sheet name:" + sheet_name + " already exists.");
+                        LogMessage.WriteLine("Sheet name:" + sheet_name + " already exists.");
                     }
 
                 }
@@ -541,15 +541,6 @@ namespace ExcelReportApplication
 
             // Close Test Case Excel
             ExcelAction.CloseTestCaseExcel();
-        }
-
-        static private void ConsoleWarning(String function, int row)
-        {
-            Console.WriteLine("Warning: please check " + function + " at line " + row.ToString());
-        }
-        static private void ConsoleWarning(String function)
-        {
-            Console.WriteLine("Warning: please check " + function);
         }
 
         //

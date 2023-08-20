@@ -43,7 +43,7 @@ namespace ExcelReportApplication
             }
             catch (Exception ex)
             {
-                Console.WriteLine("OpenExcelApp has expection");
+                LogMessage.WriteLine("OpenExcelApp has expection");
             }
             return b_ret;
         }

@@ -374,19 +374,6 @@ namespace ExcelReportApplication
     {
         static public String TestReport_Default_Output_Dir = "";
 
-        static private void ConsoleWarning(String function, int row, int col)
-        {
-            Console.WriteLine("Warning: please check " + function + " at (" + row.ToString() + "," + col.ToString() + ")");
-        }
-        static private void ConsoleWarning(String function, int row)
-        {
-            Console.WriteLine("Warning: please check " + function + " at line " + row.ToString());
-        }
-        static private void ConsoleWarning(String function)
-        {
-            Console.WriteLine("Warning: please check " + function);
-        }
-
         public static int col_indentifier = 2;
         public static int col_keyword = col_indentifier + 1;
         public static int row_test_detail_start = 27;
@@ -513,12 +500,12 @@ namespace ExcelReportApplication
                     //bug_list_keyword_Regex.Validate(bug_list_text); regex_step++;
 
                     //if (keyword_text == "") { ConsoleWarning("Empty Keyword", row_index); continue; }
-                    if (String.IsNullOrWhiteSpace(keyword_text)) { ConsoleWarning("Empty Keyword at row:", row_index); continue; }
-                    if (KeywordAtRow.ContainsKey(keyword_text)) { ConsoleWarning("Duplicated Keyword:" + keyword_text + " in single report", row_index); continue; }
+                    if (String.IsNullOrWhiteSpace(keyword_text)) { LogMessage.WriteLine("Empty Keyword at row: "+row_index.ToString()); continue; }
+                    if (KeywordAtRow.ContainsKey(keyword_text)) { LogMessage.WriteLine("Duplicated Keyword:" + keyword_text + " at "+ row_index.ToString()); continue; }
                     KeywordAtRow.Add(keyword_text, row_index);
                 }
                 catch (ArgumentException ex)
-                {
+                {                                                                                                                             
                     // Validation failed.
                     // Not a key row
                     switch (regex_step)
@@ -528,17 +515,17 @@ namespace ExcelReportApplication
                             break;
                         case 1:
                             // Not a "Result" 
-                            ConsoleWarning(regexBugStatusString, row_index + row_offset_result_title,
+                            LogMessage.CheckFunctionAtRowColumn(regexBugStatusString, row_index + row_offset_result_title,
                                                                  col_indentifier + col_offset_result_title);
                             break;
                         case 2:
                             // Not a "Bug Status" 
-                            ConsoleWarning(regexBugStatusString, row_index + row_index + row_offset_bugstatus_title,
+                            LogMessage.CheckFunctionAtRowColumn(regexBugStatusString, row_index + row_index + row_offset_bugstatus_title,
                                                                  col_indentifier + col_offset_bugstatus_title);
                             break;
                         case 3:
                             // Not a "Bug List" 
-                            ConsoleWarning(regexBugListString, row_index + row_offset_buglist_title,
+                            LogMessage.CheckFunctionAtRowColumn(regexBugListString, row_index + row_offset_buglist_title,
                                                                  col_indentifier + col_offset_buglist_title);
                             break;
                         default:
@@ -605,7 +592,7 @@ namespace ExcelReportApplication
                         fail_log.SetFlagOK(excelfilenameOK: true, openfileOK: true, findWorksheetOK: true);
                         fail_log.SetFlagFail(findNoKeyword: true, otherFailure: true);
                         ret_not_report_log.Add(fail_log);
-                        ConsoleWarning("Test Plan null keyword list Error occurred:" + plan.ExcelSheet + "@" + plan.ExcelFile);
+                        LogMessage.WriteLine("Test Plan null keyword list Error occurred:" + plan.ExcelSheet + "@" + plan.ExcelFile);
                     }
                 }
                 else
@@ -622,7 +609,7 @@ namespace ExcelReportApplication
                     else
                     {
                         fail_log.SetFlagFail(openfileFail: true, otherFailure: true);
-                        ConsoleWarning("Test Plan Unknown Error occurred:" + plan.ExcelSheet + "@" + plan.ExcelFile);
+                        LogMessage.WriteLine("Test Plan Unknown Error occurred:" + plan.ExcelSheet + "@" + plan.ExcelFile);
                     }
                     ret_not_report_log.Add(fail_log);
                     plan.CloseDetailExcel();
@@ -1372,7 +1359,7 @@ namespace ExcelReportApplication
                 Workbook wb_keyword_issue = ExcelAction.OpenExcelWorkbook(full_filename);
                 if (wb_keyword_issue == null)
                 {
-                    ConsoleWarning("ERR: Open workbook in V4: " + full_filename);
+                    LogMessage.WriteLine("ERR: Open workbook in V4: " + full_filename);
                     continue;
                 }
 
@@ -1380,7 +1367,7 @@ namespace ExcelReportApplication
                 Worksheet result_worksheet = ExcelAction.Find_Worksheet(wb_keyword_issue, sheet_name);
                 if (result_worksheet == null)
                 {
-                    ConsoleWarning("ERR: Open worksheet in V4: " + full_filename + " sheet: " + sheet_name);
+                    LogMessage.WriteLine("ERR: Open worksheet in V4: " + full_filename + " sheet: " + sheet_name);
                     continue;
                 }
 
@@ -1598,7 +1585,7 @@ namespace ExcelReportApplication
                         Workbook wb = ExcelAction.OpenExcelWorkbook(filename: full_filename, ReadOnly: false);
                         if (wb == null)
                         {
-                            ConsoleWarning("ERR: Open workbook in auto-correct-worksheet-name: " + full_filename);
+                            LogMessage.WriteLine("ERR: Open workbook in auto-correct-worksheet-name: " + full_filename);
                             continue;
                         }
 
@@ -2011,7 +1998,7 @@ namespace ExcelReportApplication
             Workbook wb_judgement = ExcelAction.OpenExcelWorkbook(report_workbook);
             if (wb_judgement == null)
             {
-                ConsoleWarning("ERR: Open workbook in GetJudgementValue: " + report_workbook);
+                LogMessage.WriteLine("ERR: Open workbook in GetJudgementValue: " + report_workbook);
                 judgement_str = ret_str;
                 b_ret = false;
             }
@@ -2021,7 +2008,7 @@ namespace ExcelReportApplication
                 Worksheet ws_judgement = ExcelAction.Find_Worksheet(wb_judgement, report_worksheet);
                 if (ws_judgement == null)
                 {
-                    ConsoleWarning("ERR: Open worksheet in GetJudgementValue: " + report_workbook + " sheet: " + report_worksheet);
+                    LogMessage.WriteLine("ERR: Open worksheet in GetJudgementValue: " + report_workbook + " sheet: " + report_worksheet);
                     judgement_str = ret_str;
                     b_ret = false;
                 }
@@ -2189,7 +2176,7 @@ namespace ExcelReportApplication
                         Workbook wb = ExcelAction.OpenExcelWorkbook(filename: full_filename, ReadOnly: false);
                         if (wb == null)
                         {
-                            ConsoleWarning("ERR: Open workbook in auto-correct-worksheet-name of ListAllDetailedTestPlanKeywordTask(): " + full_filename);
+                            LogMessage.WriteLine("ERR: Open workbook in auto-correct-worksheet-name of ListAllDetailedTestPlanKeywordTask(): " + full_filename);
                             continue;
                         }
 

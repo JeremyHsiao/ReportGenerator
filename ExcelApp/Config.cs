@@ -179,7 +179,7 @@ namespace ExcelReportApplication
                 {
                     // If still failed, it indicated that default value in code is not correct!
                     // highlight error
-                    Console.WriteLine("Default value for " + key + " is not a Boolean. Please check");
+                    LogMessage.WriteLine("Default value for " + key + " is not a Boolean. Please check");
                 }
             }
             return ret_value;
@@ -195,7 +195,7 @@ namespace ExcelReportApplication
                 {
                     // If still failed, it indicated that default value in code is not correct!
                     // highlight error
-                    Console.WriteLine("Default value for " + key + " is not an int. Please check");
+                    LogMessage.WriteLine("Default value for " + key + " is not an int. Please check");
                 }
             }
             return ret_value;
@@ -258,7 +258,7 @@ namespace ExcelReportApplication
             }
             catch (ConfigurationErrorsException)
             {
-                Console.WriteLine("Error writing app settings");
+                LogMessage.WriteLine("Error writing app settings");
             }
         }
 

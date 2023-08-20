@@ -982,7 +982,7 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            TestReport.AutoCorrectReport_by_Excel(excel_input_file);
+            CopyReport.CopyTestReport(excel_input_file);
 
             return true;
         }

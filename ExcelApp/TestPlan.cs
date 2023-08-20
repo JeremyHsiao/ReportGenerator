@@ -357,17 +357,5 @@ namespace ExcelReportApplication
         //    return TestReport.UpdateReportHeader(this.TestPlanWorksheet,SW_Version, Test_Start, Test_End, Judgement, Template);
         //}
 
-        static private void ConsoleWarning(String function, int row, int col)
-        {
-            Console.WriteLine("Warning: please check " + function + " at (" + row.ToString() + "," + col.ToString() + ")");
-        }
-        static private void ConsoleWarning(String function, int row)
-        {
-            Console.WriteLine("Warning: please check " + function + " at line " + row.ToString());
-        }
-        static private void ConsoleWarning(String function)
-        {
-            Console.WriteLine("Warning: please check " + function);
-        }
     }
 }
