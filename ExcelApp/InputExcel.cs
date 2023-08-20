@@ -191,7 +191,9 @@ namespace ExcelReportApplication
 
     static public class HeaderTemplate
     {
-        static public String ExcelSheetName = "BeforeLine21";
+        static public String SheetName_HeaderTemplate = "BeforeLine21";
+        static public String SheetName_ReportList = "ReportList";
+
         static public int StartRow = 1;
         static public int EndRow = 22;
         static public int StartCol = 1;

@@ -479,9 +479,9 @@ namespace ExcelReportApplication
             //Report_C_Update_Header_by_Template
             if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template == true)
             {
-                if (ExcelAction.WorksheetExist(wb_template, HeaderTemplate.ExcelSheetName))
+                if (ExcelAction.WorksheetExist(wb_template, HeaderTemplate.SheetName_HeaderTemplate))
                 {
-                    Worksheet ws_template = ExcelAction.Find_Worksheet(wb_template, HeaderTemplate.ExcelSheetName);
+                    Worksheet ws_template = ExcelAction.Find_Worksheet(wb_template, HeaderTemplate.SheetName_HeaderTemplate);
                     String filename = TestPlan.GetReportTitleAccordingToFilename(destination_file);
                     String sheetname = ws.Name;
                     HeaderTemplate.UpdateVariables(filename: filename, sheetname: sheetname);
@@ -579,6 +579,21 @@ namespace ExcelReportApplication
         public static String GroupSummary_Title_TestItem_str = "Test Item";
         public static String GroupSummary_Title_Result_str = "Result";
         public static String GroupSummary_Title_Note_str = "Note";
+
+        static public Boolean Update_Single_Group_Summary_Report(Worksheet ws_group_report)
+        {
+            // check content of title row of group summary area, if not valid content, go to next
+            if ((ExcelAction.CompareString(ws_group_report, GroupSummary_Title_No_Row, GroupSummary_Title_No_Col,GroupSummary_Title_No_str) == false ) ||
+                (ExcelAction.CompareString(ws_group_report, GroupSummary_Title_TestItem_Row, GroupSummary_Title_TestItem_Col, GroupSummary_Title_TestItem_str) == false) ||
+                (ExcelAction.CompareString(ws_group_report, GroupSummary_Title_Result_Row, GroupSummary_Title_Result_Col, GroupSummary_Title_Result_str) == false) ||
+                (ExcelAction.CompareString(ws_group_report, GroupSummary_Title_Note_Row, GroupSummary_Title_Note_Col, GroupSummary_Title_Note_str) == false))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         static public bool Update_Group_Summary(String report_path)
         {
             Boolean b_ret = false;
@@ -694,7 +709,17 @@ namespace ExcelReportApplication
                 ConsoleWarning("ERR: Open workbook in AutoCorrectReport_by_Excel(): " + input_excel_file);
                 return false;
             }
-            Worksheet ws = wb.ActiveSheet;
+
+            Worksheet ws;
+            if (ExcelAction.WorksheetExist(wb, HeaderTemplate.SheetName_ReportList))
+            {
+                ws = ExcelAction.Find_Worksheet(wb, HeaderTemplate.SheetName_ReportList);
+            }
+            else
+            {
+                ws = wb.ActiveSheet;
+            }
+
             //public String source_path;
             //public String source_folder;
             //public String source_group;

@@ -563,6 +563,10 @@ namespace ExcelReportApplication
             ReportGenerator.LinkIssue_C_Issue_Color = XMLConfig.ReadAppSetting_Color("LinkIssue_C_Issue_Color");
             ReportGenerator.LinkIssue_D_Issue_Color = XMLConfig.ReadAppSetting_Color("LinkIssue_D_Issue_Color");
 
+            // Input Excel
+            HeaderTemplate.SheetName_HeaderTemplate = XMLConfig.ReadAppSetting_String("InputExcel_Sheetname_HeaderTemplate");
+            HeaderTemplate.SheetName_ReportList = XMLConfig.ReadAppSetting_String("InputExcel_Sheetname_ReportList");
+
             // config for keyword report
             Issue.Keyword_report_Font = XMLConfig.ReadAppSetting_String("Keyword_report_Font");
             Issue.Keyword_report_FontSize = XMLConfig.ReadAppSetting_int("Keyword_report_FontSize");
