@@ -367,6 +367,8 @@ namespace ExcelReportApplication
         //public static int Period_End_at_row = 8, Period_End_at_col = ('M' - 'A' + 1);
         //public static int Judgement_at_row = 9, Judgement_at_col = ('D' - 'A' + 1);
         //public static int Judgement_string_at_row = 9, Judgement_string_at_col = 2;
+        public static StyleString blank_space = new StyleString(" ", ReportGenerator.LinkIssue_report_FontColor,
+                            ReportGenerator.LinkIssue_report_Font, ReportGenerator.LinkIssue_report_FontSize);
 
     }
 
@@ -1537,8 +1539,7 @@ namespace ExcelReportApplication
                     else
                     {
                         linked_issue_description_on_this_report.Clear();
-                        StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
-                        linked_issue_description_on_this_report.Add(blank_space);
+                        linked_issue_description_on_this_report.Add(KeywordReportHeader.blank_space);
                     }
                     ReplaceConclusionWithBugList(result_worksheet, linked_issue_description_on_this_report);
                     //
