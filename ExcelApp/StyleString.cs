@@ -280,7 +280,7 @@ Returns or sets the type of underline applied to the font.
                 }
                 else
                 {
-                    // Font doesn't exist ==> no need to change font
+                    // Default font doesn't exist ==> no need to change font (font as it is) at all
                     return;
                 }
             }
@@ -305,13 +305,13 @@ Returns or sets the type of underline applied to the font.
                                                     style_str.FontStyle,
                                                     GraphicsUnit.Pixel))
                 {
-                    if (fontTester.Name == StyleString.default_font)
+                    if (fontTester.Name == style_str.Font)
                     {
                         // Font exists
                     }
                     else
                     {
-                        // Font doesn't exist ==> no need to change font
+                        // Font doesn't exist ==> no need to change font use as it is
                         continue;
                     }
                 }
@@ -403,7 +403,7 @@ Returns or sets the type of underline applied to the font.
                     {
                         str += "(" + KeywordReport.WAIVED_str + ")";
                     }
-                    StyleString style_str = new StyleString(str, StyleString.default_color);
+                    StyleString style_str = new StyleString(str, ReportGenerator.LinkIssue_report_FontColor);
                     value_style_str.Add(style_str);
                     /*
                     // Keep portion of string before first "\n"; if no "\n", keep whole string otherwise.
