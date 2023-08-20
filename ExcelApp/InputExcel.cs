@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Office.Interop.Excel;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace ExcelReportApplication
 {
@@ -61,6 +63,7 @@ namespace ExcelReportApplication
             return fullfilepath;
         }
 
+        static public String ExcelSheetName = "";
     }
 
     //public class ReportMapping
@@ -186,5 +189,119 @@ namespace ExcelReportApplication
 
     //}
 
+    static public class HeaderTemplate
+    {
+        static public String ExcelSheetName = "BeforeLine21";
+        static public int StartRow = 1;
+        static public int EndRow = 22;
+        static public int StartCol = 1;
+        static public int EndCol = 14;
+
+        static public String Variable_ReportFileName = "$FileName$";
+        static public String Variable_ReportSheetName = "$SheetName$";
+        static public String Variable_Assignee = "$Assignee$";
+        static public String Variable_Today = "$Today$";
+        static public String Variable_TC_LinkedIssue = "$LinkedIssue$";
+
+        static private String ReportFileName = "$FileName$";
+        static private String ReportSheetName = "$SheetName$";
+        static private String Assignee = "$Assignee$";
+        static private String Today = "$Today$";
+        static private StyleString default_for_linked_issue = new StyleString("$LinkedIssue$");
+        static private List<StyleString> TC_LinkedIssue = default_for_linked_issue.ConvertToList();
+
+        static public void ResetVariables()
+        {
+            ReportFileName = Variable_ReportFileName;
+            ReportSheetName = Variable_ReportSheetName;
+            Assignee = Variable_Assignee;
+            Today = Variable_Today;
+            TC_LinkedIssue = default_for_linked_issue.ConvertToList();
+        }
+
+        static public void UpdateVariables(String filename = "", String sheetname = "", String assignee = "", String today = "", List<StyleString> LinkedIssue = null)
+        {
+            if (String.IsNullOrWhiteSpace(filename) == false)
+            {
+                ReportFileName = filename;
+            }
+            if (String.IsNullOrWhiteSpace(sheetname) == false)
+            {
+                ReportSheetName = sheetname;
+            }
+            if (String.IsNullOrWhiteSpace(assignee) == false)
+            {
+                Assignee = assignee;
+            }
+            if (String.IsNullOrWhiteSpace(today) == false)
+            {
+                Today = today;
+            }
+            if (LinkedIssue != null)
+            {
+                TC_LinkedIssue = LinkedIssue;
+            }
+        }
+
+        static private Boolean CheckAndReplace(Worksheet ws, int row, int col, String from, String to)
+        {
+            Boolean b_ret = false;
+            if (ExcelAction.GetCellValue(ws, row, col) != null)
+            {
+                String to_check = ExcelAction.GetCellValue(ws, row, col).ToString();
+                if (to_check.Contains(from))
+                {
+                    ExcelAction.ReplaceText(ws, row, col, from, to);
+                    b_ret = true;
+                }
+            }
+            else
+            {
+                b_ret = true;
+            }
+            return b_ret;
+        }
+
+        static private Boolean CheckAndReplaceConclusion(Worksheet ws, int row, int col, String from, List<StyleString> to)
+        {
+            Boolean b_ret = false;
+            if (ExcelAction.GetCellValue(ws, row, col) != null)
+            {
+                String to_check = ExcelAction.GetCellValue(ws, row, col).ToString();
+                if (to_check.Contains(Variable_TC_LinkedIssue))
+                {
+                    StyleString.WriteStyleString(ws, row, col, TC_LinkedIssue);
+                }
+                b_ret = true;
+            }
+            else
+            {
+                b_ret = true;
+            }
+            return b_ret;
+        }
+
+        static public Boolean CopyAndUpdateHeader(Worksheet template_worksheet, Worksheet report_worksheet)
+        {
+            Boolean b_ret = false;
+
+            ExcelAction.CopyColumnWidth(template_worksheet, report_worksheet, StartCol, EndCol);
+            ExcelAction.CopyPasteRows(template_worksheet, report_worksheet, StartRow, EndRow);
+
+            for (int row_index = StartRow; row_index <= EndRow; row_index++)
+            {
+                for (int col_index = StartCol; col_index <= EndCol; col_index++)
+                {
+                    CheckAndReplace(report_worksheet, row_index, col_index, Variable_ReportFileName, ReportFileName);
+                    CheckAndReplace(report_worksheet, row_index, col_index, Variable_ReportSheetName, ReportSheetName);
+                    CheckAndReplace(report_worksheet, row_index, col_index, Variable_Assignee, Assignee);
+                    CheckAndReplace(report_worksheet, row_index, col_index, Variable_Today, Today);
+                    CheckAndReplaceConclusion(report_worksheet, row_index, col_index, Variable_TC_LinkedIssue, TC_LinkedIssue);
+                }
+            }
+            b_ret=true;
+            return b_ret;
+        }
+    }
 
 }

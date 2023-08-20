@@ -426,14 +426,14 @@ namespace ExcelReportApplication
             return file_has_been_updated;
         }
 
-        static public bool AutoCorrectReport_SingleFile(String source_file, String destination_file, Boolean always_save = false)
+        static public bool AutoCorrectReport_SingleFile(String source_file, String destination_file, Workbook wb_template, Boolean always_save = false)
         {
            KeywordReportHeader out_header; // not used for this version of API.
-           return AutoCorrectReport_SingleFile(source_file, destination_file, out out_header, always_save );
+           return AutoCorrectReport_SingleFile(source_file, destination_file, wb_template, out out_header, always_save);
         }
         
         // Copy and update worksheet name & header & bug-result (configurable) -- to be used for starting a new project based on reports from anywhere
-        static public bool AutoCorrectReport_SingleFile(String source_file, String destination_file, out KeywordReportHeader out_header, Boolean always_save = false)
+        static public bool AutoCorrectReport_SingleFile(String source_file, String destination_file, Workbook wb_template, out KeywordReportHeader out_header, Boolean always_save = false)
         {
             Boolean file_has_been_updated = false;
             out_header = new KeywordReportHeader();
@@ -476,33 +476,49 @@ namespace ExcelReportApplication
                 file_has_been_updated = true;
             }
 
-            // Update header (when the option is true)
-            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header==true)
+            //Report_C_Update_Header_by_Template
+            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template == true)
             {
-                String new_title = TestPlan.GetReportTitleAccordingToFilename(destination_file);
-                KeywordReport.DefaultKeywordReportHeader.Report_Title = new_title;
-                // sheet-name is not defined as part of header --> it should be part of excel report (eg. filename, sheetname)
-                //KeywordReport.DefaultKeywordReportHeader.Report_SheetName = new_sheet_name;
-                KeywordReport.UpdateKeywordReportHeader_full(ws,KeywordReport.DefaultKeywordReportHeader);
-                file_has_been_updated = true;
+                if (ExcelAction.WorksheetExist(wb_template, HeaderTemplate.ExcelSheetName))
+                {
+                    Worksheet ws_template = ExcelAction.Find_Worksheet(wb_template, HeaderTemplate.ExcelSheetName);
+                    String filename = TestPlan.GetReportTitleAccordingToFilename(destination_file);
+                    String sheetname = ws.Name;
+                    String today = DateTime.Now.ToString("yyyy/MM/dd");
+                    HeaderTemplate.UpdateVariables(filename: filename, sheetname: sheetname, today: today);
+                    HeaderTemplate.CopyAndUpdateHeader(ws_template, ws);
+                }
             }
-            
-            //Report_C_Replace_Conclusion
-            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion == true)
+            else
             {
-                //StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
-                StyleString blank_space = new StyleString(" ", StyleString.default_color, "Gill Sans MT", StyleString.default_size);
-                KeywordReport.ReplaceConclusionWithBugList(ws, blank_space.ConvertToList());
-                file_has_been_updated = true;
-            }
+                // Update header (when the option is true)
+                if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header == true)
+                {
+                    String new_title = TestPlan.GetReportTitleAccordingToFilename(destination_file);
+                    KeywordReport.DefaultKeywordReportHeader.Report_Title = new_title;
+                    // sheet-name is not defined as part of header --> it should be part of excel report (eg. filename, sheetname)
+                    //KeywordReport.DefaultKeywordReportHeader.Report_SheetName = new_sheet_name;
+                    KeywordReport.UpdateKeywordReportHeader_full(ws, KeywordReport.DefaultKeywordReportHeader);
+                    file_has_been_updated = true;
+                }
 
-            // Clear bug-list, bug-count, Pass/Fail/Conditional_Pass count, judgement
-            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result)
-            {
-                KeywordReport.ClearKeywordBugResult(source_file, ws);
-                KeywordReport.ClearReportBugCount(ws);
-                KeywordReport.ClearJudgement(ws);
-                file_has_been_updated = true;
+                //Report_C_Replace_Conclusion
+                if (KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion == true)
+                {
+                    //StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
+                    StyleString blank_space = new StyleString(" ", StyleString.default_color, "Gill Sans MT", StyleString.default_size);
+                    KeywordReport.ReplaceConclusionWithBugList(ws, blank_space.ConvertToList());
+                    file_has_been_updated = true;
+                }
+
+                // Clear bug-list, bug-count, Pass/Fail/Conditional_Pass count, judgement
+                if (KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result)
+                {
+                    KeywordReport.ClearKeywordBugResult(source_file, ws);
+                    KeywordReport.ClearReportBugCount(ws);
+                    KeywordReport.ClearJudgement(ws);
+                    file_has_been_updated = true;
+                }
             }
 
             // Hide keyword result/bug-list row -- after clear because it is un-hide after clear
@@ -720,8 +736,9 @@ namespace ExcelReportApplication
                 }
             }
             while (bStillReadingExcel);
-            // Close Excel
-            ExcelAction.CloseExcelWorkbook(wb);
+            // Close later because excel is now also template for updating header so it will be used later
+            //// Close Excel
+            //ExcelAction.CloseExcelWorkbook(wb);
 
             // create list of source and destination
             Dictionary<String, String> copy_list = new Dictionary<String, String>();
@@ -767,7 +784,7 @@ namespace ExcelReportApplication
                 }
                 else // modifying contents so need to open excel
                 {
-                    success = AutoCorrectReport_SingleFile(source_file: src, destination_file: dest, always_save: true);
+                    success = AutoCorrectReport_SingleFile(source_file: src, destination_file: dest, wb_template: wb, always_save: true);
                 }
 
                 if (success)
@@ -781,6 +798,9 @@ namespace ExcelReportApplication
                     report_cannot_be_copied_list_dest.Add(dest);
                 }
             }
+
+            // Close Excel
+            ExcelAction.CloseExcelWorkbook(wb);
 
             if (report_cannot_be_copied_list_src.Count > 0)
                 return false;   // some can't be copied
@@ -801,7 +821,7 @@ namespace ExcelReportApplication
             foreach (String source_report in report_filename)
             {
                 String dest_filename = KeywordReport.DecideDestinationFilename(report_root, Output_dir, source_report); // replace folder name
-                b_ret |= AutoCorrectReport_SingleFile(source_file: source_report, destination_file: dest_filename, always_save: true);
+                b_ret |= AutoCorrectReport_SingleFile(source_file: source_report, destination_file: dest_filename, wb_template:new Workbook(), always_save: true);
             }
 
             return b_ret;
