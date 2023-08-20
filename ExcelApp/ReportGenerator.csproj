@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="ManPowerTask.cs" />
     <Compile Include="KeyWordListReport.cs" />
+    <Compile Include="InputExcel.cs" />
     <Compile Include="SummaryReport.cs" />
     <Compile Include="Keyword.cs" />
     <Compile Include="StandardTestReport.cs" />
