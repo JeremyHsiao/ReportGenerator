@@ -289,6 +289,14 @@ namespace ExcelReportApplication
             hiddenRange.EntireRow.Hidden = true;
         }
 
+        static public void CopyColumnWidth(Worksheet source_ws, Worksheet destination_ws, int StartCol, int EndCol)
+        {
+            for (int index = StartCol; index <= EndCol; index++)
+            {
+                destination_ws.Columns[index].ColumnWidth = source_ws.Columns[index].ColumnWidth;
+            }
+        }
+
         static public void Insert_Column(Worksheet ws, int at_col)
         {
             ws.Columns[at_col].Insert();
@@ -451,6 +459,14 @@ namespace ExcelReportApplication
             Object cell_value2 = GetTestCaseCell(row, col, IsTemplate: IsTemplate);
             if (cell_value2 == null) { return ""; }
             return cell_value2.ToString().Trim();
+        }
+
+        static public void ReplaceText(Worksheet ws, int row, int col, String from, String to)
+        {
+            Range cell = ws.Cells[row, col];
+            String cell_text = ws.Cells[row, col].Value2.ToString();
+            String new_cell_text = cell_text.Replace(from, to);
+            cell.Value2 = new_cell_text;
         }
 
         //static public void SetKeywordListCell(int row, int col, Object set_object, Boolean to_keyword_list = true)
@@ -818,6 +834,14 @@ namespace ExcelReportApplication
             Dst.PasteSpecial(Paste: XlPasteType.xlPasteAll);
         }
 
+        static public void CopyPasteRows(Worksheet src, Worksheet dst, int start_row, int end_row)
+        {
+            String row_str = start_row.ToString() + ":" + end_row.ToString();
+            Range Src = src.Rows[row_str];
+            Range Dst = dst.Rows[row_str];
+            Src.Copy();
+            Dst.PasteSpecial(Paste: XlPasteType.xlPasteAll);
+        }
         static private void CopyPasteFormat(Worksheet src, Worksheet dst, int ul_row, int ul_col)
         {
             CopyPasteFormat(src, dst, ul_row, ul_col, ul_row, ul_col);
