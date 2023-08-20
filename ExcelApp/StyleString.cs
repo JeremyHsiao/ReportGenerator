@@ -169,6 +169,14 @@ Returns or sets the type of underline applied to the font.
             return ret_list;
         }
 
+        static public List<StyleString> StringToListOfStyleString(String intput_string)
+        {
+            List<StyleString> ret_list = new List<StyleString>();
+            StyleString temp = new StyleString(intput_string);
+            ret_list.Add(temp);
+            return ret_list;
+        }
+
         //
         // Common function related to StyleString
         //

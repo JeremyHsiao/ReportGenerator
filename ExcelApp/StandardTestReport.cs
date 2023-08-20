@@ -484,8 +484,7 @@ namespace ExcelReportApplication
                     Worksheet ws_template = ExcelAction.Find_Worksheet(wb_template, HeaderTemplate.ExcelSheetName);
                     String filename = TestPlan.GetReportTitleAccordingToFilename(destination_file);
                     String sheetname = ws.Name;
-                    String today = DateTime.Now.ToString("yyyy/MM/dd");
-                    HeaderTemplate.UpdateVariables(filename: filename, sheetname: sheetname, today: today);
+                    HeaderTemplate.UpdateVariables(filename: filename, sheetname: sheetname);
                     HeaderTemplate.CopyAndUpdateHeader(ws_template, ws);
                 }
             }
@@ -744,6 +743,7 @@ namespace ExcelReportApplication
             Dictionary<String, String> copy_list = new Dictionary<String, String>();
             List<String> report_to_be_copied_list_src = new List<String>();
             List<String> report_to_be_copied_list_dest = new List<String>();
+            List<String> report_to_be_copied_list_assignee = new List<String>();
             foreach (CopyTestReport copy_report in report_list)
             {
                 String src_path = copy_report.Get_SRC_Directory();
@@ -755,6 +755,7 @@ namespace ExcelReportApplication
                 String dest_fullfilename = copy_report.Get_DEST_FullFilePath();
                 report_to_be_copied_list_src.Add(src_fullfilename);
                 report_to_be_copied_list_dest.Add(dest_fullfilename);
+                report_to_be_copied_list_assignee.Add(copy_report.destination_assignee);
             }
 
             // auto-correct report files.
@@ -767,7 +768,8 @@ namespace ExcelReportApplication
             for (int index = 0; index < report_to_be_copied_list_src.Count; index++)
             {
                 String src = report_to_be_copied_list_src[index],
-                       dest = report_to_be_copied_list_dest[index];
+                       dest = report_to_be_copied_list_dest[index],
+                       assignee = report_to_be_copied_list_assignee[index];
                 Boolean success = false;
 
                 // if only copying files, no need to open excel
@@ -784,6 +786,8 @@ namespace ExcelReportApplication
                 }
                 else // modifying contents so need to open excel
                 {
+                    String today = DateTime.Now.ToString("yyyy/MM/dd");
+                    HeaderTemplate.UpdateVariables(today: today, assignee: assignee, LinkedIssue: StyleString.StringToListOfStyleString(" "));
                     success = AutoCorrectReport_SingleFile(source_file: src, destination_file: dest, wb_template: wb, always_save: true);
                 }
 

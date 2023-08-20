@@ -207,8 +207,7 @@ namespace ExcelReportApplication
         static private String ReportSheetName = "$SheetName$";
         static private String Assignee = "$Assignee$";
         static private String Today = "$Today$";
-        static private StyleString default_for_linked_issue = new StyleString("$LinkedIssue$");
-        static private List<StyleString> TC_LinkedIssue = default_for_linked_issue.ConvertToList();
+        static private List<StyleString> TC_LinkedIssue = StyleString.StringToListOfStyleString(Variable_TC_LinkedIssue);
 
         static public void ResetVariables()
         {
@@ -216,7 +215,7 @@ namespace ExcelReportApplication
             ReportSheetName = Variable_ReportSheetName;
             Assignee = Variable_Assignee;
             Today = Variable_Today;
-            TC_LinkedIssue = default_for_linked_issue.ConvertToList();
+            TC_LinkedIssue = StyleString.StringToListOfStyleString(Variable_TC_LinkedIssue);
         }
 
         static public void UpdateVariables(String filename = "", String sheetname = "", String assignee = "", String today = "", List<StyleString> LinkedIssue = null)
