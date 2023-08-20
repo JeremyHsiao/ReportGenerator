@@ -260,14 +260,14 @@ namespace ExcelReportApplication
 
         static public String GetCurrentDirectory()
         {
-            String ret = "";
+            String ret = @"C:\";
             try
             {
                 ret = Directory.GetCurrentDirectory();
             }
             catch
             {
-                // "" will be returned if exceptions
+                // @"C:\" will be returned if exceptions
             }
             return ret;
         }
