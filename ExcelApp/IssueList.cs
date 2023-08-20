@@ -224,6 +224,7 @@ namespace ExcelReportApplication
 
         // out-of-band data
         private List<String> keyword_list;
+        private List<String> testcaseid_list;
 
         public String Key   // property
         {
@@ -330,7 +331,7 @@ namespace ExcelReportApplication
         public const string col_LinkedIssue = "Linked Issues";
         public const string col_AdditionalInfo = "Additional Information";
 
-        private void InitIssue() { keyword_list = new List<String>(); }
+        private void InitIssue() { keyword_list = new List<String>(); testcaseid_list = new List<String>(); }
 
         public Issue()
         {
@@ -345,7 +346,7 @@ namespace ExcelReportApplication
             InitIssue();
         }
 
-        public Issue(List<String> members)
+        private void SetupIssue(List<String> members)
         {
             this.key = members[(int)IssueListMemberIndex.KEY];
             this.summary = members[(int)IssueListMemberIndex.SUMMARY];
@@ -362,6 +363,15 @@ namespace ExcelReportApplication
             this.linkedissue = members[(int)IssueListMemberIndex.LINKEDISSUE];
             this.additionalinfo = members[(int)IssueListMemberIndex.ADDITIONALINFO];
             InitIssue();
+            if (String.IsNullOrWhiteSpace(this.testcaseid) == false)
+            {
+                this.testcaseid_list = Split_String_To_ListOfString(testcaseid);
+            }
+        }
+
+        public Issue(List<String> members)
+        {
+            SetupIssue(members);
         }
 
         public enum IssueListMemberIndex
@@ -575,7 +585,8 @@ namespace ExcelReportApplication
         {
             List<String> ret_list = new List<String>();
             // protection
-            if ((links == null) || (links == "")) return ret_list;   // return empty new object
+            //if ((links == null) || (links == "")) return ret_list;   // return empty new object
+            if (String.IsNullOrWhiteSpace(links)) return ret_list;   // return empty new object
             // Separate keys into string[]
             String[] issues = links.Split(separators, StringSplitOptions.RemoveEmptyEntries);
             if (issues == null) return ret_list;
