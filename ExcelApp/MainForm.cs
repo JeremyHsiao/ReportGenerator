@@ -581,6 +581,7 @@ namespace ExcelReportApplication
             KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = XMLConfig.ReadAppSetting_Boolean("Report_C_CopyFileOnly");
             KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = XMLConfig.ReadAppSetting_Boolean("Report_C_Remove_AUO_Internal");
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Full_Header");
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Header_by_Template");
             KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = XMLConfig.ReadAppSetting_Boolean("Report_C_Replace_Conclusion");
             
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Report_Sheetname");
@@ -860,6 +861,8 @@ namespace ExcelReportApplication
 
             // This issue description is needed for report purpose
             //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
+           
+            // this is for keyword report, how to input linked issue report list???
             Dictionary<string, List<StyleString>> global_issue_description_list_severity =
                                 StyleString.GenerateIssueDescription_Keyword_Issue(ReportGenerator.ReadGlobalIssueList());
             String out_dir = KeywordReport.TestReport_Default_Output_Dir;
@@ -1296,6 +1299,7 @@ namespace ExcelReportApplication
                         temp_bool.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row);
                         temp_bool.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion);
                         temp_bool.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header);
+                        temp_bool.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template);
                         KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = false;
                         KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = true;
                         KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = false;
@@ -1303,7 +1307,9 @@ namespace ExcelReportApplication
                         KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = false;
                         KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = false;
                         KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = false;
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = false;
                         bRet = Execute_AutoCorrectTestReportByExcel_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = temp_bool.Pop();
                         KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = temp_bool.Pop();
                         KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = temp_bool.Pop();
                         KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = temp_bool.Pop();
