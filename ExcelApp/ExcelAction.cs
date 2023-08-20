@@ -297,6 +297,14 @@ namespace ExcelReportApplication
             }
         }
 
+        static public void CopyRowHeight(Worksheet source_ws, Worksheet destination_ws, int StartRow, int EndRow)
+        {
+            for (int index = StartRow; index <= EndRow; index++)
+            {
+                destination_ws.Rows[index].RowHeight = source_ws.Rows[index].RowHeight;
+            }
+        }
+
         static public void Insert_Column(Worksheet ws, int at_col)
         {
             ws.Columns[at_col].Insert();
