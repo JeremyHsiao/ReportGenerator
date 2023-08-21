@@ -157,6 +157,16 @@ Returns or sets the type of underline applied to the font.
             text = string_text;
         }
 
+        static public List<StyleString> EmptyList()
+        {
+            return StringToListOfStyleString("");
+        }
+
+        static public List<StyleString> WhiteSpaceList()
+        {
+            return StringToListOfStyleString(" ");
+        }
+
         static public String StyleStringToString(StyleString stylestring)
         {
             return stylestring.text;
@@ -265,11 +275,11 @@ Returns or sets the type of underline applied to the font.
             return Link_Issue_Detail;
         }
 
-        static public void WriteStyleString(ref Range input_range, List<StyleString> sytle_string_list)
+        static public void WriteStyleString(ref Range input_range, List<StyleString> style_string_list)
         {
             // Fill the text into excel cell with default font settings.
             string txt_str = "";
-            foreach (StyleString style_str in sytle_string_list)
+            foreach (StyleString style_str in style_string_list)
             {
                 txt_str += style_str.Text;
             }
@@ -301,7 +311,7 @@ Returns or sets the type of underline applied to the font.
 
             // Change font settings when required for the string portion
             int chr_index = 1;
-            foreach (StyleString style_str in sytle_string_list)
+            foreach (StyleString style_str in style_string_list)
             {
                 int len = style_str.Text.Length;
                 
@@ -335,10 +345,10 @@ Returns or sets the type of underline applied to the font.
             }
         }
 
-        static public void WriteStyleString(Worksheet ws, int row, int col, List<StyleString> sytle_string_list)
+        static public void WriteStyleString(Worksheet ws, int row, int col, List<StyleString> style_string_list)
         {
             Range input_range = ws.Cells[row,col];
-            WriteStyleString(ref input_range, sytle_string_list);
+            WriteStyleString(ref input_range, style_string_list);
         }
 
         static public Dictionary<string, List<StyleString>> GenerateFullIssueDescription(List<Issue> issuelist)
