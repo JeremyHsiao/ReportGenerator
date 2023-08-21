@@ -428,9 +428,9 @@ namespace ExcelReportApplication
             AutoFit_Column(ws_issuelist, col);
         }
 
-        static public void IssueList_WriteStyleString(int row, int col, List<StyleString> sytle_string_list)
+        static public void IssueList_WriteStyleString(int row, int col, List<StyleString> style_string_list)
         {
-            StyleString.WriteStyleString(ws_issuelist, row, col, sytle_string_list);
+            StyleString.WriteStyleString(ws_issuelist, row, col, style_string_list);
         }
 
         static public Dictionary<string, int> CreateIssueListColumnIndex()
@@ -526,10 +526,10 @@ namespace ExcelReportApplication
             Hide_Row(ws, row, count);
         }
 
-        static public void TestCase_WriteStyleString(int row, int col, List<StyleString> sytle_string_list, bool IsTemplate = false)
+        static public void TestCase_WriteStyleString(int row, int col, List<StyleString> style_string_list, bool IsTemplate = false)
         {
             Worksheet ws = ((IsTemplate) ? ws_tc_template : ws_testcase);
-            StyleString.WriteStyleString(ws, row, col, sytle_string_list);
+            StyleString.WriteStyleString(ws, row, col, style_string_list);
         }
 
         /*
