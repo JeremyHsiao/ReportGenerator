@@ -300,6 +300,16 @@ namespace ExcelReportApplication
             return short_filename_no_extension;
         }
 
+        public static String GetReportTitleWithoutNumberAccordingToFilename(String filename)
+        {
+            String full_filename = Storage.GetFullPath(filename);
+            String short_filename_no_extension = Storage.GetFileNameWithoutExtension(full_filename);
+            String[] sp_str = short_filename_no_extension.Split(new Char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+            String ret_string = short_filename_no_extension.Substring(sp_str[0].Length + 1);
+
+            return ret_string;
+        }
+
         public static TestPlan CreateTempPlanFromFile(String filename)
         {
             TestPlan ret_plan = new TestPlan();

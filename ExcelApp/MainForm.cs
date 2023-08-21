@@ -694,7 +694,7 @@ namespace ExcelReportApplication
             else
             {
                 MsgWindow.AppendText("Processing bug_list:" + buglist_filename + ".\n");
-                ReportGenerator.WriteGlobalIssueList(Issue.GenerateIssueList(buglist_filename));
+                ReportGenerator.UpdateGlobalIssueList(Issue.GenerateIssueList(buglist_filename));
                 //ReportGenerator.lookup_BugList = Issue.UpdateIssueListLUT(ReportGenerator.global_issue_list);
                 // update LUT
                 MsgWindow.AppendText("bug_list finished!\n");
@@ -702,7 +702,7 @@ namespace ExcelReportApplication
             }
         }
 
-        private bool ReadGlobalTCListTask(String filename)
+        private Boolean ReadGlobalTCListTask(String filename)
         {
             String tclist_filename = Storage.GetFullPath(filename);
             if (!Storage.FileExists(tclist_filename))
@@ -714,6 +714,7 @@ namespace ExcelReportApplication
             {
                 MsgWindow.AppendText("Processing tc_list:" + tclist_filename + ".\n");
                 List<TestCase> new_tc_list = TestCase.GenerateTestCaseList(tclist_filename);
+                ReportGenerator.UpdateGlobalTestcaseList(new_tc_list);
                 MsgWindow.AppendText("tc_list finished!\n");
                 return true;
             }
@@ -738,7 +739,7 @@ namespace ExcelReportApplication
             KeywordReport.ClearGlobalKeywordList();
         }
 
-        private bool LoadTCListIfEmpty(String filename)
+        private Boolean LoadTCListIfEmpty(String filename)
         {
             if (ReportGenerator.IsGlobalTestcaseListEmpty())
             {
@@ -775,7 +776,7 @@ namespace ExcelReportApplication
                         StyleString.GenerateIssueDescription_Severity_by_Linked_Issue(ReportGenerator.ReadGlobalIssueList());
             List<TestCase> before = ReportGenerator.ReadGlobalTestcaseList();
             List<TestCase> after = TestCase.UpdateTCLinkedIssueList(before, ReportGenerator.ReadGlobalIssueList(), global_issue_description_list_severity);
-            ReportGenerator.WriteGlobalTestcaseList(after);
+            ReportGenerator.UpdateGlobalTestcaseList(after);
 
             //            ReportGenerator.WriteBacktoTCJiraExcel(tc_file);
             //ReportGenerator.WriteBacktoTCJiraExcelV2(tc_file, template_file, judgement_report_dir);
@@ -1328,6 +1329,13 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+                        // update tc_linked_issue_description
+                        Dictionary<string, List<StyleString>> TC_issue_description =
+                                    StyleString.GenerateIssueDescription_Severity_by_Linked_Issue(ReportGenerator.ReadGlobalIssueList());
+                        List<TestCase> before = ReportGenerator.ReadGlobalTestcaseList();
+                        List<TestCase> after = TestCase.UpdateTCLinkedIssueList(before, ReportGenerator.ReadGlobalIssueList(), TC_issue_description);
+                        ReportGenerator.UpdateGlobalTestcaseList(after);
+ 
                         bRet = Execute_UpdaetGroupSummaryReport_Task(report_path: txtReportFile.Text);
                         break;
                     case ReportType.Update_Report_Linked_Issue:

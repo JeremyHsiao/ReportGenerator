@@ -123,7 +123,7 @@ namespace ExcelReportApplication
             set { created = value; }  // set method
         }
 
-        public List<StyleString> LinkedIssueList   // property
+        public List<StyleString> LinkedIssueDescription   // property
         {
             get { return linked_issue_list; }   // get method
             set { linked_issue_list = value; }  // set method
@@ -305,7 +305,7 @@ namespace ExcelReportApplication
                 }
             }
 
-            ReportGenerator.WriteGlobalTestcaseList(ret_tc_list);
+            ReportGenerator.UpdateGlobalTestcaseList(ret_tc_list);
             ReportGenerator.SetTestcaseLUT_by_Key(TestCase.UpdateTCListLUT_by_Key(ret_tc_list));
             ReportGenerator.SetTestcaseLUT_by_Sheetname(TestCase.UpdateTCListLUT_by_Sheetname(ret_tc_list));
             return ret_tc_list;
@@ -355,7 +355,7 @@ namespace ExcelReportApplication
                 {
                     List<StyleString> str_list;
                     str_list = StyleString.FilteredBugID_to_BugDescription(links, issue_list_source, bug_description_list);
-                    tc.LinkedIssueList = str_list;
+                    tc.LinkedIssueDescription = str_list;
                 }
             }
             return updated_tc;

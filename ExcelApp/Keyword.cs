@@ -1373,6 +1373,12 @@ namespace ExcelReportApplication
                     continue;
                 }
 
+                // if sheetname is xxxxxxx.0, do group_summary_report)
+                if (sheet_name.Substring(sheet_name.Length - 2, 2) == ".0")
+                {
+                    TestReport.Update_Group_Summary(result_worksheet, sheet_name);
+                }
+
                 String judgement_str ="";
                 if (keyword_lut_by_sheetname.ContainsKey(sheet_name) == true)
                 {
@@ -1607,6 +1613,37 @@ namespace ExcelReportApplication
             }
 
             return true;
+        }
+
+        static public String Judgement_According_to_Linked_Issue(String sheet_name)
+        {
+            String judgement_str = " ";
+            if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(sheet_name))
+            {
+                // key string of all linked issue
+                String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].Links;
+                // key string to List of Issue
+                List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
+                // List of Issue filtered by status
+                List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.fileter_status_list);
+                // count of filtered issue
+                IssueCount severity_count = IssueCount.IssueListStatistic(filtered_linked_issue_list);
+                Boolean pass, fail, conditional_pass;
+                GetKeywordConclusionResult(severity_count, out pass, out fail, out conditional_pass);
+                if (fail)
+                {
+                    judgement_str = FAIL_str;
+                }
+                else if (conditional_pass)
+                {
+                    judgement_str = CONDITIONAL_PASS_str;
+                }
+                else
+                {
+                    judgement_str = PASS_str;
+                }
+            }
+            return judgement_str;
         }
 
         // to be finished

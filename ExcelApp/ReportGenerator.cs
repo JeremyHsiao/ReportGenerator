@@ -69,7 +69,7 @@ namespace ExcelReportApplication
             return global_issue_list;
         }
 
-        static public void WriteGlobalIssueList(List<Issue> new_issue_list)
+        static public void UpdateGlobalIssueList(List<Issue> new_issue_list)
         {
             global_issue_list = new_issue_list;
         }
@@ -89,7 +89,7 @@ namespace ExcelReportApplication
             return global_testcase_list;
         }
 
-        static public void WriteGlobalTestcaseList(List<TestCase> new_tc_list)
+        static public void UpdateGlobalTestcaseList(List<TestCase> new_tc_list)
         {
             global_testcase_list = new_tc_list;
         }

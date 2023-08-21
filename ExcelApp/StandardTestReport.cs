@@ -428,10 +428,10 @@ namespace ExcelReportApplication
 
         static public bool AutoCorrectReport_SingleFile(String source_file, String destination_file, Workbook wb_template, Boolean always_save = false)
         {
-           KeywordReportHeader out_header; // not used for this version of API.
-           return AutoCorrectReport_SingleFile(source_file, destination_file, wb_template, out out_header, always_save);
+            KeywordReportHeader out_header; // not used for this version of API.
+            return AutoCorrectReport_SingleFile(source_file, destination_file, wb_template, out out_header, always_save);
         }
-        
+
         // Copy and update worksheet name & header & bug-result (configurable) -- to be used for starting a new project based on reports from anywhere
         static public bool AutoCorrectReport_SingleFile(String source_file, String destination_file, Workbook wb_template, out KeywordReportHeader out_header, Boolean always_save = false)
         {
@@ -582,7 +582,7 @@ namespace ExcelReportApplication
         static public Boolean Update_Single_Group_Summary_Report(Worksheet ws_group_report)
         {
             // check content of title row of group summary area, if not valid content, go to next
-            if ((ExcelAction.CompareString(ws_group_report, GroupSummary_Title_No_Row, GroupSummary_Title_No_Col,GroupSummary_Title_No_str) == false ) ||
+            if ((ExcelAction.CompareString(ws_group_report, GroupSummary_Title_No_Row, GroupSummary_Title_No_Col, GroupSummary_Title_No_str) == false) ||
                 (ExcelAction.CompareString(ws_group_report, GroupSummary_Title_TestItem_Row, GroupSummary_Title_TestItem_Col, GroupSummary_Title_TestItem_str) == false) ||
                 (ExcelAction.CompareString(ws_group_report, GroupSummary_Title_Result_Row, GroupSummary_Title_Result_Col, GroupSummary_Title_Result_str) == false) ||
                 (ExcelAction.CompareString(ws_group_report, GroupSummary_Title_Note_Row, GroupSummary_Title_Note_Col, GroupSummary_Title_Note_str) == false))
@@ -593,6 +593,98 @@ namespace ExcelReportApplication
             return true;
         }
 
+        static public bool Update_Group_Summary(Worksheet ws_report, String summary_report_sheetname)
+        {
+            Boolean b_ret = false;
+
+            // find the table location
+
+            if ((ExcelAction.CompareString(ws_report, GroupSummary_Title_No_Row, GroupSummary_Title_No_Col,GroupSummary_Title_No_str)==false) ||
+                (ExcelAction.CompareString(ws_report, GroupSummary_Title_TestItem_Row, GroupSummary_Title_TestItem_Col, GroupSummary_Title_TestItem_str) == false) ||
+                (ExcelAction.CompareString(ws_report, GroupSummary_Title_Result_Row, GroupSummary_Title_Result_Col,GroupSummary_Title_Result_str) == false) ||
+                (ExcelAction.CompareString(ws_report, GroupSummary_Title_Note_Row, GroupSummary_Title_Note_Col, GroupSummary_Title_Note_str) == false))
+            {
+                return false;
+            }
+
+            // Find out all TCs required by this summary report
+            String[] sp_str;
+            sp_str = summary_report_sheetname.Split(new Char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            String target_prefix = sp_str[0];
+            List<TestCase> sub_tc_list = new List<TestCase>();
+            foreach (TestCase tc in ReportGenerator.ReadGlobalTestcaseList())
+            {
+                String group_sheetname = TestPlan.GetSheetNameAccordingToSummary(tc.Group);
+
+                if (group_sheetname != summary_report_sheetname) { continue; }
+
+                String summary_sheetname = TestPlan.GetSheetNameAccordingToSummary(tc.Summary);
+                sp_str = summary_sheetname.Split(new Char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+                String summary_prefix = sp_str[0];
+
+                if (target_prefix != summary_prefix) { continue; }
+
+                sub_tc_list.Add(tc);
+            }
+
+            // Adjust and check the last row of table
+            int row_found = 1;
+            int target_row_number = (sub_tc_list.Count>3)?sub_tc_list.Count:3;
+
+            do
+            {
+                int row_position = GroupSummary_Title_Note_Row + row_found;
+                String no_str = ExcelAction.GetCellTrimmedString(ws_report, row_position, GroupSummary_Title_No_Col);
+                if (String.IsNullOrWhiteSpace(no_str))
+                {
+                    break;
+                }
+                row_found++;
+            }
+            while (row_found <= target_row_number);
+
+            // Adjust table row#
+            if (row_found > target_row_number)
+            {
+                // reduce row until
+                String no_str;
+                int row_position = GroupSummary_Title_Note_Row + target_row_number + 1; // expected last row + 1
+                do
+                {
+                    ExcelAction.Delete_Row(ws_report, GroupSummary_Title_Note_Row + 2);
+                    no_str = ExcelAction.GetCellTrimmedString(ws_report, row_position, GroupSummary_Title_No_Col);
+                }
+                while (String.IsNullOrWhiteSpace(no_str)==false); // until last_row+1 is empty ==> last_row is the real last row
+            }
+            else if (row_found < target_row_number)
+            {
+                // need to increase row until
+                do
+                {
+                    ExcelAction.Insert_Row(ws_report, GroupSummary_Title_Note_Row + 2);
+                    row_found++;
+                }
+                while (row_found < target_row_number);
+            }
+
+            int row_index  = GroupSummary_Title_Note_Row+1;
+            foreach (TestCase tc in sub_tc_list)
+            {
+                int col_index = GroupSummary_Title_No_Col;
+                String str_no = TestPlan.GetSheetNameAccordingToSummary(tc.Summary);
+                String str_test_item = TestPlan.GetReportTitleWithoutNumberAccordingToFilename(tc.Summary);
+                String str_judgement = KeywordReport.Judgement_According_to_Linked_Issue(str_no);
+                List<StyleString> issue_description = tc.LinkedIssueDescription;
+                ExcelAction.SetCellValue(ws_report, row_index, col_index++, str_no);
+                ExcelAction.SetCellValue(ws_report, row_index, col_index++, str_test_item);
+                ExcelAction.SetCellValue(ws_report, row_index, col_index++, str_judgement);
+                StyleString.WriteStyleString(ws_report, row_index, col_index++, issue_description);
+            }
+            b_ret = true;
+
+            return b_ret;
+        }
+
         static public bool Update_Group_Summary(String report_path)
         {
             Boolean b_ret = false;
@@ -601,7 +693,7 @@ namespace ExcelReportApplication
             // 1. List excel under report_path
             // 2. keep only "x.0" on the file list
             List<String> group_file_list = Storage.ListCandidateGroupSummaryFilesUnderDirectory(report_path);
-            
+
             foreach (String group_file in group_file_list)
             {
                 // 3. open
@@ -624,10 +716,10 @@ namespace ExcelReportApplication
                 }
 
                 // 4. check content of title row, if not valid content, go to next
-                if ((ExcelAction.GetCellTrimmedString(ws_report, GroupSummary_Title_No_Row, GroupSummary_Title_No_Col) != GroupSummary_Title_No_str) ||
-                    (ExcelAction.GetCellTrimmedString(ws_report, GroupSummary_Title_TestItem_Row, GroupSummary_Title_TestItem_Col) != GroupSummary_Title_TestItem_str) ||
-                    (ExcelAction.GetCellTrimmedString(ws_report, GroupSummary_Title_Result_Row, GroupSummary_Title_Result_Col) != GroupSummary_Title_Result_str) ||
-                    (ExcelAction.GetCellTrimmedString(ws_report, GroupSummary_Title_Note_Row, GroupSummary_Title_Note_Col) != GroupSummary_Title_Note_str))
+                if ((ExcelAction.CompareString(ws_report, GroupSummary_Title_No_Row, GroupSummary_Title_No_Col, GroupSummary_Title_No_str) == false) ||
+                    (ExcelAction.CompareString(ws_report, GroupSummary_Title_TestItem_Row, GroupSummary_Title_TestItem_Col, GroupSummary_Title_TestItem_str) == false) ||
+                    (ExcelAction.CompareString(ws_report, GroupSummary_Title_Result_Row, GroupSummary_Title_Result_Col, GroupSummary_Title_Result_str) == false) ||
+                    (ExcelAction.CompareString(ws_report, GroupSummary_Title_Note_Row, GroupSummary_Title_Note_Col, GroupSummary_Title_Note_str) == false))
                 {
                     ExcelAction.CloseExcelWorkbook(wb_report);
                     continue;
@@ -646,7 +738,7 @@ namespace ExcelReportApplication
                 int row_index = GroupSummary_Title_No_Row + 1;
                 int row_end = ExcelAction.Get_Range_RowNumber(ExcelAction.GetWorksheetAllRange(ws_report));
                 Boolean row_found = false;
-                while (!row_found && (row_index<=row_end))
+                while (!row_found && (row_index <= row_end))
                 {
                     if (ExcelAction.GetCellTrimmedString(ws_report, row_index, GroupSummary_Title_No_Col) == "")
                     {
@@ -661,7 +753,7 @@ namespace ExcelReportApplication
 
                 // adjust row number
 
-                
+
                 // 7. Fill each row with (1) sheetname (2) summary after sheetname (3) TC result (4) linked issue on TC
                 // for each tc item
                 int current_row = 111;
@@ -709,7 +801,7 @@ namespace ExcelReportApplication
             foreach (String source_report in report_filename)
             {
                 String dest_filename = KeywordReport.DecideDestinationFilename(report_root, Output_dir, source_report); // replace folder name
-                b_ret |= AutoCorrectReport_SingleFile(source_file: source_report, destination_file: dest_filename, wb_template:new Workbook(), always_save: true);
+                b_ret |= AutoCorrectReport_SingleFile(source_file: source_report, destination_file: dest_filename, wb_template: new Workbook(), always_save: true);
             }
 
             return b_ret;
