@@ -1263,9 +1263,9 @@ namespace ExcelReportApplication
             // 0.1 List all files under report_root_dir.
             // This is done outside and result is the input paramemter file_list
             // 0.2 filename check to exclude non-report files.
-            List<String> report_filename = Storage.FilterFilename(file_list);
+            List<String> existing_report_filelist = Storage.FilterFilename(file_list);
             // 0.3 output files in file_list but not in report_filename into Not_Keyword_File
-            foreach (String report_file in report_filename)
+            foreach (String report_file in existing_report_filelist)
             {
                 file_list.Remove(report_file);
             }
@@ -1286,7 +1286,7 @@ namespace ExcelReportApplication
             List<TestPlan> do_plan = new List<TestPlan>();
 
             // 1.2 Create a temporary test plan to includes all files listed in List<String> report_filename
-            do_plan = TestPlan.CreateTempPlanFromFileList(report_filename);
+            do_plan = TestPlan.CreateTempPlanFromFileList(existing_report_filelist);
             global_report_judgement_result.Clear();
 
             //
@@ -1376,7 +1376,8 @@ namespace ExcelReportApplication
                 // if sheetname is xxxxxxx.0, do group_summary_report)
                 if (sheet_name.Substring(sheet_name.Length - 2, 2) == ".0")
                 {
-                    TestReport.Update_Group_Summary(result_worksheet, sheet_name);
+                    TestReport.Update_Group_Summary(result_worksheet, sheet_name, 
+                                        existing_report_filelist, bug_description_list);
                 }
 
                 String judgement_str ="";
