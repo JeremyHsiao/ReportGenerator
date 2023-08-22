@@ -1009,7 +1009,7 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            TestReport.Update_Group_Summary(report_path);
+            KeywordReport.Update_Group_Summary(report_path);
 
             return true;
         }
