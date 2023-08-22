@@ -702,12 +702,12 @@ namespace ExcelReportApplication
                 row_index++;
             }
             target_row_number += GroupSummary_Title_Note_Row;
-            while (row_index <= GroupSummary_Title_Note_Row)
+            while (row_index <= target_row_number)
             {
                 int col_index = GroupSummary_Title_No_Col;
-                ExcelAction.SetCellValue(ws_report, row_index, GroupSummary_Title_No_Col, "");
-                ExcelAction.SetCellValue(ws_report, row_index, GroupSummary_Title_TestItem_Col, "");
-                ExcelAction.SetCellValue(ws_report, row_index, GroupSummary_Title_Result_Col, "", ClearContentFirst: true);
+                ExcelAction.SetCellValue(ws_report, row_index, GroupSummary_Title_No_Col, " ");
+                ExcelAction.SetCellValue(ws_report, row_index, GroupSummary_Title_TestItem_Col, " ");
+                ExcelAction.SetCellValue(ws_report, row_index, GroupSummary_Title_Result_Col, " ", ClearContentFirst: true);
                 StyleString.WriteStyleString(ws_report, row_index, GroupSummary_Title_Note_Col, StyleString.EmptyList(), ClearContentFirst: true);
                 row_index++;
             }
