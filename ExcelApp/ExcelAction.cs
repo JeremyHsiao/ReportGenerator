@@ -488,9 +488,13 @@ namespace ExcelReportApplication
             return ws.Cells[row, col].Value2;
         }
 
-        static public void SetCellValue(Worksheet ws, int row, int col, Object value)
+        static public void SetCellValue(Worksheet ws, int row, int col, Object value, Boolean ClearContentFirst = false)
         {
             Range cell = ws.Cells[row, col];
+            if (ClearContentFirst)
+            {
+                cell.ClearContents();
+            }
             cell.NumberFormat = "@";
             cell.Value2 = value;
         }
