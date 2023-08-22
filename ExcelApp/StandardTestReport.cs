@@ -593,7 +593,10 @@ namespace ExcelReportApplication
             return true;
         }
 
-        static public bool Update_Group_Summary(Worksheet ws_report, String summary_report_sheetname)
+        static public int Group_Summary_Table_RowNumber_Min = 3;
+
+        static public bool Update_Group_Summary(Worksheet ws_report, String summary_report_sheetname, 
+                                   List<String> available_report_filelist,Dictionary<string, List<StyleString>> bug_description_list)
         {
             Boolean b_ret = false;
 
@@ -611,25 +614,28 @@ namespace ExcelReportApplication
             String[] sp_str;
             sp_str = summary_report_sheetname.Split(new Char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
             String target_prefix = sp_str[0];
-            List<TestCase> sub_tc_list = new List<TestCase>();
-            foreach (TestCase tc in ReportGenerator.ReadGlobalTestcaseList())
+
+            List<String> sub_report_list = new List<String>();
+            foreach(String filename in available_report_filelist)
             {
-                String group_sheetname = TestPlan.GetSheetNameAccordingToSummary(tc.Group);
+                String filename_no_extension = Storage.GetFileNameWithoutExtension(filename);
+                String report_sheetname = TestPlan.GetSheetNameAccordingToSummary(filename_no_extension);
+                // same x.0, skip to next one
+                if (report_sheetname == summary_report_sheetname) 
+                {   continue; }
 
-                if (group_sheetname != summary_report_sheetname) { continue; }
-
-                String summary_sheetname = TestPlan.GetSheetNameAccordingToSummary(tc.Summary);
-                sp_str = summary_sheetname.Split(new Char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+                sp_str = report_sheetname.Split(new Char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
                 String summary_prefix = sp_str[0];
+                if (target_prefix != summary_prefix) 
+                { continue; }
 
-                if (target_prefix != summary_prefix) { continue; }
-
-                sub_tc_list.Add(tc);
+                sub_report_list.Add(filename);
             }
 
             // Adjust and check the last row of table
             int row_found = 1;
-            int target_row_number = (sub_tc_list.Count>3)?sub_tc_list.Count:3;
+            int target_row_number = (sub_report_list.Count > Group_Summary_Table_RowNumber_Min) ? 
+                                    sub_report_list.Count : Group_Summary_Table_RowNumber_Min;
 
             do
             {
@@ -651,7 +657,7 @@ namespace ExcelReportApplication
                 int row_position = GroupSummary_Title_Note_Row + target_row_number + 1; // expected last row + 1
                 do
                 {
-                    ExcelAction.Delete_Row(ws_report, GroupSummary_Title_Note_Row + 2);
+                    ExcelAction.Delete_Row(ws_report, GroupSummary_Title_Note_Row + (Group_Summary_Table_RowNumber_Min - 1));
                     no_str = ExcelAction.GetCellTrimmedString(ws_report, row_position, GroupSummary_Title_No_Col);
                 }
                 while (String.IsNullOrWhiteSpace(no_str)==false); // until last_row+1 is empty ==> last_row is the real last row
@@ -661,25 +667,51 @@ namespace ExcelReportApplication
                 // need to increase row until
                 do
                 {
-                    ExcelAction.Insert_Row(ws_report, GroupSummary_Title_Note_Row + 2);
+                    ExcelAction.Insert_Row(ws_report, GroupSummary_Title_Note_Row + (Group_Summary_Table_RowNumber_Min - 1));
                     row_found++;
                 }
                 while (row_found < target_row_number);
             }
 
+            //update content 
             int row_index  = GroupSummary_Title_Note_Row+1;
-            foreach (TestCase tc in sub_tc_list)
+            foreach (String filename in sub_report_list)
             {
                 int col_index = GroupSummary_Title_No_Col;
-                String str_no = TestPlan.GetSheetNameAccordingToSummary(tc.Summary);
-                String str_test_item = TestPlan.GetReportTitleWithoutNumberAccordingToFilename(tc.Summary);
+                String str_no = TestPlan.GetSheetNameAccordingToFilename(filename);
+                String str_test_item = TestPlan.GetReportTitleWithoutNumberAccordingToFilename(filename);
                 String str_judgement = KeywordReport.Judgement_According_to_Linked_Issue(str_no);
-                List<StyleString> issue_description = tc.LinkedIssueDescription;
-                ExcelAction.SetCellValue(ws_report, row_index, col_index++, str_no);
-                ExcelAction.SetCellValue(ws_report, row_index, col_index++, str_test_item);
-                ExcelAction.SetCellValue(ws_report, row_index, col_index++, str_judgement);
-                StyleString.WriteStyleString(ws_report, row_index, col_index++, issue_description);
+                List<StyleString> linked_issue_description = new List<StyleString> ();
+                if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(str_no))
+                {
+                    // key string of all linked issue
+                    String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[str_no].Links;
+                    // key string to List of Issue
+                    List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
+                    // List of Issue filtered by status
+                    List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.fileter_status_list);
+                    // list of key whose issue status passed the filter
+                    List<String> filtered_links = Issue.ListOfIssueToListOfIssueKey(filtered_linked_issue_list);
+                    // use list of key to get bug_description
+                    linked_issue_description = StyleString.ExtendIssueDescription(filtered_links, bug_description_list);
+                }
+                ExcelAction.SetCellValue(ws_report, row_index, GroupSummary_Title_No_Col, str_no);
+                ExcelAction.SetCellValue(ws_report, row_index, GroupSummary_Title_TestItem_Col, str_test_item);
+                ExcelAction.SetCellValue(ws_report, row_index, GroupSummary_Title_Result_Col, str_judgement, ClearContentFirst: true);
+                StyleString.WriteStyleString(ws_report, row_index, GroupSummary_Title_Note_Col, linked_issue_description, ClearContentFirst: true);
+                row_index++;
             }
+            target_row_number += GroupSummary_Title_Note_Row;
+            while (row_index <= GroupSummary_Title_Note_Row)
+            {
+                int col_index = GroupSummary_Title_No_Col;
+                ExcelAction.SetCellValue(ws_report, row_index, GroupSummary_Title_No_Col, "");
+                ExcelAction.SetCellValue(ws_report, row_index, GroupSummary_Title_TestItem_Col, "");
+                ExcelAction.SetCellValue(ws_report, row_index, GroupSummary_Title_Result_Col, "", ClearContentFirst: true);
+                StyleString.WriteStyleString(ws_report, row_index, GroupSummary_Title_Note_Col, StyleString.EmptyList(), ClearContentFirst: true);
+                row_index++;
+            }
+
             b_ret = true;
 
             return b_ret;
