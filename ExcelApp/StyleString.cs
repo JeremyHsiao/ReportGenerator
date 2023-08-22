@@ -275,13 +275,17 @@ Returns or sets the type of underline applied to the font.
             return Link_Issue_Detail;
         }
 
-        static public void WriteStyleString(ref Range input_range, List<StyleString> style_string_list)
+        static public void WriteStyleString(ref Range input_range, List<StyleString> style_string_list, Boolean ClearContentFirst = false)
         {
             // Fill the text into excel cell with default font settings.
             string txt_str = "";
             foreach (StyleString style_str in style_string_list)
             {
                 txt_str += style_str.Text;
+            }
+            if (ClearContentFirst)
+            {
+                input_range.ClearContents();
             }
             input_range.NumberFormat = "@";
             input_range.Value2 = txt_str;
@@ -345,9 +349,13 @@ Returns or sets the type of underline applied to the font.
             }
         }
 
-        static public void WriteStyleString(Worksheet ws, int row, int col, List<StyleString> style_string_list)
+        static public void WriteStyleString(Worksheet ws, int row, int col, List<StyleString> style_string_list, Boolean ClearContentFirst = false)
         {
             Range input_range = ws.Cells[row,col];
+            if (ClearContentFirst)
+            {
+                input_range.MergeArea.ClearContents();
+            }
             WriteStyleString(ref input_range, style_string_list);
         }
 
