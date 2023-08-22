@@ -493,7 +493,7 @@ namespace ExcelReportApplication
             Range cell = ws.Cells[row, col];
             if (ClearContentFirst)
             {
-                cell.ClearContents();
+                cell.MergeArea.ClearContents();
             }
             cell.NumberFormat = "@";
             cell.Value2 = value;
