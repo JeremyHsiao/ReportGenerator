@@ -336,9 +336,9 @@ namespace ExcelReportApplication
         static public String SheetName_ReportList = "ReportList";
 
         static public int StartRow = 1;
-        static public int EndRow = 22;
+        static public int EndRow = 9;
         static public int StartCol = 1;
-        static public int EndCol = 14;
+        static public int EndCol = (int)('N' - 'A' + 1);
 
         static public String Variable_ReportFileName = "$FileName$";
         static public String Variable_ReportSheetName = "$SheetName$";
@@ -423,13 +423,9 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
-        static public Boolean CopyAndUpdateHeader(Worksheet template_worksheet, Worksheet report_worksheet)
+        static public Boolean ReplaceHeaderVariableWithValue(Worksheet report_worksheet)
         {
             Boolean b_ret = false;
-
-            ExcelAction.CopyRowHeight(template_worksheet, report_worksheet, StartRow, EndRow);
-            ExcelAction.CopyColumnWidth(template_worksheet, report_worksheet, StartCol, EndCol);
-            ExcelAction.CopyPasteRows(template_worksheet, report_worksheet, StartRow, EndRow);
 
             for (int row_index = StartRow; row_index <= EndRow; row_index++)
             {
@@ -442,7 +438,19 @@ namespace ExcelReportApplication
                     CheckAndReplaceConclusion(report_worksheet, row_index, col_index, Variable_TC_LinkedIssue, TC_LinkedIssue);
                 }
             }
-            b_ret=true;
+            b_ret = true;
+            return b_ret;
+        }
+
+        static public Boolean CopyAndUpdateHeader(Worksheet template_worksheet, Worksheet report_worksheet)
+        {
+            Boolean b_ret = false;
+
+            ExcelAction.CopyRowHeight(template_worksheet, report_worksheet, StartRow, EndRow);
+            ExcelAction.CopyColumnWidth(template_worksheet, report_worksheet, StartCol, EndCol);
+            ExcelAction.CopyPasteRows(template_worksheet, report_worksheet, StartRow, EndRow);
+
+            b_ret = ReplaceHeaderVariableWithValue(report_worksheet);
             return b_ret;
         }
     }

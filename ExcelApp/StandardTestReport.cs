@@ -487,6 +487,15 @@ namespace ExcelReportApplication
                     HeaderTemplate.UpdateVariables(filename: filename, sheetname: sheetname);
                     HeaderTemplate.CopyAndUpdateHeader(ws_template, ws);
                 }
+
+                //Report_C_Replace_Conclusion
+                if (KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion == true)
+                {
+                    //StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
+                    KeywordReport.ReplaceConclusionWithBugList(ws, KeywordReportHeader.blank_space.ConvertToList());
+                    file_has_been_updated = true;
+                }
+
             }
             else
             {

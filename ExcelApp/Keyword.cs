@@ -1621,11 +1621,11 @@ namespace ExcelReportApplication
                 // if sheetname is xxxxxxx.0, do group_summary_report)
                 if (sheet_name.Substring(sheet_name.Length - 2, 2) == ".0")
                 {
-                    KeywordReport.Update_Group_Summary(result_worksheet, sheet_name, 
+                    KeywordReport.Update_Group_Summary(result_worksheet, sheet_name,
                                         existing_report_filelist, bug_description_list);
                 }
 
-                String judgement_str ="";
+                String judgement_str = "";
                 if (keyword_lut_by_sheetname.ContainsKey(sheet_name) == true)
                 {
                     // if keyword exist, executing keyword-related part
@@ -1661,7 +1661,7 @@ namespace ExcelReportApplication
 
                             // write issue count of each severity
                             // IssueCount severity_count = keyword.Calculate_Issue(); 
-                            IssueCount severity_count = IssueCount.IssueListStatistic(keyword.KeywordIssues); 
+                            IssueCount severity_count = IssueCount.IssueListStatistic(keyword.KeywordIssues);
                             // Check bug_status
                             text_to_check = ExcelAction.GetCellTrimmedString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn - 1);
                             if (CheckIfStringMeetsKeywordBugStatusCondition(text_to_check))
@@ -1753,6 +1753,12 @@ namespace ExcelReportApplication
                     // End of updating keyword result
                 }
 
+                ////Report_C_Update_Header_by_Template
+                //if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template == true)
+                //{
+                //    HeaderTemplate.ReplaceHeaderVariableWithValue(result_worksheet);
+                //}
+
                 if (Replace_Conclusion)
                 {
                     // Add: replace conclusion with Bug-list
@@ -1764,7 +1770,7 @@ namespace ExcelReportApplication
                         // key string of all linked issue
                         String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].Links;
                         // key string to List of Issue
-                        List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links,ReportGenerator.ReadGlobalIssueList());
+                        List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
                         // List of Issue filtered by status
                         List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.fileter_status_list);
                         // list of key whose issue status passed the filter
@@ -1777,7 +1783,7 @@ namespace ExcelReportApplication
                         GetKeywordConclusionResult(severity_count, out pass, out fail, out conditional_pass);
                         if (fail)
                         {
-                             judgement_str = FAIL_str;
+                            judgement_str = FAIL_str;
                         }
                         else if (conditional_pass)
                         {
