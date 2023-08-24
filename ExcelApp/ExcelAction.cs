@@ -248,6 +248,33 @@ namespace ExcelReportApplication
             ws.Rows[row].AutoFit();
         }
 
+        static public double Get_Column_Width(Worksheet ws, int col)
+        {
+            double col_width;
+            try
+            {
+                col_width = ws.Columns[col].ColumnWidth;
+            }
+            catch
+            {
+                // TBD: need to replace this workaround with better solution.
+                col_width = ws.Columns[1].ColumnWidth;
+            }
+            return col_width;
+        }
+
+        static public void Set_Column_Width(Worksheet ws, int col, double width)
+        {
+            try
+            {
+                ws.Rows[col].ColumnWidth = width;
+            }
+            catch
+            {
+                // TBD: deal with exception when RowHeight can't be set via ws.Rows[row].RowHeight = height;
+            }
+        }
+
         static public void Set_Row_Height(Worksheet ws, int row, double height)
         {
             try
@@ -319,6 +346,11 @@ namespace ExcelReportApplication
         {
             ws.Rows[at_row].Delete();
         }
+
+        //static public void SetupHorizontalLinkBreakToColumnH(Worksheet ws)
+        //{
+        //    if(ws.HPageBreaks[0] = 
+        //}
 
         static public void CellTextAlignLeft(Worksheet ws, int at_row, int at_col)
         {
