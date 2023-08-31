@@ -85,30 +85,15 @@ namespace ExcelReportApplication
         //    ReportType.Man_Power_Processing,
         //};
 
-        public static int ReportTypeToInt(ReportType type)
-        {
-            return (int)type;
-        }
-
-        public static ReportType ReportTypeFromInt(int int_type)
-        {
-            return (ReportType)int_type;
-        }
-
         public static int ReportTypeCount = Enum.GetNames(typeof(ReportType)).Length;
 
-        public static String GetReportName(ReportType type)
+        public static String GetReportName(ReportType report_type)
         {
-            int type_index = ReportTypeToInt(type);
-            return GetReportName(type_index);
-        }
-
-        public static String GetReportName(int type_index)
-        {
+            int report_type_index = (int)(report_type);
             // prevent out of boundary
-            if (type_index < Enum.GetNames(typeof(ReportType)).Length)
+            if (report_type_index < ReportTypeCount)
             {
-                return ReportName[type_index];
+                return ReportName[report_type_index];
             }
             else
             {
@@ -142,6 +127,8 @@ namespace ExcelReportApplication
             "G.Update Report Linked Issue",
             "H.Update Keyword Rerpot and TC summary (7+9)",
             "I.Man-Power Processing",
+            // out-of-boundary
+            "Z.Final Report",
        };
 
         // Must be updated if new report type added #NewReportType
@@ -272,6 +259,13 @@ namespace ExcelReportApplication
                 "Turn exported CVS file into excel file", 
                 "Input:",  "  CSV exported from man-task",
                 "Output:", "  Excel version of CSV file with spanning date and average effort under it",
+            },
+            // "out-of-boundary text",
+            new String[] 
+            {
+                "Turn exported CVS file into excel file (to-be-finalized)", 
+                "Input:",  "  CSV exported from man-task  (to-be-finalized)",
+                "Output:", "  Excel version of CSV file with spanning date and average effort under it  (to-be-finalized)",
             },
         };
 
@@ -421,51 +415,33 @@ namespace ExcelReportApplication
                 "Test Report Path",
                 "TC Template File",
             },
+            // out-of-boundary-text
+            new String[] 
+            {
+                "Jira Bug File (OOB)", 
+                "Jira TC File (OOB)",
+                "Test Report Path (OOB)",
+                "TC Template File (OOB)",
+            },
         };
 
-        public static String GetReportDescription(int type_index)
+        public static String GetReportDescription(ReportType report_type)
         {
             String ret_str = "";
             ret_str += ReportGeneratorVersionString + "\r\n";
-            // prevent out of boundary
-            if (type_index < Enum.GetNames(typeof(ReportType)).Length)
+            int report_type_index = (int)report_type;
+            foreach (String str in ReportDescription[report_type_index])
             {
-                foreach (String str in ReportDescription[type_index])
-                {
-                    ret_str += str + "\r\n";
-                }
-                return ret_str;
+                ret_str += str + "\r\n";
             }
-            else
-            {
-                return "GetReportDescriptione_issue";
-            }
+            return ret_str;
         }
 
-        public static String[] GetLabelTextArray(int type_index)
+        public static String[] GetLabelTextArray(ReportType report_type)
         {
-            if (type_index < Enum.GetNames(typeof(ReportType)).Length)
-            {
-                return UI_Label[type_index];
-            }
-            else
-            {
-                String[] error_message = new String[] 
-                {
-                    "GetLabelTextArray_issue", 
-                    "GetLabelTextArray_issue", 
-                    "GetLabelTextArray_issue", 
-                    "GetLabelTextArray_issue", 
-                };
-                return error_message;
-            }
+            int report_type_index = (int)report_type;
+            return UI_Label[report_type_index];
         }
-
-        public static String GetReportDescription(ReportType type)
-        {
-            return GetReportDescription(ReportTypeToInt(type));
-        }
-        // END
 
         private static List<String> SplitCommaSeparatedStringIntoList(String input_string)
         {
@@ -587,7 +563,7 @@ namespace ExcelReportApplication
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Full_Header");
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Header_by_Template");
             KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = XMLConfig.ReadAppSetting_Boolean("Report_C_Replace_Conclusion");
-            
+
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Report_Sheetname");
             KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = XMLConfig.ReadAppSetting_Boolean("Report_C_Clear_Keyword_Result");
             KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = XMLConfig.ReadAppSetting_Boolean("Report_C_Hide_Keyword_Result_Bug_Row");
@@ -636,21 +612,65 @@ namespace ExcelReportApplication
             foreach (ReportType report_type in ReportSelectableTable)
             {
                 String report_name;
-                report_name = GetReportName((int)report_type);
+                report_name = GetReportName(report_type);
                 comboBoxReportSelect.Items.Add(report_name);
             }
             //int default_select_index = (int)ReportType.FullIssueDescription_Summary; // current default
             int default_select_index = 0;
-            Set_comboBoxReportSelect_SelectedIndex(default_select_index);
+            Set_comboBoxReportSelect_IndexValue(default_select_index);
         }
 
-        private void Set_comboBoxReportSelect_SelectedIndex(int value)
+        private Boolean Set_comboBoxReportSelect_IndexValue(int index_value)
         {
-            comboBoxReportSelect.SelectedIndex = (int)ReportSelectableTable[value];
+            Boolean b_ret = false;
+            if ((index_value >= 0) && (index_value < ReportTypeCount))
+            {
+                comboBoxReportSelect.SelectedIndex = index_value;
+                b_ret = true;
+            }
+            return b_ret;
         }
-        private int Get_comboBoxReportSelect_SelectedIndex()
+
+        private int Get_comboBoxReportSelect_IndexValue()
         {
-            return (int)ReportSelectableTable[comboBoxReportSelect.SelectedIndex];
+            int selected_index = comboBoxReportSelect.SelectedIndex;
+            if ((selected_index < 0) || (selected_index >= ReportTypeCount))
+            {
+                // shouldn't be out of range.
+                return 0;
+            }
+            else
+            {
+                return comboBoxReportSelect.SelectedIndex;
+            }
+        }
+
+        private void Set_comboBoxReportSelect_ByReportType(ReportType report_type)
+        {
+            for (int index = 0; index < ReportTypeCount; index++)
+            {
+                if (ReportSelectableTable[index] == report_type)
+                {
+                    comboBoxReportSelect.SelectedIndex = index;
+                    break;
+                }
+            }
+        }
+        private ReportType Get_comboBoxReportSelect_ReturnReportType()
+        {
+            // comboBoxReportSelect.SelectedIndex range check should be done when it is set.
+            int selected_index = comboBoxReportSelect.SelectedIndex;
+            if ((selected_index < 0) || (selected_index >= ReportTypeCount))
+            {
+                // shouldn't be out of range.
+                // to-be-checked here.
+                MsgWindow.AppendText("WARNING: Get_comboBoxReportSelect_ReturnReportType out-of-range error.\n");
+                return ReportSelectableTable[0];
+            }
+            else
+            {
+                return ReportSelectableTable[comboBoxReportSelect.SelectedIndex];
+            }
         }
 
         static public String ReportGeneratorVersionString;
@@ -866,7 +886,7 @@ namespace ExcelReportApplication
 
             // This issue description is needed for report purpose
             //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
-           
+
             // this is for keyword report, how to input linked issue report list???
             Dictionary<string, List<StyleString>> global_issue_description_list_severity =
                                 StyleString.GenerateIssueDescription_Keyword_Issue(ReportGenerator.ReadGlobalIssueList());
@@ -1051,10 +1071,10 @@ namespace ExcelReportApplication
         // default is to select directory
         private void btnSelectReportFile_Click(object sender, EventArgs e)
         {
-            int report_index = Get_comboBoxReportSelect_SelectedIndex();
+            ReportType report_type = Get_comboBoxReportSelect_ReturnReportType();
             bool sel_file = false;
             String init_dir;
-            switch (ReportTypeFromInt(report_index))
+            switch (report_type)
             {
                 case ReportType.KeywordIssue_Report_SingleFile:
                     init_dir = Storage.GetFullPath(txtReportFile.Text);
@@ -1074,10 +1094,10 @@ namespace ExcelReportApplication
 
         private void btnSelectOutputTemplate_Click(object sender, EventArgs e)
         {
-            int report_index = Get_comboBoxReportSelect_SelectedIndex();
+            ReportType report_type = Get_comboBoxReportSelect_ReturnReportType();
             bool sel_file = true;
             String init_dir;
-            switch (ReportTypeFromInt(report_index))
+            switch (report_type)
             {
                 case ReportType.TC_TestReportCreation:
                     //case ReportType.FindAllKeywordInReport:
@@ -1090,7 +1110,7 @@ namespace ExcelReportApplication
                     break;
             }
 
-            if (ReportTypeFromInt(report_index) == ReportType.Man_Power_Processing)
+            if (report_type == ReportType.Man_Power_Processing)
             {
                 String ret_str = Storage.UsesrSelectCSVFilename(init_dir);
                 if (ret_str != "")
@@ -1171,20 +1191,13 @@ namespace ExcelReportApplication
         {
             bool bRet;
 
-            int report_index = Get_comboBoxReportSelect_SelectedIndex();
-
-            if ((report_index < 0) || (report_index >= ReportTypeCount))
-            {
-                // shouldn't be out of range.
-                return;
-            }
-
+            ReportType report_type = Get_comboBoxReportSelect_ReturnReportType();
             ClearIssueList();
             ClearTCList();
 
-            UpdateUIDuringExecution(report_index: report_index, executing: true);
+            UpdateUIDuringExecution(report_type: report_type, executing: true);
 
-            MsgWindow.AppendText("Executing: " + GetReportName(report_index) + ".\n");
+            MsgWindow.AppendText("Executing: " + GetReportName(report_type) + ".\n");
 
             Boolean open_excel_ok = ExcelAction.OpenExcelApp();
             if (open_excel_ok)
@@ -1192,7 +1205,7 @@ namespace ExcelReportApplication
                 Stack<Boolean> temp_bool = new Stack<Boolean>();
 
                 // Must be updated if new report type added #NewReportType
-                switch (ReportTypeFromInt(report_index))
+                switch (report_type)
                 {
                     case ReportType.FullIssueDescription_TC:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
@@ -1335,7 +1348,7 @@ namespace ExcelReportApplication
                         List<TestCase> before = ReportGenerator.ReadGlobalTestcaseList();
                         List<TestCase> after = TestCase.UpdateTCLinkedIssueList(before, ReportGenerator.ReadGlobalIssueList(), TC_issue_description);
                         ReportGenerator.UpdateGlobalTestcaseList(after);
- 
+
                         bRet = Execute_UpdaetGroupSummaryReport_Task(report_path: txtReportFile.Text);
                         break;
                     case ReportType.Update_Report_Linked_Issue:
@@ -1358,7 +1371,7 @@ namespace ExcelReportApplication
 
                         String report_output_path;
                         bRet = Execute_KeywordIssueGenerationTask_returning_report_path(txtReportFile.Text, true, out report_output_path);
-                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, bug_file: txtBugFile.Text, judgement_report_dir: report_output_path, 
+                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, bug_file: txtBugFile.Text, judgement_report_dir: report_output_path,
                                             template_file: txtOutputTemplate.Text);
                         break;
                     case ReportType.Man_Power_Processing:
@@ -1379,7 +1392,7 @@ namespace ExcelReportApplication
             ExcelAction.CloseExcelApp();
 
             MsgWindow.AppendText("Finished.\n");
-            UpdateUIDuringExecution(report_index: report_index, executing: false);
+            UpdateUIDuringExecution(report_type: report_type, executing: false);
         }
 
         private void SetEnable_BugFile(bool value)
@@ -1408,19 +1421,21 @@ namespace ExcelReportApplication
 
         private void comboBoxReportSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int select = Get_comboBoxReportSelect_SelectedIndex();
-            UpdateUIAfterReportTypeChanged(select);
-            label_issue.Text = GetLabelTextArray(select)[0];
-            label_tc.Text = GetLabelTextArray(select)[1];
-            label_1st.Text = GetLabelTextArray(select)[2];
-            label_2nd.Text = GetLabelTextArray(select)[3];
+            int selected_index = Get_comboBoxReportSelect_IndexValue();
+            ReportType selected_report_type = Get_comboBoxReportSelect_ReturnReportType();
+            UpdateUIAfterReportTypeChanged(selected_report_type);
+            String[] string_array = GetLabelTextArray(selected_report_type);
+            label_issue.Text = string_array[0];
+            label_tc.Text = string_array[1];
+            label_1st.Text = string_array[2];
+            label_2nd.Text = string_array[3];
         }
 
-        private void UpdateUIDuringExecution(int report_index, bool executing)
+        private void UpdateUIDuringExecution(ReportType report_type, bool executing)
         {
             if (!executing)
             {
-                UpdateFilenameBoxUIForReportType(report_index);
+                UpdateFilenameBoxUIForReportType(report_type);
                 btnCreateReport.Enabled = true;
             }
             else
@@ -1433,10 +1448,10 @@ namespace ExcelReportApplication
             }
         }
 
-        private void UpdateFilenameBoxUIForReportType(int ReportIndex)
+        private void UpdateFilenameBoxUIForReportType(ReportType report_type)
         {
             // Must be updated if new report type added #NewReportType
-            switch (ReportTypeFromInt(ReportIndex))
+            switch (report_type)
             {
                 case ReportType.FullIssueDescription_TC: // "1.Issue Description for TC"
                     SetEnable_BugFile(true);
@@ -1553,14 +1568,14 @@ namespace ExcelReportApplication
             }
         }
 
-        private void UpdateUIAfterReportTypeChanged(int ReportIndex)
+        private void UpdateUIAfterReportTypeChanged(ReportType report_type)
         {
-            txtReportInfo.Text = GetReportDescription(ReportIndex);
-            UpdateFilenameBoxUIForReportType(ReportIndex);
+            txtReportInfo.Text = GetReportDescription(report_type);
+            UpdateFilenameBoxUIForReportType(report_type);
 
 
             // Must be updated if new report type added #NewReportType
-            switch (ReportTypeFromInt(ReportIndex))
+            switch (report_type)
             {
                 case ReportType.FullIssueDescription_TC: // "1.Issue Description for TC"
                     if (!btnSelectOutputTemplate_Clicked)
