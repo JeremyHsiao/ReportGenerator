@@ -607,6 +607,9 @@ namespace ExcelReportApplication
             // end config for keyword report
         }
 
+        private static ReportType default_selected_report_type = ReportSelectableTable[0];
+        //private static ReportType default_selected_report_type = ReportType.Man_Power_Processing;
+
         private void InitializeReportFunctionListBox()
         {
             foreach (ReportType report_type in ReportSelectableTable)
@@ -616,34 +619,33 @@ namespace ExcelReportApplication
                 comboBoxReportSelect.Items.Add(report_name);
             }
             //int default_select_index = (int)ReportType.FullIssueDescription_Summary; // current default
-            int default_select_index = 0;
-            Set_comboBoxReportSelect_IndexValue(default_select_index);
+            Set_comboBoxReportSelect_ByReportType(default_selected_report_type);
         }
 
-        private Boolean Set_comboBoxReportSelect_IndexValue(int index_value)
-        {
-            Boolean b_ret = false;
-            if ((index_value >= 0) && (index_value < ReportTypeCount))
-            {
-                comboBoxReportSelect.SelectedIndex = index_value;
-                b_ret = true;
-            }
-            return b_ret;
-        }
+        //private Boolean Set_comboBoxReportSelect_IndexValue(int index_value)
+        //{
+        //    Boolean b_ret = false;
+        //    if ((index_value >= 0) && (index_value < ReportTypeCount))
+        //    {
+        //        comboBoxReportSelect.SelectedIndex = index_value;
+        //        b_ret = true;
+        //    }
+        //    return b_ret;
+        //}
 
-        private int Get_comboBoxReportSelect_IndexValue()
-        {
-            int selected_index = comboBoxReportSelect.SelectedIndex;
-            if ((selected_index < 0) || (selected_index >= ReportTypeCount))
-            {
-                // shouldn't be out of range.
-                return 0;
-            }
-            else
-            {
-                return comboBoxReportSelect.SelectedIndex;
-            }
-        }
+        //private int Get_comboBoxReportSelect_IndexValue()
+        //{
+        //    int selected_index = comboBoxReportSelect.SelectedIndex;
+        //    if ((selected_index < 0) || (selected_index >= ReportTypeCount))
+        //    {
+        //        // shouldn't be out of range.
+        //        return 0;
+        //    }
+        //    else
+        //    {
+        //        return comboBoxReportSelect.SelectedIndex;
+        //    }
+        //}
 
         private void Set_comboBoxReportSelect_ByReportType(ReportType report_type)
         {
@@ -1421,7 +1423,6 @@ namespace ExcelReportApplication
 
         private void comboBoxReportSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int selected_index = Get_comboBoxReportSelect_IndexValue();
             ReportType selected_report_type = Get_comboBoxReportSelect_ReturnReportType();
             UpdateUIAfterReportTypeChanged(selected_report_type);
             String[] string_array = GetLabelTextArray(selected_report_type);
