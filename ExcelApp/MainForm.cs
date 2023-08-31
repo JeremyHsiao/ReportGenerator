@@ -657,6 +657,9 @@ namespace ExcelReportApplication
                     break;
                 }
             }
+            // shouldn't be here, need to debug
+            MsgWindow.AppendText("WARNING: Set_comboBoxReportSelect_ByReportType Report Type not found.\n");
+            comboBoxReportSelect.SelectedIndex = 0;
         }
         private ReportType Get_comboBoxReportSelect_ReturnReportType()
         {
@@ -667,12 +670,9 @@ namespace ExcelReportApplication
                 // shouldn't be out of range.
                 // to-be-checked here.
                 MsgWindow.AppendText("WARNING: Get_comboBoxReportSelect_ReturnReportType out-of-range error.\n");
-                return ReportSelectableTable[0];
+                comboBoxReportSelect.SelectedIndex = 0;
             }
-            else
-            {
-                return ReportSelectableTable[comboBoxReportSelect.SelectedIndex];
-            }
+            return ReportSelectableTable[comboBoxReportSelect.SelectedIndex];
         }
 
         static public String ReportGeneratorVersionString;
@@ -1656,7 +1656,21 @@ namespace ExcelReportApplication
                     break;
                 case ReportType.Man_Power_Processing:
                     if (!btnSelectOutputTemplate_Clicked)
-                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_C_Default_Excel");
+                    {
+                        string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+                        String[] sp_str = userName.Split(new Char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+                        String short_userName;
+                        if (sp_str.Count() > 1)
+                        {
+                            short_userName = sp_str[1];
+                        }
+                        else
+                        {
+                            short_userName = userName;
+                        }
+
+                        txtOutputTemplate.Text = @"C:\Users\" + short_userName + @"\Downloads";
+                    }
                     break;
                 default:
                     break;
