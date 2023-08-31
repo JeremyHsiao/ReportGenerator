@@ -37,7 +37,9 @@ namespace ExcelReportApplication
         In_progress_IC,
         Done_IC,
         Total_IC,
+        Product_Type,       // for D0
         Man_hour,
+        Customer,           // for D0
         COUNT,
     };
 
@@ -68,7 +70,9 @@ namespace ExcelReportApplication
         public String In_progress_IC;
         public String Done_IC;
         public String Total_IC;
+        public String Product_Type; // for D0
         public String Man_hour;
+        public String Customer;     // for D0
 
         // generated data for each "Manpower" task (hierachy_string == Manpower)
         public String Task_Project_Name;
@@ -109,6 +113,8 @@ namespace ExcelReportApplication
 
         static public String hierarchy_string_for_project = "Task";
         static public String hierarchy_string_for_action = "Manpower";
+        static public String hierarchy_string_for_D0_project = "Project";
+        static public String hierarchy_string_for_D0_action = "Sub-Project";
         static public String empty_average_manhour = " ";
         static public Double empty_average_manhour_value = -1.0;
 
@@ -160,12 +166,24 @@ namespace ExcelReportApplication
             In_progress_IC = members[index++];
             Done_IC = members[index++];
             Total_IC = members[index++];
+            // For D0
+            if ((Hierarchy == hierarchy_string_for_D0_project) || (Hierarchy == hierarchy_string_for_D0_action))
+            {
+                Product_Type = members[index++];
+            }
             Man_hour = members[index++];
-            if (Hierarchy == hierarchy_string_for_project)
+            // For D0
+            if ((Hierarchy == hierarchy_string_for_D0_project) || (Hierarchy == hierarchy_string_for_D0_action))
+            {
+                Customer = members[index++];
+            }
+
+            // Post-processing
+            if ((Hierarchy == hierarchy_string_for_project) || (Hierarchy == hierarchy_string_for_D0_project))
             {
                 ManPower.Recent_Task_Project_Name = Title;
             }
-            else if (Hierarchy == hierarchy_string_for_action)   // only man-power to calculate average man-hour
+            else if ((Hierarchy == hierarchy_string_for_action)||(Hierarchy == hierarchy_string_for_D0_action))  // only man-power to calculate average man-hour
             {
                 Process_ManPower_Data();
             }
@@ -213,11 +231,18 @@ namespace ExcelReportApplication
                 // ManHour is valid.
             }
 
+            // Start date shouldn't be later than End date
+            if (Task_End_Date < Task_Start_Date)
+            {
+                average_can_be_calculated = false;
+            }
+
             if (average_can_be_calculated)
             {
                 DateTime start = Task_Start_Date;
                 DateTime end = Task_End_Date;
                 int workday_count = DateOnly.BusinessDaysUntil(start, end);
+                // workday must be > 0 (ie, from start to end date shouldn't be all in the middle of holidays)
                 if (workday_count > 0)
                 {
                     Double average_man_hour = Math.Round(ManHour / workday_count, ManPower.average_rounding_digit);
@@ -226,7 +251,7 @@ namespace ExcelReportApplication
                 }
                 else
                 {
-                    // to check:
+                    // man-power plan needs to be checked and updated.
                     Daily_Average_ManHour = empty_average_manhour;
                     daily_average_manhour_value = empty_average_manhour_value;
                 }
@@ -452,8 +477,17 @@ namespace ExcelReportApplication
             return_string += AddComma(this.In_progress_IC);
             return_string += AddComma(this.Done_IC);
             return_string += AddComma(this.Total_IC);
-            return_string += this.Man_hour;  // no need to output comma
-
+            // For D0
+            if ((Hierarchy == hierarchy_string_for_D0_project) || (Hierarchy == hierarchy_string_for_D0_action))
+            {
+                return_string += AddQuoteWithComma(this.Product_Type);
+                return_string += AddComma(this.Man_hour);
+                return_string += AddQuote(this.Customer);
+            }
+            else
+            {
+                return_string += this.Man_hour;  // no need to output comma
+            }
             return return_string;
         }
     }
@@ -495,42 +529,42 @@ namespace ExcelReportApplication
             return ret_manpower_list;
         }
 
-        static public List<ManPower> Post_Processing(List<ManPower> list_before_post_processing)
-        {
-            List<ManPower> ret_manpower_list = list_before_post_processing;
+        //static public List<ManPower> Post_Processing(List<ManPower> list_before_post_processing)
+        //{
+        //    List<ManPower> ret_manpower_list = list_before_post_processing;
 
-            // Generated data for ManPower
-            ManPower.Start_Date = DateOnly.FindEearliestTargetStartDate(ret_manpower_list);
-            ManPower.End_Date = DateOnly.FindLatestTargetEndDate(ret_manpower_list);
-            DateOnly.Update_Holiday_Range(ManPower.Start_Date, ManPower.End_Date);
-            ManPower.IsWorkingDay.Clear();
-            for (DateTime dt = ManPower.Start_Date.Date; dt <= ManPower.End_Date.Date; dt = dt.AddDays(1.0))
-            {
-                if (DateOnly.IsHoliday(dt))
-                {
-                    ManPower.IsWorkingDay.Add(false);       // a holiday --> not a working day
-                }
-                else
-                {
-                    ManPower.IsWorkingDay.Add(true);
-                }
-            }
-            ManPower.Title_StartDate_to_EndDate = ManPower.GenerateDateTitle(ManPower.Start_Date, ManPower.End_Date);
-            ManPower.Title_StartWeek_to_EndWeek = ManPower.GenerateWeekOfYearTitle(ManPower.Start_Date, ManPower.End_Date);
+        //    // Generated data for ManPower
+        //    ManPower.Start_Date = DateOnly.FindEearliestTargetStartDate(ret_manpower_list);
+        //    ManPower.End_Date = DateOnly.FindLatestTargetEndDate(ret_manpower_list);
+        //    DateOnly.Update_Holiday_Range(ManPower.Start_Date, ManPower.End_Date);
+        //    ManPower.IsWorkingDay.Clear();
+        //    for (DateTime dt = ManPower.Start_Date.Date; dt <= ManPower.End_Date.Date; dt = dt.AddDays(1.0))
+        //    {
+        //        if (DateOnly.IsHoliday(dt))
+        //        {
+        //            ManPower.IsWorkingDay.Add(false);       // a holiday --> not a working day
+        //        }
+        //        else
+        //        {
+        //            ManPower.IsWorkingDay.Add(true);
+        //        }
+        //    }
+        //    ManPower.Title_StartDate_to_EndDate = ManPower.GenerateDateTitle(ManPower.Start_Date, ManPower.End_Date);
+        //    ManPower.Title_StartWeek_to_EndWeek = ManPower.GenerateWeekOfYearTitle(ManPower.Start_Date, ManPower.End_Date);
 
-            // Setup static class YearWeek variables
-            YearWeek.SetupByStartDateEndDate(ManPower.Start_Date, ManPower.End_Date);
-            ManPower.Start_Week = YearWeek.GetStartWeek();
-            ManPower.End_Week = YearWeek.GetEndWeek();
+        //    // Setup static class YearWeek variables
+        //    YearWeek.SetupByStartDateEndDate(ManPower.Start_Date, ManPower.End_Date);
+        //    ManPower.Start_Week = YearWeek.GetStartWeek();
+        //    ManPower.End_Week = YearWeek.GetEndWeek();
 
-            // Generated data for each task
-            foreach (ManPower mp in ret_manpower_list)
-            {
-                mp.GenerateManPowerDailyEffortString();
-            }
+        //    // Generated data for each task
+        //    foreach (ManPower mp in ret_manpower_list)
+        //    {
+        //        mp.GenerateManPowerDailyEffortString();
+        //    }
 
-            return ret_manpower_list;
-        }
+        //    return ret_manpower_list;
+        //}
 
         static public List<ManPower> Post_Processing_V2(List<ManPower> list_before_post_processing)
         {
@@ -623,29 +657,29 @@ namespace ExcelReportApplication
         //}
         */
 
-        static public void ProcessManPowerPlan(String manpower_csv)
-        {
-            List<ManPower> manpower_list_before = ReadManPowerTaskCSV(manpower_csv);
-            List<ManPower> manpower_list = Post_Processing(manpower_list_before);
-            //DateTime manpower_due_date = FindLatestDueDate(manpower_list);
+        //static public void ProcessManPowerPlan(String manpower_csv)
+        //{
+        //    List<ManPower> manpower_list_before = ReadManPowerTaskCSV(manpower_csv);
+        //    List<ManPower> manpower_list = Post_Processing(manpower_list_before);
+        //    //DateTime manpower_due_date = FindLatestDueDate(manpower_list);
 
-            //before your loop
-            var csv = new StringBuilder();
+        //    //before your loop
+        //    var csv = new StringBuilder();
 
-            //csv.AppendLine(ManPower.Caption_Line);
-            csv.AppendLine(ManPower.Caption_Line + "," + ManPower.Title_StartDate_to_EndDate);
+        //    //csv.AppendLine(ManPower.Caption_Line);
+        //    csv.AppendLine(ManPower.Caption_Line + "," + ManPower.Title_StartDate_to_EndDate);
 
-            //in your loop
-            foreach (ManPower mp in manpower_list)
-            {
-                //var newLine = mp.ToString();
-                var newLine = mp.ToString() + "," + mp.Daily_ManHour_String;
-                csv.AppendLine(newLine);
-            }
+        //    //in your loop
+        //    foreach (ManPower mp in manpower_list)
+        //    {
+        //        //var newLine = mp.ToString();
+        //        var newLine = mp.ToString() + "," + mp.Daily_ManHour_String;
+        //        csv.AppendLine(newLine);
+        //    }
 
-            //after your loop
-            File.WriteAllText(Storage.GenerateFilenameWithDateTime(manpower_csv, ".csv"), csv.ToString(), Encoding.UTF8);
-        }
+        //    //after your loop
+        //    File.WriteAllText(Storage.GenerateFilenameWithDateTime(manpower_csv, ".csv"), csv.ToString(), Encoding.UTF8);
+        //}
 
         static public void ProcessManPowerPlan_V2(String manpower_csv)
         {
@@ -657,7 +691,7 @@ namespace ExcelReportApplication
             var csv = new StringBuilder();
 
             // Setup Title line
-            ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour = "ProjectStage, TestAction, Owner, Week, ManHour,";
+            ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour = "ProjectStage, TestAction, Owner, Week, ManHourThisWeek,";
             //csv.AppendLine(ManPower.Caption_Line);
             csv.AppendLine(ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour + ManPower.Caption_Line);
 
@@ -667,11 +701,11 @@ namespace ExcelReportApplication
             // add items in week of year
             foreach (ManPower mp in manpower_list)
             {
-                if (mp.Hierarchy == ManPower.hierarchy_string_for_project)
+                if ((mp.Hierarchy == ManPower.hierarchy_string_for_project)||(mp.Hierarchy == ManPower.hierarchy_string_for_D0_project))
                 {
                     csv.AppendLine(Empty_Field_String + mp.ToString());
                 }
-                else if (mp.Hierarchy == ManPower.hierarchy_string_for_action)   // only man-power to calculate average man-hour
+                else if ((mp.Hierarchy == ManPower.hierarchy_string_for_action)||(mp.Hierarchy == ManPower.hierarchy_string_for_D0_action))   // only man-power to calculate average man-hour
                 {
                     // need to deal with 1st week and last week of this task
 
@@ -1110,7 +1144,10 @@ namespace ExcelReportApplication
             firstDay = firstDay.Date;
             lastDay = lastDay.Date;
             if (firstDay > lastDay)
-                throw new ArgumentException("Incorrect last day " + lastDay);
+            {
+                //throw new ArgumentException("Incorrect last day " + lastDay);
+                return -1;
+            }
 
             TimeSpan span = lastDay - firstDay;
             int businessDays = span.Days + 1;
