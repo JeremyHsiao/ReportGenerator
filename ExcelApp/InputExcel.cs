@@ -446,8 +446,8 @@ namespace ExcelReportApplication
         {
             Boolean b_ret = false;
 
-            ExcelAction.CopyRowHeight(template_worksheet, report_worksheet, StartRow, EndRow);
-            ExcelAction.CopyColumnWidth(template_worksheet, report_worksheet, StartCol, EndCol);
+            //ExcelAction.CopyRowHeight(template_worksheet, report_worksheet, StartRow, EndRow);
+            //ExcelAction.CopyColumnWidth(template_worksheet, report_worksheet, StartCol, EndCol);
             ExcelAction.CopyPasteRows(template_worksheet, report_worksheet, StartRow, EndRow);
 
             b_ret = ReplaceHeaderVariableWithValue(report_worksheet);
