@@ -44,24 +44,24 @@ namespace ExcelReportApplication
 
         public static ReportType[] ReportSelectableTable =
         {
-            ReportType.FullIssueDescription_TC,                     // report 1
-            //ReportType.FullIssueDescription_Summary,
-            //ReportType.StandardTestReportCreation,
-            ReportType.KeywordIssue_Report_SingleFile,
-            //ReportType.TC_Likely_Passed,
-            ReportType.FindAllKeywordInReport,
-            ReportType.KeywordIssue_Report_Directory,               // report 7
-            //ReportType.Excel_Sheet_Name_Update_Tool,
-            ReportType.FullIssueDescription_TC_report_judgement,    // report 9
-            ReportType.TC_TestReportCreation,
-            //ReportType.TC_AutoCorrectReport_By_Filename,
-            ReportType.TC_AutoCorrectReport_By_ExcelList, 
-            ReportType.CopyReportOnly,
-            ReportType.RemoveInternalSheet, 
-            //ReportType.TC_GroupSummaryReport,
-            //ReportType.Update_Report_Linked_Issue,
-            ReportType.Update_Keyword_and_TC_Report,
-            //ReportType.Man_Power_Processing,
+            //ReportType.FullIssueDescription_TC,                     // report 1
+            ////ReportType.FullIssueDescription_Summary,
+            ////ReportType.StandardTestReportCreation,
+            //ReportType.KeywordIssue_Report_SingleFile,
+            ////ReportType.TC_Likely_Passed,
+            //ReportType.FindAllKeywordInReport,
+            //ReportType.KeywordIssue_Report_Directory,               // report 7
+            ////ReportType.Excel_Sheet_Name_Update_Tool,
+            //ReportType.FullIssueDescription_TC_report_judgement,    // report 9
+            //ReportType.TC_TestReportCreation,
+            ////ReportType.TC_AutoCorrectReport_By_Filename,
+            //ReportType.TC_AutoCorrectReport_By_ExcelList, 
+            //ReportType.CopyReportOnly,
+            //ReportType.RemoveInternalSheet, 
+            ////ReportType.TC_GroupSummaryReport,
+            ////ReportType.Update_Report_Linked_Issue,
+            //ReportType.Update_Keyword_and_TC_Report,
+            ReportType.Man_Power_Processing,
          };
 
         //public static ReportType[] ReportSelectableTable =
@@ -257,16 +257,16 @@ namespace ExcelReportApplication
             // "I.Man-Power Processing",
             new String[] 
             {
-                "Turn exported CVS file into excel file", 
-                "Input:",  "  CSV exported from man-task",
-                "Output:", "  Excel version of CSV file with spanning date and average effort under it",
+                "Augment CSV exported from Jira man-power plan with information required for Pivot Table", 
+                "Input:",  "  CSV exported from man-power project",
+                "Output:", "  Original CSV with extra information for using Pivot Table",
             },
             // "out-of-boundary text",
             new String[] 
             {
-                "Turn exported CVS file into excel file (to-be-finalized)", 
-                "Input:",  "  CSV exported from man-task  (to-be-finalized)",
-                "Output:", "  Excel version of CSV file with spanning date and average effort under it  (to-be-finalized)",
+                "New feature to generate a better report (to-be-finalized)", 
+                "Input:",  "  report input or template input (to-be-finalized)",
+                "Output:", "  enhanced report (to-be-finalized)",
             },
         };
 
@@ -414,7 +414,7 @@ namespace ExcelReportApplication
                 "Jira Bug File", 
                 "Jira TC File",
                 "Test Report Path",
-                "TC Template File",
+                "Exported CSV File",
             },
             // out-of-boundary-text
             new String[] 
@@ -656,7 +656,8 @@ namespace ExcelReportApplication
                 if (ReportSelectableTable[index] == report_type)
                 {
                     comboBoxReportSelect.SelectedIndex = index;
-                    break;
+                    MsgWindow.AppendText(@"Report Type " + '"' + report_type.ToString() + '"' + " is selected.\n");
+                    return;
                 }
             }
             // shouldn't be here, need to debug
