@@ -7,6 +7,7 @@ using System.IO;
 using System.Globalization;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Configuration;
+using System.Management;
 
 namespace ExcelReportApplication
 {
