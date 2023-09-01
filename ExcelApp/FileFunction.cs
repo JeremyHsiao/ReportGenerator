@@ -513,5 +513,25 @@ namespace ExcelReportApplication
                 return "";
             }
         }
+
+        public static String GetWindowsLoginUserName()
+        {
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT UserName FROM Win32_ComputerSystem");
+            ManagementObjectCollection collection = searcher.Get();
+            string userName = (string)collection.Cast<ManagementBaseObject>().First()["UserName"];
+            String[] sp_str = userName.Split(new Char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+
+            String short_userName;
+            if (sp_str.Count() > 1)
+            {
+                short_userName = sp_str[1];
+            }
+            else
+            {
+                short_userName = userName;
+            }
+            return short_userName;
+        }
+
     }
 }
