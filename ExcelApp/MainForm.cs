@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Configuration;
 using System.Collections.Specialized;
 using System.Management;
+using System.Threading;
 
 namespace ExcelReportApplication
 {
@@ -656,7 +657,8 @@ namespace ExcelReportApplication
                 if (ReportSelectableTable[index] == report_type)
                 {
                     comboBoxReportSelect.SelectedIndex = index;
-                    MsgWindow.AppendText(@"Report Type " + '"' + report_type.ToString() + '"' + " is selected.\n");
+                    //MsgWindow.AppendText(@"Report Type " + '"' + report_type.ToString() + '"' + " is selected.\n");
+                    MsgWindow.AppendText(@"Report Type " + '"' + GetReportName(report_type) + '"' + " is selected.\n");
                     return;
                 }
             }
@@ -1171,26 +1173,28 @@ namespace ExcelReportApplication
         */
         // Update file path to full path (for excel operation)
         // Only enabled textbox will be updated.
-        private void UpdateTextBoxPathToFullAndCheckExist(ref TextBox box)
+        private Boolean UpdateTextBoxPathToFullAndCheckExist(ref TextBox box)
         {
             String name = Storage.GetFullPath(box.Text);
             if (!Storage.FileExists(name))
             {
-                MsgWindow.AppendText(box.Text + "can't be found. Please check again.\n");
-                return;
+                MsgWindow.AppendText("Files can't be found and please check again: " + box.Text + "\n");
+                return false;
             }
             box.Text = name;
+            return true;
         }
 
-        private void UpdateTextBoxDirToFullAndCheckExist(ref TextBox box)
+        private Boolean UpdateTextBoxDirToFullAndCheckExist(ref TextBox box)
         {
             String name = Storage.GetFullPath(box.Text);
             if (!Storage.DirectoryExists(name))
             {
-                MsgWindow.AppendText(box.Text + "can't be found. Please check again.\n");
-                return;
+                MsgWindow.AppendText("Directory can't be found and please check again: " + box.Text + "\n");
+                return false;
             }
             box.Text = name;
+            return true;
         }
 
         private void btnCreateReport_Click(object sender, EventArgs e)
@@ -1381,11 +1385,21 @@ namespace ExcelReportApplication
                                             template_file: txtOutputTemplate.Text);
                         break;
                     case ReportType.Man_Power_Processing:
-                        UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
-                        // to-be-updated
-                        bRet = Execute_Man_Power_Processing_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
+                        tabInfomation.SelectedTab = tabInfomation.TabPages[1];
+                        Application.DoEvents();
+                        //Thread.Sleep(500);
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate))
+                        {
+                            MsgWindow.AppendText("Using the following file: " + txtOutputTemplate.Text + "\n");
+                            bRet = Execute_Man_Power_Processing_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
+                            if (!bRet)
+                            {
+                                MsgWindow.AppendText("Execution was not unsuccessful and please check CSV file\n");
+                            }
+                        }
                         break;
                     default:
+                        MsgWindow.AppendText("Report Type has exception. Please check\n");
                         // shouldn't be here.
                         break;
                 }
@@ -1434,6 +1448,7 @@ namespace ExcelReportApplication
             label_tc.Text = string_array[1];
             label_1st.Text = string_array[2];
             label_2nd.Text = string_array[3];
+            tabInfomation.SelectedTab = tabInfomation.TabPages[0];
         }
 
         private void UpdateUIDuringExecution(ReportType report_type, bool executing)
