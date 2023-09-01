@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Configuration;
 using System.Collections.Specialized;
+using System.Management;
 
 namespace ExcelReportApplication
 {
@@ -620,6 +621,7 @@ namespace ExcelReportApplication
             }
             //int default_select_index = (int)ReportType.FullIssueDescription_Summary; // current default
             Set_comboBoxReportSelect_ByReportType(default_selected_report_type);
+            UpdateUIAfterReportTypeChanged(default_selected_report_type);
         }
 
         //private Boolean Set_comboBoxReportSelect_IndexValue(int index_value)
@@ -695,6 +697,8 @@ namespace ExcelReportApplication
 
             LoadConfigAll();
 
+            InitializeReportFunctionListBox();
+
             if ((Storage.GetFullPath(txtBugFile.Text) == "") ||
                 (Storage.GetFullPath(txtTCFile.Text) == "") ||
                 (Storage.GetFullPath(txtReportFile.Text) == "") ||
@@ -702,7 +706,6 @@ namespace ExcelReportApplication
             {
                 MsgWindow.AppendText("WARNING: one or more sample files do not exist.\n");
             }
-            InitializeReportFunctionListBox();
         }
 
         private bool ReadGlobalIssueListTask(String filename)
@@ -1616,7 +1619,7 @@ namespace ExcelReportApplication
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
-                case ReportType.TC_TestReportCreation:
+                case ReportType.TC_TestReportCreation:                  // report A
                     if (!btnSelectOutputTemplate_Clicked) // source
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("TestReport_Default_Source_Path");
                     if (!btnSelectReportFile_Clicked) // destination
@@ -1626,11 +1629,11 @@ namespace ExcelReportApplication
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     break;
-                case ReportType.TC_AutoCorrectReport_By_ExcelList:
+                case ReportType.TC_AutoCorrectReport_By_ExcelList:      // Report C
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_C_Default_Excel");
                     break;
-                case ReportType.CopyReportOnly:
+                case ReportType.CopyReportOnly:                         // Report D
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_D_Copy_Only_Default_Excel");
                     break;
@@ -1648,7 +1651,7 @@ namespace ExcelReportApplication
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
-                case ReportType.Update_Keyword_and_TC_Report: // original adopted from report 9
+                case ReportType.Update_Keyword_and_TC_Report: // original adopted from report 9     -- report H
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     if (!btnSelectOutputTemplate_Clicked)
@@ -1657,19 +1660,8 @@ namespace ExcelReportApplication
                 case ReportType.Man_Power_Processing:
                     if (!btnSelectOutputTemplate_Clicked)
                     {
-                        string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-                        String[] sp_str = userName.Split(new Char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
-                        String short_userName;
-                        if (sp_str.Count() > 1)
-                        {
-                            short_userName = sp_str[1];
-                        }
-                        else
-                        {
-                            short_userName = userName;
-                        }
-
-                        txtOutputTemplate.Text = @"C:\Users\" + short_userName + @"\Downloads";
+                        String short_userName = Storage.GetWindowsLoginUserName();
+                        txtOutputTemplate.Text = @"C:\Users\" + short_userName + @"\Downloads\Advance Roadmaps.csv";
                     }
                     break;
                 default:
