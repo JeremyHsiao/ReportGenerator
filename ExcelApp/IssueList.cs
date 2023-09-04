@@ -91,7 +91,7 @@ namespace ExcelReportApplication
             set { count[(int)SeverityOrder.Closed_D] = value; }  // set method
         }
 
-        public IssueCount() 
+        public IssueCount()
         {
             for (int index = 0; index < (int)SeverityOrder.COUNT; index++)
             {
@@ -475,7 +475,7 @@ namespace ExcelReportApplication
                     // Add issue only if key contains KeyPrefix (very likely a valid key value)
                     String key_str = members[(int)IssueListMemberIndex.KEY];
                     //if (members[(int)IssueListMemberIndex.KEY].Contains(KeyPrefix))
-                    if((String.IsNullOrWhiteSpace(key_str)==false)&&(key_str.Contains(KeyPrefix))&&(for_checking_repeated_key.Contains(key_str)==false))
+                    if ((String.IsNullOrWhiteSpace(key_str) == false) && (key_str.Contains(KeyPrefix)) && (for_checking_repeated_key.Contains(key_str) == false))
                     {
                         ret_issue_list.Add(new Issue(members));
                         for_checking_repeated_key.Add(key_str);
@@ -504,7 +504,7 @@ namespace ExcelReportApplication
             Dictionary<string, Issue> ret_lut = new Dictionary<string, Issue>();
             foreach (Issue issue in issue_list)
             {
-                if (ret_lut.ContainsKey(issue.Key)==true)
+                if (ret_lut.ContainsKey(issue.Key) == true)
                 {
                     continue;           // key are repeated. shouldn't be here
                 }
@@ -562,7 +562,7 @@ namespace ExcelReportApplication
             bool b_ret = false;
 
             String allowed_delimiter = @"/,;";                                    // slash, comma, semi-colon are allowed as delimiter
-            String regexKeywordString = @"(?:["+allowed_delimiter+@"]|^)\s*" + 
+            String regexKeywordString = @"(?:[" + allowed_delimiter + @"]|^)\s*" +
                                         Regex.Escape(@Keyword) +                 // \QKeyword\E in regex
                                         @"\s*(?:[" + allowed_delimiter + @"]|$)";
             RegexStringValidator identifier_keyword_Regex = new RegexStringValidator(regexKeywordString);
@@ -614,7 +614,53 @@ namespace ExcelReportApplication
         }
 
 
-    
+        static public Boolean severity_descending = true;
+        static public Boolean key_descending = true;
+        static public int Compare_Severity_then_Key(Issue x, Issue y)
+        {
+            String[] separators_key_value = { "-" };
+            int final_compare = 0;
+
+            // compare key value first
+            int severity_compare = String.Compare(x.Severity, y.Severity);
+            if (severity_compare == 0)
+            {
+                // same severity, then check key
+                String[] key_x = x.Key.Split(separators_key_value, StringSplitOptions.RemoveEmptyEntries);
+                String[] key_y = y.Key.Split(separators_key_value, StringSplitOptions.RemoveEmptyEntries);
+                int x_value = Convert.ToInt32(key_x[1]);
+                int y_value = Convert.ToInt32(key_y[1]);
+                if (x_value > y_value)
+                {
+                    final_compare = (key_descending) ? (1) : (-1);
+                }
+                else if (x_value < y_value)
+                {
+                    final_compare = (key_descending) ? (-1) : (1);
+                }
+                else
+                {
+                    final_compare = 0;
+                }
+            }
+            else
+            {
+                // not the same severity
+                final_compare = (severity_descending) ? (-severity_compare) : (severity_compare);
+            }
+
+            return final_compare;
+        }
+
+
+        static public List<Issue> SortingBySeverityAndKey(List<Issue> issue_list, Boolean severity_descending = true, Boolean key_descending = true)
+        {
+
+            List<Issue> ret_list = new List<Issue>();
+            ret_list.AddRange(issue_list);
+            ret_list.Sort(Compare_Severity_then_Key);
+            return ret_list;
+        }
     }
 
     public class IssueList
