@@ -268,7 +268,7 @@ Returns or sets the type of underline applied to the font.
                 // filtered out issues whose key is not in links string
                 List<Issue> key_issue_list = Issue.KeyStringToListOfIssue(links,issue_list_source);
                 // To remove closed issue
-                List<Issue> filtered_issue_list = Issue.FilterIssueByStatus(key_issue_list, ReportGenerator.filter_status_list);
+                List<Issue> filtered_issue_list = Issue.FilterIssueByStatus(key_issue_list, ReportGenerator.filter_status_list_linked_issue);
                 List<String> filtered_issue_key_list = Issue.ListOfIssueToListOfIssueKey(filtered_issue_list);
                 Link_Issue_Detail = ExtendIssueDescription(filtered_issue_key_list, bug_description_list);
             }
@@ -521,85 +521,90 @@ Returns or sets the type of underline applied to the font.
             return ret_list;
         }
 
-        static public Dictionary<string, List<StyleString>> GenerateIssueDescription_Severity_by_Linked_Issue(List<Issue> issuelist)
-        {
-            Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
+        //static public Dictionary<string, List<StyleString>> GenerateIssueDescription_Severity_by_Linked_Issue(List<Issue> issuelist)
+        //{
+        //    Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
 
-            foreach (Issue issue in issuelist)
-            {
-                List<StyleString> value_style_str = new List<StyleString>();
-                String key = issue.Key;  // rd_comment_str = issue.comment;
-                Boolean is_waived = false;
+        //    foreach (Issue issue in issuelist)
+        //    {
+        //        List<StyleString> value_style_str = new List<StyleString>();
+        //        String key = issue.Key;  // rd_comment_str = issue.comment;
+        //        Boolean is_waived = false;
 
-                if (key != "")
-                {
-                    Color color_by_severity = Issue.ISSUE_DEFAULT_COLOR;
-                    if (issue.Status == Issue.STR_CLOSE)
-                    {
-                        color_by_severity = Issue.CLOSED_ISSUE_COLOR;
-                    }
-                    else if (issue.Status == Issue.STR_WAIVE)
-                    {
-                        color_by_severity = Issue.WAIVED_ISSUE_COLOR;
-                        is_waived = true;
-                    }
-                    else // if ((issue.Status != Issue.STR_CLOSE) && (issue.Status != Issue.STR_WAIVE))
-                    {
-                        switch (issue.Severity[0])
-                        {
-                            case 'A':
-                                color_by_severity = ReportGenerator.LinkIssue_A_Issue_Color;
-                                break;
-                            case 'B':
-                                color_by_severity = ReportGenerator.LinkIssue_B_Issue_Color;
-                                break;
-                            case 'C':
-                                color_by_severity = ReportGenerator.LinkIssue_C_Issue_Color;
-                                break;
-                            case 'D':
-                                color_by_severity = ReportGenerator.LinkIssue_D_Issue_Color;
-                                break;
-                            default:
-                                // Use Default
-                                break;
-                        }
+        //        if (key != "")
+        //        {
+        //            Color color_by_severity = Issue.ISSUE_DEFAULT_COLOR;
+        //            if (issue.Status == Issue.STR_CLOSE)
+        //            {
+        //                color_by_severity = Issue.CLOSED_ISSUE_COLOR;
+        //            }
+        //            else if (issue.Status == Issue.STR_WAIVE)
+        //            {
+        //                color_by_severity = Issue.WAIVED_ISSUE_COLOR;
+        //                is_waived = true;
+        //            }
+        //            else // if ((issue.Status != Issue.STR_CLOSE) && (issue.Status != Issue.STR_WAIVE))
+        //            {
+        //                switch (issue.Severity[0])
+        //                {
+        //                    case 'A':
+        //                        color_by_severity = ReportGenerator.LinkIssue_A_Issue_Color;
+        //                        break;
+        //                    case 'B':
+        //                        color_by_severity = ReportGenerator.LinkIssue_B_Issue_Color;
+        //                        break;
+        //                    case 'C':
+        //                        color_by_severity = ReportGenerator.LinkIssue_C_Issue_Color;
+        //                        break;
+        //                    case 'D':
+        //                        color_by_severity = ReportGenerator.LinkIssue_D_Issue_Color;
+        //                        break;
+        //                    default:
+        //                        // Use Default
+        //                        break;
+        //                }
 
-                    }
+        //            }
 
-                    String str;
-                    str = key + issue.Summary + "(" + issue.Severity + ")";
-                    if (is_waived)
-                    {
-                        str += "(" + KeywordReport.WAIVED_str + ")";
-                    }
-                    StyleString style_str = new StyleString(str, color_by_severity, ReportGenerator.LinkIssue_report_Font, 
-                                                ReportGenerator.LinkIssue_report_FontSize, ReportGenerator.LinkIssue_report_FontStyle);
-                    value_style_str.Add(style_str);
-                    // Add whole string into return_list
-                    if (ret_list.ContainsKey(key))
-                    {
-                        continue; // shouldn't be here.
-                    }
-                    ret_list.Add(key, value_style_str);
-                }
-            }
-            return ret_list;
-        }
+        //            String str;
+        //            str = key + issue.Summary + "(" + issue.Severity + ")";
+        //            if (is_waived)
+        //            {
+        //                str += "(" + KeywordReport.WAIVED_str + ")";
+        //            }
+        //            StyleString style_str = new StyleString(str, color_by_severity, ReportGenerator.LinkIssue_report_Font, 
+        //                                        ReportGenerator.LinkIssue_report_FontSize, ReportGenerator.LinkIssue_report_FontStyle);
+        //            value_style_str.Add(style_str);
+        //            // Add whole string into return_list
+        //            if (ret_list.ContainsKey(key))
+        //            {
+        //                continue; // shouldn't be here.
+        //            }
+        //            ret_list.Add(key, value_style_str);
+        //        }
+        //    }
+        //    return ret_list;
+        //}
 
         static public List<StyleString> BugList_To_LinkedIssueDescription(List<Issue> issuelist)
         {
             List<StyleString> ret_style_string = new List<StyleString>();
+            int processed_count = 0;
 
             foreach (Issue issue in issuelist)
             {
-                List<StyleString> value_style_str = new List<StyleString>();
                 String key = issue.Key;  // rd_comment_str = issue.comment;
+                processed_count++;
 
                 //if (key != "")
                 if (String.IsNullOrWhiteSpace(key) == false)
                 {
                     List<StyleString> next_bug_description = Bug_To_LinkedIssueDescription(issue);
-                    value_style_str.AddRange(next_bug_description);
+                    ret_style_string.AddRange(next_bug_description);
+                    if (processed_count < issuelist.Count())
+                    {
+                        ret_style_string.Add(new StyleString("\n"));
+                    }
                 }
             }
             return ret_style_string;

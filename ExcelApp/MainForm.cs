@@ -37,7 +37,7 @@ namespace ExcelReportApplication
             TC_AutoCorrectReport_By_ExcelList,              // Report C
             CopyReportOnly,                                 // Report D -- copy only version of report C
             RemoveInternalSheet,                            // Report E -- remove internalsheet version of report C
-            TC_GroupSummaryReport,
+            TC_GroupSummaryReport,                          // Report F -- Not used
             Update_Report_Linked_Issue,
             Update_Keyword_and_TC_Report,
             Man_Power_Processing,
@@ -507,7 +507,7 @@ namespace ExcelReportApplication
             //}
             //ReportGenerator.fileter_status_list = ret_list;
             String links = XMLConfig.ReadAppSetting_String("LinkIssueFilterStatusString");
-            ReportGenerator.filter_status_list = SplitCommaSeparatedStringIntoList(links);
+            ReportGenerator.filter_status_list_linked_issue = SplitCommaSeparatedStringIntoList(links);
             links = XMLConfig.ReadAppSetting_String("TestReport_FilterStatusString");
             KeywordReport.filter_status_list = SplitCommaSeparatedStringIntoList(links);
             // End
@@ -800,15 +800,16 @@ namespace ExcelReportApplication
 
             // This full issue description is needed for report purpose
             //Dictionary<string, List<StyleString>> global_issue_description_list = StyleString.GenerateIssueDescription(ReportGenerator.global_issue_list);
-            Dictionary<string, List<StyleString>> global_issue_description_list_severity =
-                        StyleString.GenerateIssueDescription_Severity_by_Linked_Issue(ReportGenerator.ReadGlobalIssueList());
-            List<TestCase> before = ReportGenerator.ReadGlobalTestcaseList();
-            List<TestCase> after = TestCase.UpdateTCLinkedIssueList(before, ReportGenerator.ReadGlobalIssueList(), global_issue_description_list_severity);
-            ReportGenerator.UpdateGlobalTestcaseList(after);
+            //Dictionary<string, List<StyleString>> global_issue_description_list_severity =
+            //            StyleString.GenerateIssueDescription_Severity_by_Linked_Issue(ReportGenerator.ReadGlobalIssueList());
+            //List<TestCase> before = ReportGenerator.ReadGlobalTestcaseList();
+            //List<TestCase> after = TestCase.UpdateTCLinkedIssueList(before, ReportGenerator.ReadGlobalIssueList(), global_issue_description_list_severity);
+            //ReportGenerator.UpdateGlobalTestcaseList(after);
 
             //            ReportGenerator.WriteBacktoTCJiraExcel(tc_file);
             //ReportGenerator.WriteBacktoTCJiraExcelV2(tc_file, template_file, judgement_report_dir);
-            ReportGenerator.WriteBacktoTCJiraExcelV3(tc_file, template_file, bug_file, ReportGenerator.ReadGlobalIssueList(), global_issue_description_list_severity, judgement_report_dir);
+            //ReportGenerator.WriteBacktoTCJiraExcelV3(tc_file, template_file, bug_file, ReportGenerator.ReadGlobalIssueList(), global_issue_description_list_severity, judgement_report_dir);
+            ReportGenerator.WriteBacktoTCJiraExcelV3(tc_file, template_file, bug_file, ReportGenerator.ReadGlobalIssueList(), judgement_report_dir);
             return true;
         }
 
@@ -1353,11 +1354,11 @@ namespace ExcelReportApplication
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
                         // update tc_linked_issue_description
-                        Dictionary<string, List<StyleString>> TC_issue_description =
-                                    StyleString.GenerateIssueDescription_Severity_by_Linked_Issue(ReportGenerator.ReadGlobalIssueList());
-                        List<TestCase> before = ReportGenerator.ReadGlobalTestcaseList();
-                        List<TestCase> after = TestCase.UpdateTCLinkedIssueList(before, ReportGenerator.ReadGlobalIssueList(), TC_issue_description);
-                        ReportGenerator.UpdateGlobalTestcaseList(after);
+                        //Dictionary<string, List<StyleString>> TC_issue_description =
+                        //            StyleString.GenerateIssueDescription_Severity_by_Linked_Issue(ReportGenerator.ReadGlobalIssueList());
+                        //List<TestCase> before = ReportGenerator.ReadGlobalTestcaseList();
+                        //List<TestCase> after = TestCase.UpdateTCLinkedIssueList(before, ReportGenerator.ReadGlobalIssueList(), TC_issue_description);
+                        //ReportGenerator.UpdateGlobalTestcaseList(after);
 
                         bRet = Execute_UpdaetGroupSummaryReport_Task(report_path: txtReportFile.Text);
                         break;

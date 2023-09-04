@@ -502,12 +502,12 @@ namespace ExcelReportApplication
                     //bug_list_keyword_Regex.Validate(bug_list_text); regex_step++;
 
                     //if (keyword_text == "") { ConsoleWarning("Empty Keyword", row_index); continue; }
-                    if (String.IsNullOrWhiteSpace(keyword_text)) { LogMessage.WriteLine("Empty Keyword at row: "+row_index.ToString()); continue; }
-                    if (KeywordAtRow.ContainsKey(keyword_text)) { LogMessage.WriteLine("Duplicated Keyword:" + keyword_text + " at "+ row_index.ToString()); continue; }
+                    if (String.IsNullOrWhiteSpace(keyword_text)) { LogMessage.WriteLine("Empty Keyword at row: " + row_index.ToString()); continue; }
+                    if (KeywordAtRow.ContainsKey(keyword_text)) { LogMessage.WriteLine("Duplicated Keyword:" + keyword_text + " at " + row_index.ToString()); continue; }
                     KeywordAtRow.Add(keyword_text, row_index);
                 }
                 catch (ArgumentException ex)
-                {                                                                                                                             
+                {
                     // Validation failed.
                     // Not a key row
                     switch (regex_step)
@@ -674,7 +674,7 @@ namespace ExcelReportApplication
                 {
                     // found duplicated item ==> kw exists in for_checking_duplicated
                     // first to check if already duplicated before
-                    if (dic_ret_kw_list.ContainsKey(kw)==false)
+                    if (dic_ret_kw_list.ContainsKey(kw) == false)
                     {
                         // 1st time duplicated so that not available in dic_ret_kw_list
                         // then it is necessary to create a new item in dic_ret_kw_list
@@ -1281,8 +1281,7 @@ namespace ExcelReportApplication
         }
 
 
-        static public bool Update_Group_Summary(Worksheet ws_report, String summary_report_sheetname,
-                                   List<String> available_report_filelist, Dictionary<string, List<StyleString>> bug_description_list)
+        static public bool Update_Group_Summary(Worksheet ws_report, String summary_report_sheetname, List<String> available_report_filelist)
         {
             Boolean b_ret = false;
 
@@ -1384,11 +1383,13 @@ namespace ExcelReportApplication
                     // key string to List of Issue
                     List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
                     // List of Issue filtered by status
-                    List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list);
-                    // list of key whose issue status passed the filter
-                    List<String> filtered_links = Issue.ListOfIssueToListOfIssueKey(filtered_linked_issue_list);
-                    // use list of key to get bug_description
-                    linked_issue_description = StyleString.ExtendIssueDescription(filtered_links, bug_description_list);
+                    List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
+                    //// list of key whose issue status passed the filter
+                    //List<String> filtered_links = Issue.ListOfIssueToListOfIssueKey(filtered_linked_issue_list);
+                    //// use list of key to get bug_description
+                    //linked_issue_description = StyleString.ExtendIssueDescription(filtered_links, bug_description_list);
+                    // Remove usage of Dictionary of bug-key and linked issue description. directly extension from bug-key-list to whole linked issue description 
+                    linked_issue_description = StyleString.BugList_To_LinkedIssueDescription(filtered_linked_issue_list);
                 }
                 ExcelAction.SetCellValue(ws_report, row_index, GroupSummary_Title_No_Col, str_no);
                 ExcelAction.SetCellValue(ws_report, row_index, GroupSummary_Title_TestItem_Col, str_test_item);
@@ -1621,8 +1622,7 @@ namespace ExcelReportApplication
                 // if sheetname is xxxxxxx.0, do group_summary_report)
                 if (sheet_name.Substring(sheet_name.Length - 2, 2) == ".0")
                 {
-                    KeywordReport.Update_Group_Summary(result_worksheet, sheet_name,
-                                        existing_report_filelist, bug_description_list);
+                    KeywordReport.Update_Group_Summary(result_worksheet, sheet_name, existing_report_filelist);
                 }
 
                 String judgement_str = "";
@@ -1772,11 +1772,13 @@ namespace ExcelReportApplication
                         // key string to List of Issue
                         List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
                         // List of Issue filtered by status
-                        List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list);
-                        // list of key whose issue status passed the filter
-                        List<String> filtered_links = Issue.ListOfIssueToListOfIssueKey(filtered_linked_issue_list);
-                        // use list of key to get bug_description
-                        linked_issue_description_on_this_report = StyleString.ExtendIssueDescription(filtered_links, bug_description_list);
+                        List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
+                        //// list of key whose issue status passed the filter
+                        //List<String> filtered_links = Issue.ListOfIssueToListOfIssueKey(filtered_linked_issue_list);
+                        //// use list of key to get bug_description
+                        //linked_issue_description_on_this_report = StyleString.ExtendIssueDescription(filtered_links, linked_issue_description_list);
+                        // Remove usage of Dictionary of bug-key and linked issue description. directly extension from bug-key-list to whole linked issue description 
+                        linked_issue_description_on_this_report = StyleString.BugList_To_LinkedIssueDescription(filtered_linked_issue_list);
                         // count of filtered issue
                         IssueCount severity_count = IssueCount.IssueListStatistic(filtered_linked_issue_list);
                         Boolean pass, fail, conditional_pass;
@@ -1877,7 +1879,7 @@ namespace ExcelReportApplication
                 // key string to List of Issue
                 List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
                 // List of Issue filtered by status
-                List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list);
+                List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
                 // count of filtered issue
                 IssueCount severity_count = IssueCount.IssueListStatistic(filtered_linked_issue_list);
                 Boolean pass, fail, conditional_pass;
@@ -2496,7 +2498,7 @@ namespace ExcelReportApplication
             foreach (TestPlanKeyword tpk in keyword_list)
             {
                 String sheet = tpk.Worksheet;
-                
+
                 // if key (current) exists in dictionary, add new dictionary pair (keyword, sheetname-list) with value is empty List.
                 if (ret_dic.ContainsKey(sheet) == false)
                 {

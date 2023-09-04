@@ -24,7 +24,7 @@ namespace ExcelReportApplication
         private String stepstoreproduce;
         private String created;
         // generated-data
-        private List<StyleString> linked_issue_list;
+        //private List<StyleString> linked_issue_list;
         private List<StyleString> keyword_issue_list;
 
         public String Key   // property
@@ -123,11 +123,11 @@ namespace ExcelReportApplication
             set { created = value; }  // set method
         }
 
-        public List<StyleString> LinkedIssueDescription   // property
-        {
-            get { return linked_issue_list; }   // get method
-            set { linked_issue_list = value; }  // set method
-        }
+        //public List<StyleString> LinkedIssueDescription   // property
+        //{
+        //    get { return linked_issue_list; }   // get method
+        //    set { linked_issue_list = value; }  // set method
+        //}
 
         public List<StyleString> KeywordIssueList   // property
         {
@@ -343,23 +343,23 @@ namespace ExcelReportApplication
             return ret_lut;
         }
 
-        static public List<TestCase> UpdateTCLinkedIssueList(List<TestCase> tc_to_be_updated, List<Issue> issue_list_source,
-                                                Dictionary<string, List<StyleString>> bug_description_list)
-        {
-            List<TestCase> updated_tc = tc_to_be_updated;
-            foreach (TestCase tc in updated_tc) // looping
-            {
-                String links = tc.Links;
-                //if (links != "")
-                if (String.IsNullOrWhiteSpace(links) == false)
-                {
-                    List<StyleString> str_list;
-                    str_list = StyleString.FilteredBugID_to_BugDescription(links, issue_list_source, bug_description_list);
-                    tc.LinkedIssueDescription = str_list;
-                }
-            }
-            return updated_tc;
-        }
+        //static public List<TestCase> UpdateTCLinkedIssueList(List<TestCase> tc_to_be_updated, List<Issue> issue_list_source,
+        //                                        Dictionary<string, List<StyleString>> bug_description_list)
+        //{
+        //    List<TestCase> updated_tc = tc_to_be_updated;
+        //    foreach (TestCase tc in updated_tc) // looping
+        //    {
+        //        String links = tc.Links;
+        //        //if (links != "")
+        //        if (String.IsNullOrWhiteSpace(links) == false)
+        //        {
+        //            List<StyleString> str_list;
+        //            str_list = StyleString.FilteredBugID_to_BugDescription(links, issue_list_source, bug_description_list);
+        //            tc.LinkedIssueDescription = str_list;
+        //        }
+        //    }
+        //    return updated_tc;
+        //}
 
 
     }

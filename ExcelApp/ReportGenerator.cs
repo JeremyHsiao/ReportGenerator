@@ -17,7 +17,7 @@ namespace ExcelReportApplication
         //static public Dictionary<string, List<StyleString>> global_issue_description_list = new Dictionary<string, List<StyleString>>(); // TC-related
         //static public Dictionary<string, List<StyleString>> global_issue_description_list_severity = new Dictionary<string, List<StyleString>>(); //keyword-related
         static private List<TestCase> global_testcase_list = new List<TestCase>();
-        static public List<String> filter_status_list = new List<String>();
+        static public List<String> filter_status_list_linked_issue = new List<String>();
         static public List<ReportFileRecord> excel_not_report_log = new List<ReportFileRecord>();
 
         //static public Dictionary<string, Issue> lookup_BugList = new Dictionary<string, Issue>();
@@ -401,8 +401,7 @@ namespace ExcelReportApplication
         }
 
         // Split some part of V2 into sub-functions 
-        static public void WriteBacktoTCJiraExcelV3(String tclist_filename, String template_filename, String bug_filename, List<Issue> bug_list,
-            Dictionary<string, List<StyleString>> bug_description_list, String judgement_report_dir = "")
+        static public void WriteBacktoTCJiraExcelV3(String tclist_filename, String template_filename, String bug_filename, List<Issue> bug_list, String judgement_report_dir = "")
         {
             // Open original excel (read-only & corrupt-load) and write to another filename when closed
             ExcelAction.ExcelStatus status;
@@ -459,8 +458,12 @@ namespace ExcelReportApplication
                 //if (links != "")
                 if (String.IsNullOrWhiteSpace(links) == false)
                 {
+                    List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
+                    // List of Issue filtered by status
+                    List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
                     List<StyleString> str_list;
-                    str_list = StyleString.FilteredBugID_to_BugDescription(links, bug_list, bug_description_list);
+                    //str_list = StyleString.FilteredBugID_to_BugDescription(links, bug_list, bug_description_list);
+                    str_list = StyleString.BugList_To_LinkedIssueDescription(filtered_linked_issue_list);
                     ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
                 }
 
