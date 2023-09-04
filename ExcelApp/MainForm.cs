@@ -507,9 +507,9 @@ namespace ExcelReportApplication
             //}
             //ReportGenerator.fileter_status_list = ret_list;
             String links = XMLConfig.ReadAppSetting_String("LinkIssueFilterStatusString");
-            ReportGenerator.fileter_status_list = SplitCommaSeparatedStringIntoList(links);
+            ReportGenerator.filter_status_list = SplitCommaSeparatedStringIntoList(links);
             links = XMLConfig.ReadAppSetting_String("TestReport_FilterStatusString");
-            KeywordReport.fileter_status_list = SplitCommaSeparatedStringIntoList(links);
+            KeywordReport.filter_status_list = SplitCommaSeparatedStringIntoList(links);
             // End
 
             // config for default parameters used in Test Plan / Test Report

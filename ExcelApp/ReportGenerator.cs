@@ -17,7 +17,7 @@ namespace ExcelReportApplication
         //static public Dictionary<string, List<StyleString>> global_issue_description_list = new Dictionary<string, List<StyleString>>(); // TC-related
         //static public Dictionary<string, List<StyleString>> global_issue_description_list_severity = new Dictionary<string, List<StyleString>>(); //keyword-related
         static private List<TestCase> global_testcase_list = new List<TestCase>();
-        static public List<String> fileter_status_list = new List<String>();
+        static public List<String> filter_status_list = new List<String>();
         static public List<ReportFileRecord> excel_not_report_log = new List<ReportFileRecord>();
 
         //static public Dictionary<string, Issue> lookup_BugList = new Dictionary<string, Issue>();

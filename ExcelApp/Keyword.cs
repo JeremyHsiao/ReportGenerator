@@ -390,7 +390,7 @@ namespace ExcelReportApplication
         public static String regexBugStatusString = @"^(?i)\s*Bug Status\s*$";
         public static String regexBugListString = @"^(?i)\s*Bug List\s*$";
 
-        static public List<String> fileter_status_list = new List<String>();
+        static public List<String> filter_status_list = new List<String>();
 
         public static String PASS_str = "Pass";
         public static String CONDITIONAL_PASS_str = "Conditional Pass";
@@ -1384,7 +1384,7 @@ namespace ExcelReportApplication
                     // key string to List of Issue
                     List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
                     // List of Issue filtered by status
-                    List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.fileter_status_list);
+                    List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list);
                     // list of key whose issue status passed the filter
                     List<String> filtered_links = Issue.ListOfIssueToListOfIssueKey(filtered_linked_issue_list);
                     // use list of key to get bug_description
@@ -1566,7 +1566,7 @@ namespace ExcelReportApplication
                 foreach (Issue issue in ReportGenerator.ReadGlobalIssueList())
                 {
                     // if status meets filter condition (mostly Closed_0), skip to next issue)
-                    if (fileter_status_list.IndexOf(issue.Status) >= 0)
+                    if (filter_status_list.IndexOf(issue.Status) >= 0)
                     {
                         continue;
                     }
@@ -1772,7 +1772,7 @@ namespace ExcelReportApplication
                         // key string to List of Issue
                         List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
                         // List of Issue filtered by status
-                        List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.fileter_status_list);
+                        List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list);
                         // list of key whose issue status passed the filter
                         List<String> filtered_links = Issue.ListOfIssueToListOfIssueKey(filtered_linked_issue_list);
                         // use list of key to get bug_description
@@ -1877,7 +1877,7 @@ namespace ExcelReportApplication
                 // key string to List of Issue
                 List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
                 // List of Issue filtered by status
-                List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.fileter_status_list);
+                List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list);
                 // count of filtered issue
                 IssueCount severity_count = IssueCount.IssueListStatistic(filtered_linked_issue_list);
                 Boolean pass, fail, conditional_pass;

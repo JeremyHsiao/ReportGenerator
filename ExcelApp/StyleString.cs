@@ -268,7 +268,7 @@ Returns or sets the type of underline applied to the font.
                 // filtered out issues whose key is not in links string
                 List<Issue> key_issue_list = Issue.KeyStringToListOfIssue(links,issue_list_source);
                 // To remove closed issue
-                List<Issue> filtered_issue_list = Issue.FilterIssueByStatus(key_issue_list, ReportGenerator.fileter_status_list);
+                List<Issue> filtered_issue_list = Issue.FilterIssueByStatus(key_issue_list, ReportGenerator.filter_status_list);
                 List<String> filtered_issue_key_list = Issue.ListOfIssueToListOfIssueKey(filtered_issue_list);
                 Link_Issue_Detail = ExtendIssueDescription(filtered_issue_key_list, bug_description_list);
             }
