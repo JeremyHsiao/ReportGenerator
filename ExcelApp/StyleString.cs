@@ -586,6 +586,78 @@ Returns or sets the type of underline applied to the font.
             return ret_list;
         }
 
+        static public List<StyleString> BugList_To_LinkedIssueDescription(List<Issue> issuelist)
+        {
+            List<StyleString> ret_style_string = new List<StyleString>();
+
+            foreach (Issue issue in issuelist)
+            {
+                List<StyleString> value_style_str = new List<StyleString>();
+                String key = issue.Key;  // rd_comment_str = issue.comment;
+
+                //if (key != "")
+                if (String.IsNullOrWhiteSpace(key) == false)
+                {
+                    List<StyleString> next_bug_description = Bug_To_LinkedIssueDescription(issue);
+                    value_style_str.AddRange(next_bug_description);
+                }
+            }
+            return ret_style_string;
+        }
+
+        static public List<StyleString> Bug_To_LinkedIssueDescription(Issue issue)
+        {
+            List<StyleString> value_style_str = new List<StyleString>();
+            String key = issue.Key;  // rd_comment_str = issue.comment;
+            Boolean is_waived = false;
+
+            if (String.IsNullOrWhiteSpace(key) == false)
+            {
+                Color color_by_severity = Issue.ISSUE_DEFAULT_COLOR;
+                if (issue.Status == Issue.STR_CLOSE)
+                {
+                    color_by_severity = Issue.CLOSED_ISSUE_COLOR;
+                }
+                else if (issue.Status == Issue.STR_WAIVE)
+                {
+                    color_by_severity = Issue.WAIVED_ISSUE_COLOR;
+                    is_waived = true;
+                }
+                else // if ((issue.Status != Issue.STR_CLOSE) && (issue.Status != Issue.STR_WAIVE))
+                {
+                    switch (issue.Severity[0])
+                    {
+                        case 'A':
+                            color_by_severity = ReportGenerator.LinkIssue_A_Issue_Color;
+                            break;
+                        case 'B':
+                            color_by_severity = ReportGenerator.LinkIssue_B_Issue_Color;
+                            break;
+                        case 'C':
+                            color_by_severity = ReportGenerator.LinkIssue_C_Issue_Color;
+                            break;
+                        case 'D':
+                            color_by_severity = ReportGenerator.LinkIssue_D_Issue_Color;
+                            break;
+                        default:
+                            // Use Default
+                            break;
+                    }
+
+                }
+
+                String str;
+                str = key + issue.Summary + "(" + issue.Severity + ")";
+                if (is_waived)
+                {
+                    str += "(" + KeywordReport.WAIVED_str + ")";
+                }
+                StyleString style_str = new StyleString(str, color_by_severity, ReportGenerator.LinkIssue_report_Font,
+                                            ReportGenerator.LinkIssue_report_FontSize, ReportGenerator.LinkIssue_report_FontStyle);
+                value_style_str.Add(style_str);
+            }
+            return value_style_str;
+        }
 
     }
 
