@@ -632,11 +632,12 @@ namespace ExcelReportApplication
                 int y_value = Convert.ToInt32(key_y[1]);
                 if (x_value > y_value)
                 {
-                    final_compare = (key_descending) ? (1) : (-1);
+                    // descending means larger is earlier --> reverse the sequence --> reverse the result
+                    final_compare = (key_descending) ? (-1) : (1);
                 }
                 else if (x_value < y_value)
                 {
-                    final_compare = (key_descending) ? (-1) : (1);
+                    final_compare = (key_descending) ? (1) : (-1);
                 }
                 else
                 {
@@ -646,7 +647,8 @@ namespace ExcelReportApplication
             else
             {
                 // not the same severity
-                final_compare = (severity_descending) ? (-severity_compare) : (severity_compare);
+                // "smaller" char means higher severity ==> descending is smaller to larger --> no need to reveerse the result
+                final_compare = (severity_descending) ? (severity_compare) : (-severity_compare);
             }
 
             return final_compare;
