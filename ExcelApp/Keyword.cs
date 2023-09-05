@@ -1566,7 +1566,9 @@ namespace ExcelReportApplication
                     }
                 }
                 //keyword.IssueList = Issue.ListOfIssueToListOfIssueKey(keyword.KeywordIssues);
-                description_list = StyleString.BugList_To_KeywordIssueDescription(keyword.KeywordIssues);
+                // Sort issue by Severity and Key valie
+                List<Issue> sorted_keyword_issues = Issue.SortingBySeverityAndKey(keyword.KeywordIssues);
+                description_list = StyleString.BugList_To_KeywordIssueDescription(sorted_keyword_issues);
                 keyword.IssueDescriptionList = description_list;
             }
 
