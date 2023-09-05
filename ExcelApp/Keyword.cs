@@ -1307,6 +1307,8 @@ namespace ExcelReportApplication
                 sub_report_list.Add(filename);
             }
 
+            sub_report_list.Sort(TestPlan.Compare_Sheetname);
+            
             // Adjust and check the last row of table
             int row_found = 1;
             // target is the larger one between (1) number of rows required (2) Group_Summary_Table_RowNumber_Min

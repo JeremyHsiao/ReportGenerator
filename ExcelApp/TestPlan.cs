@@ -366,6 +366,49 @@ namespace ExcelReportApplication
         //{
         //    return TestReport.UpdateReportHeader(this.TestPlanWorksheet,SW_Version, Test_Start, Test_End, Judgement, Template);
         //}
+        // Sorting Function
+        static public int Compare_Sheetname(String x, String y)
+        {
+            int final_compare = 0;
+
+            String sheetname_x = TestPlan.GetSheetNameAccordingToFilename(x);
+            String sheetname_y = TestPlan.GetSheetNameAccordingToFilename(y);
+
+            int sheetname_x_len = sheetname_x.Length;
+            int sheetname_x_value_pos = sheetname_x.IndexOf('.');
+            String x_str = sheetname_x.Substring(sheetname_x_value_pos + 1, sheetname_x_len - (sheetname_x_value_pos + 1));
+            double x_value;
+            Boolean x_is_double = double.TryParse(x_str, out x_value);
+
+            int sheetname_y_len = sheetname_y.Length;
+            int sheetname_y_value_pos = sheetname_y.IndexOf('.');
+            String y_str = sheetname_y.Substring(sheetname_y_value_pos + 1, sheetname_y_len - (sheetname_y_value_pos + 1));
+            double y_value;
+            Boolean y_is_double = double.TryParse(y_str, out y_value);
+
+            if (x_is_double == false)
+            {
+                if (y_is_double == true)
+                {
+                    final_compare = 1;
+                }
+            }
+            else if (y_is_double == false)
+            {
+                final_compare = -1;
+            }
+            // both are double, can be compared in value
+            else if (x_value < y_value)
+            {
+                final_compare = -1;
+            }
+            else if (x_value > y_value)
+            {
+                final_compare = 1;
+            }
+
+            return final_compare;
+        }
 
     }
 }
