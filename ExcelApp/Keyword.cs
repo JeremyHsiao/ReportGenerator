@@ -1384,12 +1384,10 @@ namespace ExcelReportApplication
                     List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
                     // List of Issue filtered by status
                     List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
-                    //// list of key whose issue status passed the filter
-                    //List<String> filtered_links = Issue.ListOfIssueToListOfIssueKey(filtered_linked_issue_list);
-                    //// use list of key to get bug_description
-                    //linked_issue_description = StyleString.ExtendIssueDescription(filtered_links, bug_description_list);
-                    // Remove usage of Dictionary of bug-key and linked issue description. directly extension from bug-key-list to whole linked issue description 
-                    linked_issue_description = StyleString.BugList_To_LinkedIssueDescription(filtered_linked_issue_list);
+                    // Sort issue by Severity and Key valie
+                    List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
+                    // Convert list of sorted linked issue to description list
+                    linked_issue_description = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
                 }
                 ExcelAction.SetCellValue(ws_report, row_index, GroupSummary_Title_No_Col, str_no);
                 ExcelAction.SetCellValue(ws_report, row_index, GroupSummary_Title_TestItem_Col, str_test_item);
@@ -1773,12 +1771,10 @@ namespace ExcelReportApplication
                         List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
                         // List of Issue filtered by status
                         List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
-                        //// list of key whose issue status passed the filter
-                        //List<String> filtered_links = Issue.ListOfIssueToListOfIssueKey(filtered_linked_issue_list);
-                        //// use list of key to get bug_description
-                        //linked_issue_description_on_this_report = StyleString.ExtendIssueDescription(filtered_links, linked_issue_description_list);
-                        // Remove usage of Dictionary of bug-key and linked issue description. directly extension from bug-key-list to whole linked issue description 
-                        linked_issue_description_on_this_report = StyleString.BugList_To_LinkedIssueDescription(filtered_linked_issue_list);
+                        // Sort issue by Severity and Key valie
+                        List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
+                        // Convert list of sorted linked issue to description list
+                        linked_issue_description_on_this_report = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
                         // count of filtered issue
                         IssueCount severity_count = IssueCount.IssueListStatistic(filtered_linked_issue_list);
                         Boolean pass, fail, conditional_pass;
