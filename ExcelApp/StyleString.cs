@@ -257,7 +257,7 @@ Returns or sets the type of underline applied to the font.
         }
 
         // extexd issue description when this issue is not filtered by its status
-        static public List<StyleString> FilteredBugID_to_BugDescription(String links, List<Issue> issue_list_source, 
+        static public List<StyleString> FilteredBugID_to_BugDescription(String links, List<Issue> issue_list_source,
                                                                             Dictionary<string, List<StyleString>> bug_description_list)
         {
             List<StyleString> Link_Issue_Detail = new List<StyleString>();
@@ -266,7 +266,7 @@ Returns or sets the type of underline applied to the font.
             if (String.IsNullOrWhiteSpace(links) == false)
             {
                 // filtered out issues whose key is not in links string
-                List<Issue> key_issue_list = Issue.KeyStringToListOfIssue(links,issue_list_source);
+                List<Issue> key_issue_list = Issue.KeyStringToListOfIssue(links, issue_list_source);
                 // To remove closed issue
                 List<Issue> filtered_issue_list = Issue.FilterIssueByStatus(key_issue_list, ReportGenerator.filter_status_list_linked_issue);
                 List<String> filtered_issue_key_list = Issue.ListOfIssueToListOfIssueKey(filtered_issue_list);
@@ -290,10 +290,10 @@ Returns or sets the type of underline applied to the font.
             input_range.NumberFormat = "@";
             input_range.Value2 = txt_str;
 
-            using (System.Drawing.Font fontTester = 
+            using (System.Drawing.Font fontTester =
                         new System.Drawing.Font(StyleString.default_font,
                                                 StyleString.default_size,
-                                                StyleString.default_fontstyle, 
+                                                StyleString.default_fontstyle,
                                                 GraphicsUnit.Pixel))
             {
                 if (fontTester.Name == StyleString.default_font)
@@ -318,7 +318,7 @@ Returns or sets the type of underline applied to the font.
             foreach (StyleString style_str in style_string_list)
             {
                 int len = style_str.Text.Length;
-                
+
                 // Skip font-update if "NoChange";
                 //if (style_str.Font == "NoChange") continue;
                 using (System.Drawing.Font fontTester =
@@ -351,7 +351,7 @@ Returns or sets the type of underline applied to the font.
 
         static public void WriteStyleString(Worksheet ws, int row, int col, List<StyleString> style_string_list, Boolean ClearContentFirst = false)
         {
-            Range input_range = ws.Cells[row,col];
+            Range input_range = ws.Cells[row, col];
             if (ClearContentFirst)
             {
                 input_range.MergeArea.ClearContents();
@@ -359,19 +359,21 @@ Returns or sets the type of underline applied to the font.
             WriteStyleString(ref input_range, style_string_list);
         }
 
-        static public Dictionary<string, List<StyleString>> GenerateFullIssueDescription(List<Issue> issuelist)
+        static public List<StyleString> BugList_To_SummaryPageFullIssueDescription(List<Issue> issuelist)
         {
-           Color descrption_color_issue = Color.Red;
-           Color descrption_color_comment = Color.Blue;
+            Color descrption_color_issue = Color.Red;
+            Color descrption_color_comment = Color.Blue;
 
-            Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
+            List<StyleString> ret_style_string = new List<StyleString>();
+            int processed_count = 0;
 
             foreach (Issue issue in issuelist)
             {
                 List<StyleString> value_style_str = new List<StyleString>();
                 String key = issue.Key, rd_comment_str = issue.Comment;
+                processed_count++;
 
-                if (key != "")
+                if (String.IsNullOrWhiteSpace(key) == false)
                 {
                     String str = key + issue.Summary + "(" + issue.Severity + ")";
                     StyleString style_str = new StyleString(str, descrption_color_issue);
@@ -395,10 +397,13 @@ Returns or sets the type of underline applied to the font.
                     }
 
                     // Add whole string into return_list
-                    ret_list.Add(key, value_style_str);
+                    if (processed_count < issuelist.Count())
+                    {
+                        ret_style_string.Add(new StyleString("\n"));
+                    }
                 }
             }
-            return ret_list;
+            return ret_style_string;
         }
 
         // create key/rich-text-issue-description pair.
@@ -407,54 +412,55 @@ Returns or sets the type of underline applied to the font.
         //
         // For example: BENSE27105-99[OSD]Menu scenario-Color Gamut value incorrect Without Metadata when Sub screen(B)
         //
-        static public Dictionary<string, List<StyleString>> GenerateIssueDescription(List<Issue> issuelist)
-        {
-            Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
 
-            foreach (Issue issue in issuelist)
-            {
-                List<StyleString> value_style_str = new List<StyleString>();
-                String key = issue.Key, rd_comment_str = issue.Comment;
+        //static public Dictionary<string, List<StyleString>> GenerateIssueDescription(List<Issue> issuelist)
+        //{
+        //    Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
 
-                if (key != "")
-                {
-                    Boolean is_waived = false;
-                    if (issue.Status == Issue.STR_WAIVE)
-                    {
-                        is_waived = true;
-                    }
+        //    foreach (Issue issue in issuelist)
+        //    {
+        //        List<StyleString> value_style_str = new List<StyleString>();
+        //        String key = issue.Key, rd_comment_str = issue.Comment;
 
-                    String str = key + issue.Summary + "(" + issue.Severity + ")";
-                    if (is_waived)
-                    {
-                        str += "(" + KeywordReport.WAIVED_str + ")";
-                    }
-                    StyleString style_str = new StyleString(str, ReportGenerator.LinkIssue_report_FontColor);
-                    value_style_str.Add(style_str);
-                    /*
-                    // Keep portion of string before first "\n"; if no "\n", keep whole string otherwise.
-                    String short_comment = "";
-                    if (rd_comment_str.Contains("\n"))
-                    {
-                        short_comment = rd_comment_str.Substring(0, rd_comment_str.IndexOf("\n"));
-                    }
-                    else
-                    {
-                        short_comment = rd_comment_str;
-                    }
-                    if (short_comment != "")
-                    {
-                        str = " --> " + short_comment;
-                        style_str = new StyleString(str, descrption_color_comment);
-                        value_style_str.Add(style_str);
-                    }
-                    */
-                    // Add whole string into return_list
-                    ret_list.Add(key, value_style_str);
-                }
-            }
-            return ret_list;
-        }
+        //        if (key != "")
+        //        {
+        //            Boolean is_waived = false;
+        //            if (issue.Status == Issue.STR_WAIVE)
+        //            {
+        //                is_waived = true;
+        //            }
+
+        //            String str = key + issue.Summary + "(" + issue.Severity + ")";
+        //            if (is_waived)
+        //            {
+        //                str += "(" + KeywordReport.WAIVED_str + ")";
+        //            }
+        //            StyleString style_str = new StyleString(str, ReportGenerator.LinkIssue_report_FontColor);
+        //            value_style_str.Add(style_str);
+        //            /*
+        //            // Keep portion of string before first "\n"; if no "\n", keep whole string otherwise.
+        //            String short_comment = "";
+        //            if (rd_comment_str.Contains("\n"))
+        //            {
+        //                short_comment = rd_comment_str.Substring(0, rd_comment_str.IndexOf("\n"));
+        //            }
+        //            else
+        //            {
+        //                short_comment = rd_comment_str;
+        //            }
+        //            if (short_comment != "")
+        //            {
+        //                str = " --> " + short_comment;
+        //                style_str = new StyleString(str, descrption_color_comment);
+        //                value_style_str.Add(style_str);
+        //            }
+        //            */
+        //            // Add whole string into return_list
+        //            ret_list.Add(key, value_style_str);
+        //        }
+        //    }
+        //    return ret_list;
+        //}
 
         static public Dictionary<string, List<StyleString>> GenerateIssueDescription_Keyword_Issue(List<Issue> issuelist)
         {

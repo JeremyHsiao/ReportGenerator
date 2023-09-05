@@ -823,10 +823,11 @@ namespace ExcelReportApplication
             }
 
             // This full issue description is needed for report purpose
-            Dictionary<string, List<StyleString>> global_full_issue_description_list =
-                                        StyleString.GenerateFullIssueDescription(ReportGenerator.ReadGlobalIssueList());
+            //Dictionary<string, List<StyleString>> global_full_issue_description_list =
+            //                            StyleString.GenerateFullIssueDescription(ReportGenerator.ReadGlobalIssueList());
 
-            SummaryReport.SaveIssueToSummaryReport(template_file, global_full_issue_description_list);
+            //SummaryReport.SaveIssueToSummaryReport(template_file, global_full_issue_description_list);
+            SummaryReport.SaveIssueToSummaryReport(template_file);
 
             return true;
         }
@@ -971,8 +972,8 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            // This issue description is needed for report purpose
-            Dictionary<string, List<StyleString>> global_issue_description_list = StyleString.GenerateIssueDescription(ReportGenerator.ReadGlobalIssueList());
+            //// This issue description is needed for report purpose
+            //Dictionary<string, List<StyleString>> global_issue_description_list = StyleString.GenerateIssueDescription(ReportGenerator.ReadGlobalIssueList());
 
             ReportGenerator.FindFailTCLinkedIssueAllClosed(tc_file, template_file, ReportGenerator.ReadGlobalIssueList());
             return true;
@@ -1226,7 +1227,7 @@ namespace ExcelReportApplication
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
                         bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, bug_file: txtBugFile.Text);
                         break;
-                    case ReportType.FullIssueDescription_Summary:
+                    case ReportType.FullIssueDescription_Summary: // report 2 not used now
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
@@ -1250,7 +1251,7 @@ namespace ExcelReportApplication
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         bRet = Execute_KeywordIssueGenerationTask(FileOrDirectoryName: txtReportFile.Text, IsDirectory: true);
                         break;
-                    case ReportType.TC_Likely_Passed:
+                    case ReportType.TC_Likely_Passed:           /// report 5 not used now
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);

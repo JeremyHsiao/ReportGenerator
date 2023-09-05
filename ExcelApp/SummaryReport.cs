@@ -13,7 +13,7 @@ namespace ExcelReportApplication
         // This demo open Summary Report Excel and write to Notes with all issues beloging to this test group (issue written in ID+Summary+Severity+RD_Comment)
         //
         static public string sheet_Report_Result = "Result";
-        static public void SaveIssueToSummaryReport(string report_filename, Dictionary<string, List<StyleString>> bug_description_list)
+        static public void SaveIssueToSummaryReport(string report_filename)
         {
             // Re-arrange test-case list into dictionary of summary/links pair
             Dictionary<String, String> group_note_issue = new Dictionary<String, String>();
@@ -51,7 +51,7 @@ namespace ExcelReportApplication
 
                         // find out which test_group
                         key = ExcelAction.GetCellTrimmedString(result_worksheet, index, col_group);
-                        if (key == "") break; // if no value in test_group-->end of report
+                        if (String.IsNullOrWhiteSpace(key)) break; // if no value in test_group-->end of report
 
                         // goes to next row if Result is N/A
                         if (ExcelAction.GetCellTrimmedString(result_worksheet, index, col_result) == "N/A") continue;
@@ -63,12 +63,13 @@ namespace ExcelReportApplication
                             note = "";
                         }
 
-                        if (note != "")
+                        if (String.IsNullOrWhiteSpace(note)!=true)
                         {
                             // issue --> Fail
                             ExcelAction.SetCellValue(result_worksheet, index, col_result, "Fail");
                             // Fill "Note" 
-                            str_list = StyleString.ExtendIssueDescription(note, bug_description_list);
+                            List<Issue> issue_list = Issue.KeyStringToListOfIssue(note, ReportGenerator.ReadGlobalIssueList());
+                            str_list = StyleString.BugList_To_SummaryPageFullIssueDescription(issue_list);
                             StyleString.WriteStyleString(result_worksheet, index, col_issue, str_list);
                         }
                         else
