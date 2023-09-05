@@ -206,74 +206,74 @@ Returns or sets the type of underline applied to the font.
         // input: bug_id separated by comma
         // output: bug descriptions (one bug each line)
         //
-        static public List<StyleString> ExtendIssueDescription(string links_str, Dictionary<string, List<StyleString>> bug_description_list)
-        {
-            List<StyleString> extended_str = new List<StyleString>();
+        //static public List<StyleString> ExtendIssueDescription(string links_str, Dictionary<string, List<StyleString>> bug_description_list)
+        //{
+        //    List<StyleString> extended_str = new List<StyleString>();
 
-            // protection
-            if ((links_str == null) || (bug_description_list == null)) return null;
+        //    // protection
+        //    if ((links_str == null) || (bug_description_list == null)) return null;
 
-            List<String> id_list = Issue.Split_String_To_ListOfString(links_str);
-            extended_str = ExtendIssueDescription(id_list, bug_description_list);
-            return extended_str;
-        }
+        //    List<String> id_list = Issue.Split_String_To_ListOfString(links_str);
+        //    extended_str = ExtendIssueDescription(id_list, bug_description_list);
+        //    return extended_str;
+        //}
 
         //
         // input: bug_id List
         // output: bug descriptions (one bug each line)
         //
-        static public List<StyleString> ExtendIssueDescription(List<String> bug_id, Dictionary<string, List<StyleString>> bug_description_list)
-        {
-            List<StyleString> extended_str = new List<StyleString>();
+        //static public List<StyleString> ExtendIssueDescription(List<String> bug_id, Dictionary<string, List<StyleString>> bug_description_list)
+        //{
+        //    List<StyleString> extended_str = new List<StyleString>();
 
-            // protection
-            if ((bug_id == null) || (bug_description_list == null)) return null;
+        //    // protection
+        //    if ((bug_id == null) || (bug_description_list == null)) return null;
 
-            // replace each bug_id with full description seperated by newline and combine into one string
-            StyleString new_line_str = new StyleString("\n");
-            foreach (string key in bug_id)
-            {
-                string trimmed_key = key.Trim();
-                if (bug_description_list.ContainsKey(trimmed_key))
-                {
-                    List<StyleString> bug_str = bug_description_list[trimmed_key];
+        //    // replace each bug_id with full description seperated by newline and combine into one string
+        //    StyleString new_line_str = new StyleString("\n");
+        //    foreach (string key in bug_id)
+        //    {
+        //        string trimmed_key = key.Trim();
+        //        if (bug_description_list.ContainsKey(trimmed_key))
+        //        {
+        //            List<StyleString> bug_str = bug_description_list[trimmed_key];
 
-                    foreach (StyleString style_str in bug_str)
-                    {
+        //            foreach (StyleString style_str in bug_str)
+        //            {
 
-                        extended_str.Add(style_str);
-                    }
-                }
-                else
-                {
-                    StyleString def_str = new StyleString(trimmed_key);
-                    extended_str.Add(def_str);
-                }
-                extended_str.Add(new_line_str);
-            }
-            if (extended_str.Count > 0) { extended_str.RemoveAt(extended_str.Count - 1); } // remove last '\n'
+        //                extended_str.Add(style_str);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            StyleString def_str = new StyleString(trimmed_key);
+        //            extended_str.Add(def_str);
+        //        }
+        //        extended_str.Add(new_line_str);
+        //    }
+        //    if (extended_str.Count > 0) { extended_str.RemoveAt(extended_str.Count - 1); } // remove last '\n'
 
-            return extended_str;
-        }
+        //    return extended_str;
+        //}
 
-        // extexd issue description when this issue is not filtered by its status
-        static public List<StyleString> FilteredBugID_to_BugDescription(String links, List<Issue> issue_list_source,
-                                                                            Dictionary<string, List<StyleString>> bug_description_list)
-        {
-            List<StyleString> Link_Issue_Detail = new List<StyleString>();
+        //// extexd issue description when this issue is not filtered by its status
+        //static public List<StyleString> FilteredBugID_to_BugDescription(String links, List<Issue> issue_list_source,
+        //                                                                    Dictionary<string, List<StyleString>> bug_description_list)
+        //{
+        //    List<StyleString> Link_Issue_Detail = new List<StyleString>();
 
-            //if (links != "")
-            if (String.IsNullOrWhiteSpace(links) == false)
-            {
-                // filtered out issues whose key is not in links string
-                List<Issue> key_issue_list = Issue.KeyStringToListOfIssue(links, issue_list_source);
-                // To remove closed issue
-                List<Issue> filtered_issue_list = Issue.FilterIssueByStatus(key_issue_list, ReportGenerator.filter_status_list_linked_issue);
-                List<String> filtered_issue_key_list = Issue.ListOfIssueToListOfIssueKey(filtered_issue_list);
-                Link_Issue_Detail = ExtendIssueDescription(filtered_issue_key_list, bug_description_list);
-            }
-            return Link_Issue_Detail;
-        }
+        //    //if (links != "")
+        //    if (String.IsNullOrWhiteSpace(links) == false)
+        //    {
+        //        // filtered out issues whose key is not in links string
+        //        List<Issue> key_issue_list = Issue.KeyStringToListOfIssue(links, issue_list_source);
+        //        // To remove closed issue
+        //        List<Issue> filtered_issue_list = Issue.FilterIssueByStatus(key_issue_list, ReportGenerator.filter_status_list_linked_issue);
+        //        List<String> filtered_issue_key_list = Issue.ListOfIssueToListOfIssueKey(filtered_issue_list);
+        //        Link_Issue_Detail = ExtendIssueDescription(filtered_issue_key_list, bug_description_list);
+        //    }
+        //    return Link_Issue_Detail;
+        //}
 
         static public void WriteStyleString(ref Range input_range, List<StyleString> style_string_list, Boolean ClearContentFirst = false)
         {
@@ -462,9 +462,10 @@ Returns or sets the type of underline applied to the font.
         //    return ret_list;
         //}
 
-        static public Dictionary<string, List<StyleString>> GenerateIssueDescription_Keyword_Issue(List<Issue> issuelist)
+        static public List<StyleString> BugList_To_KeywordIssueDescription(List<Issue> issuelist)
         {
-            Dictionary<string, List<StyleString>> ret_list = new Dictionary<string, List<StyleString>>();
+            List<StyleString> ret_style_string = new List<StyleString>();
+            int processed_count = 0;
 
             foreach (Issue issue in issuelist)
             {
@@ -472,7 +473,8 @@ Returns or sets the type of underline applied to the font.
                 String key = issue.Key;  // rd_comment_str = issue.comment;
                 Boolean is_waived = false;
 
-                if (key != "")
+                processed_count++;
+                if (String.IsNullOrWhiteSpace(key) != true)
                 {
                     Color color_by_severity = Issue.ISSUE_DEFAULT_COLOR;
                     if (issue.Status == Issue.STR_CLOSE)
@@ -515,16 +517,17 @@ Returns or sets the type of underline applied to the font.
                     }
                     StyleString style_str = new StyleString(str, color_by_severity, Issue.Keyword_report_Font,
                                                 Issue.Keyword_report_FontSize, Issue.Keyword_report_FontStyle);
-                    value_style_str.Add(style_str);
+                    ret_style_string.Add(style_str);
+
                     // Add whole string into return_list
-                    if (ret_list.ContainsKey(key))
+                    if (processed_count < issuelist.Count())
                     {
-                        continue; // shouldn't be here.
+                        ret_style_string.Add(new StyleString("\n"));
                     }
-                    ret_list.Add(key, value_style_str);
+
                 }
             }
-            return ret_list;
+            return ret_style_string;
         }
 
         //static public Dictionary<string, List<StyleString>> GenerateIssueDescription_Severity_by_Linked_Issue(List<Issue> issuelist)

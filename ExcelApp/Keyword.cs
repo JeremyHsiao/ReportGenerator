@@ -136,11 +136,11 @@ namespace ExcelReportApplication
             set { keyword_issues = value; }  // set method
         }
 
-        public List<String> IssueList   // property
-        {
-            get { return issue_list; }   // get method
-            set { issue_list = value; }  // set method
-        }
+        //public List<String> IssueList   // property
+        //{
+        //    get { return issue_list; }   // get method
+        //    set { issue_list = value; }  // set method
+        //}
 
         public List<String> TestCaseList   // property
         {
@@ -160,33 +160,23 @@ namespace ExcelReportApplication
             set { tc_description_list = value; }  // set method
         }
 
-        public void UpdateIssueList()
-        {
-            List<String> ret_str = new List<String>();
+//d
+        //public void UpdateIssueDescriptionList(List<StyleString> description)
+        //{
+        //    List<StyleString> ret_str = new List<StyleString>();
 
-            if (keyword != "")
-            {
-            }
+        //    if (IssueList == null)
+        //    {
+        //        UpdateIssueList();
+        //    }
 
-            IssueList = ret_str;
-        }
+        //    if (IssueList != null)
+        //    {
 
-        public void UpdateIssueDescriptionList(List<StyleString> description)
-        {
-            List<StyleString> ret_str = new List<StyleString>();
+        //    }
 
-            if (IssueList == null)
-            {
-                UpdateIssueList();
-            }
-
-            if (IssueList != null)
-            {
-
-            }
-
-            IssueDescriptionList = ret_str;
-        }
+        //    IssueDescriptionList = ret_str;
+        //}
 
         //// Greater or Equal to 1.0 ==> not Closed(0) nor Waived(0.1)
         //public IssueCount Calculate_Issue_GE_Stage_1_0()
@@ -1499,8 +1489,7 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
-        static public bool KeywordIssueGenerationTaskV4(List<String> file_list, Dictionary<string, List<StyleString>> bug_description_list,
-                                                String src_dir, String dest_dir = "")
+        static public bool KeywordIssueGenerationTaskV4(List<String> file_list, String src_dir, String dest_dir = "")
         {
             // Clear keyword log report data-table
             ReportGenerator.excel_not_report_log.Clear();
@@ -1560,7 +1549,8 @@ namespace ExcelReportApplication
             foreach (TestPlanKeyword keyword in keyword_list)
             {
                 List<StyleString> description_list;
-                List<String> id_list = new List<String>();
+                //List<String> id_list = new List<String>();
+                keyword.KeywordIssues.Clear();
                 String keyword_str = keyword.Keyword;
                 foreach (Issue issue in ReportGenerator.ReadGlobalIssueList())
                 {
@@ -1571,13 +1561,12 @@ namespace ExcelReportApplication
                     }
                     if (issue.ContainKeyword(keyword_str))
                     {
-                        id_list.Add(issue.Key);
                         issue.KeywordList.Add(keyword_str);
                         keyword.KeywordIssues.Add(issue);       // keep issue with keyword so that it can be used later.
                     }
                 }
-                keyword.IssueList = id_list;
-                description_list = StyleString.ExtendIssueDescription(id_list, bug_description_list);
+                //keyword.IssueList = Issue.ListOfIssueToListOfIssueKey(keyword.KeywordIssues);
+                description_list = StyleString.BugList_To_KeywordIssueDescription(keyword.KeywordIssues);
                 keyword.IssueDescriptionList = description_list;
             }
 

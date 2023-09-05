@@ -809,7 +809,7 @@ namespace ExcelReportApplication
             //            ReportGenerator.WriteBacktoTCJiraExcel(tc_file);
             //ReportGenerator.WriteBacktoTCJiraExcelV2(tc_file, template_file, judgement_report_dir);
             //ReportGenerator.WriteBacktoTCJiraExcelV3(tc_file, template_file, bug_file, ReportGenerator.ReadGlobalIssueList(), global_issue_description_list_severity, judgement_report_dir);
-            ReportGenerator.WriteBacktoTCJiraExcelV3(tc_file, template_file, bug_file, ReportGenerator.ReadGlobalIssueList(), judgement_report_dir);
+            ReportGenerator.WriteBacktoTCJiraExcelV3(tc_file, template_file, bug_file, judgement_report_dir);
             return true;
         }
 
@@ -897,9 +897,9 @@ namespace ExcelReportApplication
             // This issue description is needed for report purpose
             //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
 
-            // this is for keyword report, how to input linked issue report list???
-            Dictionary<string, List<StyleString>> global_issue_description_list_severity =
-                                StyleString.GenerateIssueDescription_Keyword_Issue(ReportGenerator.ReadGlobalIssueList());
+            //// this is for keyword report, how to input linked issue report list???
+            //Dictionary<string, List<StyleString>> global_issue_description_list_severity =
+            //                    StyleString.GenerateIssueDescription_Keyword_Issue(ReportGenerator.ReadGlobalIssueList());
             String out_dir = KeywordReport.TestReport_Default_Output_Dir;
             if ((out_dir != "") && Storage.DirectoryExists(out_dir))
             {
@@ -909,7 +909,7 @@ namespace ExcelReportApplication
             {
                 output_report_path = Storage.GenerateDirectoryNameWithDateTime(source_dir);
             }
-            KeywordReport.KeywordIssueGenerationTaskV4(report_list, global_issue_description_list_severity, source_dir, output_report_path);
+            KeywordReport.KeywordIssueGenerationTaskV4(report_list, source_dir, output_report_path);
             return true;
         }
 

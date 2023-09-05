@@ -401,7 +401,7 @@ namespace ExcelReportApplication
         }
 
         // Split some part of V2 into sub-functions 
-        static public void WriteBacktoTCJiraExcelV3(String tclist_filename, String template_filename, String bug_filename, List<Issue> bug_list, String judgement_report_dir = "")
+        static public void WriteBacktoTCJiraExcelV3(String tclist_filename, String template_filename, String bug_filename, String judgement_report_dir = "")
         {
             // Open original excel (read-only & corrupt-load) and write to another filename when closed
             ExcelAction.ExcelStatus status;
