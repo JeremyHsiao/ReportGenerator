@@ -345,6 +345,7 @@ namespace ExcelReportApplication
         static public String Variable_Assignee = "$Assignee$";
         static public String Variable_Today = "$Today$";
         static public String Variable_TC_LinkedIssue = "$LinkedIssue$";
+        static public String Variable_KEEP = "$KEEP$";
 
         static private String ReportFileName = "$FileName$";
         static private String ReportSheetName = "$SheetName$";
@@ -453,6 +454,60 @@ namespace ExcelReportApplication
             b_ret = ReplaceHeaderVariableWithValue(report_worksheet);
             return b_ret;
         }
+
+        static private List<int> KEEP_ROW = new List<int>(), KEEP_COL = new List<int>();
+        static private List<Object> KEEP_CELL = new List<Object>();
+
+        static public Boolean CopyKEEPCell(Worksheet template_worksheet, Worksheet report_workshee)
+        {
+            Boolean b_ret = false;
+            KEEP_ROW.Clear();
+            KEEP_COL.Clear();
+            KEEP_CELL.Clear();
+            for (int row_index = StartRow; row_index <= EndRow; row_index++)
+            {
+                for (int col_index = StartCol; col_index <= EndCol; col_index++)
+                {
+                    Object obj = ExcelAction.GetCellValue(template_worksheet, row_index, col_index);
+                    if (obj != null)
+                    {
+                        String to_check = obj.ToString();
+                        if (to_check.Contains(Variable_KEEP))
+                        {
+                            KEEP_ROW.Add(row_index);
+                            KEEP_COL.Add(col_index);
+                            obj = ExcelAction.GetCellValue(report_workshee, row_index, col_index);
+                            KEEP_CELL.Add(obj);
+                        }
+                    }
+                }
+            }
+            return b_ret;
+        }
+
+        static public Boolean CopyAndUpdateHeader_with_KEEP(Worksheet template_worksheet, Worksheet report_worksheet)
+        {
+            Boolean b_ret = false;
+
+            CopyKEEPCell(template_worksheet, report_worksheet);
+            //ExcelAction.CopyRowHeight(template_worksheet, report_worksheet, StartRow, EndRow);
+            //ExcelAction.CopyColumnWidth(template_worksheet, report_worksheet, StartCol, EndCol);
+            ExcelAction.CopyPasteRows(template_worksheet, report_worksheet, StartRow, EndRow);
+
+            b_ret = ReplaceHeaderVariableWithValue(report_worksheet);
+
+            // PasteKEEPCell
+            int count = KEEP_ROW.Count();
+            while (count-- > 0)
+            {
+                int row = KEEP_ROW[count], col = KEEP_COL[count];
+                Object obj = KEEP_CELL[count];
+                ExcelAction.SetCellValue(report_worksheet, row, col, obj);
+            }
+
+            return b_ret;
+        }
+
     }
 
 }
