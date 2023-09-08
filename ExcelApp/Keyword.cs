@@ -1647,6 +1647,7 @@ namespace ExcelReportApplication
                             if (CheckIfStringMeetsKeywordBugListCondition(text_to_check))
                             {
                                 StyleString.WriteStyleString(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn, keyword.IssueDescriptionList);
+                                ExcelAction.AutoFit_Row(result_worksheet, keyword.BugListAtRow);
                                 keyword_issue_description_on_this_report.AddRange(keyword.IssueDescriptionList);
                             }
 
@@ -1658,6 +1659,7 @@ namespace ExcelReportApplication
                             if (CheckIfStringMeetsKeywordBugStatusCondition(text_to_check))
                             {
                                 WriteBugCountOnKeywordReport(keyword, result_worksheet, severity_count);
+                                ExcelAction.AutoFit_Row(result_worksheet, keyword.BugStatusAtRow);
                             }
 
                             // write conclusion of each keyword
@@ -1668,6 +1670,7 @@ namespace ExcelReportApplication
                             if (CheckIfStringMeetsKeywordResultCondition(text_to_check))
                             {
                                 WriteKeywordConclusionOnKeywordReport(keyword, result_worksheet, severity_count);
+                                ExcelAction.AutoFit_Row(result_worksheet, keyword.ResultAtRow);
                             }
 
                             if (pass)
@@ -1684,32 +1687,57 @@ namespace ExcelReportApplication
                             }
 
                             // auto-fit row-height
-                            ExcelAction.AutoFit_Row(result_worksheet, keyword.ResultAtRow);
-                            ExcelAction.AutoFit_Row(result_worksheet, keyword.BugListAtRow);
+                            // Check cell, auto-fit if met
+                            //ExcelAction.AutoFit_Row(result_worksheet, keyword.ResultAtRow);
+                            //ExcelAction.AutoFit_Row(result_worksheet, keyword.BugListAtRow);
                             // issue_count = severity_count.Severity_A + severity_count.Severity_B + severity_count.Severity_C;
                             //if (issue_count >= 1)
-                            int issue_count = severity_count.NotClosedCount();
-                            if (issue_count > 0)
+                            text_to_check = ExcelAction.GetCellTrimmedString(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn - 1);
+                            if (CheckIfStringMeetsKeywordBugListCondition(text_to_check))
                             {
-                                double single_row_height = (StyleString.default_size + 1) * 2 * 0.75;
-                                double new_row_height = single_row_height * issue_count;
-                                ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, new_row_height);
+                                int issue_count = severity_count.NotClosedCount();
+                                if (issue_count > 0)
+                                {
+                                    double single_row_height = (StyleString.default_size + 1) * 2 * 0.75;
+                                    double new_row_height = single_row_height * issue_count;
+                                    // Check cell, unhide if met
+                                    ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, new_row_height);
+                                }
+                                else
+                                {
+                                    // Hide bug list row only when there isn't any non-closed issue at all (all issues must be closed)
+                                    double new_row_height = 0.2;
+                                    // Check cell, hide if met
+                                    ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, new_row_height);
+                                    //ExcelAction.Hide_Row(result_worksheet, keyword.BugListAtRow);
+                                }
+                                //ExcelAction.CellTextAlignLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
+                                ExcelAction.CellTextAlignUpperLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
                             }
-                            else
-                            {
-                                // Hide bug list row only when there isn't any non-closed issue at all (all issues must be closed)
-                                double new_row_height = 0.2;
-                                ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, new_row_height);
-                                //ExcelAction.Hide_Row(result_worksheet, keyword.BugListAtRow);
-                            }
-                            //ExcelAction.CellTextAlignLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
-                            ExcelAction.CellTextAlignUpperLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
 
                             if (Hide_Keyword_Result_Bug)
                             {
                                 double new_row_height = 0.2;
-                                ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, new_row_height);
-                                ExcelAction.Set_Row_Height(result_worksheet, keyword.BugStatusAtRow, new_row_height);
+                                // Check cell, hide if met
+                                text_to_check = ExcelAction.GetCellTrimmedString(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn - 1);
+                                if (CheckIfStringMeetsKeywordBugListCondition(text_to_check))
+                                {
+                                    ExcelAction.Set_Row_Height(result_worksheet, keyword.BugListAtRow, new_row_height);
+                                }
+
+                                // Check cell, hide if met
+                                text_to_check = ExcelAction.GetCellTrimmedString(result_worksheet, keyword.ResultAtRow, keyword.ResultAtColumn - 1);
+                                if (CheckIfStringMeetsKeywordResultCondition(text_to_check))
+                                {
+                                    ExcelAction.Set_Row_Height(result_worksheet, keyword.ResultAtRow, new_row_height);
+                                }
+
+                                // Check cell, hide if met
+                                text_to_check = ExcelAction.GetCellTrimmedString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn - 1);
+                                if (CheckIfStringMeetsKeywordBugStatusCondition(text_to_check))
+                                {
+                                    ExcelAction.Set_Row_Height(result_worksheet, keyword.BugStatusAtRow, new_row_height);
+                                }
                             }
                         }
                     }
