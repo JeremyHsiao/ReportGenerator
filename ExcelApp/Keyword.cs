@@ -160,7 +160,7 @@ namespace ExcelReportApplication
             set { tc_description_list = value; }  // set method
         }
 
-//d
+        //d
         //public void UpdateIssueDescriptionList(List<StyleString> description)
         //{
         //    List<StyleString> ret_str = new List<StyleString>();
@@ -428,19 +428,76 @@ namespace ExcelReportApplication
             global_keyword_list.Clear();
         }
 
-        private static Dictionary<String, String> global_report_judgement_result = new Dictionary<String, String>();
-        public static Boolean CheckLookupReportJudgementResultExist()
+        //private static Dictionary<String, String> global_report_judgement_result = new Dictionary<String, String>();
+        //public static Boolean CheckLookupReportJudgementResultExist()
+        //{
+        //    return (global_report_judgement_result.Count > 0);
+        //}
+        //public static String LookupReportJudgementResult(String full_report_path)
+        //{
+        //    String ret_str = "";
+        //    if (global_report_judgement_result.ContainsKey(full_report_path))
+        //    {
+        //        ret_str = global_report_judgement_result[full_report_path];
+        //    }
+        //    return ret_str;
+        //}
+        //public static void ClearReportJudgementResult()
+        //{
+        //    global_report_judgement_result.Clear();
+        //}
+        //public static void AppendReportJudgementResult(String full_report_path, String judgement)
+        //{
+        //    global_report_judgement_result.Add(full_report_path, judgement);
+        //}
+
+        private enum REPORT_INFO
         {
-            return (global_report_judgement_result.Count > 0);
+            JUDGEMENT = 0,
+            PURPOSE,
+            CRITERIA,
         }
-        public static String LookupReportJudgementResult(String full_report_path)
+        private static Dictionary<String, List<String>> global_report_information = new Dictionary<String, List<String>>();
+        public static Boolean CheckLookupReportInformationExist()
         {
-            String ret_str = "";
-            if (global_report_judgement_result.ContainsKey(full_report_path))
+            return (global_report_information.Count > 0);
+        }
+        public static void ClearReportInformation()
+        {
+            global_report_information.Clear();
+        }
+        public static void AppendReportInformation(String full_report_path, List<String> info_to_append)
+        {
+            global_report_information.Add(full_report_path, info_to_append);
+        }
+        public static List<String> LookupReportInformation(String full_report_path)
+        {
+            List<String> ret_list_str = new List<String>();
+            if (global_report_information.ContainsKey(full_report_path))
             {
-                ret_str = global_report_judgement_result[full_report_path];
+                ret_list_str = global_report_information[full_report_path];
             }
-            return ret_str;
+            return ret_list_str;
+        }
+        public static List<String> CombineReportInfo(String judgement = "", String purpose = "", String criteria = "")
+        {
+            List<String> ret_list_str = new List<String>();
+            ret_list_str.Add(judgement);
+            ret_list_str.Add(purpose);
+            ret_list_str.Add(criteria);
+            return ret_list_str;
+        }
+        public static String GetJudgement(List<String> info)
+        {
+            return info.ElementAt((int)REPORT_INFO.JUDGEMENT);
+        }
+        public static String GetPurpose(List<String> info)
+        {
+            return info.ElementAt((int)REPORT_INFO.PURPOSE);
+        }
+        public static String GetCriteria(List<String> info)
+        {
+            return info.ElementAt((int)REPORT_INFO.CRITERIA);
         }
 
         // Visit report content and find out all keywords
@@ -1188,71 +1245,49 @@ namespace ExcelReportApplication
             return true;
         }
 
-        static private Boolean CheckIfStringMeetsKeywordIdentifierCondition(String text_to_check)
-        {
-            Boolean ret_bol = false;
-            return ret_bol;
-        }
-
         static private Boolean CheckIfStringMeetsKeywordResultCondition(String text_to_check)
         {
-            Boolean ret_bol;
-            RegexStringValidator result_keyword_Regex = new RegexStringValidator(regexResultString);
-            try
-            {
-                result_keyword_Regex.Validate(text_to_check);
-                ret_bol = true;
-            }
-            catch (ArgumentException ex)
-            {
-                // does not meet
-                ret_bol = false;
-            }
-            return ret_bol;
+            String regex = regexResultString;
+            return CheckIfStringMeetsRegexString(text_to_check, regex);
         }
 
         static private Boolean CheckIfStringMeetsKeywordBugStatusCondition(String text_to_check)
         {
-            Boolean ret_bol;
-            RegexStringValidator bug_status_keyword_Regex = new RegexStringValidator(regexBugStatusString);
-            try
-            {
-                bug_status_keyword_Regex.Validate(text_to_check);
-                ret_bol = true;
-            }
-            catch (ArgumentException ex)
-            {
-                // does not meet
-                ret_bol = false;
-            }
-            return ret_bol;
+            String regex = regexBugStatusString;
+            return CheckIfStringMeetsRegexString(text_to_check, regex);
         }
 
         static private Boolean CheckIfStringMeetsKeywordBugListCondition(String text_to_check)
         {
-            Boolean ret_bol;
-            RegexStringValidator bug_list_keyword_Regex = new RegexStringValidator(regexBugListString);
-            try
-            {
-                bug_list_keyword_Regex.Validate(text_to_check);
-                ret_bol = true;
-            }
-            catch (ArgumentException ex)
-            {
-                // does not meet
-                ret_bol = false;
-            }
-            return ret_bol;
+            String regex = regexBugListString;
+            return CheckIfStringMeetsRegexString(text_to_check, regex);
         }
 
         static private Boolean CheckIfStringMeetsTestPeriod(String text_to_check)
         {
+            String regex = @"^(?i)\s*Test Period\s*$";
+            return CheckIfStringMeetsRegexString(text_to_check, regex);
+        }
+
+        static private Boolean CheckIfStringMeetsCriteria(String text_to_check)
+        {
+            String regex = @"^(?i)\s*Criteria:\s*$";
+            return CheckIfStringMeetsRegexString(text_to_check, regex);
+        }
+
+        static private Boolean CheckIfStringMeetsPurpose(String text_to_check)
+        {
+            String regex = @"^(?i)\s*Purpose:\s*$";
+            return CheckIfStringMeetsRegexString(text_to_check, regex);
+        }
+
+        static private Boolean CheckIfStringMeetsRegexString(String text_to_check, String regex_to_check)
+        {
             Boolean ret_bol;
-            String regexTestPeriodString = @"^(?i)\s*Test Period\s*$";
-            RegexStringValidator bug_list_keyword_Regex = new RegexStringValidator(regexTestPeriodString);
+            RegexStringValidator RegexString = new RegexStringValidator(regex_to_check);
             try
             {
-                bug_list_keyword_Regex.Validate(text_to_check);
+                RegexString.Validate(text_to_check);
                 ret_bol = true;
             }
             catch (ArgumentException ex)
@@ -1326,7 +1361,7 @@ namespace ExcelReportApplication
             }
 
             sub_report_list.Sort(TestPlan.Compare_Sheetname);
-            
+
             // Adjust and check the last row of table
             int row_found = 1;
             // target is the larger one between (1) number of rows required (2) Group_Summary_Table_RowNumber_Min
@@ -1540,7 +1575,8 @@ namespace ExcelReportApplication
 
             // 1.2 Create a temporary test plan to includes all files listed in List<String> report_filename
             do_plan = TestPlan.CreateTempPlanFromFileList(existing_report_filelist);
-            global_report_judgement_result.Clear();
+            //ClearReportJudgementResult();
+            ClearReportInformation();
 
             //
             // 2. Search keywords within all selected file (2.1) and use those keywords to find out issues containing keywords.
@@ -1634,7 +1670,7 @@ namespace ExcelReportApplication
                     KeywordReport.Update_Group_Summary(result_worksheet, sheet_name, existing_report_filelist);
                 }
 
-                String judgement_str = "";
+                String judgement_str = "", purpose_str = "", criteria_str = "";
                 if (keyword_lut_by_sheetname.ContainsKey(sheet_name) == true)
                 {
                     // if keyword exist, executing keyword-related part
@@ -1642,6 +1678,25 @@ namespace ExcelReportApplication
                     // 3.3. input:  IssueDescriptionList of Keyword
                     //    output: write color_description_list 
                     //         
+
+                    // 3.3.0: store text of purpose & criteia for updating into TC summary report
+                    int search_start_row = 10, search_end_row = 19;
+                    for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
+                    {
+                        String text = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, 2);
+                        if(CheckIfStringMeetsPurpose(text))
+                        {
+                            row_index++;
+                            purpose_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, 'C' - 'A' + 1);
+                            continue;
+                        }
+                        else if (CheckIfStringMeetsCriteria(text))
+                        {
+                            row_index++;
+                            criteria_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, 'C' - 'A' + 1);
+                            continue;
+                        }
+                    }
 
                     // 3.3.2 Write keyword-related formatted issue descriptions 
                     //       also count how many "Pass" or how many "Fail"
@@ -1889,7 +1944,9 @@ namespace ExcelReportApplication
                 Storage.CreateDirectory(dest_filename_dir, auto_parent_dir: true);
                 ExcelAction.CloseExcelWorkbook(wb_keyword_issue, SaveChanges: true, AsFilename: dest_filename);
 
-                global_report_judgement_result.Add(dest_filename, judgement_str);
+                //AppendReportJudgementResult(dest_filename, judgement_str);
+                List<String> report_info = CombineReportInfo(judgement: judgement_str, purpose: purpose_str, criteria: criteria_str);
+                AppendReportInformation(dest_filename, report_info);
             }
 
             // Output updated report with recommended sheetname.
@@ -2345,10 +2402,12 @@ namespace ExcelReportApplication
         }
 
         // This function is used to get judgement result (only read and no update to report) of keyword report
-        static public Boolean GetJudgementValue(String report_workbook, String report_worksheet, out String judgement_str)
+        //static public Boolean GetJudgementValue(String report_workbook, String report_worksheet, out String judgement_str)
+        static public Boolean GetJudgementValue(String report_workbook, String report_worksheet, out String judgement_str, out String purpose_str, out String criteria_str)
         {
             Boolean b_ret = false;
             String ret_str = ""; // default returning judgetment_str;
+            purpose_str = criteria_str = "";
 
             // 1. Open Excel and find the sheet
             // File exist check is done outside
@@ -2382,6 +2441,25 @@ namespace ExcelReportApplication
                     {
                         judgement_str = ret_str;
                         b_ret = false;
+                    }
+
+                    // 3.3.0: store text of purpose & criteia for updating into TC summary report
+                    int search_start_row = 10, search_end_row = 19;
+                    for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
+                    {
+                        String text = ExcelAction.GetCellTrimmedString(ws_judgement, row_index, 2);
+                        if(CheckIfStringMeetsPurpose(text))
+                        {
+                            row_index++;
+                            purpose_str = ExcelAction.GetCellTrimmedString(ws_judgement, row_index, 'C' - 'A' + 1);
+                            continue;
+                        }
+                        else if (CheckIfStringMeetsCriteria(text))
+                        {
+                            row_index++;
+                            criteria_str = ExcelAction.GetCellTrimmedString(ws_judgement, row_index, 'C' - 'A' + 1);
+                            continue;
+                        }
                     }
                 }
 

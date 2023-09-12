@@ -386,19 +386,19 @@ namespace ExcelReportApplication
         //    return ret;
         //}
 
-        static public String WriteBacktoTCJiraExcel_GetJudgementString(String worksheet_name, String workbook_filename)
-        {
-            String judgement_string = ""; // empty if cannot get judgement value
-            // If current_status is "Finished" in excel report, it will be updated according to judgement of corresponding test report.
-            String judgement_str;
-            // If judgement value is available, update it.
-            if (KeywordReport.GetJudgementValue(workbook_filename, worksheet_name, out judgement_str))
-            {
-                judgement_string = judgement_str;
-            }
+        //static public String WriteBacktoTCJiraExcel_GetJudgementString(String worksheet_name, String workbook_filename)
+        //{
+        //    String judgement_string = ""; // empty if cannot get judgement value
+        //    // If current_status is "Finished" in excel report, it will be updated according to judgement of corresponding test report.
+        //    String judgement_str;
+        //    // If judgement value is available, update it.
+        //    if (KeywordReport.GetJudgementValue(workbook_filename, worksheet_name, out judgement_str))
+        //    {
+        //        judgement_string = judgement_str;
+        //    }
 
-            return judgement_string;
-        }
+        //    return judgement_string;
+        //}
 
         // Split some part of V2 into sub-functions 
         static public void WriteBacktoTCJiraExcelV3(String tclist_filename, String template_filename, String judgement_report_dir = "")
@@ -433,6 +433,8 @@ namespace ExcelReportApplication
             int links_col = template_col_name_list[TestCase.col_LinkedIssue];
             int summary_col = template_col_name_list[TestCase.col_Summary];
             int status_col = template_col_name_list[TestCase.col_Status];
+            int purpose_col = template_col_name_list[TestCase.col_Purpose];
+            int criteria_col = template_col_name_list[TestCase.col_Criteria];
             int last_row = ExcelAction.Get_Range_RowNumber(ExcelAction.GetTestCaseAllRange(IsTemplate: true));
             // for 4.3 & 4.4
             int col_end = ExcelAction.GetTestCaseExcelRange_Col(IsTemplate: true);
@@ -474,19 +476,27 @@ namespace ExcelReportApplication
                     // 4.2 update Status (if it is Finished) according to judgement report (if report is available)
 
                     String current_status = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, status_col, IsTemplate: true);
-                    String judgement_str;
+                    String judgement_str, purpose_str, criteria_str;
                     //Boolean update_status = false;
                     String workbook_filename = report_filelist_by_sheetname[worksheet_name];
-                    if (KeywordReport.CheckLookupReportJudgementResultExist())
+                    //if (KeywordReport.CheckLookupReportJudgementResultExist()) 
+                    if (KeywordReport.CheckLookupReportInformationExist()) //
                     {
-                        judgement_str = KeywordReport.LookupReportJudgementResult(workbook_filename);
+                        //judgement_str = KeywordReport.LookupReportJudgementResult(workbook_filename);
+                        List<String> report_info = KeywordReport.LookupReportInformation(workbook_filename);
+                        judgement_str = KeywordReport.GetJudgement(report_info);
+                        purpose_str = KeywordReport.GetPurpose(report_info);
+                        criteria_str = KeywordReport.GetCriteria(report_info);
                     }
                     else
                     {
-                        judgement_str = WriteBacktoTCJiraExcel_GetJudgementString(worksheet_name, workbook_filename);
+                        KeywordReport.GetJudgementValue(workbook_filename, worksheet_name, out judgement_str, out purpose_str, out criteria_str);
+                        //judgement_str = WriteBacktoTCJiraExcel_GetJudgementString(worksheet_name, workbook_filename);
                     }
+
                     // Update focus to current status cell
                     ExcelAction.TestCase_CellActivate(excel_row_index, status_col, IsTemplate: true);
+                    
                     if (current_status == TestCase.STR_FINISHED)
                     {
                         // update only of judgement_string is available.
@@ -496,7 +506,18 @@ namespace ExcelReportApplication
                             ExcelAction.SetTestCaseCell(excel_row_index, status_col, judgement_str, IsTemplate: true);
                         }
                     }
+                    if (String.IsNullOrWhiteSpace(purpose_str) == false)
+                    {
+                        ExcelAction.SetTestCaseCell(excel_row_index, purpose_col, purpose_str, IsTemplate: true);
+                    }
+                    if (String.IsNullOrWhiteSpace(criteria_str) == false)
+                    {
+                        ExcelAction.SetTestCaseCell(excel_row_index, criteria_col, criteria_str, IsTemplate: true);
+                    }
 
+                    // 4.2.1 -- update purpose and criteria
+
+                    // If keyword is available, add 2 extra columns of keyword result judgement and keyword issue list for reference
                     if (KeywordReport.CheckGlobalKeywordListExist())
                     {
                         // 4.3 always fill judgement value for reference outside report border (if report is available)
