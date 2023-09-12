@@ -23,6 +23,11 @@ namespace ExcelReportApplication
         private String testcaseid;          
         private String stepstoreproduce;
         private String created;
+        private String purpose;
+        private String criteria;
+        private String category;
+        private String planver;
+
         // generated-data
         //private List<StyleString> linked_issue_list;
         private List<StyleString> keyword_issue_list;
@@ -123,6 +128,30 @@ namespace ExcelReportApplication
             set { created = value; }  // set method
         }
 
+        public String Purpose   // property
+        {
+            get { return purpose; }   // get method
+            set { purpose = value; }  // set method
+        }
+
+        public String Criteria   // property
+        {
+            get { return criteria; }   // get method
+            set { criteria = value; }  // set method
+        }
+
+        public String Category   // property
+        {
+            get { return category; }   // get method
+            set { category = value; }  // set method
+        }
+
+        public String PlanVer   // property
+        {
+            get { return planver; }   // get method
+            set { planver = value; }  // set method
+        }
+
         //public List<StyleString> LinkedIssueDescription   // property
         //{
         //    get { return linked_issue_list; }   // get method
@@ -151,6 +180,10 @@ namespace ExcelReportApplication
         public const string col_TestCaseID = "Test Case ID";
         public const string col_StepsToReproduce = "Steps To Reproduce";
         public const string col_Created = "Created";
+        public const string col_Purpose = "Test Case Purpose";
+        public const string col_Criteria = "Test Case Criteria";
+        public const string col_Category = "Test Case Category";
+        public const string col_PlanVer = "Test Plan Ver.";
 
         public TestCase()
         {
@@ -179,6 +212,10 @@ namespace ExcelReportApplication
             this.additionalinfo = members[(int)TestCaseMemberIndex.ADDITIONALINFO];
             this.testcaseid = members[(int)TestCaseMemberIndex.TESTCASEID];
             this.stepstoreproduce = members[(int)TestCaseMemberIndex.STEPSTOREPRODUCE];
+            this.purpose = members[(int)TestCaseMemberIndex.PURPOSE];
+            this.criteria = members[(int)TestCaseMemberIndex.CRITERIA];
+            this.category = members[(int)TestCaseMemberIndex.CATEGORY];
+            this.planver = members[(int)TestCaseMemberIndex.PLANVER];
         }
 
         public enum TestCaseMemberIndex
@@ -199,6 +236,10 @@ namespace ExcelReportApplication
             TESTCASEID,
             LINKEDISSUE,
             STEPSTOREPRODUCE,
+            PURPOSE,
+            CRITERIA,
+            CATEGORY,
+            PLANVER
         }
 
         public static int TestCaseMemberCount = Enum.GetNames(typeof(TestCaseMemberIndex)).Length;
@@ -221,7 +262,11 @@ namespace ExcelReportApplication
             col_AdditionalInfo,
             col_TestCaseID,
             col_LinkedIssue,
-            col_StepsToReproduce
+            col_StepsToReproduce,
+            col_Purpose,
+            col_Criteria,
+            col_Category,
+            col_PlanVer,
         };
 
         static public String STR_FINISHED = @"Finished";
