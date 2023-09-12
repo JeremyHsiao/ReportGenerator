@@ -1245,6 +1245,24 @@ namespace ExcelReportApplication
             return ret_bol;
         }
 
+        static private Boolean CheckIfStringMeetsTestPeriod(String text_to_check)
+        {
+            Boolean ret_bol;
+            String regexTestPeriodString = @"^(?i)\s*Test Period\s*$";
+            RegexStringValidator bug_list_keyword_Regex = new RegexStringValidator(regexTestPeriodString);
+            try
+            {
+                bug_list_keyword_Regex.Validate(text_to_check);
+                ret_bol = true;
+            }
+            catch (ArgumentException ex)
+            {
+                // does not meet
+                ret_bol = false;
+            }
+            return ret_bol;
+        }
+
         // Code for Report *.0
         static public int Group_Summary_Table_RowNumber_Min = 3;
         public static int GroupSummary_Title_No_Row = 25, GroupSummary_Title_No_Col = 'D' - 'A' + 1;
@@ -1825,8 +1843,38 @@ namespace ExcelReportApplication
                 }
 
                 // always update Test End Period to today
-                String end_date = DateTime.Now.ToString("yyyy/MM/dd");
-                ExcelAction.SetCellValue(result_worksheet, KeywordReportHeader.Test_Period_End_at_row, KeywordReportHeader.Test_Period_End_at_col, end_date);
+                if (true)      // this part of code is only for old header mechanism before header template is available
+                {
+                    String end_date = DateTime.Now.ToString("yyyy/MM/dd");
+                    String text_to_check;
+                    int today_row = 0, today_col = 0, check_row, check_col;
+                    // Check format 1
+                    check_row = 8;
+                    check_col = 'J' - 'A' + 1;
+                    text_to_check = ExcelAction.GetCellTrimmedString(result_worksheet, check_row, check_col);
+                    if (CheckIfStringMeetsTestPeriod(text_to_check))
+                    {
+                        today_row = 8;
+                        today_col = 'M' - 'A' + 1;
+                    }
+                    else
+                    {
+                        // Check format 1
+                        check_row = 8;
+                        check_col = 'H' - 'A' + 1;
+                        text_to_check = ExcelAction.GetCellTrimmedString(result_worksheet, check_row, check_col);
+                        if (CheckIfStringMeetsTestPeriod(text_to_check))
+                        {
+                            today_row = 8;
+                            today_col = 'L' - 'A' + 1;
+                            end_date = "-             " + end_date;
+                        }
+                    }
+                    if ((today_row > 0) && (today_col > 0))
+                    {
+                        ExcelAction.SetCellValue(result_worksheet, today_row, today_col, end_date);
+                    }
+                }
                 //// update Part No.
                 //String default_part_no = "99.M2710.0A4-";
                 //String part_no = default_part_no + sheet_name;
