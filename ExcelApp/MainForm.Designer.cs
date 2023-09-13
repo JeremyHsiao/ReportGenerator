@@ -202,6 +202,7 @@
             // comboBoxReportSelect
             // 
             this.comboBoxReportSelect.BackColor = System.Drawing.SystemColors.Control;
+            this.comboBoxReportSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxReportSelect.Font = new System.Drawing.Font("Arial Rounded MT Bold", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.comboBoxReportSelect.FormattingEnabled = true;
             this.comboBoxReportSelect.Location = new System.Drawing.Point(120, 11);
