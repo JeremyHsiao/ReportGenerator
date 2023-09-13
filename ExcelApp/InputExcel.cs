@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Office.Interop.Excel;
 using Excel = Microsoft.Office.Interop.Excel;
+using System.Text.RegularExpressions;
 
 namespace ExcelReportApplication
 {
@@ -434,6 +435,7 @@ namespace ExcelReportApplication
                 {
                     CheckAndReplace(report_worksheet, row_index, col_index, Variable_ReportFileName, ReportFileName);
                     CheckAndReplace(report_worksheet, row_index, col_index, Variable_ReportSheetName, ReportSheetName);
+                    Assignee = Regex.Replace(Assignee, "[\u4E00-\u9FFF]", ""); // 移除中文
                     CheckAndReplace(report_worksheet, row_index, col_index, Variable_Assignee, Assignee);
                     CheckAndReplace(report_worksheet, row_index, col_index, Variable_Today, Today);
                     CheckAndReplaceConclusion(report_worksheet, row_index, col_index, Variable_TC_LinkedIssue, TC_LinkedIssue);
