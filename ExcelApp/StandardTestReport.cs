@@ -537,6 +537,7 @@ namespace ExcelReportApplication
 
             if (KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal)
             {
+                // step 1: remove sheets which are not to be released
                 String sheet_name_to_keep = ws.Name;
                 if (wb.Sheets.Count > 1)
                 {
@@ -553,6 +554,18 @@ namespace ExcelReportApplication
                         }
                         wb.Sheets[sheet_index].Delete();
                         file_has_been_updated = true;
+                    }
+                }
+                // step 2: remove contents on the sheet which are not to be released
+                //CheckIfStringMeetsMethod
+                int search_start_row = KeywordReport.row_test_brief_start, search_end_row = KeywordReport.row_test_brief_end;
+                for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
+                {
+                    String text = ExcelAction.GetCellTrimmedString(wb.Sheets[1], row_index, KeywordReport.col_indentifier);
+                    if (KeywordReport.CheckIfStringMeetsMethod(text))
+                    {
+                        ExcelAction.ClearContent(wb.Sheets[1], row_index, 1, row_index + 1, KeywordReport.col_default_report_right_border);
+                        break;
                     }
                 }
             }

@@ -366,11 +366,12 @@ namespace ExcelReportApplication
     {
         static public String TestReport_Default_Output_Dir = "";
 
-        public static int col_indentifier = 2;
+        public static int col_indentifier = ExcelAction.ColumnNameToNumber('B');
         public static int col_keyword = col_indentifier + 1;
         public static int row_test_brief_start = 10;
         public static int row_test_brief_end = 22;
         public static int row_test_detail_start = 27;
+        public static int col_default_report_right_border = ExcelAction.ColumnNameToNumber('N');
         public static String regexKeywordString = @"(?i)Item";
         public static int row_offset_result_title = 1;                                // offset from the row of identifier regex "Item"
         public static int row_offset_bugstatus_title = row_offset_result_title;       // offset from the row of identifier regex "Item"
@@ -396,11 +397,11 @@ namespace ExcelReportApplication
 
         public static KeywordReportHeader DefaultKeywordReportHeader = new KeywordReportHeader();
 
-        public static int PassCnt_at_row = 21, PassCnt_at_col = 5;
-        public static int FailCnt_at_row = 21, FailCnt_at_col = 7;
+        public static int PassCnt_at_row = 21, PassCnt_at_col = ExcelAction.ColumnNameToNumber('E');
+        public static int FailCnt_at_row = 21, FailCnt_at_col = ExcelAction.ColumnNameToNumber('G');
         //public static int TotalCnt_at_row = 21, TotalCnt_at_col = 9;
-        public static int ConditionalPass_string_at_row = 21, ConditionalPass_string_at_col = 8;
-        public static int ConditionalPassCnt_at_row = 21, ConditionalPassCnt_at_col = 9;
+        public static int ConditionalPass_string_at_row = 21, ConditionalPass_string_at_col = ExcelAction.ColumnNameToNumber('H');
+        public static int ConditionalPassCnt_at_row = 21, ConditionalPassCnt_at_col = ExcelAction.ColumnNameToNumber('I');
 
         private static List<TestPlanKeyword> global_keyword_list = new List<TestPlanKeyword>();
         private static Boolean global_keyword_available;
@@ -1289,6 +1290,12 @@ namespace ExcelReportApplication
         static private Boolean CheckIfStringMeetsConclusion(String text_to_check)
         {
             String regex = @"^(?i)\s*Conclusion:\s*$";
+            return CheckIfStringMeetsRegexString(text_to_check, regex);
+        }
+
+        static public Boolean CheckIfStringMeetsMethod(String text_to_check)
+        {
+            String regex = @"^(?i)\s*Method:\s*$";
             return CheckIfStringMeetsRegexString(text_to_check, regex);
         }
 
@@ -2458,7 +2465,7 @@ namespace ExcelReportApplication
                     int search_start_row = 10, search_end_row = 19;
                     for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
                     {
-                        String text = ExcelAction.GetCellTrimmedString(ws_judgement, row_index, 2);
+                        String text = ExcelAction.GetCellTrimmedString(ws_judgement, row_index, col_indentifier);
                         if(CheckIfStringMeetsPurpose(text))
                         {
                             row_index++;
