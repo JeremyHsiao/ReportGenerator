@@ -433,8 +433,15 @@ namespace ExcelReportApplication
             int links_col = template_col_name_list[TestCase.col_LinkedIssue];
             int summary_col = template_col_name_list[TestCase.col_Summary];
             int status_col = template_col_name_list[TestCase.col_Status];
-            int purpose_col = template_col_name_list[TestCase.col_Purpose];
-            int criteria_col = template_col_name_list[TestCase.col_Criteria];
+            int purpose_col, criteria_col;
+            if (template_col_name_list.TryGetValue(TestCase.col_Purpose, out purpose_col) == false)
+            {
+                purpose_col = 0;
+            }
+            if (template_col_name_list.TryGetValue(TestCase.col_Criteria, out criteria_col) == false)
+            {
+                criteria_col = 0;
+            }
             int last_row = ExcelAction.Get_Range_RowNumber(ExcelAction.GetTestCaseAllRange(IsTemplate: true));
             // for 4.3 & 4.4
             int col_end = ExcelAction.GetTestCaseExcelRange_Col(IsTemplate: true);
@@ -506,16 +513,16 @@ namespace ExcelReportApplication
                             ExcelAction.SetTestCaseCell(excel_row_index, status_col, judgement_str, IsTemplate: true);
                         }
                     }
-                    if (String.IsNullOrWhiteSpace(purpose_str) == false)
+                    // 4.2.1 -- update purpose and criteria
+                    // check if purpose/criteria field exists and strings are not empty
+                    if ((purpose_col > 0)&&(String.IsNullOrWhiteSpace(purpose_str) == false))
                     {
                         ExcelAction.SetTestCaseCell(excel_row_index, purpose_col, purpose_str, IsTemplate: true);
                     }
-                    if (String.IsNullOrWhiteSpace(criteria_str) == false)
-                    {
+                    if ((criteria_col > 0) && (String.IsNullOrWhiteSpace(criteria_str) == false))
+                    {                                           
                         ExcelAction.SetTestCaseCell(excel_row_index, criteria_col, criteria_str, IsTemplate: true);
                     }
-
-                    // 4.2.1 -- update purpose and criteria
 
                     // If keyword is available, add 2 extra columns of keyword result judgement and keyword issue list for reference
                     if (KeywordReport.CheckGlobalKeywordListExist())
@@ -691,7 +698,7 @@ namespace ExcelReportApplication
                             hide_row_start = hide_row_count = 0;
                         }
                     }
-                    // Hide allnot-hidden-yet rows
+                    // Hide all not-hidden-yet rows
                     if ((hide_row_start > 0) && (hide_row_count > 0))
                     {
                         ExcelAction.TestCase_Hide_Row(hide_row_start, hide_row_count, IsTemplate: true);
