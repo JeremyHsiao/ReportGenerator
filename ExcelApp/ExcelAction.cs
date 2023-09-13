@@ -109,7 +109,7 @@ namespace ExcelReportApplication
                 {
                     // Try suggestion of https://stackoverflow.com/questions/5188527/how-to-deal-with-files-with-a-name-longer-than-259-characters
                     String retry_filename = @"\\?\" + AsFilename, final_filename = " ";
- 
+
                     try
                     {
                         if (AsFilename.Length < 259)
@@ -378,12 +378,12 @@ namespace ExcelReportApplication
             {
                 String cell_value2 = GetCellTrimmedString(ws, naming_row, col_index);
                 //if (cell_value2 == "") { continue; }
-                if (String.IsNullOrWhiteSpace(cell_value2)) 
+                if (String.IsNullOrWhiteSpace(cell_value2))
                 {
                     continue;               // column header is empty. shouldn't be here
                 }
 
-                if(col_name_list.ContainsKey(cell_value2))
+                if (col_name_list.ContainsKey(cell_value2))
                 {
                     continue;               // column header is repeated. shouldn't be here
                 }
@@ -1366,6 +1366,52 @@ namespace ExcelReportApplication
             int countColumns = worksheet.UsedRange.Columns.Count;
             Range table_range = worksheet.Range[worksheet.Cells[start_row, 1], worksheet.Cells[end_row, countColumns]];
             table_range.Interior.Color = bg_color;
+        }
+
+        static public void Merge(Worksheet worksheet, int upper_row, int left_column, int bottom_row, int right_column)
+        {
+            Range merge_range = worksheet.Range[worksheet.Cells[upper_row, left_column], worksheet.Cells[bottom_row, right_column]];
+            merge_range.Merge(true);
+        }
+
+        static public void UnMerge(Worksheet worksheet, int upper_row, int left_column, int bottom_row, int right_column)
+        {
+            Range merge_range = worksheet.Range[worksheet.Cells[upper_row, left_column], worksheet.Cells[bottom_row, right_column]];
+            merge_range.UnMerge();
+        }
+
+        // Return the column number for this column name.
+        static public int ColumnNameToNumber(String col_name)
+        {
+            int result = 0;
+
+            // Process each letter.
+            for (int i = 0; i < col_name.Length; i++)
+            {
+                result *= 26;
+                char letter = col_name[i];
+
+                // See if it's out of bounds.
+                if (letter < 'A') letter = 'A';
+                if (letter > 'Z') letter = 'Z';
+
+                // Add in the value of this letter.
+                result += (int)letter - (int)'A' + 1;
+            }
+            return result;
+        }
+
+        static public int ColumnNameToNumber(Char col_char)
+        {
+            int result = 0;
+
+            if (col_char < 'A')
+                col_char = 'A';
+            if (col_char > 'Z')
+                col_char = 'Z';
+
+            result = (int)col_char - (int)'A' + 1;
+            return result;
         }
 
         //static public Workbook OpenCSV(String filename)
