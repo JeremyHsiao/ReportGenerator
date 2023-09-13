@@ -490,7 +490,7 @@ namespace ExcelReportApplication
                     }
                     else
                     {
-                        KeywordReport.GetJudgementValue(workbook_filename, worksheet_name, out judgement_str, out purpose_str, out criteria_str);
+                        KeywordReport.GetJudgementPurposeCriteriaValue(workbook_filename, worksheet_name, out judgement_str, out purpose_str, out criteria_str);
                         //judgement_str = WriteBacktoTCJiraExcel_GetJudgementString(worksheet_name, workbook_filename);
                     }
 

@@ -320,42 +320,42 @@ namespace ExcelReportApplication
         public Boolean Update_Tested_by = true;
         public Boolean Update_Approved_by = true;
 
-        public static int Title_at_row = 1, Title_at_col = ('A' - 'A' + 1);
+        public static int Title_at_row = 1, Title_at_col = ExcelAction.ColumnNameToNumber('A');
 
-        public static int Period_Start_at_row = 8, Period_Start_at_col = ('L' - 'A' + 1);
-        public static int Period_End_at_row = 8, Period_End_at_col = ('M' - 'A' + 1);
-        //        public static int Judgement_at_row = 9, Judgement_at_col = ('D' - 'A' + 1);
-        public static int Judgement_string_at_row = 9, Judgement_string_at_col = 2;
+        public static int Period_Start_at_row = 8, Period_Start_at_col = ExcelAction.ColumnNameToNumber('L');
+        public static int Period_End_at_row = 8, Period_End_at_col = ExcelAction.ColumnNameToNumber('M');
+        //        public static int Judgement_at_row = 9, Judgement_at_col = ExcelAction.ColumnNameToNumber('D');
+        public static int Judgement_string_at_row = 9, Judgement_string_at_col = ExcelAction.ColumnNameToNumber('B');
 
-        public static int Model_Name_at_row = 3, Model_Name_at_col = ('D' - 'A' + 1);
-        public static int Part_No_at_row = 3, Part_No_at_col = ('J' - 'A' + 1);
+        public static int Model_Name_at_row = 3, Model_Name_at_col = ExcelAction.ColumnNameToNumber('D');
+        public static int Part_No_at_row = 3, Part_No_at_col = ExcelAction.ColumnNameToNumber('J');
 
-        public static int Panel_Module_at_row = 4, Panel_Module_at_col = ('D' - 'A' + 1);
-        public static int TCON_Board_at_row = 4, TCON_Board_at_col = ('J' - 'A' + 1);
+        public static int Panel_Module_at_row = 4, Panel_Module_at_col = ExcelAction.ColumnNameToNumber('D');
+        public static int TCON_Board_at_row = 4, TCON_Board_at_col = ExcelAction.ColumnNameToNumber('J');
 
-        public static int AD_Board_at_row = 5, AD_Board_at_col = ('D' - 'A' + 1);
-        public static int Power_Board_at_row = 5, Power_Board_at_col = ('J' - 'A' + 1);
+        public static int AD_Board_at_row = 5, AD_Board_at_col = ExcelAction.ColumnNameToNumber('D');
+        public static int Power_Board_at_row = 5, Power_Board_at_col = ExcelAction.ColumnNameToNumber('J');
 
-        public static int Smart_BD_OS_Version_at_row = 6, Smart_BD_OS_Version_at_col = ('D' - 'A' + 1);
-        public static int Touch_Sensor_at_row = 6, Touch_Sensor_at_col = ('J' - 'A' + 1);
+        public static int Smart_BD_OS_Version_at_row = 6, Smart_BD_OS_Version_at_col = ExcelAction.ColumnNameToNumber('D');
+        public static int Touch_Sensor_at_row = 6, Touch_Sensor_at_col = ExcelAction.ColumnNameToNumber('J');
 
-        public static int Speaker_AQ_Version_at_row = 7, Speaker_AQ_Version_at_col = ('D' - 'A' + 1);
-        public static int SW_PQ_Version_at_row = 7, SW_PQ_Version_at_col = ('J' - 'A' + 1);
+        public static int Speaker_AQ_Version_at_row = 7, Speaker_AQ_Version_at_col = ExcelAction.ColumnNameToNumber('D');
+        public static int SW_PQ_Version_at_row = 7, SW_PQ_Version_at_col = ExcelAction.ColumnNameToNumber('J');
 
-        public static int Test_Stage_at_row = 8, Test_Stage_at_col = ('D' - 'A' + 1);
-        public static int Test_QTY_SN_at_row = 8, Test_QTY_SN_at_col = ('H' - 'A' + 1);
-        public static int Test_Period_Begin_at_row = 8, Test_Period_Begin_at_col = ('L' - 'A' + 1);
-        public static int Test_Period_End_at_row = 8, Test_Period_End_at_col = ('M' - 'A' + 1);
+        public static int Test_Stage_at_row = 8, Test_Stage_at_col = ExcelAction.ColumnNameToNumber('D');
+        public static int Test_QTY_SN_at_row = 8, Test_QTY_SN_at_col = ExcelAction.ColumnNameToNumber('H');
+        public static int Test_Period_Begin_at_row = 8, Test_Period_Begin_at_col = ExcelAction.ColumnNameToNumber('L');
+        public static int Test_Period_End_at_row = 8, Test_Period_End_at_col = ExcelAction.ColumnNameToNumber('M');
 
-        public static int Judgement_at_row = 9, Judgement_at_col = ('D' - 'A' + 1);
-        public static int Tested_by_at_row = 9, Tested_by_at_col = ('H' - 'A' + 1);
-        public static int Approved_by_at_row = 9, Approved_by_at_col = ('L' - 'A' + 1);
+        public static int Judgement_at_row = 9, Judgement_at_col = ExcelAction.ColumnNameToNumber('D');
+        public static int Tested_by_at_row = 9, Tested_by_at_col = ExcelAction.ColumnNameToNumber('H');
+        public static int Approved_by_at_row = 9, Approved_by_at_col = ExcelAction.ColumnNameToNumber('L');
 
-        //public static int Part_No_at_row = 3, Part_No_at_col = ('J' - 'A' + 1);
-        //public static int SW_Version_at_row = 7, SW_Version_at_col = ('J' - 'A' + 1);
-        //public static int Period_Start_at_row = 8, Period_Start_at_col = ('L' - 'A' + 1);
-        //public static int Period_End_at_row = 8, Period_End_at_col = ('M' - 'A' + 1);
-        //public static int Judgement_at_row = 9, Judgement_at_col = ('D' - 'A' + 1);
+        //public static int Part_No_at_row = 3, Part_No_at_col = ExcelAction.ColumnNameToNumber('J');
+        //public static int SW_Version_at_row = 7, SW_Version_at_col = ExcelAction.ColumnNameToNumber('J');
+        //public static int Period_Start_at_row = 8, Period_Start_at_col = ExcelAction.ColumnNameToNumber('L');
+        //public static int Period_End_at_row = 8, Period_End_at_col = ExcelAction.ColumnNameToNumber('M');
+        //public static int Judgement_at_row = 9, Judgement_at_col = ExcelAction.ColumnNameToNumber('D');
         //public static int Judgement_string_at_row = 9, Judgement_string_at_col = 2;
         public static StyleString blank_space = new StyleString(" ", ReportGenerator.LinkIssue_report_FontColor,
                             ReportGenerator.LinkIssue_report_Font, ReportGenerator.LinkIssue_report_FontSize);
@@ -368,6 +368,8 @@ namespace ExcelReportApplication
 
         public static int col_indentifier = 2;
         public static int col_keyword = col_indentifier + 1;
+        public static int row_test_brief_start = 10;
+        public static int row_test_brief_end = 22;
         public static int row_test_detail_start = 27;
         public static String regexKeywordString = @"(?i)Item";
         public static int row_offset_result_title = 1;                                // offset from the row of identifier regex "Item"
@@ -1220,17 +1222,20 @@ namespace ExcelReportApplication
         static public Boolean ReplaceConclusionWithBugList(Worksheet ws, List<StyleString> bug_list_description)
         {
             // find conclusion, if not found, row 21/22 as default
-            int conclusion_start_row = 19, conclusion_end_row = 22;
+            int conclusion_start_row = row_test_brief_start, conclusion_end_row = row_test_brief_end;
             for (int row_index = conclusion_start_row; row_index <= conclusion_end_row; row_index++)
             {
-                String text = ExcelAction.GetCellTrimmedString(ws, row_index, 2);
-                if (String.Compare(text, "Conclusion:", true) == 0)
+                String text = ExcelAction.GetCellTrimmedString(ws, row_index, ExcelAction.ColumnNameToNumber("B"));
+                if (CheckIfStringMeetsConclusion(text))
                 {
+                    int col_start = ExcelAction.ColumnNameToNumber("C"), 
+                        col_end = ExcelAction.ColumnNameToNumber("M");
                     // replace "conclusion:" with "Bug List:"
                     //ExcelAction.SetCellValue(ws, row_index, 2, "Bug List:");
-                    ExcelAction.ClearContent(ws, row_index, 3, row_index + 1, ('J' - 'A' + 1));
+                    ExcelAction.ClearContent(ws, row_index, col_start, row_index + 1, col_end);
                     // output linked issue at C2
                     StyleString.WriteStyleString(ws, row_index + 1, 3, bug_list_description);
+                    ExcelAction.Merge(ws, row_index + 1, col_start, row_index + 1, col_end);
                     int line_count = 1; // at least one line, add one if "\n" encountered
                     foreach (StyleString style_string in bug_list_description)
                     {
@@ -1281,6 +1286,12 @@ namespace ExcelReportApplication
             return CheckIfStringMeetsRegexString(text_to_check, regex);
         }
 
+        static private Boolean CheckIfStringMeetsConclusion(String text_to_check)
+        {
+            String regex = @"^(?i)\s*Conclusion:\s*$";
+            return CheckIfStringMeetsRegexString(text_to_check, regex);
+        }
+
         static private Boolean CheckIfStringMeetsRegexString(String text_to_check, String regex_to_check)
         {
             Boolean ret_bol;
@@ -1300,10 +1311,10 @@ namespace ExcelReportApplication
 
         // Code for Report *.0
         static public int Group_Summary_Table_RowNumber_Min = 3;
-        public static int GroupSummary_Title_No_Row = 25, GroupSummary_Title_No_Col = 'D' - 'A' + 1;
-        public static int GroupSummary_Title_TestItem_Row = 25, GroupSummary_Title_TestItem_Col = 'E' - 'A' + 1;
-        public static int GroupSummary_Title_Result_Row = 25, GroupSummary_Title_Result_Col = 'H' - 'A' + 1;
-        public static int GroupSummary_Title_Note_Row = 25, GroupSummary_Title_Note_Col = 'J' - 'A' + 1;
+        public static int GroupSummary_Title_No_Row = 25, GroupSummary_Title_No_Col = ExcelAction.ColumnNameToNumber('D');
+        public static int GroupSummary_Title_TestItem_Row = 25, GroupSummary_Title_TestItem_Col = ExcelAction.ColumnNameToNumber('E');
+        public static int GroupSummary_Title_Result_Row = 25, GroupSummary_Title_Result_Col = ExcelAction.ColumnNameToNumber('H');
+        public static int GroupSummary_Title_Note_Row = 25, GroupSummary_Title_Note_Col = ExcelAction.ColumnNameToNumber('J');
         public static String GroupSummary_Title_No_str = "No";
         public static String GroupSummary_Title_TestItem_str = "Test Item";
         public static String GroupSummary_Title_Result_str = "Result";
@@ -1629,7 +1640,7 @@ namespace ExcelReportApplication
             }
 
             // Output keyword list log excel here.
-            String out_dir = (dest_dir != "") ? dest_dir : src_dir;
+            String out_dir = (String.IsNullOrWhiteSpace(dest_dir)==false) ? dest_dir : src_dir;
             KeyWordListReport.OutputKeywordLog(out_dir, keyword_list, ReportGenerator.excel_not_report_log, output_keyword_issue: true);
             //KeyWordListReport.OutputKeywordLog(out_dir, keyword_list, ReportGenerator.excel_not_report_log, output_keyword_issue: false);
 
@@ -1680,20 +1691,20 @@ namespace ExcelReportApplication
                     //         
 
                     // 3.3.0: store text of purpose & criteia for updating into TC summary report
-                    int search_start_row = 10, search_end_row = 19;
+                    int search_start_row = row_test_brief_start, search_end_row = row_test_brief_end;
                     for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
                     {
-                        String text = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, 2);
+                        String text = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, col_indentifier);
                         if(CheckIfStringMeetsPurpose(text))
                         {
                             row_index++;
-                            purpose_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, 'C' - 'A' + 1);
+                            purpose_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, ExcelAction.ColumnNameToNumber('C'));
                             continue;
                         }
                         else if (CheckIfStringMeetsCriteria(text))
                         {
                             row_index++;
-                            criteria_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, 'C' - 'A' + 1);
+                            criteria_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, ExcelAction.ColumnNameToNumber('C'));
                             continue;
                         }
                     }
@@ -1905,23 +1916,23 @@ namespace ExcelReportApplication
                     int today_row = 0, today_col = 0, check_row, check_col;
                     // Check format 1
                     check_row = 8;
-                    check_col = 'J' - 'A' + 1;
+                    check_col = ExcelAction.ColumnNameToNumber('J');
                     text_to_check = ExcelAction.GetCellTrimmedString(result_worksheet, check_row, check_col);
                     if (CheckIfStringMeetsTestPeriod(text_to_check))
                     {
                         today_row = 8;
-                        today_col = 'M' - 'A' + 1;
+                        today_col = ExcelAction.ColumnNameToNumber('M');
                     }
                     else
                     {
                         // Check format 1
                         check_row = 8;
-                        check_col = 'H' - 'A' + 1;
+                        check_col = ExcelAction.ColumnNameToNumber('H');
                         text_to_check = ExcelAction.GetCellTrimmedString(result_worksheet, check_row, check_col);
                         if (CheckIfStringMeetsTestPeriod(text_to_check))
                         {
                             today_row = 8;
-                            today_col = 'L' - 'A' + 1;
+                            today_col = ExcelAction.ColumnNameToNumber('L');
                             end_date = "-             " + end_date;
                         }
                     }
@@ -2403,7 +2414,7 @@ namespace ExcelReportApplication
 
         // This function is used to get judgement result (only read and no update to report) of keyword report
         //static public Boolean GetJudgementValue(String report_workbook, String report_worksheet, out String judgement_str)
-        static public Boolean GetJudgementValue(String report_workbook, String report_worksheet, out String judgement_str, out String purpose_str, out String criteria_str)
+        static public Boolean GetJudgementPurposeCriteriaValue(String report_workbook, String report_worksheet, out String judgement_str, out String purpose_str, out String criteria_str)
         {
             Boolean b_ret = false;
             String ret_str = ""; // default returning judgetment_str;
@@ -2451,13 +2462,13 @@ namespace ExcelReportApplication
                         if(CheckIfStringMeetsPurpose(text))
                         {
                             row_index++;
-                            purpose_str = ExcelAction.GetCellTrimmedString(ws_judgement, row_index, 'C' - 'A' + 1);
+                            purpose_str = ExcelAction.GetCellTrimmedString(ws_judgement, row_index, ExcelAction.ColumnNameToNumber('C'));
                             continue;
                         }
                         else if (CheckIfStringMeetsCriteria(text))
                         {
                             row_index++;
-                            criteria_str = ExcelAction.GetCellTrimmedString(ws_judgement, row_index, 'C' - 'A' + 1);
+                            criteria_str = ExcelAction.GetCellTrimmedString(ws_judgement, row_index, ExcelAction.ColumnNameToNumber('C'));
                             continue;
                         }
                     }

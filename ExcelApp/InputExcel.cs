@@ -338,7 +338,7 @@ namespace ExcelReportApplication
         static public int StartRow = 1;
         static public int EndRow = 9;
         static public int StartCol = 1;
-        static public int EndCol = (int)('N' - 'A' + 1);
+        static public int EndCol = ExcelAction.ColumnNameToNumber('N');
 
         static public String Variable_ReportFileName = "$FileName$";
         static public String Variable_ReportSheetName = "$SheetName$";
