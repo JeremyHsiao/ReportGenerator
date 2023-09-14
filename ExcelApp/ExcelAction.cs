@@ -1414,6 +1414,22 @@ namespace ExcelReportApplication
             return result;
         }
 
+        static public Boolean CopyBugListSheetIntoTestCaseTemplateWorkbook()
+        {
+            Boolean b_ret = false;
+            Worksheet template_last_sheet = workbook_tc_template.Worksheets[workbook_tc_template.Worksheets.Count];
+
+            ////Add new worksheet to template workbook
+            //workbook_tc_template.Worksheets.Add(Type.Missing, template_last_sheet, Type.Missing, XlSheetType.xlWorksheet);
+            ////copy worksheet to the new added worksheets
+            //workbook_tc_template.Worksheets[workbook_tc_template.Worksheets.Count].CopyFrom(workbook_issuelist.Worksheets[1]);
+
+            ws_issuelist.Copy(After: ws_tc_template);
+            b_ret = true;
+
+            return b_ret;
+        }
+
         //static public Workbook OpenCSV(String filename)
         //{
         //    Workbook ret_workbook = null;

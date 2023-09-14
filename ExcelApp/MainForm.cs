@@ -787,10 +787,10 @@ namespace ExcelReportApplication
             KeywordReport.ClearGlobalKeywordList();
         }
 
-        private bool Execute_WriteIssueDescriptionToTC(String tc_file, String template_file, String judgement_report_dir = "")
+        private bool Execute_WriteIssueDescriptionToTC(String tc_file, String template_file, String buglist_file, String judgement_report_dir = "")
         {
             if ((ReportGenerator.IsGlobalIssueListEmpty()) || (ReportGenerator.IsGlobalTestcaseListEmpty()) ||
-                (!Storage.FileExists(tc_file)) || (!Storage.FileExists(template_file))
+                (!Storage.FileExists(tc_file)) || (!Storage.FileExists(template_file) || (!Storage.FileExists(buglist_file)))
                 || ((judgement_report_dir != "") && !Storage.DirectoryExists(judgement_report_dir)))
             {
                 // protection check
@@ -809,7 +809,7 @@ namespace ExcelReportApplication
             //            ReportGenerator.WriteBacktoTCJiraExcel(tc_file);
             //ReportGenerator.WriteBacktoTCJiraExcelV2(tc_file, template_file, judgement_report_dir);
             //ReportGenerator.WriteBacktoTCJiraExcelV3(tc_file, template_file, bug_file, ReportGenerator.ReadGlobalIssueList(), global_issue_description_list_severity, judgement_report_dir);
-            ReportGenerator.WriteBacktoTCJiraExcelV3(tc_file, template_file, judgement_report_dir);
+            ReportGenerator.WriteBacktoTCJiraExcelV3(tclist_filename: tc_file, template_filename: template_file, buglist_file: buglist_file, judgement_report_dir: judgement_report_dir);
             return true;
         }
 
@@ -1226,7 +1226,7 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text);
+                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
                         break;
                     case ReportType.FullIssueDescription_Summary: // report 2 not used now
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
@@ -1281,7 +1281,7 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: txtReportFile.Text, template_file: txtOutputTemplate.Text);
+                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: txtReportFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
                         break;
                     case ReportType.CreateCSTReport:                                    // Report A
                         //UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
@@ -1411,7 +1411,7 @@ namespace ExcelReportApplication
 
                         String report_output_path;
                         bRet = Execute_KeywordIssueGenerationTask_returning_report_path(txtReportFile.Text, true, out report_output_path);
-                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_output_path, template_file: txtOutputTemplate.Text);
+                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_output_path, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
                         break;
                     case ReportType.Man_Power_Processing:
                         tabInfomation.SelectedTab = tabInfomation.TabPages[1];

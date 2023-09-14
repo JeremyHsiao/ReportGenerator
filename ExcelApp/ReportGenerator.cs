@@ -297,7 +297,7 @@ namespace ExcelReportApplication
         }
         */
 
-        static public ExcelAction.ExcelStatus WriteBacktoTCJiraExcel_OpenExcel(String tclist_filename, String template_filename)
+        static public ExcelAction.ExcelStatus WriteBacktoTCJiraExcel_OpenExcel(String tclist_filename, String template_filename, String buglist_file)
         {
             ExcelAction.ExcelStatus status;
 
@@ -314,6 +314,18 @@ namespace ExcelReportApplication
                 ExcelAction.CloseTestCaseExcel();
                 return status;
             }
+
+            // open bug-list file
+            status = ExcelAction.OpenIssueListExcel(buglist_file);
+            if (status != ExcelAction.ExcelStatus.OK)
+            {
+                ExcelAction.CloseIssueListExcel();
+                return status;
+            }
+  
+            // copy-and-paste into template files.
+            ExcelAction.CopyBugListSheetIntoTestCaseTemplateWorkbook();
+            ExcelAction.CloseIssueListExcel();
             return status;
         }
 
@@ -401,13 +413,13 @@ namespace ExcelReportApplication
         //}
 
         // Split some part of V2 into sub-functions 
-        static public void WriteBacktoTCJiraExcelV3(String tclist_filename, String template_filename, String judgement_report_dir = "")
+        static public void WriteBacktoTCJiraExcelV3(String tclist_filename, String template_filename, String buglist_file, String judgement_report_dir = "")
         {
             // Open original excel (read-only & corrupt-load) and write to another filename when closed
             ExcelAction.ExcelStatus status;
 
             // 1. open test case excel
-            status = WriteBacktoTCJiraExcel_OpenExcel(tclist_filename, template_filename);
+            status = WriteBacktoTCJiraExcel_OpenExcel(tclist_filename, template_filename, buglist_file);
             if (status != ExcelAction.ExcelStatus.OK)
             {
                 return; // to-be-checked if here
