@@ -7,6 +7,8 @@ using Excel = Microsoft.Office.Interop.Excel;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
+
 
 namespace ExcelReportApplication
 {
@@ -297,6 +299,21 @@ namespace ExcelReportApplication
         }
         */
 
+        static public String ExtractDate(String input_string)
+        {
+            String ret_string = "";
+            String pattern = @"(?<year>\d{4})\/(?<month>\d{2})\/(?<day>\d{2})";
+            Regex rgx = new Regex(pattern);
+            Match match = rgx.Match(input_string);
+            if (match.Success)
+            {
+               ret_string  = match.Groups["year"].Value;
+               ret_string += match.Groups["month"].Value;
+               ret_string += match.Groups["day"].Value;
+            }
+            return ret_string;
+        }
+
         static public ExcelAction.ExcelStatus WriteBacktoTCJiraExcel_OpenExcel(String tclist_filename, String template_filename, String buglist_file)
         {
             ExcelAction.ExcelStatus status;
@@ -322,10 +339,32 @@ namespace ExcelReportApplication
                 ExcelAction.CloseIssueListExcel();
                 return status;
             }
-  
+
+            String new_Buglist_sheetname = "BugList";
+            String buglist_date_string = ExcelAction.GetIssueListCellTrimmedString(3, 1);
+            String extracted_buglist_date = ExtractDate(buglist_date_string);
+            if (String.IsNullOrWhiteSpace(extracted_buglist_date) == false)
+            {
+                new_Buglist_sheetname += "_" + extracted_buglist_date;
+            }
+
+            String newTClist_sheetname = "TCList";
+            String tcglist_date_string = ExcelAction.GetTestCaseCellTrimmedString(3, 1, IsTemplate: false); // Use input TC as DATE
+            String extracted_tclist_date = ExtractDate(tcglist_date_string);
+            if (String.IsNullOrWhiteSpace(extracted_tclist_date) == false)
+            {
+                newTClist_sheetname += "_" + extracted_tclist_date;
+            }
+
+            Worksheet bug_list_worksheet = ExcelAction.GetIssueListWorksheet();
+            bug_list_worksheet.Name = new_Buglist_sheetname;
             // copy-and-paste into template files.
             ExcelAction.CopyBugListSheetIntoTestCaseTemplateWorkbook();
             ExcelAction.CloseIssueListExcel();
+
+            Worksheet tc_list_worksheet = ExcelAction.GetTestCaseWorksheet(IsTemplate: true);
+            tc_list_worksheet.Name = newTClist_sheetname;
+
             return status;
         }
 
@@ -485,7 +524,7 @@ namespace ExcelReportApplication
                     // Sort issue by Severity and Key valie
                     List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
                     // Convert list of sorted linked issue to description list
-                    List<StyleString>  str_list = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
+                    List<StyleString> str_list = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
                     ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
                 }
 
@@ -515,24 +554,24 @@ namespace ExcelReportApplication
 
                     // Update focus to current status cell
                     ExcelAction.TestCase_CellActivate(excel_row_index, status_col, IsTemplate: true);
-                    
+
                     if (current_status == TestCase.STR_FINISHED)
                     {
                         // update only of judgement_string is available.
                         //if (judgement_str != "")
-                        if(String.IsNullOrWhiteSpace(judgement_str)==false)
+                        if (String.IsNullOrWhiteSpace(judgement_str) == false)
                         {
                             ExcelAction.SetTestCaseCell(excel_row_index, status_col, judgement_str, IsTemplate: true);
                         }
                     }
                     // 4.2.1 -- update purpose and criteria
                     // check if purpose/criteria field exists and strings are not empty
-                    if ((purpose_col > 0)&&(String.IsNullOrWhiteSpace(purpose_str) == false))
+                    if ((purpose_col > 0) && (String.IsNullOrWhiteSpace(purpose_str) == false))
                     {
                         ExcelAction.SetTestCaseCell(excel_row_index, purpose_col, purpose_str, IsTemplate: true);
                     }
                     if ((criteria_col > 0) && (String.IsNullOrWhiteSpace(criteria_str) == false))
-                    {                                           
+                    {
                         ExcelAction.SetTestCaseCell(excel_row_index, criteria_col, criteria_str, IsTemplate: true);
                     }
 
@@ -544,7 +583,7 @@ namespace ExcelReportApplication
 
                         // 4.4 
                         // get buglist from keyword report and show it.
-                        
+
                         // but if worksheetname is not in LUT, go fornext worksheet
                         if (keyword_lut_by_Sheetname.ContainsKey(worksheet_name) == false)
                         {
