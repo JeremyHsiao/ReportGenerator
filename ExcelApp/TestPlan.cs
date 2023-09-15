@@ -367,48 +367,149 @@ namespace ExcelReportApplication
         //    return TestReport.UpdateReportHeader(this.TestPlanWorksheet,SW_Version, Test_Start, Test_End, Judgement, Template);
         //}
         // Sorting Function
-        static public int Compare_Sheetname(String x, String y)
+        //static public int Compare_Sheetname_Ascending_v01(String x, String y)
+        //{
+        //    int final_compare = 0;
+
+        //    String sheetname_x = TestPlan.GetSheetNameAccordingToFilename(x);
+        //    String sheetname_y = TestPlan.GetSheetNameAccordingToFilename(y);
+
+        //    int sheetname_x_len = sheetname_x.Length;
+        //    int sheetname_x_value_pos = sheetname_x.IndexOf('.');
+        //    String x_str = sheetname_x.Substring(sheetname_x_value_pos + 1, sheetname_x_len - (sheetname_x_value_pos + 1));
+        //    double x_value;
+        //    Boolean x_is_double = double.TryParse(x_str, out x_value);
+
+        //    int sheetname_y_len = sheetname_y.Length;
+        //    int sheetname_y_value_pos = sheetname_y.IndexOf('.');
+        //    String y_str = sheetname_y.Substring(sheetname_y_value_pos + 1, sheetname_y_len - (sheetname_y_value_pos + 1));
+        //    double y_value;
+        //    Boolean y_is_double = double.TryParse(y_str, out y_value);
+
+        //    if (x_is_double == false)
+        //    {
+        //        if (y_is_double == true)
+        //        {
+        //            final_compare = 1;
+        //        }
+        //    }
+        //    else if (y_is_double == false)
+        //    {
+        //        final_compare = -1;
+        //    }
+        //    // both are double, can be compared in value
+        //    else if (x_value < y_value)
+        //    {
+        //        final_compare = -1;
+        //    }
+        //    else if (x_value > y_value)
+        //    {
+        //        final_compare = 1;
+        //    }
+
+        //    return final_compare;
+        //}
+
+        static public int Compare_Sheetname_Ascending(String x, String y)
         {
             int final_compare = 0;
 
             String sheetname_x = TestPlan.GetSheetNameAccordingToFilename(x);
             String sheetname_y = TestPlan.GetSheetNameAccordingToFilename(y);
 
-            int sheetname_x_len = sheetname_x.Length;
-            int sheetname_x_value_pos = sheetname_x.IndexOf('.');
-            String x_str = sheetname_x.Substring(sheetname_x_value_pos + 1, sheetname_x_len - (sheetname_x_value_pos + 1));
-            double x_value;
-            Boolean x_is_double = double.TryParse(x_str, out x_value);
+            String[] subs_x = sheetname_x.Split('.');
+            String[] subs_y = sheetname_y.Split('.');
 
-            int sheetname_y_len = sheetname_y.Length;
-            int sheetname_y_value_pos = sheetname_y.IndexOf('.');
-            String y_str = sheetname_y.Substring(sheetname_y_value_pos + 1, sheetname_y_len - (sheetname_y_value_pos + 1));
-            double y_value;
-            Boolean y_is_double = double.TryParse(y_str, out y_value);
+            int compare_index = 0;
 
-            if (x_is_double == false)
+            while (true)
             {
-                if (y_is_double == true)
+                int x_value = 0, y_value = 0;
+
+                Boolean x_no_more_point = (compare_index < subs_x.Count()) ? false : true;
+                Boolean y_no_more_point = (compare_index < subs_y.Count()) ? false : true;
+
+                // Comparison 1: reaching end of sheetname?
+                if (x_no_more_point)
+                {
+                    if (y_no_more_point)
+                    {
+                        final_compare = 0;
+                        break;
+                    }
+                    else  
+                    {
+                        final_compare = -1;
+                        break;
+                    }
+                }
+                else if (y_no_more_point)
                 {
                     final_compare = 1;
+                    break;
+                }
+
+                String x_str = subs_x[compare_index];
+                String y_str = subs_y[compare_index];
+
+                Boolean x_is_value = Int32.TryParse(x_str, out x_value);
+                Boolean y_is_value = Int32.TryParse(y_str, out y_value);
+
+                // Comparison 2: comparing text vs value? default: value < text
+                if (x_is_value == false)
+                {
+                    if (y_is_value == false)
+                    {
+                        final_compare = String.Compare(x_str, y_str);
+                        if (final_compare != 0)
+                        {
+                            // break to return final_compare
+                            break;
+                        }
+                        else
+                        {
+                            // maybe there are more points to compare 
+                            compare_index++;
+                        }
+                    }
+                    else
+                    {
+                        final_compare = 1;
+                        break;
+                    }
+                }
+                else if (y_is_value == false)
+                {
+                    final_compare = -1;
+                    break;
+                }
+                else
+                {
+
+                    if (x_value < y_value)
+                    {
+                        final_compare = -1;
+                        break;
+                    }
+                    else if (x_value > y_value)
+                    {
+                        final_compare = 1;
+                        break;
+                    }
+                    else
+                    {
+                        // maybe there are more points to compare 
+                        compare_index++; // go to compare next level
+                    }
                 }
             }
-            else if (y_is_double == false)
-            {
-                final_compare = -1;
-            }
-            // both are double, can be compared in value
-            else if (x_value < y_value)
-            {
-                final_compare = -1;
-            }
-            else if (x_value > y_value)
-            {
-                final_compare = 1;
-            }
-
             return final_compare;
         }
 
+        static public int Compare_Sheetname_Descending(String x, String y)
+        {
+            int compare_result_asceding = Compare_Sheetname_Ascending(x, y);
+            return -compare_result_asceding;
+        }
     }
 }
