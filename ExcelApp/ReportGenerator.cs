@@ -363,6 +363,7 @@ namespace ExcelReportApplication
             ExcelAction.CloseIssueListExcel();
 
             Worksheet tc_list_worksheet = ExcelAction.GetTestCaseWorksheet(IsTemplate: true);
+            tc_list_worksheet.Select();
             tc_list_worksheet.Name = newTClist_sheetname;
 
             return status;
