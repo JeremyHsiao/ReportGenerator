@@ -566,6 +566,9 @@ namespace ExcelReportApplication
                     if (KeywordReport.CheckIfStringMeetsMethod(text))
                     {
                         ExcelAction.ClearContent(wb.Sheets[1], row_index, 1, row_index + 1, KeywordReport.col_default_report_right_border);
+                        double new_row_height = 0.2;
+                        ExcelAction.Set_Row_Height(wb.Sheets[1], row_index, new_row_height);
+                        ExcelAction.Set_Row_Height(wb.Sheets[1], row_index + 1, new_row_height);
                         break;
                     }
                 }
