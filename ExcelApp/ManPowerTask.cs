@@ -7,6 +7,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 using Microsoft.VisualBasic.FileIO;
 using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace ExcelReportApplication
 {
@@ -88,6 +89,8 @@ namespace ExcelReportApplication
         public Double daily_average_manhour_value;
         public String Daily_ManHour_String;
         public String Project_Action_Owner_WeekOfYear_ManHour;
+        public List<String> Category_List;
+        static public int Max_Category_Count;
 
         public ManPower ShallowCopy()
         {
@@ -523,6 +526,12 @@ namespace ExcelReportApplication
                     List<String> elements = new List<String>();
                     elements.AddRange(csvParser.ReadFields());
                     ManPower manpower = new ManPower(elements);
+                    List<String> category_list = Extracting_Category(manpower.Title);
+                    manpower.Category_List = category_list;
+                    if (category_list.Count > ManPower.Max_Category_Count)
+                    {
+                        ManPower.Max_Category_Count = category_list.Count;
+                    }
                     ret_manpower_list.Add(manpower);
                 }
             }
@@ -566,7 +575,7 @@ namespace ExcelReportApplication
         //    return ret_manpower_list;
         //}
 
-        static public List<ManPower> Post_Processing_V2(List<ManPower> list_before_post_processing)
+        static public List<ManPower> Processing_DateWeekHoliday(List<ManPower> list_before_post_processing)
         {
             // Generated data for ManPower
             ManPower.Start_Date = DateOnly.FindEearliestTargetStartDate(list_before_post_processing);
@@ -681,17 +690,40 @@ namespace ExcelReportApplication
         //    File.WriteAllText(Storage.GenerateFilenameWithDateTime(manpower_csv, ".csv"), csv.ToString(), Encoding.UTF8);
         //}
 
+
+        static public List<String> Extracting_Category(String title)
+        {
+            List<String> ret_list = new List<string>();
+
+            String pattern = @"(\[\w*\s*\w*\])+";
+            Regex rgx = new Regex(pattern);
+            Match match = rgx.Match(title);
+            if (match.Success)
+            {
+                String[] names = rgx.GetGroupNames();
+                foreach (var name in names)
+                {
+                    if (name == "0") continue;
+                    Group grp = match.Groups[name];
+                    String extracted_category = grp.Value;
+                    ret_list.Add(extracted_category);
+                }
+            }
+
+            return ret_list;
+        }
+
         static public void ProcessManPowerPlan_V2(String manpower_csv)
         {
             List<ManPower> manpower_list_before = ReadManPowerTaskCSV(manpower_csv);
-            List<ManPower> manpower_list = Post_Processing_V2(manpower_list_before);
+            List<ManPower> manpower_list = Processing_DateWeekHoliday(manpower_list_before);
             //DateTime manpower_due_date = FindLatestDueDate(manpower_list);
 
             //before your loop
             var csv = new StringBuilder();
 
             // Setup Title line
-            ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour = "ProjectStage, TestAction, Owner, Week, ManHourThisWeek,";
+            ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour = "ProjectStage,TestAction,Owner,Week,ManHourThisWeek,";
             //csv.AppendLine(ManPower.Caption_Line);
             csv.AppendLine(ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour + ManPower.Caption_Line);
 
@@ -778,6 +810,125 @@ namespace ExcelReportApplication
             //after your loop
             File.WriteAllText(Storage.GenerateFilenameWithDateTime(manpower_csv, ".csv"), csv.ToString(), Encoding.UTF8);
         }
+
+        static public void ProcessManPowerPlan_V3(String manpower_csv)
+        {
+            List<ManPower> manpower_list_before = ReadManPowerTaskCSV(manpower_csv);
+            List<ManPower> manpower_list = Processing_DateWeekHoliday(manpower_list_before);
+            //DateTime manpower_due_date = FindLatestDueDate(manpower_list);
+
+            //before your loop
+            var csv = new StringBuilder();
+
+            // Setup Title line
+            // Setup & repeat for weekly man-hour
+            String Empty_Field_String = ",,,,,";
+            ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour += ManPower.AddQuoteWithComma("ProjectStage") +
+                                                                      ManPower.AddQuoteWithComma("TestAction") +
+                                                                      ManPower.AddQuoteWithComma("Owner") + 
+                                                                      ManPower.AddQuoteWithComma("Week") +
+                                                                      ManPower.AddQuoteWithComma("ManHourThisWeek");
+            for (int index = 0; index < ManPower.Max_Category_Count; index++)
+            {
+                ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour += ManPower.AddComma("Category" + index.ToString());
+            }
+            //csv.AppendLine(ManPower.Caption_Line);
+            csv.AppendLine(ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour + ManPower.Caption_Line);
+
+            // add items in week of year
+            foreach (ManPower mp in manpower_list)
+            {
+                int category_countdown = ManPower.Max_Category_Count;
+                String category_string = "";
+                foreach (String str in mp.Category_List)
+                {
+                    category_string += ManPower.AddQuoteWithComma(str);
+                    category_countdown--;
+                }
+                while (category_countdown-- > 0)
+                {
+                    category_string += ",";
+                }
+                
+                if ((mp.Hierarchy == ManPower.hierarchy_string_for_project) || (mp.Hierarchy == ManPower.hierarchy_string_for_D0_project))
+                {
+                    csv.AppendLine(Empty_Field_String + category_string + mp.ToString());
+                }
+                else if ((mp.Hierarchy == ManPower.hierarchy_string_for_action) || (mp.Hierarchy == ManPower.hierarchy_string_for_D0_action))   // only man-power to calculate average man-hour
+                {
+                    // need to deal with 1st week and last week of this task
+
+                    String Item_Field_String = ManPower.AddQuoteWithComma(mp.Task_Project_Name);
+                    Item_Field_String += ManPower.AddQuoteWithComma(mp.Task_Action_Name);
+                    Item_Field_String += ManPower.AddQuoteWithComma(mp.Task_Owner_Name);
+                    int begin_wk_index = YearWeek.IndexOf(mp.Task_Start_Week);
+                    int end_wk_index = YearWeek.IndexOf(mp.Task_End_Week);
+                    int current_wk_index = begin_wk_index;
+                    Double daily_average_manhour_value = mp.daily_average_manhour_value;
+                    // for 1st week
+                    if (current_wk_index == begin_wk_index)
+                    {
+                        DateTime first_date = mp.Task_Start_Date;
+                        int remaining_workday = YearWeek.WeekWorkdayToLastDateFrom(first_date);
+                        //special case: 1st week is also last week
+                        if (current_wk_index == end_wk_index)
+                        {
+                            DateTime last_date = mp.Task_End_Date;
+                            if (DateOnly.IsHoliday(last_date))
+                            {
+                                remaining_workday -= YearWeek.WeekWorkdayToLastDateFrom(last_date);
+                            }
+                            else
+                            {
+                                remaining_workday -= YearWeek.WeekWorkdayToLastDateFrom(last_date);
+                                remaining_workday++;
+                            }
+                        }
+                        Double weekly_manhour = remaining_workday * daily_average_manhour_value;
+                        int current_yearweek = YearWeek.ElementAt(current_wk_index);
+                        // append year-week
+                        String Project_Action_Owner_WeekOfYear_ManHour = Item_Field_String + ManPower.AddQuoteWithComma(current_yearweek.ToString());
+                        // append man-hour in this week
+                        Project_Action_Owner_WeekOfYear_ManHour += ManPower.AddQuoteWithComma(weekly_manhour.ToString(ManPower.pSpecifier));
+                        csv.AppendLine(Project_Action_Owner_WeekOfYear_ManHour + category_string + mp.ToString());
+                        current_wk_index++;
+                    }
+
+                    // for 2nd until one-week before last week
+                    while (current_wk_index <= end_wk_index - 1)
+                    {
+                        Double weekly_manhour = YearWeek.GetWorkingDayOfWeekByIndex(current_wk_index) * daily_average_manhour_value;
+                        int current_yearweek = YearWeek.ElementAt(current_wk_index);
+                        // append year-week
+                        String Project_Action_Owner_WeekOfYear_ManHour = Item_Field_String + ManPower.AddQuoteWithComma(current_yearweek.ToString());
+                        // append man-hour in this week
+                        Project_Action_Owner_WeekOfYear_ManHour += ManPower.AddQuoteWithComma(weekly_manhour.ToString(ManPower.pSpecifier));
+                        csv.AppendLine(Project_Action_Owner_WeekOfYear_ManHour + category_string + mp.ToString());
+                        current_wk_index++;
+                    }
+                    // for last week
+
+                    if (current_wk_index == end_wk_index)
+                    {
+                        DateTime last_date = mp.Task_End_Date;
+                        int remaining_workday = YearWeek.WeekWorkdayFromFirstDateTo(last_date);
+                        Double weekly_manhour = remaining_workday * daily_average_manhour_value;
+                        int current_yearweek = YearWeek.ElementAt(current_wk_index);
+                        // append year-week
+                        String Project_Action_Owner_WeekOfYear_ManHour = Item_Field_String + ManPower.AddQuoteWithComma(current_yearweek.ToString());
+                        // append man-hour in this week
+                        Project_Action_Owner_WeekOfYear_ManHour += ManPower.AddQuoteWithComma(weekly_manhour.ToString(ManPower.pSpecifier));
+                        csv.AppendLine(Project_Action_Owner_WeekOfYear_ManHour + category_string + mp.ToString());
+                        current_wk_index++;
+                    }
+                }
+
+            }
+
+            //after your loop
+            File.WriteAllText(Storage.GenerateFilenameWithDateTime(manpower_csv, ".csv"), csv.ToString(), Encoding.UTF8);
+        }
+
     }
 
     static public class YearWeek
