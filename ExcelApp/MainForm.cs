@@ -120,7 +120,7 @@ namespace ExcelReportApplication
             "7.Keyword Issue - Directory",
             "8.Excel sheet name update tool",
             "9.TC issue/judgement",
-            "A.Jira Test Report Creator",
+            "A.Create CST Report",
             "B.Auto-correct report header",
             "C.Create New Model Report",
             "D.Copy Report Only",
@@ -202,9 +202,9 @@ namespace ExcelReportApplication
             // "A.Jira Test Report Creator",
             new String[] 
             {
-                "Create file structure of Test Report according to TC on the Jira Test Case file", 
-                "Input:",  "  Jira Test Case File & directories of source report and of output destination",
-                "Output:", "  Directory structure and report files under directories",
+                "Create CST Report", 
+                "Input:",  "  Input excel file",
+                "Output:", "  Reports copied and renamed (filename / worksheet name) according to input excel file",
             },
             // "B.Auto-correct report header",
             new String[] 
@@ -216,7 +216,7 @@ namespace ExcelReportApplication
             // "C.Create New Model Report",
             new String[] 
             {
-                "Worksheet name & 1st row (header) of report will be renamed and these reports are copied to corresponding folders", 
+                "Create New Model Report", 
                 "Input:",  "  Input excel file",
                 "Output:", "  Reports copied and renamed (filename / worksheet name) according to input excel file",
             },
@@ -478,13 +478,14 @@ namespace ExcelReportApplication
 
             // config for issue list
             Issue.KeyPrefix = XMLConfig.ReadAppSetting_String("Issue_Key_Prefix");
-            Issue.SheetName = XMLConfig.ReadAppSetting_String("Issue_SheetName");
+            Issue.SheetName = XMLConfig.ReadAppSetting_String("BugList_ExportedSheetName");
             Issue.NameDefinitionRow = XMLConfig.ReadAppSetting_int("Issue_Row_NameDefine");
             Issue.DataBeginRow = XMLConfig.ReadAppSetting_int("Issue_Row_DataBegin");
 
             // config for test-case
             TestCase.KeyPrefix = XMLConfig.ReadAppSetting_String("TC_Key_Prefix");
-            TestCase.SheetName = XMLConfig.ReadAppSetting_String("TC_SheetName");
+            TestCase.SheetName = XMLConfig.ReadAppSetting_String("TCList_ExportedSheetName");
+            TestCase.TemplateSheetName = XMLConfig.ReadAppSetting_String("TC_SheetName");
             TestCase.NameDefinitionRow = XMLConfig.ReadAppSetting_int("TC_Row_NameDefine");
             TestCase.DataBeginRow = XMLConfig.ReadAppSetting_int("TC_Row_DataBegin");
 

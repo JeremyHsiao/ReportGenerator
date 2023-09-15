@@ -744,7 +744,16 @@ namespace ExcelReportApplication
                     return ExcelStatus.ERR_OpenTestCaseExcel_OpenExcelWorkbook;
                 }
 
-                Worksheet ws_tclist = ExcelAction.Find_Worksheet(wb_tc, TestCase.SheetName);
+                Worksheet ws_tclist;
+                if (IsTemplate == false)
+                {
+                    ws_tclist = ExcelAction.Find_Worksheet(wb_tc, TestCase.SheetName);
+                }
+                else
+                {
+                    ws_tclist = ExcelAction.Find_Worksheet(wb_tc, TestCase.TemplateSheetName);
+                }
+
                 if (ws_tclist == null)
                 {
                     return ExcelStatus.ERR_OpenTestCaseExcel_Find_Worksheet;

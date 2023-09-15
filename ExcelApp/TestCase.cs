@@ -277,6 +277,7 @@ namespace ExcelReportApplication
         static public int NameDefinitionRow = 4;
         static public int DataBeginRow = 5;
         static public string SheetName = "general_report";
+        static public string TemplateSheetName = "TC_List";
         static public string KeyPrefix = "TCBEN";
 
         static public Boolean CheckValidTC_By_Key_Summary(String tc_key, String tc_summary)
