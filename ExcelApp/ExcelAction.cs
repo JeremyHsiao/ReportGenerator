@@ -651,8 +651,15 @@ namespace ExcelReportApplication
             {
                 Workbook wb_issuelist;
 
-                // Open excel (read-only & corrupt-load)
-                wb_issuelist = ExcelAction.OpenExcelWorkbook(buglist_filename, XLS: true);
+                if (Storage.GetExtension(buglist_filename) == ".xls")
+                {
+                    // Open excel (read-only & corrupt-load)
+                    wb_issuelist = ExcelAction.OpenExcelWorkbook(buglist_filename, XLS: true);
+                }
+                else
+                {
+                    wb_issuelist = ExcelAction.OpenExcelWorkbook(buglist_filename);
+                }
 
                 if (wb_issuelist == null)
                 {
@@ -731,8 +738,15 @@ namespace ExcelReportApplication
                 Workbook wb_tc;
                 if (IsTemplate == false)
                 {
-                    // Open excel (read-only & corrupt-load)
-                    wb_tc = ExcelAction.OpenExcelWorkbook(tclist_filename, XLS: true);
+                    if (Storage.GetExtension(tclist_filename) == ".xls")
+                    {
+                        // Open excel (read-only & corrupt-load)
+                        wb_tc = ExcelAction.OpenExcelWorkbook(tclist_filename, XLS: true);
+                    }
+                    else
+                    {
+                        wb_tc = ExcelAction.OpenExcelWorkbook(tclist_filename);
+                    }
                 }
                 else
                 {
