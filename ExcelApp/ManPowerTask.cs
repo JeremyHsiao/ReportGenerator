@@ -818,11 +818,11 @@ namespace ExcelReportApplication
             // Setup Title line
             // Setup & repeat for weekly man-hour
             String Empty_Field_String = ",,,,,";
-            ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour += ManPower.AddQuoteWithComma("ProjectStage") +
-                                                                      ManPower.AddQuoteWithComma("TestAction") +
-                                                                      ManPower.AddQuoteWithComma("Owner") +
-                                                                      ManPower.AddQuoteWithComma("Week") +
-                                                                      ManPower.AddQuoteWithComma("ManHourThisWeek");
+            ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour =    ManPower.AddQuoteWithComma("ProjectStage") +
+                                                                        ManPower.AddQuoteWithComma("TestAction") +
+                                                                        ManPower.AddQuoteWithComma("Owner") +
+                                                                        ManPower.AddQuoteWithComma("Week") +
+                                                                        ManPower.AddQuoteWithComma("ManHourThisWeek");
             for (int index = 0; index < ManPower.Max_Category_Count; index++)
             {
                 ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour += ManPower.AddComma("Category" + index.ToString());
