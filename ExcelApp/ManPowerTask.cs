@@ -186,7 +186,7 @@ namespace ExcelReportApplication
             {
                 ManPower.Recent_Task_Project_Name = Title;
             }
-            else if ((Hierarchy == hierarchy_string_for_action)||(Hierarchy == hierarchy_string_for_D0_action))  // only man-power to calculate average man-hour
+            else if ((Hierarchy == hierarchy_string_for_action) || (Hierarchy == hierarchy_string_for_D0_action))  // only man-power to calculate average man-hour
             {
                 Process_ManPower_Data();
             }
@@ -695,21 +695,15 @@ namespace ExcelReportApplication
         {
             List<String> ret_list = new List<string>();
 
-            String pattern = @"(\[\w*\s*\w*\])+";
+            String pattern = @"(\[\w+\s*\w*\])";
             Regex rgx = new Regex(pattern);
-            Match match = rgx.Match(title);
-            if (match.Success)
+            Match match = Regex.Match(title, pattern, RegexOptions.None);
+            while (match.Success)
             {
-                String[] names = rgx.GetGroupNames();
-                foreach (var name in names)
-                {
-                    if (name == "0") continue;
-                    Group grp = match.Groups[name];
-                    String extracted_category = grp.Value;
-                    ret_list.Add(extracted_category);
-                }
+                String category_str = match.Value;
+                ret_list.Add(category_str);
+                match = match.NextMatch();
             }
-
             return ret_list;
         }
 
@@ -733,11 +727,11 @@ namespace ExcelReportApplication
             // add items in week of year
             foreach (ManPower mp in manpower_list)
             {
-                if ((mp.Hierarchy == ManPower.hierarchy_string_for_project)||(mp.Hierarchy == ManPower.hierarchy_string_for_D0_project))
+                if ((mp.Hierarchy == ManPower.hierarchy_string_for_project) || (mp.Hierarchy == ManPower.hierarchy_string_for_D0_project))
                 {
                     csv.AppendLine(Empty_Field_String + mp.ToString());
                 }
-                else if ((mp.Hierarchy == ManPower.hierarchy_string_for_action)||(mp.Hierarchy == ManPower.hierarchy_string_for_D0_action))   // only man-power to calculate average man-hour
+                else if ((mp.Hierarchy == ManPower.hierarchy_string_for_action) || (mp.Hierarchy == ManPower.hierarchy_string_for_D0_action))   // only man-power to calculate average man-hour
                 {
                     // need to deal with 1st week and last week of this task
 
@@ -754,14 +748,15 @@ namespace ExcelReportApplication
                         DateTime first_date = mp.Task_Start_Date;
                         int remaining_workday = YearWeek.WeekWorkdayToLastDateFrom(first_date);
                         //special case: 1st week is also last week
-                        if(current_wk_index==end_wk_index)
+                        if (current_wk_index == end_wk_index)
                         {
                             DateTime last_date = mp.Task_End_Date;
                             if (DateOnly.IsHoliday(last_date))
                             {
                                 remaining_workday -= YearWeek.WeekWorkdayToLastDateFrom(last_date);
                             }
-                            else                            {
+                            else
+                            {
                                 remaining_workday -= YearWeek.WeekWorkdayToLastDateFrom(last_date);
                                 remaining_workday++;
                             }
@@ -784,7 +779,7 @@ namespace ExcelReportApplication
                         // append year-week
                         String Project_Action_Owner_WeekOfYear_ManHour = Item_Field_String + ManPower.AddQuoteWithComma(current_yearweek.ToString());
                         // append man-hour in this week
-                        Project_Action_Owner_WeekOfYear_ManHour += ManPower.AddQuoteWithComma(weekly_manhour.ToString(ManPower.pSpecifier)); 
+                        Project_Action_Owner_WeekOfYear_ManHour += ManPower.AddQuoteWithComma(weekly_manhour.ToString(ManPower.pSpecifier));
                         csv.AppendLine(Project_Action_Owner_WeekOfYear_ManHour + mp.ToString());
                         current_wk_index++;
                     }
@@ -825,7 +820,7 @@ namespace ExcelReportApplication
             String Empty_Field_String = ",,,,,";
             ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour += ManPower.AddQuoteWithComma("ProjectStage") +
                                                                       ManPower.AddQuoteWithComma("TestAction") +
-                                                                      ManPower.AddQuoteWithComma("Owner") + 
+                                                                      ManPower.AddQuoteWithComma("Owner") +
                                                                       ManPower.AddQuoteWithComma("Week") +
                                                                       ManPower.AddQuoteWithComma("ManHourThisWeek");
             for (int index = 0; index < ManPower.Max_Category_Count; index++)
@@ -849,7 +844,7 @@ namespace ExcelReportApplication
                 {
                     category_string += ",";
                 }
-                
+
                 if ((mp.Hierarchy == ManPower.hierarchy_string_for_project) || (mp.Hierarchy == ManPower.hierarchy_string_for_D0_project))
                 {
                     csv.AppendLine(Empty_Field_String + category_string + mp.ToString());
@@ -937,8 +932,8 @@ namespace ExcelReportApplication
         static private DateTime EndDate;
         static private List<int> yearweek_list = new List<int>();
         static private List<int> weekly_workday_list = new List<int>();
-        static private Dictionary<DateTime, int> remaining_workday_to_Saturday_from = new Dictionary<DateTime, int> ();
-        static private Dictionary<DateTime, int> remaining_workday_from_Sunday_to = new Dictionary<DateTime, int> ();
+        static private Dictionary<DateTime, int> remaining_workday_to_Saturday_from = new Dictionary<DateTime, int>();
+        static private Dictionary<DateTime, int> remaining_workday_from_Sunday_to = new Dictionary<DateTime, int>();
         static public int invalid_index = -1;
         static public int invalid_yearweek = -1;
 
@@ -946,11 +941,11 @@ namespace ExcelReportApplication
 
         static public List<int> WeeklyWorkdayList() { return weekly_workday_list; }
 
-        static public int WeekWorkdayToLastDateFrom(DateTime datetime) 
-        { 
-            if(DateOnly.IsBetween(datetime,StartDate,EndDate))
+        static public int WeekWorkdayToLastDateFrom(DateTime datetime)
+        {
+            if (DateOnly.IsBetween(datetime, StartDate, EndDate))
             {
-                return remaining_workday_to_Saturday_from[datetime]; 
+                return remaining_workday_to_Saturday_from[datetime];
             }
             else
             {
@@ -958,11 +953,11 @@ namespace ExcelReportApplication
             }
         }
 
-        static public int WeekWorkdayFromFirstDateTo(DateTime datetime)         
-        { 
-            if(DateOnly.IsBetween(datetime,StartDate,EndDate))
+        static public int WeekWorkdayFromFirstDateTo(DateTime datetime)
+        {
+            if (DateOnly.IsBetween(datetime, StartDate, EndDate))
             {
-                return remaining_workday_from_Sunday_to[datetime]; 
+                return remaining_workday_from_Sunday_to[datetime];
             }
             else
             {
@@ -997,7 +992,7 @@ namespace ExcelReportApplication
                         ACC_workday_from_Sunday = 0;
                         is_weekly_workday.Add(false);
 
-                         // update weekofyear here 
+                        // update weekofyear here 
                         weekofyear_temp = GetYearAndWeekOfYear(dateime);
 
                         // record processed date
@@ -1010,11 +1005,11 @@ namespace ExcelReportApplication
                         //datetime_thisweek.Add(dateime);
                         // accumulator don't change (holiday) & record remaining_workday_from_Sunday_to;
                         //workday_since_Sunday_acc++;
-                        
+
                         //workday_1st_day_of_week_till_datetime.Add(workday_since_Sunday_acc);
                         // store weekofyear/working_day info here
-                        weekly_workday_list.Add(ACC_workday_from_Sunday);   
-                        yearweek_list.Add(weekofyear_temp);         
+                        weekly_workday_list.Add(ACC_workday_from_Sunday);
+                        yearweek_list.Add(weekofyear_temp);
 
                         // record workday_datetime_till_last_day_of_week
                         // updating by looping datetime_thisweek
@@ -1023,7 +1018,7 @@ namespace ExcelReportApplication
                         for (int index = 0; index < datetime_thisweek.Count; index++)
                         {
                             DateTime dt = datetime_thisweek[index];
-                            if(is_weekly_workday[index]) 
+                            if (is_weekly_workday[index])
                             {
                                 workday_to_Saturday = ACC_workday_from_Sunday - temp_workday;
                                 temp_workday++;
@@ -1041,7 +1036,7 @@ namespace ExcelReportApplication
                         ACC_workday_from_Sunday = 0;
                         datetime_thisweek.Clear();
                         is_weekly_workday.Clear();
- 
+
                         break;
                     default:
                         // the same current_weekofyear
@@ -1056,7 +1051,7 @@ namespace ExcelReportApplication
                             is_weekly_workday.Add(true);
                             ACC_workday_from_Sunday++;
                         }
-                        remaining_workday_from_Sunday_to.Add(dateime, ACC_workday_from_Sunday); 
+                        remaining_workday_from_Sunday_to.Add(dateime, ACC_workday_from_Sunday);
                         break;
                 }
             }
