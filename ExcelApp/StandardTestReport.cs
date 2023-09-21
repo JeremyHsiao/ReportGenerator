@@ -269,74 +269,74 @@ namespace ExcelReportApplication
         //    return true;
         //}
 
-        public static bool CopyTestReportbyTestCase(String report_Src, String output_report_dir)
-        {
-            // Full file name exist checked before executing task
+        //public static bool CopyTestReportbyTestCase(String report_Src, String output_report_dir)
+        //{
+        //    // Full file name exist checked before executing task
 
-            String input_report_dir = report_Src;
+        //    String input_report_dir = report_Src;
 
-            // test_plan (sample) dir must exist
-            if (!Storage.DirectoryExists(input_report_dir)) { return false; }  // should exist
+        //    // test_plan (sample) dir must exist
+        //    if (!Storage.DirectoryExists(input_report_dir)) { return false; }  // should exist
 
-            // output test plan root_dir must be inexist so that no overwritten
-            if (!Storage.DirectoryExists(output_report_dir)) { return false; } // should exist
+        //    // output test plan root_dir must be inexist so that no overwritten
+        //    if (!Storage.DirectoryExists(output_report_dir)) { return false; } // should exist
 
-            // Generate a list of all possible excel report files under input_report_dir -- SET A (all_report_list)
-            List<String> all_report_list = Storage.ListCandidateReportFilesUnderDirectory(report_Src);
+        //    // Generate a list of all possible excel report files under input_report_dir -- SET A (all_report_list)
+        //    List<String> all_report_list = Storage.ListCandidateReportFilesUnderDirectory(report_Src);
 
-            // Report to be copied according to test-case file -- SET B (src_report_list)
-            List<String> src_report_list = new List<String>();
-            // Files will be copied -- the intersection (SET A, SET B) (SET A&B report_can_be_copied_list_src)
-            Dictionary<String, String> report_to_be_copied = new Dictionary<String, String>();
-            // Files should be copied (listed in B) but not in A (because files don't exist in source SET A -- (B-A&B) report_not_available_list
-            List<String> report_not_available_list = new List<String>();
-            // files in A are not used in B this time -- SET (A-A&B) report_not_used_list
-            List<String> report_not_used_list = new List<String>();
+        //    // Report to be copied according to test-case file -- SET B (src_report_list)
+        //    List<String> src_report_list = new List<String>();
+        //    // Files will be copied -- the intersection (SET A, SET B) (SET A&B report_can_be_copied_list_src)
+        //    Dictionary<String, String> report_to_be_copied = new Dictionary<String, String>();
+        //    // Files should be copied (listed in B) but not in A (because files don't exist in source SET A -- (B-A&B) report_not_available_list
+        //    List<String> report_not_available_list = new List<String>();
+        //    // files in A are not used in B this time -- SET (A-A&B) report_not_used_list
+        //    List<String> report_not_used_list = new List<String>();
 
-            // Generating SET B (src_report_list)
-            // Because A is also available, we can use it to generate A&B (check if this B is also in A) and B-A&B (check if this B is NOT in A)
-            foreach (TestCase tc in ReportGenerator.ReadGlobalTestcaseList())
-            {
-                // go through all test-case and copy report files.
-                String path = tc.Group, filename = tc.Summary + ".xlsx";
-                String src_dir = Storage.CominePath(report_Src, path);
-                String src_file = Storage.GetValidFullFilename(src_dir, filename);
-                src_report_list.Add(src_file);          // item in SET B
-                if (all_report_list.IndexOf(src_file) >= 0)   // if this item (of SET B) also in SET A ==? A&B
-                {
-                    String dest_dir = Storage.CominePath(output_report_dir, path);
-                    String dest_file = Storage.GetValidFullFilename(dest_dir, filename);
-                    report_to_be_copied.Add(src_file, dest_file);
-                }
-                else
-                {
-                    // but not in A    
-                    report_not_available_list.Add(src_file);        // for B-A&B (in B but not in A)
-                }
-            }
-            // SET (A-A&B) report_not_used_list -- this report is available under source path but not used for copying
-            report_not_used_list = all_report_list.Except(report_to_be_copied.Keys).ToList();
+        //    // Generating SET B (src_report_list)
+        //    // Because A is also available, we can use it to generate A&B (check if this B is also in A) and B-A&B (check if this B is NOT in A)
+        //    foreach (TestCase tc in ReportGenerator.ReadGlobalTestcaseList())
+        //    {
+        //        // go through all test-case and copy report files.
+        //        String path = tc.Group, filename = tc.Summary + ".xlsx";
+        //        String src_dir = Storage.CominePath(report_Src, path);
+        //        String src_file = Storage.GetValidFullFilename(src_dir, filename);
+        //        src_report_list.Add(src_file);          // item in SET B
+        //        if (all_report_list.IndexOf(src_file) >= 0)   // if this item (of SET B) also in SET A ==? A&B
+        //        {
+        //            String dest_dir = Storage.CominePath(output_report_dir, path);
+        //            String dest_file = Storage.GetValidFullFilename(dest_dir, filename);
+        //            report_to_be_copied.Add(src_file, dest_file);
+        //        }
+        //        else
+        //        {
+        //            // but not in A    
+        //            report_not_available_list.Add(src_file);        // for B-A&B (in B but not in A)
+        //        }
+        //    }
+        //    // SET (A-A&B) report_not_used_list -- this report is available under source path but not used for copying
+        //    report_not_used_list = all_report_list.Except(report_to_be_copied.Keys).ToList();
 
-            // copy report files.
-            List<String> report_actually_copied_list_src = new List<String>();
-            List<String> report_actually_copied_list_dest = new List<String>();
-            // use Auto Correct Function to copy and auto-correct.
+        //    // copy report files.
+        //    List<String> report_actually_copied_list_src = new List<String>();
+        //    List<String> report_actually_copied_list_dest = new List<String>();
+        //    // use Auto Correct Function to copy and auto-correct.
 
-            foreach (String src in report_to_be_copied.Keys)
-            {
-                String dest = report_to_be_copied[src];
-                if (CopyReportClearJudgement_SingleFile(source_file: src, destination_file: dest))
-                {
-                    report_actually_copied_list_src.Add(src);
-                    report_actually_copied_list_dest.Add(dest);
-                }
-            }
+        //    foreach (String src in report_to_be_copied.Keys)
+        //    {
+        //        String dest = report_to_be_copied[src];
+        //        if (CopyReportClearJudgement_SingleFile(source_file: src, destination_file: dest))
+        //        {
+        //            report_actually_copied_list_src.Add(src);
+        //            report_actually_copied_list_dest.Add(dest);
+        //        }
+        //    }
 
-            if (report_actually_copied_list_src.Count > 0)
-                return true;
-            else
-                return false;
-        }
+        //    if (report_actually_copied_list_src.Count > 0)
+        //        return true;
+        //    else
+        //        return false;
+        //}
 
         //public static Dictionary<String, String> CopyTestReport(List<String> src_list, List<String> dest_list)
         //{

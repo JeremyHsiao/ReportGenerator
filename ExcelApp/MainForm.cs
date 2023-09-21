@@ -844,17 +844,17 @@ namespace ExcelReportApplication
             return TestReport.CreateStandardTestReportTask(main_file);
         }
 
-        private bool Execute_CreateTestReportbyTestCaseTask(String report_src_dir, String output_report_dir)
-        {
-            if (!Storage.DirectoryExists(report_src_dir) || !Storage.DirectoryExists(output_report_dir))
-            {
-                // protection check
-                // source_dir & output_dir must exist.
-                return false;
-            }
+        //private bool Execute_CreateTestReportbyTestCaseTask(String report_src_dir, String output_report_dir)
+        //{
+        //    if (!Storage.DirectoryExists(report_src_dir) || !Storage.DirectoryExists(output_report_dir))
+        //    {
+        //        // protection check
+        //        // source_dir & output_dir must exist.
+        //        return false;
+        //    }
 
-            return TestReport.CopyTestReportbyTestCase(report_src_dir, output_report_dir);
-        }
+        //    return TestReport.CopyTestReportbyTestCase(report_src_dir, output_report_dir);
+        //}
 
         private bool Execute_KeywordIssueGenerationTask(String FileOrDirectoryName, Boolean IsDirectory = false)
         {
