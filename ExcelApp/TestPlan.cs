@@ -17,7 +17,14 @@ namespace ExcelReportApplication
         private String category;
         private String subpart;
 
-        // The following members will be used but not part of the test plan in Standard Test Report. (out-of-band data)
+        // newly-added
+        private String customer;
+        private String sw_version;
+        private String hw_version;
+        private String testplan_version;
+        private String priority;
+
+         // The following members will be used but not part of the test plan in Standard Test Report. (out-of-band data)
         private String from;
         private String path;
         private String sheet;
@@ -60,6 +67,32 @@ namespace ExcelReportApplication
             set { subpart = value; }  // set method
         }
 
+        public String Customer   // property
+        {
+            get { return customer; }   // get method
+            set { customer = value; }  // set method
+        }
+        public String SW_Version   // property
+        {
+            get { return sw_version; }   // get method
+            set { sw_version = value; }  // set method
+        }
+        public String HW_Version   // property
+        {
+            get { return hw_version; }   // get method
+            set { hw_version = value; }  // set method
+        }
+        public String TestPlan_Version   // property
+        {
+            get { return testplan_version; }   // get method
+            set { testplan_version = value; }  // set method
+        }
+        public String Priority   // property
+        {
+            get { return priority; }   // get method
+            set { priority = value; }  // set method
+        }
+
         public String BackupSource   // property
         {
             get { return from; }   // get method
@@ -90,6 +123,11 @@ namespace ExcelReportApplication
 
         public TestPlan(List<String> members)
         {
+            this.SetByMembers(members);
+        }
+
+        public void SetByMembers(List<String> members)
+        {
             this.group = members[(int)TestPlanMemberIndex.GROUP];
             this.summary = members[(int)TestPlanMemberIndex.SUMMARY];
             this.assignee = members[(int)TestPlanMemberIndex.ASSIGNEE];
@@ -116,6 +154,11 @@ namespace ExcelReportApplication
         public const string col_DoOrNot = "Do or Not";
         public const string col_Category = "Test Case Category";
         public const string col_Subpart = "Subpart";
+        public const string col_Customer = "Customer";
+        public const string col_SW_Version = "SW Version";
+        public const string col_HW_Version = "HW Version";
+        public const string col_TestPlan_Version = "Test Plan Ver.";
+        public const string col_Priority = "Priority";
         // The sequence of this String[] must be aligned with enum TestPlanMemberIndex
         static public String[] TestPlanMemberColumnName = { col_Group, col_Summary, col_Assignee, col_DoOrNot, col_Category, col_Subpart };
 
