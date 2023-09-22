@@ -16,8 +16,8 @@ namespace ExcelReportApplication
         private int column_name_row;
         private int data_start_row;
         private int data_end_row;
-        private Worksheet worksheet;
-        private Workbook workbook;
+        //private Worksheet worksheet;
+        //private Workbook workbook;
         private String csv_filename;
         private List<List<String>> data_list;
         private int status_code;
@@ -46,54 +46,45 @@ namespace ExcelReportApplication
             get { return status_code; }   // get method
             //set { status_code = value; }  // set method
         }
-        public Worksheet Worksheet   // property
-        {
-            get { return worksheet; }   // get method
-            //set { worksheet = value; }  // set method
-        }
-        public Workbook Workbook   // property
-        {
-            get { return workbook; }   // get method
-            //set { workbook = value; }  // set method
-        }
-        public String FullFileName   // property
-        {
-            get { return workbook.FullName; }   // get method
-            // set { workbook.FullName = value; }  // set method
-        }
+        //public Worksheet Worksheet   // property
+        //{
+        //    get { return worksheet; }   // get method
+        //    //set { worksheet = value; }  // set method
+        //}
+        //public Workbook Workbook   // property
+        //{
+        //    get { return workbook; }   // get method
+        //    //set { workbook = value; }  // set method
+        //}
+        //public String FullFileName   // property
+        //{
+        //    get { return workbook.FullName; }   // get method
+        //    // set { workbook.FullName = value; }  // set method
+        //}
 
         // class object setup function
         private void Init()
         {
             column_name = new List<String>();
             column_name_row = data_start_row = data_end_row = status_code = 0;
-            workbook = null; worksheet = null;
+//            worksheet = null;
             data_list = new List<List<String>>();
         }
         public ExcelData() { Init(); }
-        public ExcelData(Workbook workbook, String sheetname, int column_name_row, int data_start_row, int data_end_row = 0)
+        public void InitFromExcel(Worksheet worksheet, int column_name_row, int data_start_row, int data_end_row = 0)
         {
             Init();
-            column_name_row = column_name_row;
-            data_start_row = data_start_row;
-            data_end_row = data_end_row;
-            workbook = workbook;
+            this.column_name_row = column_name_row;
+            this.data_start_row = data_start_row;
+            this.data_end_row = data_end_row;
 
-            if (workbook == null)
-            {
-                status_code = -1;
-                return;
-            }
-
-            // Select and read Test Plan sheet
-            Worksheet Worksheet = ExcelAction.Find_Worksheet(workbook, sheetname);
-            if (Worksheet == null)
+            if (worksheet == null)
             {
                 status_code = -2;
                 return;
             }
 
-            SetupColumnName();
+            this.column_name = InitColumnNameFromExcel(worksheet, Column_Name_Row);
 
             if (Data_Start_Row <= Column_Name_Row)
             {
@@ -122,24 +113,90 @@ namespace ExcelReportApplication
                 }
                 if (all_white_space) break;
                 data_list.Add(list_str);
+                row_index++;
             }
+            this.data_end_row = row_index - 1;
+            status_code = 1;
+        }
+        public void InitFromExcelColumns(Worksheet worksheet, List<String> column_names, int column_name_row, int data_start_row, int data_end_row = 0)
+        {
+            Init();
+            this.column_name_row = column_name_row;
+            this.data_start_row = data_start_row;
+            this.data_end_row = data_end_row;
+
+            if (worksheet == null)
+            {
+                status_code = -2;
+                return;
+            }
+
+            this.column_name.AddRange(column_names);
+
+            if (Data_Start_Row <= Column_Name_Row)
+            {
+                status_code = -4;
+                return;
+            }
+
+            Boolean no_end_row = false;
+            if (Data_End_Row <= 0)
+                no_end_row = true;
+
+            // find out col_index of column_names on input excel
+            // if "-1", it means this column on excel is not used.
+            List<int> col_index_list = new List<int>();
+            col_index_list.Add(-1);     // column_0 is not used in excel so set to -1
+            int col_index = 1;
+            String str = ExcelAction.GetCellTrimmedString(worksheet, Column_Name_Row, col_index);
+            while (String.IsNullOrWhiteSpace(str) == false)
+            {
+                int col_found = column_names.IndexOf(str);
+                col_index_list.Add(col_found);
+                col_index++;
+                str = ExcelAction.GetCellTrimmedString(worksheet, Column_Name_Row, col_index);
+            }
+
+            int row_index = Data_Start_Row;
+            while ((no_end_row) || (row_index < Data_End_Row))
+            {
+                Boolean all_white_space = true;
+                col_index = 1;
+                List<String> list_str = new List<String>();
+                list_str.AddRange(new string[column_names.Count]);
+                while (col_index < col_index_list.Count)  // col_index is from 1 to (col_index_list.Count-1) (because a dummy value for col_index 0 has been added)
+                {
+                    int member_index = col_index_list[col_index];
+                    if (member_index >= 0)
+                    {
+                        str = ExcelAction.GetCellTrimmedString(worksheet, row_index, col_index);
+                        if (String.IsNullOrWhiteSpace(str) == false)
+                        {
+                            all_white_space = false;
+                        }
+                        list_str[member_index] = str;
+                    }
+                    col_index++;
+                }
+                if (all_white_space) break;
+                data_list.Add(list_str);
+                row_index++;
+            }
+            this.data_end_row = row_index - 1;
             status_code = 1;
         }
 
         // class member function
-        public void SetupColumnName()
+        public List<String> InitColumnNameFromExcel(Worksheet worksheet, int name_row)
         {
             column_name = new List<String>();
 
             // exception prevention
-            if (worksheet == null)
-                return;
-
-            if (column_name_row <= 0)
-                return;
+            if ((worksheet == null)||(name_row <= 0))
+                return column_name;
 
             int cell_col_index = 1;
-            String str = ExcelAction.GetCellTrimmedString(worksheet, column_name_row, cell_col_index);
+            String str = ExcelAction.GetCellTrimmedString(worksheet, name_row, cell_col_index);
 
             while (String.IsNullOrWhiteSpace(str) == false)
             {
@@ -148,8 +205,10 @@ namespace ExcelReportApplication
                     str = "_" + str;
                 }
                 column_name.Add(str);
-                str = ExcelAction.GetCellTrimmedString(worksheet, column_name_row, ++cell_col_index);
+                str = ExcelAction.GetCellTrimmedString(worksheet, name_row, ++cell_col_index);
             }
+
+            return column_name;
         }
         public Boolean ContainsColumn(String name) { return (column_name.Contains(name)); }
         public int GetColumnIndex(String name) { return (column_name.IndexOf(name)); } // if not found in IndexOf, return -1 
@@ -426,9 +485,8 @@ namespace ExcelReportApplication
         }
         
         // *** Use with caution and make sure the content of file is consistent with data_list
-        public void SaveWorkbookAs(String save_filename) { ExcelAction.SaveExcelWorkbook(this.workbook, save_filename); }
         //public void CopyToNewWorkbook(String new_filename) { ExcelAction.SaveExcelWorkbook(this.workbook, save_filename); }
-        public Boolean UpdateExcel()
+        public Boolean UpdateExcel(Worksheet worksheet)
         {
             Boolean b_Ret = true;
             int row_index = data_start_row;
