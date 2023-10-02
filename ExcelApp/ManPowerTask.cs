@@ -108,18 +108,25 @@ namespace ExcelReportApplication
         static public DateTime Start_Date, End_Date;    // search all CSV
         static public int Start_Week, End_Week;         // search all CSV
         static public List<Boolean> IsWorkingDay = new List<Boolean>();
-        static public String Title_StartDate_to_EndDate;  // Generated according to Start_Date, End_Date
+        //static public String Title_StartDate_to_EndDate;  // Generated according to Start_Date, End_Date
         static public String Title_StartWeek_to_EndWeek;  // Generated according to Start_Date, End_Date
         static public String Title_Project_Action_Owner_WeekOfYear_ManHour;
         static public Dictionary<int, int> WorkingDayInWeek = new Dictionary<int, int>();
         static public List<int> WeekOfYearList = new List<int>();
 
-        static public String hierarchy_string_for_project = "Task";
-        static public String hierarchy_string_for_action = "Manpower";
+        static public String hierarchy_string_for_project_v1 = "Task";
+        static public String hierarchy_string_for_action_v1 = "Manpower";
+        static public String hierarchy_string_for_project_v2 = "Manpower";
+        static public String hierarchy_string_for_action_v2 = "Sub-Manpower";
         static public String hierarchy_string_for_D0_project = "Project";
         static public String hierarchy_string_for_D0_action = "Sub-Project";
         static public String empty_average_manhour = " ";
         static public Double empty_average_manhour_value = -1.0;
+
+        static public Boolean hierarchy_D0_v1_detected = false;
+        static public Boolean hierarchy_non_D0_v1_detected = false;
+        static public Boolean hierarchy_auto_detected_finished = false;
+        static public Boolean hierarchy_auto_detected_failed = false;
 
         static public String Recent_Task_Project_Name;
 
@@ -132,6 +139,70 @@ namespace ExcelReportApplication
         public ManPower(List<String> elements)
         {
             this.SetMemberByString(elements);
+        }
+
+        public Boolean Check_If_Hierarchy_Project()
+        {
+            if (hierarchy_auto_detected_failed)
+                return false;
+
+            if (hierarchy_D0_v1_detected)
+            {
+                // (1) hierarchy for D0 is (Project/Sub-Project)
+                if (Hierarchy == hierarchy_string_for_D0_project)
+                {
+                    return true;
+                }
+            }
+            else if (hierarchy_non_D0_v1_detected)
+            {
+                // (2) hierarchy non-D0 v1 is (Task/Manpower)
+                if (Hierarchy == hierarchy_string_for_project_v1)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                // (3) hierarchy non-D0 v2 is (Manpower/Sub-Manpower)
+                if (Hierarchy == hierarchy_string_for_project_v2)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public Boolean Check_If_Hierarchy_Action()
+        {
+            if (hierarchy_auto_detected_failed)
+                return false;
+
+            if (hierarchy_D0_v1_detected)
+            {
+                // (1) hierarchy for D0 is (Project/Sub-Project)
+                if (Hierarchy == hierarchy_string_for_D0_action)
+                {
+                    return true;
+                }
+            }
+            else if (hierarchy_non_D0_v1_detected)
+            {
+                // (2) hierarchy non-D0 v1 is (Task/Manpower)
+                if (Hierarchy == hierarchy_string_for_action_v1)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                // (3) hierarchy non-D0 v1 is (Manpower/Sub-Manpower)
+                if (Hierarchy == hierarchy_string_for_action_v2)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public void SetMemberByString(List<String> members)
@@ -169,27 +240,109 @@ namespace ExcelReportApplication
             In_progress_IC = members[index++];
             Done_IC = members[index++];
             Total_IC = members[index++];
-            // For D0
-            if ((Hierarchy == hierarchy_string_for_D0_project) || (Hierarchy == hierarchy_string_for_D0_action))
+
+            // auto-detecting hierarchy for v1 (Task/Manpower)
+            // v2 is (Manpower/Sub-Manpower)
+            if (hierarchy_auto_detected_finished == false)
             {
-                Product_Type = members[index++];
-            }
-            Man_hour = members[index++];
-            // For D0
-            if ((Hierarchy == hierarchy_string_for_D0_project) || (Hierarchy == hierarchy_string_for_D0_action))
-            {
-                Customer = members[index++];
+                if (Hierarchy == hierarchy_string_for_project_v1)
+                {
+                    hierarchy_non_D0_v1_detected = true;
+                    hierarchy_D0_v1_detected = false;
+                    hierarchy_auto_detected_finished = true;
+                    hierarchy_auto_detected_failed = false;
+                }
+                else if (Hierarchy == hierarchy_string_for_project_v2)
+                {
+                    hierarchy_non_D0_v1_detected = false;
+                    hierarchy_D0_v1_detected = false;
+                    hierarchy_auto_detected_finished = true;
+                    hierarchy_auto_detected_failed = false;
+                }
+                else if (Hierarchy == hierarchy_string_for_D0_project)
+                {
+                    hierarchy_D0_v1_detected = true;
+                    hierarchy_auto_detected_finished = true;
+                    hierarchy_auto_detected_failed = false;
+                }
+                else
+                {
+                    hierarchy_D0_v1_detected = false;
+                    hierarchy_auto_detected_finished = true;
+                    hierarchy_auto_detected_failed = true;
+                }
             }
 
+            // For D0
+            if (hierarchy_D0_v1_detected)
+            {
+                Product_Type = members[index++];
+                Man_hour = members[index++];
+                Customer = members[index++];
+            }
+            else
+            {
+                Man_hour = members[index++];
+            }
+            
             // Post-processing
-            if ((Hierarchy == hierarchy_string_for_project) || (Hierarchy == hierarchy_string_for_D0_project))
+            if (Check_If_Hierarchy_Project())
             {
                 ManPower.Recent_Task_Project_Name = Title;
             }
-            else if ((Hierarchy == hierarchy_string_for_action) || (Hierarchy == hierarchy_string_for_D0_action))  // only man-power to calculate average man-hour
+            else if (Check_If_Hierarchy_Action())  // only man-power to calculate average man-hour
             {
                 Process_ManPower_Data();
             }
+            else
+            {
+            }
+
+            //if (hierarchy_D0_v1_detected)
+            //{
+            //    // (1) hierarchy for D0 is (Project/Sub-Project)
+            //    if (Hierarchy == hierarchy_string_for_D0_project)
+            //    {
+            //        ManPower.Recent_Task_Project_Name = Title;
+            //    }
+            //    else if (Hierarchy == hierarchy_string_for_D0_action)  // only man-power to calculate average man-hour
+            //    {
+            //        Process_ManPower_Data();
+            //    }
+            //    else
+            //    {
+            //    }
+            //}
+            //else if (hierarchy_non_D0_v1_detected)
+            //{
+            //    // (1) hierarchy non-D0 v1 is (Task/Manpower)
+            //    if (Hierarchy == hierarchy_string_for_project_v1)
+            //    {
+            //        ManPower.Recent_Task_Project_Name = Title;
+            //    }
+            //    else if (Hierarchy == hierarchy_string_for_action_v1)  // only man-power to calculate average man-hour
+            //    {
+            //        Process_ManPower_Data();
+            //    }
+            //    else
+            //    {
+            //    }
+            //}
+            //else
+            //{
+            //    // (1) hierarchy non-D0 v1 is (Manpower/Sub-Manpower)
+            //    if (Hierarchy == hierarchy_string_for_project_v2)
+            //    {
+            //        ManPower.Recent_Task_Project_Name = Title;
+            //    }
+            //    else if (Hierarchy == hierarchy_string_for_action_v2)  // only man-power to calculate average man-hour
+            //    {
+            //        Process_ManPower_Data();
+            //    }
+            //    else
+            //    {
+            //    }
+            //}
         }
         //// generated data for each "Manpower" task (hierachy_string == Manpower)
         //public String Task_Project_Name;
@@ -338,118 +491,118 @@ namespace ExcelReportApplication
         }
 
         // this function is working properly when title start/end date are set up correctly.
-        public String GenerateManPowerDailyEffortString()
-        {
-            String ret_str = "";
+        //public String GenerateManPowerDailyEffortString()
+        //{
+        //    String ret_str = "";
 
-            // check if (1) a man-power item (2) Average ManHour is not empty (3) start/end date is not correct
-            if ((this.Hierarchy != hierarchy_string_for_action) || (this.Daily_Average_ManHour == empty_average_manhour) ||
-                (this.Task_Start_Date > this.Task_End_Date) || (ManPower.Start_Date > ManPower.End_Date))
-            {
-                // to-check: shouldn't be here
-                return ret_str;
-            }
+        //    // check if (1) a man-power item (2) Average ManHour is not empty (3) start/end date is not correct
+        //    if ((this.Check_If_Hierarchy_Action()) || (this.Daily_Average_ManHour == empty_average_manhour) ||
+        //        (this.Task_Start_Date > this.Task_End_Date) || (ManPower.Start_Date > ManPower.End_Date))
+        //    {
+        //        // to-check: shouldn't be here
+        //        return ret_str;
+        //    }
 
-            // Find overlay with Task_Start/Task_End -- by default
-            DateTime overlay_start = ManPower.Start_Date, overlay_end = ManPower.End_Date;
+        //    // Find overlay with Task_Start/Task_End -- by default
+        //    DateTime overlay_start = ManPower.Start_Date, overlay_end = ManPower.End_Date;
 
-            // check 1: Task start is later than Man Power Start or not? later one will be the new overlay start_date
-            if (this.Task_Start_Date > overlay_start)
-            {
-                overlay_start = this.Task_Start_Date;
-            }
+        //    // check 1: Task start is later than Man Power Start or not? later one will be the new overlay start_date
+        //    if (this.Task_Start_Date > overlay_start)
+        //    {
+        //        overlay_start = this.Task_Start_Date;
+        //    }
 
-            // check 2: Task end date is earlier than Man Power End date or not? earlier one will be the new overlay end_date
-            if (this.Task_End_Date < overlay_end)
-            {
-                overlay_end = this.Task_End_Date;
-            }
+        //    // check 2: Task end date is earlier than Man Power End date or not? earlier one will be the new overlay end_date
+        //    if (this.Task_End_Date < overlay_end)
+        //    {
+        //        overlay_end = this.Task_End_Date;
+        //    }
 
-            int overlay_start_index = (int)(overlay_start - ManPower.Start_Date).TotalDays,
-                overlay_end_index = (int)(overlay_end - ManPower.Start_Date).TotalDays,
-                total_end_index = (int)(ManPower.End_Date - ManPower.Start_Date).TotalDays;
+        //    int overlay_start_index = (int)(overlay_start - ManPower.Start_Date).TotalDays,
+        //        overlay_end_index = (int)(overlay_end - ManPower.Start_Date).TotalDays,
+        //        total_end_index = (int)(ManPower.End_Date - ManPower.Start_Date).TotalDays;
 
-            // 1st day is already overlay-date or not? if yes, average-manhour for working day or "0" for holiday
-            // if 1st day is not-yet an overlay-date, fill "0"
-            if (overlay_start_index == 0)
-            {
-                ret_str += (ManPower.IsWorkingDay[0]) ? this.Daily_Average_ManHour : "0";
-            }
-            else
-            {
-                ret_str += "0";
-            }
+        //    // 1st day is already overlay-date or not? if yes, average-manhour for working day or "0" for holiday
+        //    // if 1st day is not-yet an overlay-date, fill "0"
+        //    if (overlay_start_index == 0)
+        //    {
+        //        ret_str += (ManPower.IsWorkingDay[0]) ? this.Daily_Average_ManHour : "0";
+        //    }
+        //    else
+        //    {
+        //        ret_str += "0";
+        //    }
 
-            int date_index = 1;
+        //    int date_index = 1;
 
-            // before overlay
-            while (date_index < overlay_start_index)
-            {
-                ret_str += ", 0";
-                date_index++;
-            }
+        //    // before overlay
+        //    while (date_index < overlay_start_index)
+        //    {
+        //        ret_str += ", 0";
+        //        date_index++;
+        //    }
 
-            // during overlay -- output average man-hour
-            while (date_index <= overlay_end_index)
-            {
-                ret_str += ", ";
-                ret_str += (ManPower.IsWorkingDay[date_index]) ? this.Daily_Average_ManHour : "0";
-                date_index++;
-            }
+        //    // during overlay -- output average man-hour
+        //    while (date_index <= overlay_end_index)
+        //    {
+        //        ret_str += ", ";
+        //        ret_str += (ManPower.IsWorkingDay[date_index]) ? this.Daily_Average_ManHour : "0";
+        //        date_index++;
+        //    }
 
-            // after overlay
-            while (date_index <= total_end_index)
-            {
-                ret_str += ", 0";
-                date_index++;
-            }
+        //    // after overlay
+        //    while (date_index <= total_end_index)
+        //    {
+        //        ret_str += ", 0";
+        //        date_index++;
+        //    }
 
 
-            //DateTime filling_Date = ManPower.Start_Date;
+        //    //DateTime filling_Date = ManPower.Start_Date;
 
-            //// 1st date is already overlay-date?
-            //if (filling_Date == overlay_start)
-            //{
-            //    ret_str += this.Average_ManHour;    // if yes, output average manhour
-            //}
-            //else
-            //{
-            //    ret_str += "0";
-            //}
-            //filling_Date = filling_Date.AddDays(1.0);
+        //    //// 1st date is already overlay-date?
+        //    //if (filling_Date == overlay_start)
+        //    //{
+        //    //    ret_str += this.Average_ManHour;    // if yes, output average manhour
+        //    //}
+        //    //else
+        //    //{
+        //    //    ret_str += "0";
+        //    //}
+        //    //filling_Date = filling_Date.AddDays(1.0);
 
-            //// before overlay
-            //while(filling_Date < overlay_start) 
-            //{
-            //    ret_str += ", 0";
-            //    filling_Date = filling_Date.AddDays(1.0);
-            //}
+        //    //// before overlay
+        //    //while(filling_Date < overlay_start) 
+        //    //{
+        //    //    ret_str += ", 0";
+        //    //    filling_Date = filling_Date.AddDays(1.0);
+        //    //}
 
-            //// during overlay -- output average man-hour
-            //while(filling_Date <= overlay_end)
-            //{
-            //    ret_str += ", ";
-            //    if (DateOnly.IsHoliday(filling_Date))
-            //    {
-            //        ret_str += "0";
-            //    }
-            //    else
-            //    {
-            //        ret_str += this.Average_ManHour; 
-            //    }
-            //    filling_Date = filling_Date.AddDays(1.0);
-            //}
+        //    //// during overlay -- output average man-hour
+        //    //while(filling_Date <= overlay_end)
+        //    //{
+        //    //    ret_str += ", ";
+        //    //    if (DateOnly.IsHoliday(filling_Date))
+        //    //    {
+        //    //        ret_str += "0";
+        //    //    }
+        //    //    else
+        //    //    {
+        //    //        ret_str += this.Average_ManHour; 
+        //    //    }
+        //    //    filling_Date = filling_Date.AddDays(1.0);
+        //    //}
 
-            //// after overlay
-            //while (filling_Date <= ManPower.End_Date)
-            //{
-            //    ret_str += ", 0";
-            //    filling_Date = filling_Date.AddDays(1.0);
-            //}
+        //    //// after overlay
+        //    //while (filling_Date <= ManPower.End_Date)
+        //    //{
+        //    //    ret_str += ", 0";
+        //    //    filling_Date = filling_Date.AddDays(1.0);
+        //    //}
 
-            this.Daily_ManHour_String = ret_str;
-            return ret_str;
-        }
+        //    this.Daily_ManHour_String = ret_str;
+        //    return ret_str;
+        //}
 
         public override String ToString()
         {
@@ -593,7 +746,7 @@ namespace ExcelReportApplication
                     ManPower.IsWorkingDay.Add(true);
                 }
             }
-            ManPower.Title_StartDate_to_EndDate = ManPower.GenerateDateTitle(ManPower.Start_Date, ManPower.End_Date);
+            //ManPower.Title_StartDate_to_EndDate = ManPower.GenerateDateTitle(ManPower.Start_Date, ManPower.End_Date);
             ManPower.Title_StartWeek_to_EndWeek = ManPower.GenerateWeekOfYearTitle(ManPower.Start_Date, ManPower.End_Date);
 
             // Setup static class YearWeek variables
@@ -709,6 +862,7 @@ namespace ExcelReportApplication
 
         static public void ProcessManPowerPlan_V2(String manpower_csv)
         {
+            ManPower.hierarchy_auto_detected_finished = false;
             List<ManPower> manpower_list_before = ReadManPowerTaskCSV(manpower_csv);
             List<ManPower> manpower_list = Processing_DateWeekHoliday(manpower_list_before);
             //DateTime manpower_due_date = FindLatestDueDate(manpower_list);
@@ -727,11 +881,11 @@ namespace ExcelReportApplication
             // add items in week of year
             foreach (ManPower mp in manpower_list)
             {
-                if ((mp.Hierarchy == ManPower.hierarchy_string_for_project) || (mp.Hierarchy == ManPower.hierarchy_string_for_D0_project))
+                if (mp.Check_If_Hierarchy_Project())
                 {
                     csv.AppendLine(Empty_Field_String + mp.ToString());
                 }
-                else if ((mp.Hierarchy == ManPower.hierarchy_string_for_action) || (mp.Hierarchy == ManPower.hierarchy_string_for_D0_action))   // only man-power to calculate average man-hour
+                else if (mp.Check_If_Hierarchy_Action())   // only man-power to calculate average man-hour
                 {
                     // need to deal with 1st week and last week of this task
 
@@ -808,6 +962,7 @@ namespace ExcelReportApplication
 
         static public void ProcessManPowerPlan_V3(String manpower_csv)
         {
+            ManPower.hierarchy_auto_detected_finished = false;
             List<ManPower> manpower_list_before = ReadManPowerTaskCSV(manpower_csv);
             List<ManPower> manpower_list = Processing_DateWeekHoliday(manpower_list_before);
             //DateTime manpower_due_date = FindLatestDueDate(manpower_list);
@@ -818,7 +973,7 @@ namespace ExcelReportApplication
             // Setup Title line
             // Setup & repeat for weekly man-hour
             String Empty_Field_String = ",,,,,";
-            ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour =    ManPower.AddQuoteWithComma("ProjectStage") +
+            ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour = ManPower.AddQuoteWithComma("ProjectStage") +
                                                                         ManPower.AddQuoteWithComma("TestAction") +
                                                                         ManPower.AddQuoteWithComma("Owner") +
                                                                         ManPower.AddQuoteWithComma("Week") +
@@ -845,11 +1000,11 @@ namespace ExcelReportApplication
                     category_string += ",";
                 }
 
-                if ((mp.Hierarchy == ManPower.hierarchy_string_for_project) || (mp.Hierarchy == ManPower.hierarchy_string_for_D0_project))
+                if (mp.Check_If_Hierarchy_Project())
                 {
                     csv.AppendLine(Empty_Field_String + category_string + mp.ToString());
                 }
-                else if ((mp.Hierarchy == ManPower.hierarchy_string_for_action) || (mp.Hierarchy == ManPower.hierarchy_string_for_D0_action))   // only man-power to calculate average man-hour
+                else if (mp.Check_If_Hierarchy_Action())   // only man-power to calculate average man-hour
                 {
                     // need to deal with 1st week and last week of this task
 
