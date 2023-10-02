@@ -45,24 +45,24 @@ namespace ExcelReportApplication
 
         public static ReportType[] ReportSelectableTable =
         {
-            //ReportType.FullIssueDescription_TC,                     // report 1
-            ////ReportType.FullIssueDescription_Summary,
-            ////ReportType.StandardTestReportCreation,
-            //ReportType.KeywordIssue_Report_SingleFile,
-            ////ReportType.TC_Likely_Passed,
-            //ReportType.FindAllKeywordInReport,
-            //ReportType.KeywordIssue_Report_Directory,               // report 7
-            ////ReportType.Excel_Sheet_Name_Update_Tool,
-            //ReportType.FullIssueDescription_TC_report_judgement,    // report 9
-            //ReportType.CreateCSTReport,                             // report A
-            ////ReportType.TC_AutoCorrectReport_By_Filename,
-            //ReportType.TC_AutoCorrectReport_By_ExcelList, 
-            //ReportType.CopyReportOnly,
-            //ReportType.RemoveInternalSheet, 
-            ////ReportType.TC_GroupSummaryReport,
-            ////ReportType.Update_Report_Linked_Issue,
-            //ReportType.Update_Keyword_and_TC_Report,
-            ReportType.Man_Power_Processing,
+            ReportType.FullIssueDescription_TC,                     // report 1
+            //ReportType.FullIssueDescription_Summary,
+            //ReportType.StandardTestReportCreation,
+            ReportType.KeywordIssue_Report_SingleFile,
+            //ReportType.TC_Likely_Passed,
+            ReportType.FindAllKeywordInReport,
+            ReportType.KeywordIssue_Report_Directory,               // report 7
+            //ReportType.Excel_Sheet_Name_Update_Tool,
+            ReportType.FullIssueDescription_TC_report_judgement,    // report 9
+            ReportType.CreateCSTReport,                             // report A
+            //ReportType.TC_AutoCorrectReport_By_Filename,
+            ReportType.TC_AutoCorrectReport_By_ExcelList, 
+            ReportType.CopyReportOnly,
+            ReportType.RemoveInternalSheet, 
+            //ReportType.TC_GroupSummaryReport,
+            //ReportType.Update_Report_Linked_Issue,
+            ReportType.Update_Keyword_and_TC_Report,
+            //ReportType.Man_Power_Processing,
          };
 
         //public static ReportType[] ReportSelectableTable =
