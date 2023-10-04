@@ -1120,7 +1120,7 @@ namespace ExcelReportApplication
             }
             else
             {
-                bug_status_string.Add(new StyleString("0A", Color.Black));
+                bug_status_string.Add(new StyleString("0A", Issue.Keyword_report_FontColor));
             }
             //bug_status_string.Add(new StyleString(",", Color.Black));
             StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn, bug_status_string);
@@ -1133,7 +1133,7 @@ namespace ExcelReportApplication
             }
             else
             {
-                bug_status_string.Add(new StyleString("0B", Color.Black));
+                bug_status_string.Add(new StyleString("0B", Issue.Keyword_report_FontColor));
             }
             //bug_status_string.Add(new StyleString(",", Color.Black));
             StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 1, bug_status_string);
@@ -1146,7 +1146,7 @@ namespace ExcelReportApplication
             }
             else
             {
-                bug_status_string.Add(new StyleString("0C", Color.Black));
+                bug_status_string.Add(new StyleString("0C", Issue.Keyword_report_FontColor));
             }
             StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 2, bug_status_string);
             bug_status_string.Clear();
@@ -1158,7 +1158,7 @@ namespace ExcelReportApplication
             }
             else
             {
-                bug_status_string.Add(new StyleString("0D", Color.Black));
+                bug_status_string.Add(new StyleString("0D", Issue.Keyword_report_FontColor));
             }
             StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 3, bug_status_string);
             bug_status_string.Clear();
@@ -1166,7 +1166,7 @@ namespace ExcelReportApplication
             issue_count = severity_count.TotalWaived();
             if (issue_count > 0)
             {
-                bug_status_string.Add(new StyleString(issue_count.ToString() + " Waived", Issue.WAIVED_ISSUE_COLOR));
+                bug_status_string.Add(new StyleString(issue_count.ToString() + " Waived", Issue.Keyword_WAIVED_ISSUE_COLOR));
                 StyleString.WriteStyleString(result_worksheet, keyword.BugStatusAtRow, keyword.BugStatusAtColumn + 4, bug_status_string);
             }
             else

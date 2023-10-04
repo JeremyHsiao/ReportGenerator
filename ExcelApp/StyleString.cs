@@ -476,14 +476,14 @@ Returns or sets the type of underline applied to the font.
                 processed_count++;
                 if (String.IsNullOrWhiteSpace(key) != true)
                 {
-                    Color color_by_severity = Issue.ISSUE_DEFAULT_COLOR;
+                    Color color_by_severity = Issue.Keyword_report_FontColor;
                     if (issue.Status == Issue.STR_CLOSE)
                     {
-                        color_by_severity = Issue.CLOSED_ISSUE_COLOR;
+                        color_by_severity = Issue.Keyword_CLOSED_ISSUE_COLOR;
                     }
                     else if (issue.Status == Issue.STR_WAIVE)
                     {
-                        color_by_severity = Issue.WAIVED_ISSUE_COLOR;
+                        color_by_severity = Issue.Keyword_WAIVED_ISSUE_COLOR;
                         is_waived = true;
                     }
                     else // if ((issue.Status != Issue.STR_CLOSE) && (issue.Status != Issue.STR_WAIVE))

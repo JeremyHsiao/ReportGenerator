@@ -541,6 +541,8 @@ namespace ExcelReportApplication
             ReportGenerator.LinkIssue_B_Issue_Color = XMLConfig.ReadAppSetting_Color("LinkIssue_B_Issue_Color");
             ReportGenerator.LinkIssue_C_Issue_Color = XMLConfig.ReadAppSetting_Color("LinkIssue_C_Issue_Color");
             ReportGenerator.LinkIssue_D_Issue_Color = XMLConfig.ReadAppSetting_Color("LinkIssue_D_Issue_Color");
+            ReportGenerator.LinkIssue_WAIVED_ISSUE_COLOR = ReportGenerator.LinkIssue_report_FontColor;
+            ReportGenerator.LinkIssue_CLOSED_ISSUE_COLOR = ReportGenerator.LinkIssue_report_FontColor;
 
             // Input Excel
             HeaderTemplate.SheetName_HeaderTemplate = XMLConfig.ReadAppSetting_String("InputExcel_Sheetname_HeaderTemplate");
@@ -555,6 +557,8 @@ namespace ExcelReportApplication
             Issue.Keyword_B_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_B_Issue_Color");
             Issue.Keyword_C_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_C_Issue_Color");
             Issue.Keyword_D_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("Keyword_report_D_Issue_Color");
+            Issue.Keyword_WAIVED_ISSUE_COLOR = Issue.Keyword_report_FontColor;
+            Issue.Keyword_CLOSED_ISSUE_COLOR = Issue.Keyword_report_FontColor;
 
             KeywordReport.Replace_Conclusion = XMLConfig.ReadAppSetting_Boolean("Keyword_report_replace_conclusion");
             KeywordReport.Hide_Keyword_Result_Bug = XMLConfig.ReadAppSetting_Boolean("Keyword_report_Hide_Keyword_Result_Bug");

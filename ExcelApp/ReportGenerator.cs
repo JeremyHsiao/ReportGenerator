@@ -34,6 +34,8 @@ namespace ExcelReportApplication
         static public Color LinkIssue_B_Issue_Color = Color.Black;
         static public Color LinkIssue_C_Issue_Color = Color.Black;
         static public Color LinkIssue_D_Issue_Color = Color.Black;
+        static public Color LinkIssue_WAIVED_ISSUE_COLOR = Color.Black;
+        static public Color LinkIssue_CLOSED_ISSUE_COLOR = Color.Black;
 
 
         static public Dictionary<string, TestCase> GetTestcaseLUT_by_Sheetname()

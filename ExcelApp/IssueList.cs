@@ -437,9 +437,8 @@ namespace ExcelReportApplication
         static public Color Keyword_B_ISSUE_COLOR = Color.Black;
         static public Color Keyword_C_ISSUE_COLOR = Color.Black;
         static public Color Keyword_D_ISSUE_COLOR = Color.Black;
-        static public Color WAIVED_ISSUE_COLOR = Color.Black;
-        static public Color CLOSED_ISSUE_COLOR = Color.Black;
-        static public Color ISSUE_DEFAULT_COLOR = Color.Black;
+        static public Color Keyword_WAIVED_ISSUE_COLOR = Color.Black;
+        static public Color Keyword_CLOSED_ISSUE_COLOR = Color.Black;
 
         static public List<Issue> GenerateIssueList(string buglist_filename)
         {
