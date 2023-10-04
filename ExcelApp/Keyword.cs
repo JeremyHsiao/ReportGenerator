@@ -1378,7 +1378,7 @@ namespace ExcelReportApplication
                 sub_report_list.Add(filename);
             }
 
-            sub_report_list.Sort(TestPlan.Compare_Sheetname_Ascending);
+            sub_report_list.Sort(TestPlan.Compare_Sheetname_by_Filename_Ascending);
 
             // Adjust and check the last row of table
             int row_found = 1;
@@ -1571,7 +1571,7 @@ namespace ExcelReportApplication
             // 0.2 filename check to exclude non-report files.
             List<String> existing_report_filelist = Storage.FilterFilename(file_list);
             // Sorting report_file (file_list) in descending order so that x.0 report will be processed after all other x.n reprot
-            existing_report_filelist.Sort(TestPlan.Compare_Sheetname_Descending);
+            existing_report_filelist.Sort(TestPlan.Compare_Sheetname_by_Filename_Descending);
             // 0.3 output files in file_list but not in report_filename into Not_Keyword_File
             foreach (String report_file in existing_report_filelist)
             {

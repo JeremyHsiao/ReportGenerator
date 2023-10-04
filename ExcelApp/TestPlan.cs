@@ -453,12 +453,29 @@ namespace ExcelReportApplication
         //    return final_compare;
         //}
 
-        static public int Compare_Sheetname_Ascending(String x, String y)
+        static public int Compare_Sheetname_Ascending(String sheetname_x, String sheetname_y)
         {
             int final_compare = 0;
 
-            String sheetname_x = TestPlan.GetSheetNameAccordingToFilename(x);
-            String sheetname_y = TestPlan.GetSheetNameAccordingToFilename(y);
+            // process when one of sheetname is null
+            if (sheetname_x == null)
+            {
+                if (sheetname_y == null)
+                {
+                    final_compare = 0;
+                    return final_compare;
+                }
+                else
+                {
+                    final_compare = -1;
+                    return final_compare;
+                }
+            }
+            else if (sheetname_y == null)
+            {
+                final_compare = -1;
+                return final_compare;
+            }
 
             String[] subs_x = sheetname_x.Split('.');
             String[] subs_y = sheetname_y.Split('.');
@@ -480,7 +497,7 @@ namespace ExcelReportApplication
                         final_compare = 0;
                         break;
                     }
-                    else  
+                    else
                     {
                         final_compare = -1;
                         break;
@@ -549,9 +566,18 @@ namespace ExcelReportApplication
             return final_compare;
         }
 
-        static public int Compare_Sheetname_Descending(String x, String y)
+        static public int Compare_Sheetname_by_Filename_Ascending(String filename_x, String filename_y)
         {
-            int compare_result_asceding = Compare_Sheetname_Ascending(x, y);
+
+            String sheetname_x = TestPlan.GetSheetNameAccordingToFilename(filename_x);
+            String sheetname_y = TestPlan.GetSheetNameAccordingToFilename(filename_y);
+
+            return Compare_Sheetname_Ascending(sheetname_x, sheetname_y);
+        }
+
+        static public int Compare_Sheetname_by_Filename_Descending(String filename_x, String filename_y)
+        {
+            int compare_result_asceding = Compare_Sheetname_by_Filename_Ascending(filename_x, filename_y);
             return -compare_result_asceding;
         }
     }
