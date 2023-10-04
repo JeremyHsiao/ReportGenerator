@@ -336,6 +336,64 @@ namespace ExcelReportApplication
                         ret_tc_list.Add(new TestCase(members));
                     }
                 }
+
+                ExcelAction.CloseTestCaseExcel();
+            }
+            else
+            {
+                if (status == ExcelAction.ExcelStatus.ERR_OpenTestCaseExcel_Find_Worksheet)
+                {
+                    // Worksheet not found -- data corruption -- need to check excel
+                    ExcelAction.CloseTestCaseExcel();
+                }
+                else
+                {
+                    // other error -- to be checked 
+                }
+            }
+
+            ReportGenerator.UpdateGlobalTestcaseList(ret_tc_list);
+            ReportGenerator.SetTestcaseLUT_by_Key(TestCase.UpdateTCListLUT_by_Key(ret_tc_list));
+            ReportGenerator.SetTestcaseLUT_by_Sheetname(TestCase.UpdateTCListLUT_by_Sheetname(ret_tc_list));
+            return ret_tc_list;
+        }
+
+        static public ExcelData ExcelData_testcase;
+        static public List<TestCase> GenerateTestCaseList_New(string tclist_filename)
+        {
+            List<TestCase> ret_tc_list = new List<TestCase>();
+
+            ExcelAction.ExcelStatus status = ExcelAction.OpenTestCaseExcel(tclist_filename);
+
+            if (status == ExcelAction.ExcelStatus.OK)
+            {
+                ExcelData_testcase = ExcelAction.InitTCExcelData();
+
+                // prepare LUT for member_index (from 0 in sequence) to column_index  
+                List<int> LUT_member_to_column_index = new List<int>();
+                foreach (String name in TestCaseMemberColumnName)
+                {
+                    int index = ExcelData_testcase.Column_Name.IndexOf(name);
+                    LUT_member_to_column_index.Add(index);
+                }
+
+                // Visit all rows and add content of TestCase
+                for ( int line_index = 0; line_index < ExcelData_testcase.LineCount(); line_index++)
+                {
+                    List<String> members = new List<String>();
+                    foreach (int column_index in LUT_member_to_column_index)
+                    {
+                        String str = ExcelData_testcase.GetCell(line_index, column_index);
+                        members.Add(str);
+                    }
+
+                    String tc_key = members[(int)TestCaseMemberIndex.KEY];
+                    String summary = members[(int)TestCaseMemberIndex.SUMMARY];
+                    if (CheckValidTC_By_Key_Summary(tc_key, summary))
+                    {
+                        ret_tc_list.Add(new TestCase(members));
+                    }
+                }
                 ExcelAction.CloseTestCaseExcel();
             }
             else

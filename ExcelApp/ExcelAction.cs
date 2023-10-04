@@ -1453,6 +1453,14 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
+        static public ExcelData InitTCExcelData(bool IsTemplate = false)
+        {
+            ExcelData excel_data = new ExcelData();
+            Worksheet ws_tclist = (IsTemplate)?ws_tc_template:ws_testcase;
+            excel_data.InitFromExcel(ws_tclist, TestCase.NameDefinitionRow, TestCase.DataBeginRow);
+            return excel_data;
+       }
+
         //static public Workbook OpenCSV(String filename)
         //{
         //    Workbook ret_workbook = null;

@@ -6,10 +6,12 @@ using Microsoft.Office.Interop.Excel;
 using Excel = Microsoft.Office.Interop.Excel;
 using Microsoft.VisualBasic.FileIO;
 using System.IO;
+using System.Text.RegularExpressions;
+
 
 namespace ExcelReportApplication
 {
-    class ExcelData
+    public class ExcelData
     {
         // class member
         private List<String> column_name;
@@ -102,9 +104,9 @@ namespace ExcelReportApplication
                 Boolean all_white_space = true;
                 int col_index = 1;
                 List<String> list_str = new List<String>();
-                while (col_index++ <= Column_Name.Count())
+                while (col_index <= Column_Name.Count())
                 {
-                    String str = ExcelAction.GetCellTrimmedString(worksheet, row_index, col_index);
+                    String str = ExcelAction.GetCellTrimmedString(worksheet, row_index, col_index++);
                     if (String.IsNullOrWhiteSpace(str) == false)
                     {
                         all_white_space = false;
@@ -186,6 +188,42 @@ namespace ExcelReportApplication
             status_code = 1;
         }
 
+        public void WriteToExcel(Worksheet worksheet, int column_name_row, List<String> column_name_list, int data_start_row, List<List<String>> data_list)
+        {
+            this.column_name = column_name_list;
+            this.data_list = data_list;
+            WriteToExcel(worksheet, column_name_row, data_start_row);
+        }
+
+        public void WriteToExcel(Worksheet worksheet, int column_name_row, int data_start_row)
+        {
+            this.column_name_row = column_name_row;
+            this.data_start_row = data_start_row;
+            WriteToExcel(worksheet);
+        }
+
+        public void WriteToExcel(Worksheet worksheet)
+        {
+            int row_index = column_name_row;
+            int col_index = 1;
+            foreach (String name in column_name)
+            {
+                ExcelAction.SetCellValue(worksheet, row_index, col_index++, (String)name);
+            }
+
+            row_index = data_start_row;
+            foreach (List<String> line in data_list)
+            {
+                col_index = 1;
+                foreach (String value in line)
+                {
+                    ExcelAction.SetCellValue(worksheet, row_index, col_index++, (String)value);
+                }
+                row_index++;
+            }
+            data_end_row = row_index--;
+        }
+
         // class member function
         public List<String> InitColumnNameFromExcel(Worksheet worksheet, int name_row)
         {
@@ -211,14 +249,15 @@ namespace ExcelReportApplication
             return column_name;
         }
         public Boolean ContainsColumn(String name) { return (column_name.Contains(name)); }
+        public Boolean ContainsColumns(List<String> name_list) { foreach (String name in name_list) { if (ContainsColumn(name) == false) { return false; } } return true; }
         public int GetColumnIndex(String name) { return (column_name.IndexOf(name)); } // if not found in IndexOf, return -1 
         public String GetColumnName(int column_index) { return (OutOfColumnBoundary(column_index) ? "" : (column_name[column_index])); }
-        public int ListCount() { return data_list.Count; }
+        public int LineCount() { return data_list.Count; }
         public int ColumnCount() { return column_name.Count; }
-        public  Boolean OutOfListBoundary(int list_index) { return ((list_index < 0) || (list_index >= ListCount())); }
+        public  Boolean OutOfListBoundary(int list_index) { return ((list_index < 0) || (list_index >= LineCount())); }
         private Boolean OutOfColumnBoundary(int column_index) { return ((column_index < 0) || (column_index >= ColumnCount())); }
         private Boolean OutOfBoundary(int list_index, int column_index) { return (OutOfListBoundary(list_index) || OutOfColumnBoundary(column_index)); }
-        private String GetCell(int list_index, int column_index) { return (OutOfBoundary(list_index, column_index) ? "" : (data_list[list_index][column_index])); }
+        public String GetCell(int list_index, int column_index) { return (OutOfBoundary(list_index, column_index) ? "" : (data_list[list_index][column_index])); }
         public String GetCell(int list_index, String name) { return (ContainsColumn(name)) ? (GetCell(list_index, GetColumnIndex(name))) : ""; }
         public List<String> GetLine(int line_index) { return (OutOfListBoundary(line_index) ? new List<String>() : (data_list[line_index])); }
         public List<List<String>> GetLines(List<int> line_list)
@@ -360,8 +399,43 @@ namespace ExcelReportApplication
 
             return b_Ret;
         }
-        
-        //public Boolean InsertColumn(String insert_name, String before_name = null, List<String> insert_data = null)   // Before_column == null means inserted after all columns
+        public Boolean DeleteLine(int line)
+        {
+            Boolean b_Ret = true;
+            if (OutOfListBoundary(line))
+                return false;
+
+            data_list.RemoveAt(line);
+
+            return b_Ret;
+        }
+
+        private Boolean ascending = true;
+        private int Compare_index = -1;
+        public int Compare_Sheetname_Ascending(List<String> line_x, List<String> line_y) 
+        { 
+            if (Compare_index<0)
+                return 0;       // cannot compare
+
+            String x = line_x[Compare_index], y = line_y[Compare_index];
+            return TestPlan.Compare_Sheetname_Ascending(x, y);
+        }
+        public Boolean Setup_Compare_Field_and_Function(String field, Boolean ascending = true)
+        {
+            Boolean b_Ret = false;
+
+            Compare_index = GetColumnIndex(field);
+            if (Compare_index >= 0) b_Ret = true;
+            this.ascending = ascending;
+            return b_Ret;
+        }
+
+        private List<Comparison<String>> ascending_list = null;
+        private List<int> Compare_index_list = null;
+        //public int Compare_Ascending
+        //public Boolean Setup_Compare_Field_and_Function
+
+         //public Boolean InsertColumn(String insert_name, String before_name = null, List<String> insert_data = null)   // Before_column == null means inserted after all columns
         //{
         //    Boolean b_Ret = true;
 
@@ -402,9 +476,7 @@ namespace ExcelReportApplication
 
         //    return b_Ret;
         //}
-
-        
-        Boolean CopyDataFrom(ExcelData src_data, List<String> src_column_list = null)
+        public Boolean CopyDataFrom(ExcelData src_data, List<String> src_column_list = null)
         {
             Boolean b_Ret = true;
             foreach (String name in src_column_list)
@@ -421,7 +493,6 @@ namespace ExcelReportApplication
         //}
 
         // class member function for saving files
-
         public Boolean ReadFromCSV(String csv_filename)
         {
             Boolean b_ret = true;
@@ -522,4 +593,130 @@ namespace ExcelReportApplication
     //    }
     //}
 
+    public class ExcelDataApplication
+    {
+
+        static public string SheetName_TestPlan = "TestPlan";
+        static public string SheetName_ImportToJira_Template = "ImportToJira_Template";
+        static public string SheetName_ReportList = "ReportList";
+        static public string SheetName_Jira_TestCase = "general_report";
+        static public Worksheet ws_TestPlan;
+        static public Worksheet ws_ImportToJira_Template;
+        static public Worksheet ws_ReportList;
+        static public Worksheet ws_Jira_TestCase;
+        static public Boolean CheckTestPlanAndReportListAndImportToJira(Workbook workbook)
+        {
+            Boolean b_ret = ExcelAction.WorksheetExist(workbook, SheetName_TestPlan);
+            if (b_ret)
+            {
+                ws_TestPlan = ExcelAction.Find_Worksheet(workbook, SheetName_TestPlan);
+                b_ret = ExcelAction.WorksheetExist(workbook, SheetName_ReportList);
+            }
+            if (b_ret)
+            {
+                ws_ReportList = ExcelAction.Find_Worksheet(workbook, SheetName_ReportList);
+                b_ret = ExcelAction.WorksheetExist(workbook, SheetName_ImportToJira_Template);
+            }
+            if (b_ret)
+            {
+                ws_ImportToJira_Template = ExcelAction.Find_Worksheet(workbook, SheetName_ImportToJira_Template);
+            }
+
+            return b_ret;
+        }
+
+        // Fill ImportToJira_Template (MUST check if columns exist in advance)
+        // 1. Init ImportToJira_Template from worksheet -- to get all columns
+        // 2. init TestPlan from worksheet with columns (see end of line) and remove lines where "Do or Not" is not "V"  { "Test Group", "Summary", "Customer", "SW version", "HW version", "Test Plan Ver.","Priority" };
+        // 3. Write columns from (2) to ImportToJira_Template
+        // 4. Get Column of Testcase {  "Summary", "Test Case Category", "Test Case Purpose", "Test Case Criteria" };
+        // 5. Iterate all "Summary" on Testcase, check if value exists on ImportToJira_Template, if yes then write rest of data column on ImportToJira_Template
+        // 6. Get "Source Report" and "Asignee" Column of Report List
+        // 7. Iterate all "Source Report" on Report List, check if value exists on "Summary" of ImportToJira_Template, if yes then write "Assignee" column on ImportToJira_Template (shortened format of assignee)
+        // 8. Writeback to CSV
+
+        static public void ProcessImportToJira(String csv_filename)
+        {
+            // 1.
+            ExcelData import_to_jira = new ExcelData();
+            import_to_jira.InitFromExcel(worksheet: ws_ImportToJira_Template, column_name_row: 1, data_start_row: 2);
+
+            // 2.
+            ExcelData testplan_selected = new ExcelData();
+            string[] column_to_copy_from_TestPlan = { "Test Group", "Summary", "Customer", "SW version", "HW version", "Test Plan Ver.","Priority" };
+            testplan_selected.InitFromExcelColumns(worksheet: ws_TestPlan, column_names: column_to_copy_from_TestPlan.ToList(), column_name_row: 2, data_start_row: 3);
+            List<String> do_or_not_list = testplan_selected.GetColumn("Do or Not");
+            for (int line_index = do_or_not_list.Count - 1; line_index >= 0; line_index--)
+            {
+                if (do_or_not_list[line_index] != "V")
+                {
+                    testplan_selected.DeleteLine(line_index);
+                }
+            }
+
+            // 3.
+            List<List<String>> testplan_columns = testplan_selected.GetColumns(column_to_copy_from_TestPlan.ToList());
+            for(int index = 0; index < column_to_copy_from_TestPlan.Count(); index++)
+            {
+                import_to_jira.WriteColumn(column_to_copy_from_TestPlan[index], testplan_columns[index]);
+            }
+
+            // 4.
+            ExcelData jira_testcase = new ExcelData(); // to be replaced by actual input data
+            string[] column_to_copy_from_Jira_TestCase = { "Summary", "Test Case Category", "Test Case Purpose", "Test Case Criteria" };
+            List<List<String>> testcase_columns = jira_testcase.GetColumns(column_to_copy_from_Jira_TestCase.ToList());
+
+            // 5.
+            string ImportToJira_Key = column_to_copy_from_TestPlan[1]; // "Summary"
+            int summary_index = import_to_jira.GetColumnIndex(ImportToJira_Key);
+            string TestCase_key = column_to_copy_from_Jira_TestCase[0];
+            int testcase_summary_index = column_to_copy_from_Jira_TestCase.ToList().IndexOf(TestCase_key);
+            int index1 = import_to_jira.GetColumnIndex(column_to_copy_from_Jira_TestCase[1]);
+            int index2 = import_to_jira.GetColumnIndex(column_to_copy_from_Jira_TestCase[2]);
+            int index3 = import_to_jira.GetColumnIndex(column_to_copy_from_Jira_TestCase[3]);
+            for (int line_index = 0; line_index < import_to_jira.LineCount(); line_index++)
+            {
+                List<String> line = import_to_jira.GetLine(line_index);
+                String summary = line[summary_index];
+                int testcase_line_index = testcase_columns[testcase_summary_index].IndexOf(summary);
+                if (testcase_line_index >= 0)
+                {
+                    line[index1] = testcase_columns[1][testcase_line_index];    // here testcase_column is a line*1 column vectore
+                    line[index2] = testcase_columns[2][testcase_line_index];    // here testcase_column is a line*1 column vectore
+                    line[index3] = testcase_columns[3][testcase_line_index];    // here testcase_column is a line*1 column vectore
+                }
+                import_to_jira.WriteLine(line_index, line);
+            }
+
+            // 6. 
+            ExcelData report_list = new ExcelData();
+            string[] column_to_copy_from_ReportList = { "Source Report", "Assignee" };
+            List<List<String>> reportlist_columns = report_list.GetColumns(column_to_copy_from_ReportList.ToList());
+
+            // 7.
+            ImportToJira_Key = column_to_copy_from_TestPlan[1]; // "Summary"
+            summary_index = import_to_jira.GetColumnIndex(ImportToJira_Key);
+            string ReportList_key = column_to_copy_from_ReportList[0];
+            int reportlist_summary_index = column_to_copy_from_ReportList.ToList().IndexOf(ReportList_key);
+            index1 = import_to_jira.GetColumnIndex(column_to_copy_from_ReportList[1]);
+            for (int line_index = 0; line_index < import_to_jira.LineCount(); line_index++)
+            {
+                List<String> line = import_to_jira.GetLine(line_index);
+                String summary = line[summary_index];
+                int reportlist_line_index = reportlist_columns[reportlist_summary_index].IndexOf(summary);
+                if (reportlist_line_index >= 0)
+                {
+                    String full_name = reportlist_columns[1][reportlist_line_index]; 
+                    String english_name = Regex.Replace(full_name, "[\u4E00-\u9FFF]", ""); // 移除中文
+                    String shortend_name = Regex.Replace(english_name, @"\W", "");
+                    line[index1] = shortend_name;    // here testcase_column is a line*1 column vectore
+                }
+                import_to_jira.WriteLine(line_index, line);
+            }
+
+            // 8.
+            import_to_jira.WriteToCSV(csv_filename);
+        }
+
+    }
 }
