@@ -13,6 +13,13 @@ namespace ExcelReportApplication
 {
     public class ExcelData
     {
+        public enum Status
+        {
+            INIT = 0,
+            OK = 1,
+            ERR_WorkSheet = -2,
+            ERR_DataStartRow = -4,
+        }
         // class member
         private List<String> column_name;
         private int column_name_row;
@@ -22,7 +29,7 @@ namespace ExcelReportApplication
         //private Workbook workbook;
         private String csv_filename;
         private List<List<String>> data_list;
-        private int status_code;
+        private Status status_code = Status.INIT;
         public List<String> Column_Name   // property
         {
             get { return column_name; }   // get method
@@ -43,7 +50,7 @@ namespace ExcelReportApplication
             get { return data_end_row; }   // get method
             //set { data_end_row = value; }  // set method
         }
-        public int StatusCode   // property
+        public Status StatusCode   // property
         {
             get { return status_code; }   // get method
             //set { status_code = value; }  // set method
@@ -68,7 +75,8 @@ namespace ExcelReportApplication
         private void Init()
         {
             column_name = new List<String>();
-            column_name_row = data_start_row = data_end_row = status_code = 0;
+            column_name_row = data_start_row = data_end_row = 0;
+            status_code = Status.INIT;
 //            worksheet = null;
             data_list = new List<List<String>>();
         }
@@ -82,7 +90,7 @@ namespace ExcelReportApplication
 
             if (worksheet == null)
             {
-                status_code = -2;
+                status_code = Status.ERR_WorkSheet;
                 return;
             }
 
@@ -90,7 +98,7 @@ namespace ExcelReportApplication
 
             if (Data_Start_Row <= Column_Name_Row)
             {
-                status_code = -4;
+                status_code = Status.ERR_DataStartRow;
                 return;
             }
 
@@ -118,7 +126,7 @@ namespace ExcelReportApplication
                 row_index++;
             }
             this.data_end_row = row_index - 1;
-            status_code = 1;
+            status_code = Status.OK;
         }
         public void InitFromExcelColumns(Worksheet worksheet, List<String> column_names, int column_name_row, int data_start_row, int data_end_row = 0)
         {
@@ -129,7 +137,7 @@ namespace ExcelReportApplication
 
             if (worksheet == null)
             {
-                status_code = -2;
+                status_code = Status.ERR_WorkSheet;
                 return;
             }
 
@@ -137,7 +145,7 @@ namespace ExcelReportApplication
 
             if (Data_Start_Row <= Column_Name_Row)
             {
-                status_code = -4;
+                status_code = Status.ERR_DataStartRow;
                 return;
             }
 
@@ -185,7 +193,7 @@ namespace ExcelReportApplication
                 row_index++;
             }
             this.data_end_row = row_index - 1;
-            status_code = 1;
+            status_code = Status.OK;
         }
 
         public void WriteToExcel(Worksheet worksheet, int column_name_row, List<String> column_name_list, int data_start_row, List<List<String>> data_list)
