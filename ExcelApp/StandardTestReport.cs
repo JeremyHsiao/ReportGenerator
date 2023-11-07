@@ -102,32 +102,32 @@ namespace ExcelReportApplication
         // input_report_dir:  report_root_dir/Database Backup
         // output_report_dir: report_root_dir_DATETIME
 
-        const string src_dir = @"\Database Backup";
-        public static bool CreateStandardTestReportTask(String filename)
-        {
-            // Full file name exist checked before executing task
+        //const string src_dir = @"\Database Backup";
+        //public static bool CreateStandardTestReportTask(String filename)
+        //{
+        //    // Full file name exist checked before executing task
 
-            String file_dir = Storage.GetDirectoryName(filename);
-            String report_root_dir = Storage.GetDirectoryName(file_dir);
-            String input_report_dir = report_root_dir + src_dir;
-            String output_report_dir = Storage.GenerateDirectoryNameWithDateTime(report_root_dir);
+        //    String file_dir = Storage.GetDirectoryName(filename);
+        //    String report_root_dir = Storage.GetDirectoryName(file_dir);
+        //    String input_report_dir = report_root_dir + src_dir;
+        //    String output_report_dir = Storage.GenerateDirectoryNameWithDateTime(report_root_dir);
 
-            // test_plan (sample) dir must exist
-            if (!Storage.DirectoryExists(input_report_dir)) { return false; }  // should exist
+        //    // test_plan (sample) dir must exist
+        //    if (!Storage.DirectoryExists(input_report_dir)) { return false; }  // should exist
 
-            // output test plan root_dir must be inexist so that no overwritten
-            if (Storage.DirectoryExists(output_report_dir)) { return false; } // shouln't exist
+        //    // output test plan root_dir must be inexist so that no overwritten
+        //    if (Storage.DirectoryExists(output_report_dir)) { return false; } // shouln't exist
 
-            // read test-plan sheet NG and return if NG
-            List<TestPlan> testplan = TestReport.ReadTestPlanFromStandardTestReport(filename);
-            if (testplan == null) { return false; }
+        //    // read test-plan sheet NG and return if NG
+        //    List<TestPlan> testplan = TestReport.ReadTestPlanFromStandardTestReport(filename);
+        //    if (testplan == null) { return false; }
 
-            // all input parameters has been checked successfully, so generate
-            List<TestPlan> do_plan = TestPlan.ListDoPlan(testplan);
-            Storage.CreateDirectory(output_report_dir); // create output root-dir
-            TestReport.GenerateTestReportStructure(do_plan, input_report_dir, output_report_dir);
-            return true;
-        }
+        //    // all input parameters has been checked successfully, so generate
+        //    List<TestPlan> do_plan = TestPlan.ListDoPlan(testplan);
+        //    Storage.CreateDirectory(output_report_dir); // create output root-dir
+        //    TestReport.GenerateTestReportStructure(do_plan, input_report_dir, output_report_dir);
+        //    return true;
+        //}
 
         //public static bool CopyTestReportbyExcelList(List<CopyTestReport> report_list)
         //{
