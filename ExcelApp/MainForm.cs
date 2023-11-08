@@ -32,15 +32,16 @@ namespace ExcelReportApplication
             KeywordIssue_Report_Directory,                  // Report 7
             Excel_Sheet_Name_Update_Tool,
             FullIssueDescription_TC_report_judgement,       // Report 9
-            CreateCSTReport,
+            CreateCSTReport,                                // Report A -- Create CST
             TC_AutoCorrectReport_By_Filename,
             TC_AutoCorrectReport_By_ExcelList,              // Report C
             CopyReportOnly,                                 // Report D -- copy only version of report C
             RemoveInternalSheet,                            // Report E -- remove internalsheet version of report C
             TC_GroupSummaryReport,                          // Report F -- Not used
             Update_Report_Linked_Issue,
-            Update_Keyword_and_TC_Report,
-            Man_Power_Processing,
+            Update_Keyword_and_TC_Report,                   // Report H -- it is report 7 + 9
+            Man_Power_Processing,                           // Report I -- man-power
+            Update_Repoart_A_then_Report_H                  // Report J -- it is report A +Ｈ
         }
 
         public static ReportType[] ReportSelectableTable =
@@ -63,6 +64,7 @@ namespace ExcelReportApplication
             //ReportType.Update_Report_Linked_Issue,
             ReportType.Update_Keyword_and_TC_Report,
             //ReportType.Man_Power_Processing,
+            //ReportType.Update_Repoart_A_then_Report_H,
          };
 
         //public static ReportType[] ReportSelectableTable =
@@ -85,6 +87,7 @@ namespace ExcelReportApplication
         //    ReportType.Update_Report_Linked_Issue,
         //    ReportType.Update_Keyword_and_TC_Report,
         //    ReportType.Man_Power_Processing,
+        //    ReportType.Update_Repoart_A_then_Report_H,
         //};
 
         public static int ReportTypeCount = Enum.GetNames(typeof(ReportType)).Length;
@@ -1432,6 +1435,56 @@ namespace ExcelReportApplication
                             }
                         }
                         break;
+                    case ReportType.Update_Repoart_A_then_Report_H:                                    //Report J = A + H
+                        //
+                        //
+                        // TO BE UPDATED
+                        //
+                        //
+                        // copied from report A
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
+                        // to-be-updated
+                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly);
+                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal);
+                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname);
+                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result);
+                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row);
+                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion);
+                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header);
+                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template);
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = false;
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = false;
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = false;
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = true;
+                        //KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = false;
+                        //KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = false;
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = false;
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = true;
+                        bRet = Execute_AutoCorrectTestReportByExcel_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = temp_option_stack.Pop();
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = temp_option_stack.Pop();
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = temp_option_stack.Pop();
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = temp_option_stack.Pop();
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = temp_option_stack.Pop();
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = temp_option_stack.Pop();
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = temp_option_stack.Pop();
+                        KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = temp_option_stack.Pop();
+
+                        // copied from report H
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
+                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                        if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+
+
+                        String report_output_path_2;
+                        bRet = Execute_KeywordIssueGenerationTask_returning_report_path(txtReportFile.Text, true, out report_output_path_2);
+                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_output_path_2, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
+
+
+                        break;
                     default:
                         MsgWindow.AppendText("Report Type has exception. Please check\n");
                         // shouldn't be here.
@@ -1615,6 +1668,23 @@ namespace ExcelReportApplication
                     SetEnable_ReportFile(false);
                     SetEnable_OutputTemplate(true);
                     break;
+                case ReportType.Update_Repoart_A_then_Report_H:            // Report J = A + H
+                    //
+                    //
+                    // TO BE UPDATED
+                    //
+                    //
+                    // copied from report A
+                    SetEnable_BugFile(false);
+                    SetEnable_TCFile(false);
+                    SetEnable_ReportFile(false);
+                    SetEnable_OutputTemplate(true);
+                    // copied from report H
+                    SetEnable_BugFile(true);
+                    SetEnable_TCFile(true);
+                    SetEnable_ReportFile(true);
+                    SetEnable_OutputTemplate(true);
+                    break;
                 default:
                     // Shouldn't be here
                     break;
@@ -1714,6 +1784,21 @@ namespace ExcelReportApplication
                         String short_userName = Storage.GetWindowsLoginUserName();
                         txtOutputTemplate.Text = @"C:\Users\" + short_userName + @"\Downloads\Advance Roadmaps.csv";
                     }
+                    break;
+                case ReportType.Update_Repoart_A_then_Report_H:                  // Report J = A + H
+                    //
+                    //
+                    // TO BE UPDATED
+                    //
+                    //
+                    // copied from report A
+                    if (!btnSelectOutputTemplate_Clicked)
+                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_C_Default_Excel");
+                    // copied from report H
+                    if (!btnSelectReportFile_Clicked)
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                    if (!btnSelectOutputTemplate_Clicked)
+                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
                 default:
                     break;
