@@ -25,7 +25,7 @@ namespace ExcelReportApplication
         {
             FullIssueDescription_TC = 0,
             FullIssueDescription_Summary,
-            StandardTestReportCreation,
+            CreateImportToJiraCSV,
             KeywordIssue_Report_SingleFile,
             TC_Likely_Passed,
             FindAllKeywordInReport,
@@ -113,7 +113,7 @@ namespace ExcelReportApplication
         {
             "1.Issue Description for TC",
             "2.Issue Description for Summary",
-            "3.Standard Test Report Creator",
+            "3.Create ImportToJira CSV",
             "4.Keyword Issue - Single File",
             "5.TC likely Pass",
             "6.List Keywords of all detailed reports",
@@ -153,9 +153,9 @@ namespace ExcelReportApplication
             // "3.Standard Test Report Creator",
             new String[] 
             {
-                "Create file structure of Standard Test Report according to user's selection (Do or Not)", 
-                "Input:",  "  Main Test Report File",
-                "Output:", "  Directory structure and report files under directories",
+                "Create CSV file containing data field to import Jira testcase to TC project", 
+                "Input:",  "  Excel file contains testplan, ImportToJira Template, testcase and report list (for assignee)",
+                "Output:", "  ImportToJira CSV file",
             },
             // "4.Keyword Issue - Single File",
             new String[] 
@@ -746,7 +746,7 @@ namespace ExcelReportApplication
             else
             {
                 MsgWindow.AppendText("Processing tc_list:" + tclist_filename + ".\n");
-                List<TestCase> new_tc_list = TestCase.GenerateTestCaseList(tclist_filename);
+                List<TestCase> new_tc_list = TestCase.GenerateTestCaseList_New(tclist_filename);
                 ReportGenerator.UpdateGlobalTestcaseList(new_tc_list);
                 MsgWindow.AppendText("tc_list finished!\n");
                 return true;
@@ -837,16 +837,16 @@ namespace ExcelReportApplication
             return true;
         }
 
-        private bool Execute_CreateStandardTestReportTask(String main_file)
-        {
-            if (!Storage.FileExists(main_file))
-            {
-                // protection check
-                return false;
-            }
+        //private bool Execute_CreateStandardTestReportTask(String main_file)
+        //{
+        //    if (!Storage.FileExists(main_file))
+        //    {
+        //        // protection check
+        //        return false;
+        //    }
 
-            return TestReport.CreateStandardTestReportTask(main_file);
-        }
+        //    return TestReport.CreateStandardTestReportTask(main_file);
+        //}
 
         //private bool Execute_CreateTestReportbyTestCaseTask(String report_src_dir, String output_report_dir)
         //{
@@ -1241,9 +1241,9 @@ namespace ExcelReportApplication
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
                         bRet = Execute_WriteIssueDescriptionToSummary(template_file: txtOutputTemplate.Text);
                         break;
-                    case ReportType.StandardTestReportCreation:
+                    case ReportType.CreateImportToJiraCSV:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
-                        bRet = Execute_CreateStandardTestReportTask(main_file: txtOutputTemplate.Text);
+                        //bRet = Execute_CreateStandardTestReportTask(main_file: txtOutputTemplate.Text);
                         break;
                     case ReportType.KeywordIssue_Report_SingleFile:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
@@ -1519,7 +1519,7 @@ namespace ExcelReportApplication
                     SetEnable_ReportFile(false);
                     SetEnable_OutputTemplate(true);
                     break;
-                case ReportType.StandardTestReportCreation:
+                case ReportType.CreateImportToJiraCSV:
                     SetEnable_BugFile(false);
                     SetEnable_TCFile(false);
                     SetEnable_ReportFile(false);
@@ -1638,7 +1638,7 @@ namespace ExcelReportApplication
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_Summary");
                     break;
-                case ReportType.StandardTestReportCreation:
+                case ReportType.CreateImportToJiraCSV:
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_StandardTestReport");
                     break;

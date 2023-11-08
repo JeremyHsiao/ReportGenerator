@@ -320,6 +320,7 @@ namespace ExcelReportApplication
         {
             ExcelAction.ExcelStatus status;
 
+            // open original test-case excel
             status = ExcelAction.OpenTestCaseExcel(tclist_filename);
             if (status != ExcelAction.ExcelStatus.OK)
             {
@@ -327,6 +328,7 @@ namespace ExcelReportApplication
                 return status;
             }
 
+            // open template excel (as template of final output_
             status = ExcelAction.OpenTestCaseExcel(template_filename, IsTemplate: true);
             if (status != ExcelAction.ExcelStatus.OK)
             {
@@ -334,7 +336,7 @@ namespace ExcelReportApplication
                 return status;
             }
 
-            // open bug-list file
+            // open bug-list file so that it can be copied to template excel
             status = ExcelAction.OpenIssueListExcel(buglist_file);
             if (status != ExcelAction.ExcelStatus.OK)
             {
@@ -364,6 +366,67 @@ namespace ExcelReportApplication
             ExcelAction.CopyBugListSheetIntoTestCaseTemplateWorkbook();
             ExcelAction.CloseIssueListExcel();
 
+            // set template worksheet as active worksheet.
+            Worksheet tc_list_worksheet = ExcelAction.GetTestCaseWorksheet(IsTemplate: true);
+            tc_list_worksheet.Select();
+            tc_list_worksheet.Name = newTClist_sheetname;
+
+            return status;
+        }
+
+        // to-be updated later
+        //
+        static public ExcelAction.ExcelStatus WriteBacktoTCJiraExcel_OpenExcel_new(String tclist_filename, String template_filename, String buglist_file)
+        {
+            ExcelAction.ExcelStatus status;
+
+            // open original test-case excel
+            status = ExcelAction.OpenTestCaseExcel(tclist_filename);
+            if (status != ExcelAction.ExcelStatus.OK)
+            {
+                ExcelAction.CloseTestCaseExcel();
+                return status;
+            }
+
+            // open template excel (as template of final output_
+            status = ExcelAction.OpenTestCaseExcel(template_filename, IsTemplate: true);
+            if (status != ExcelAction.ExcelStatus.OK)
+            {
+                ExcelAction.CloseTestCaseExcel();
+                return status;
+            }
+
+            // open bug-list file so that it can be copied to template excel
+            status = ExcelAction.OpenIssueListExcel(buglist_file);
+            if (status != ExcelAction.ExcelStatus.OK)
+            {
+                ExcelAction.CloseIssueListExcel();
+                return status;
+            }
+
+            String new_Buglist_sheetname = "BugList";
+            String buglist_date_string = ExcelAction.GetIssueListCellTrimmedString(3, 1);
+            String extracted_buglist_date = ExtractDate(buglist_date_string);
+            if (String.IsNullOrWhiteSpace(extracted_buglist_date) == false)
+            {
+                new_Buglist_sheetname += "_" + extracted_buglist_date;
+            }
+
+            String newTClist_sheetname = "TCList";
+            String tcglist_date_string = ExcelAction.GetTestCaseCellTrimmedString(3, 1, IsTemplate: false); // Use input TC as DATE
+            String extracted_tclist_date = ExtractDate(tcglist_date_string);
+            if (String.IsNullOrWhiteSpace(extracted_tclist_date) == false)
+            {
+                newTClist_sheetname += "_" + extracted_tclist_date;
+            }
+
+            Worksheet bug_list_worksheet = ExcelAction.GetIssueListWorksheet();
+            bug_list_worksheet.Name = new_Buglist_sheetname;
+            // copy-and-paste into template files.
+            ExcelAction.CopyBugListSheetIntoTestCaseTemplateWorkbook();
+            ExcelAction.CloseIssueListExcel();
+
+            // set template worksheet as active worksheet.
             Worksheet tc_list_worksheet = ExcelAction.GetTestCaseWorksheet(IsTemplate: true);
             tc_list_worksheet.Select();
             tc_list_worksheet.Name = newTClist_sheetname;
