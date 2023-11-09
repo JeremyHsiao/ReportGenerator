@@ -1738,13 +1738,9 @@ namespace ExcelReportApplication
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
-                case ReportType.CreateCSTReport:                  // report A
-                    //if (!btnSelectOutputTemplate_Clicked) // source
-                    //    txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("TestReport_Default_Source_Path");
-                    //if (!btnSelectReportFile_Clicked) // destination
-                    //    txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_Default_Output_Path");
+                case ReportType.CreateCSTReport:                  // report A -- tailored version of report C
                     if (!btnSelectOutputTemplate_Clicked)
-                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_C_Default_Excel");
+                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_A_Default_Excel");
                     break;
                 case ReportType.TC_AutoCorrectReport_By_Filename:
                     if (!btnSelectReportFile_Clicked)

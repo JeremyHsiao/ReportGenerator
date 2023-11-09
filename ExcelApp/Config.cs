@@ -19,6 +19,7 @@ namespace ExcelReportApplication
             @"Report_E_Remove_AUO_Sheet_Default_Excel", @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Copy_Report_Excel_List.xlsx",
             @"Report_D_Copy_Only_Default_Excel",        @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Copy_Report_Excel_List.xlsx",
             @"Report_C_Default_Excel",                  @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Copy_Report_Excel_List.xlsx",
+            @"Report_A_Default_Excel",                  @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Copy_Report_Excel_List.xlsx",
             @"InputExcel_Sheetname_ReportList",         @"ReportList",
             @"InputExcel_Sheetname_HeaderTemplate",     @"BeforeLine21",
             @"InputExcel_Sheetname_Bug",                @"Bug",
