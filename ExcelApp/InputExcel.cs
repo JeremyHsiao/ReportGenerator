@@ -67,8 +67,16 @@ namespace ExcelReportApplication
         static public String ExcelSheetName = "";
 
         // Code for Report C
-        static public bool CopyTestReport(String input_excel_file)
+        static public bool UpdateTestReportByOptionAndSaveAsAnother(String input_excel_file)
         {
+            List<String> report_list;
+            return UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(input_excel_file, out report_list);
+        }
+        
+        static public bool UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(String input_excel_file, out List<String> output_report_list)
+        {
+            output_report_list = new List<String>();
+
             // open excel and read and close excel
             // Open Excel workbook
             Workbook wb = ExcelAction.OpenExcelWorkbook(filename: input_excel_file, ReadOnly: true);
@@ -198,6 +206,8 @@ namespace ExcelReportApplication
 
             // Close Excel
             ExcelAction.CloseExcelWorkbook(wb);
+
+            output_report_list = report_actually_copied_list_dest;
 
             if (report_cannot_be_copied_list_src.Count > 0)
                 return false;   // some can't be copied

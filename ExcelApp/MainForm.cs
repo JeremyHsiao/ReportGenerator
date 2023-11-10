@@ -63,8 +63,8 @@ namespace ExcelReportApplication
             //ReportType.TC_GroupSummaryReport,
             //ReportType.Update_Report_Linked_Issue,
             ReportType.Update_Keyword_and_TC_Report,
-            //ReportType.Man_Power_Processing,
-            //ReportType.Update_Repoart_A_then_Report_H,
+            ReportType.Man_Power_Processing,
+            ReportType.Update_Repoart_A_then_Report_H,
          };
 
         //public static ReportType[] ReportSelectableTable =
@@ -132,6 +132,7 @@ namespace ExcelReportApplication
             "G.Update Report Linked Issue",
             "H.Update Keyword Rerpot and TC summary (7+9)",
             "I.Man-Power Processing",
+            "J.Create Report, Update Report and TC Summary (A+H)",
             // out-of-boundary
             "Z.Final Report",
        };
@@ -264,6 +265,13 @@ namespace ExcelReportApplication
                 "Augment CSV exported from Jira man-power plan with information required for Pivot Table", 
                 "Input:",  "  CSV exported from man-power project",
                 "Output:", "  Original CSV with extra information for using Pivot Table",
+            },
+            // "J.Create Report, Update Report and TC Summary (A+H)",
+            new String[] 
+            {
+                "Create Report and update them, also update TC Linked Issue ==> Report (A+H)", 
+                "Input:",  "  Jira Bug & TC file, Template (for Test case output), and Input Excel File",
+                "Output:", "  Updated reports specified within Input Excel File and TC summary with Linked issues",
             },
             // "out-of-boundary text",
             new String[] 
@@ -419,6 +427,14 @@ namespace ExcelReportApplication
                 "Jira TC File",
                 "Test Report Path",
                 "Exported CSV File",
+            },
+            // "J.Create Report, Update Report and TC Summary (A+H)",
+            new String[] 
+            {
+                "Jira Bug File", 
+                "Jira TC File",
+                "Input Excel File",         // this is file selection
+                "TC Template File",
             },
             // out-of-boundary-text
             new String[] 
@@ -1021,7 +1037,22 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            CopyReport.CopyTestReport(excel_input_file);
+            CopyReport.UpdateTestReportByOptionAndSaveAsAnother(excel_input_file);
+
+            return true;
+        }
+
+        private bool Execute_AutoCorrectTestReportByExcel_with_output_report_list_Task(String excel_input_file, out List<String> output_report_list)
+        {
+            output_report_list = new List<String>();
+
+            if (!Storage.FileExists(excel_input_file))
+            {
+                // protection check
+                return false;
+            }
+
+            CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(excel_input_file, out output_report_list);
 
             return true;
         }
@@ -1095,6 +1126,7 @@ namespace ExcelReportApplication
             switch (report_type)
             {
                 case ReportType.KeywordIssue_Report_SingleFile:
+                case ReportType.Update_Repoart_A_then_Report_H:              //Report J = A + H
                     init_dir = Storage.GetFullPath(txtReportFile.Text);
                     sel_file = true;  // Here select file instead of directory
                     break;
@@ -1342,12 +1374,12 @@ namespace ExcelReportApplication
                         UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
                         bRet = Execute_AutoCorrectTestReportByFilename_Task(report_root: Storage.GetFullPath(txtReportFile.Text));
                         break;
-                    case ReportType.TC_AutoCorrectReport_By_ExcelList:
+                    case ReportType.TC_AutoCorrectReport_By_ExcelList:                          // Report C
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         // to-be-updated
                         bRet = Execute_AutoCorrectTestReportByExcel_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
                         break;
-                    case ReportType.CopyReportOnly:
+                    case ReportType.CopyReportOnly:                                             // Report D
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         // copy files only
                         temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly);
@@ -1355,7 +1387,7 @@ namespace ExcelReportApplication
                         bRet = Execute_AutoCorrectTestReportByExcel_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
                         KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = temp_option_stack.Pop();
                         break;
-                    case ReportType.RemoveInternalSheet:
+                    case ReportType.RemoveInternalSheet:                                        // Report E
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         // copy files only
                         temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly);
@@ -1442,7 +1474,10 @@ namespace ExcelReportApplication
                         //
                         //
                         // copied from report A
-                        UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
+                        // NOTE: Input Excel File is storted in txtReportFile for Report J
+                        //UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                        String report_j_input_excel_selected = txtOutputTemplate.Text;
                         // to-be-updated
                         temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly);
                         temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal);
@@ -1460,7 +1495,8 @@ namespace ExcelReportApplication
                         //KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = false;
                         KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = false;
                         KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = true;
-                        bRet = Execute_AutoCorrectTestReportByExcel_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
+                        List<String> report_list;
+                        bRet = Execute_AutoCorrectTestReportByExcel_with_output_report_list_Task(Storage.GetFullPath(report_j_input_excel_selected), out report_list);
                         KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = temp_option_stack.Pop();
                         KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = temp_option_stack.Pop();
                         KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = temp_option_stack.Pop();
@@ -1473,11 +1509,10 @@ namespace ExcelReportApplication
                         // copied from report H
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
-                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                        //UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-
 
                         String report_output_path_2;
                         bRet = Execute_KeywordIssueGenerationTask_returning_report_path(txtReportFile.Text, true, out report_output_path_2);
@@ -1669,17 +1704,7 @@ namespace ExcelReportApplication
                     SetEnable_OutputTemplate(true);
                     break;
                 case ReportType.Update_Repoart_A_then_Report_H:            // Report J = A + H
-                    //
-                    //
-                    // TO BE UPDATED
-                    //
-                    //
-                    // copied from report A
-                    SetEnable_BugFile(false);
-                    SetEnable_TCFile(false);
-                    SetEnable_ReportFile(false);
-                    SetEnable_OutputTemplate(true);
-                    // copied from report H
+                    // copied from report H -- all enabled
                     SetEnable_BugFile(true);
                     SetEnable_TCFile(true);
                     SetEnable_ReportFile(true);
@@ -1754,7 +1779,7 @@ namespace ExcelReportApplication
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_D_Copy_Only_Default_Excel");
                     break;
-                case ReportType.RemoveInternalSheet:
+                case ReportType.RemoveInternalSheet:                    // Report E
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_E_Remove_AUO_Sheet_Default_Excel");
                     break;
@@ -1782,17 +1807,10 @@ namespace ExcelReportApplication
                     }
                     break;
                 case ReportType.Update_Repoart_A_then_Report_H:                  // Report J = A + H
-                    //
-                    //
-                    // TO BE UPDATED
-                    //
-                    //
-                    // copied from report A
-                    if (!btnSelectOutputTemplate_Clicked)
-                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_C_Default_Excel");
                     // copied from report H
+                    // NOTE: Input Excel File is storted in txtReportFile for Report J
                     if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Report_A_Default_Excel");
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
