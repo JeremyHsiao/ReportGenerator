@@ -1406,6 +1406,52 @@ namespace ExcelReportApplication
 
         };
 
+        // To-be-updated:
+        // XM calendar
+        static private DateTime[] non_Holiday_weekend_XM = 
+        {
+            new DateTime(2023,  1,  1, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2023,  1, 21, 0, 0, 0),    // CNY
+        };
+
+        static private DateTime[] HolidaysSince2023_XM = 
+        {
+            // National Holiday 
+            new DateTime(2023,  1,  1, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2023,  1, 21, 0, 0, 0),    // CNY
+            new DateTime(2023,  1, 22, 0, 0, 0),    // CNY
+            new DateTime(2023,  1, 23, 0, 0, 0),    // CNY
+            new DateTime(2023,  1, 24, 0, 0, 0),    // CNY
+            new DateTime(2023,  2, 28, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2023,  4,  4, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2023,  4,  5, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2023,  5,  1, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2023,  6, 22, 0, 0, 0),    // dragon-boat
+            new DateTime(2023,  9, 29, 0, 0, 0),    // mid-autumn
+            new DateTime(2023, 10, 10, 0, 0, 0),    // fixed-date holiday
+
+            new DateTime(2024,  1,  1, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2024,  2, 28, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2024,  4,  4, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2024,  4,  5, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2024,  5,  1, 0, 0, 0),    // fixed-date holiday
+            new DateTime(2024, 10, 10, 0, 0, 0),    // fixed-date holiday
+            // National Holiday on weekend -- shifted off
+            new DateTime(2023,  1,  2, 0, 0, 0),    // NY
+            new DateTime(2023,  1, 25, 0, 0, 0),    // CNY
+            new DateTime(2023,  1, 26, 0, 0, 0),    // CNY
+            // Company shift off
+            new DateTime(2023,  1, 20, 0, 0, 0),    // CNY
+            new DateTime(2023,  1, 27, 0, 0, 0),    // CNY
+            new DateTime(2023,  2, 27, 0, 0, 0),    // 228
+            new DateTime(2023,  4,  3, 0, 0, 0),    // 44&45
+            new DateTime(2023,  6, 23, 0, 0, 0),    // dragon-boat
+            new DateTime(2022, 10,  9, 0, 0, 0),    // 10*2
+            // Typhoon off
+            new DateTime(2023,  8,  3, 0, 0, 0),
+
+        };
+
         static public void SortHoliday()
         {
             Array.Sort<DateTime>(HolidaysSince2023);
