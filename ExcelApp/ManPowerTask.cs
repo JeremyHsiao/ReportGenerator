@@ -1323,13 +1323,38 @@ namespace ExcelReportApplication
             return ret_weekly_working_day;
         }
 
+        //
+        // Input: Date
+        // Output: YWW, example 345
+        // 
+        // NOTE: because we use the week containing 1/1 as first week, we need to check if 1/1 is within this week
+        //
+        // If 1/1 is within this week, weekno is always 01, otherwise weekno is GetWeekOfYear(CalendarWeekRule.FirstDay)
+        //
+        //
         static public int GetYearAndWeekOfYear(DateTime datetime)
         {
             CultureInfo my_culture = DateOnly.datetime_culture;
             Calendar my_calendar = my_culture.Calendar;
             DateTimeFormatInfo my_dt_format = my_culture.DateTimeFormat;
-            int weekno = my_calendar.GetWeekOfYear(datetime, my_dt_format.CalendarWeekRule, my_dt_format.FirstDayOfWeek);
+            int weekno = my_calendar.GetWeekOfYear(datetime, CalendarWeekRule.FirstDay, my_dt_format.FirstDayOfWeek);
             int yearno = datetime.Year % 10;
+            // Special case
+            // Detect if 1/1 is the same week as datetime(12/xx)
+            // In this case, yearno is last year but weekno  is 1
+            // if before December 25(inclusive), skip the rest of special-check
+            // 1, 31, 30, 29, 28, 27, 26 of December
+            if(((int)datetime.Month==12)&&((int)datetime.Day>26))
+            {
+                int day = datetime.Day;
+                int dow = (int) datetime.DayOfWeek;
+                int Saturday_of_this_week = day + ( 6-dow );
+                if (Saturday_of_this_week >= 32) // already January on Saturday of this week
+                {
+                    weekno = 1;
+                    yearno++;
+                }
+            }
             return (yearno * 100 + weekno);
         }
 
@@ -1414,7 +1439,7 @@ namespace ExcelReportApplication
 
             if ((datetime.DayOfWeek == DayOfWeek.Saturday) || (datetime.DayOfWeek == DayOfWeek.Sunday))
             {
-                // Weekend as holiday by default
+                // Weekend as holiday by default in TWN
                 ret = true;
             }
             else
