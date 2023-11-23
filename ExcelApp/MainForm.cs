@@ -63,9 +63,9 @@ namespace ExcelReportApplication
             //ReportType.TC_GroupSummaryReport,
             //ReportType.Update_Report_Linked_Issue,
             ReportType.Update_Keyword_and_TC_Report,
-            ReportType.Man_Power_Processing,
+            //ReportType.Man_Power_Processing,
             ReportType.Update_Repoart_A_then_Report_H,
-         };
+        };
 
         //public static ReportType[] ReportSelectableTable =
         //{
@@ -837,6 +837,20 @@ namespace ExcelReportApplication
             return true;
         }
 
+        private bool Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount(String tc_file, String template_file, String buglist_file)
+        {
+            if ((ReportGenerator.IsGlobalIssueListEmpty()) || (ReportGenerator.IsGlobalTestcaseListEmpty()) ||
+                (!Storage.FileExists(tc_file)) || (!Storage.FileExists(template_file) || (!Storage.FileExists(buglist_file))))
+            {
+                // protection check
+                // Bug/TC files must have been loaded
+                return false;
+            }
+
+            ReportGenerator.WriteBacktoTCJiraExcelV3_simpliified_branch(tclist_filename: tc_file, template_filename: template_file, buglist_file: buglist_file);
+            return true;
+        }
+
         private bool Execute_WriteIssueDescriptionToSummary(String template_file)
         {
             if ((ReportGenerator.IsGlobalIssueListEmpty()) || (ReportGenerator.IsGlobalTestcaseListEmpty()) ||
@@ -1266,7 +1280,7 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
+                        bRet = Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
                         break;
                     case ReportType.FullIssueDescription_Summary: // report 2 not used now
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);

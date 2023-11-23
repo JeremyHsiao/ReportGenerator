@@ -309,9 +309,9 @@ namespace ExcelReportApplication
             Match match = rgx.Match(input_string);
             if (match.Success)
             {
-               ret_string  = match.Groups["year"].Value;
-               ret_string += match.Groups["month"].Value;
-               ret_string += match.Groups["day"].Value;
+                ret_string = match.Groups["year"].Value;
+                ret_string += match.Groups["month"].Value;
+                ret_string += match.Groups["day"].Value;
             }
             return ret_string;
         }
@@ -692,6 +692,89 @@ namespace ExcelReportApplication
             ExcelAction.CloseTestCaseExcel();
         }
 
+        // Difference with V3 -- Use linked issue status to update STATUS when it is FINISHED (instead of judgement_report as in V3)
+        // Do not use keyword result
+        static public void WriteBacktoTCJiraExcelV3_simpliified_branch(String tclist_filename, String template_filename, String buglist_file)
+        {
+            // Open original excel (read-only & corrupt-load) and write to another filename when closed
+            ExcelAction.ExcelStatus status;
+
+            // 1. open test case excel
+            status = WriteBacktoTCJiraExcel_OpenExcel(tclist_filename, template_filename, buglist_file);
+            if (status != ExcelAction.ExcelStatus.OK)
+            {
+                return; // to-be-checked if here
+            }
+
+            // 3. Copy test case data into template excel -- both will have the same row but column can be in different order
+            ExcelAction.CopyTestCaseIntoTemplate_v2();
+
+            // 4. Prepare data on test case excel and write into test-case (template)
+            Dictionary<string, int> template_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate: true);
+            int key_col = template_col_name_list[TestCase.col_Key];
+            int links_col = template_col_name_list[TestCase.col_LinkedIssue];
+            int summary_col = template_col_name_list[TestCase.col_Summary];
+            int status_col = template_col_name_list[TestCase.col_Status];
+            int last_row = ExcelAction.Get_Range_RowNumber(ExcelAction.GetTestCaseAllRange(IsTemplate: true));
+            // for 4.3 & 4.4
+            int col_end = ExcelAction.GetTestCaseExcelRange_Col(IsTemplate: true);
+
+            // Visit all rows and replace Bug-ID at Linked Issue with long description of Bug.
+            for (int excel_row_index = TestCase.DataBeginRow; excel_row_index <= last_row; excel_row_index++)
+            {
+                // Make sure Key of TC contains KeyPrefix
+                String tc_key = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, key_col, IsTemplate: true);
+                if (TestCase.CheckValidTC_By_KeyPrefix(tc_key) == false) { continue; }
+                if (ReportGenerator.GetTestcaseLUT_by_Key().ContainsKey(tc_key) == false) { continue; }
+
+                // 4.1 Extend bug key string (if not empty) into long string with font settings
+                String links = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, links_col, IsTemplate: true);
+                List<Issue> filtered_linked_issue_list = new List<Issue> ();
+                if (String.IsNullOrWhiteSpace(links) == false)
+                {
+                    List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
+                    // List of Issue filtered by status
+                    filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
+                    // Sort issue by Severity and Key value (A first then larger key first if same severity)
+                    List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
+                    // Convert list of sorted linked issue to description list
+                    List<StyleString> str_list = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
+                    ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
+                }
+
+                // 4.2 update Status (if it is Finished) according to linked issue count
+
+                String current_status = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, status_col, IsTemplate: true);
+
+                // Update focus to current status cell
+                ExcelAction.TestCase_CellActivate(excel_row_index, status_col, IsTemplate: true);
+
+                if (current_status == TestCase.STR_FINISHED)
+                {
+                    String status_string;
+                    if (filtered_linked_issue_list.Count == 0)
+                    {
+                        status_string = KeywordReport.PASS_str;
+                    }
+                    else
+                    {
+                        status_string = KeywordReport.FAIL_str;
+                    }
+                    ExcelAction.SetTestCaseCell(excel_row_index, status_col, status_string, IsTemplate: true);
+                }
+            }
+
+            // 5. auto-fit-height of column links
+            ExcelAction.TestCase_AutoFit_Column(links_col, IsTemplate: true);
+
+            // 6. Write to another filename with datetime (and close template file)
+            string dest_filename = Storage.GenerateFilenameWithDateTime(tclist_filename, FileExt: ".xlsx");
+            ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
+
+            // Close Test Case Excel
+            ExcelAction.CloseTestCaseExcel();
+        }
+
         //
         // This demo finds out Test-case whose status is fail but all linked issues are closed (other issues are hidden)
         //
@@ -795,7 +878,7 @@ namespace ExcelReportApplication
                     {
                         // Make sure Key of TC contains KeyPrefix
                         String key = ExcelAction.GetTestCaseCellTrimmedString(index, key_col, IsTemplate: true);
-                        if (key.Contains(TestCase.KeyPrefix) == false) { break; } // If not a TC key in this row, go to next row
+                        if (TestCase.CheckValidTC_By_KeyPrefix(key) == false) { break; } // If not a TC key in this row, go to next row
 
                         bool blToHide = false;
                         if (tc_blocked_all_closed.Count == 0) { blToHide = true; }

@@ -280,12 +280,24 @@ namespace ExcelReportApplication
         static public string TemplateSheetName = "TC_List";
         static public string KeyPrefix = "TCBEN";
 
+        static public Boolean CheckValidTC_By_KeyPrefix(String tc_key)
+        {
+            Boolean ret = false;
+            if ((tc_key.Length > TestCase.KeyPrefix.Length) && (String.Compare(tc_key, 0, TestCase.KeyPrefix, 0, TestCase.KeyPrefix.Length) == 0)) 
+            {
+                ret = true;
+            }
+
+            return ret;
+        }
+
         static public Boolean CheckValidTC_By_Key_Summary(String tc_key, String tc_summary)
         {
             Boolean ret = false;
-            if ((tc_key.Length > TestCase.KeyPrefix.Length) &&
-                (String.Compare(tc_key, 0, TestCase.KeyPrefix, 0, TestCase.KeyPrefix.Length) == 0) &&
-                (String.IsNullOrWhiteSpace(tc_summary) == false))
+            if ((CheckValidTC_By_KeyPrefix(tc_key)) && (String.IsNullOrWhiteSpace(tc_summary) == false))
+            //if ((tc_key.Length > TestCase.KeyPrefix.Length) &&
+            //    (String.Compare(tc_key, 0, TestCase.KeyPrefix, 0, TestCase.KeyPrefix.Length) == 0) &&
+            //    (String.IsNullOrWhiteSpace(tc_summary) == false))
             {
                 ret = true;
             }

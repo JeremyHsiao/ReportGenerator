@@ -991,7 +991,7 @@ namespace ExcelReportApplication
         }
 
         // This version doesn't assume that columns item/sequence are both the same.
-        // 1. adjust rows of tc_template to be the same as test-case excel
+        // 1. adjust rows of tc_template to be the same as test-case excel (by inserting/deleting rows)
         // 2. don't copy column name --> keep them instead
         // 3. copy cell value (of each data row) into correpsonding column of tc_template.
         //     for example copy "Key" (assumed at column 1) to another "Key" (assumed not at column 1)
@@ -1050,6 +1050,7 @@ namespace ExcelReportApplication
             int row_begin = TestCase.DataBeginRow, row_end = Src_last_row;
             foreach (string col_name in dst_col_name_list.Keys)
             {
+                // check to prevent outputing unavailable columns in source to destination
                 if (src_col_name_list.ContainsKey(col_name))
                 {
                     int dst_col = dst_col_name_list[col_name], src_col = src_col_name_list[col_name];
