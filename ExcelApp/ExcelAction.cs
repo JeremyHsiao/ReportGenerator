@@ -25,6 +25,7 @@ namespace ExcelReportApplication
         static private Worksheet ws_keyword_list;
         static private Worksheet ws_not_keyword_file;
         static private Workbook workbook_new_keyword_list;
+        static public List<String> Error_Log = new List<String>();
 
         static public bool ExcelVisible = true;
 
@@ -89,7 +90,7 @@ namespace ExcelReportApplication
             }
             catch (Exception ex)
             {
-                // 
+                Error_Log.Add("OpenExcelWorkbook exception: " + filename); // here is for setting break-point
             }
 
             return ret_workbook;
@@ -125,7 +126,7 @@ namespace ExcelReportApplication
                     }
                     catch (Exception ex)
                     {
-                        final_filename = final_filename; // here is for setting break-point
+                        Error_Log.Add("CloseExcelWorkbook exception: "+ final_filename); // here is for setting break-point
                     }
                 }
                 else
@@ -234,6 +235,7 @@ namespace ExcelReportApplication
             {
                 // Use whole sheet as workaround for Printable Range
                 rngPrintable = ws.Range["A1"].SpecialCells(XlCellType.xlCellTypeLastCell, (XlSpecialCellsValue)(1 + 2 + 4 + 16));
+                Error_Log.Add("GetWorksheetPrintableRange exception with PrintArea: " + PrintArea); // here is for setting break-point
             }
             return rngPrintable;
         }
@@ -259,6 +261,7 @@ namespace ExcelReportApplication
             {
                 // TBD: need to replace this workaround with better solution.
                 col_width = ws.Columns[1].ColumnWidth;
+                Error_Log.Add("Get_Column_Width exception with col_width: " + col_width.ToString()); // here is for setting break-point
             }
             return col_width;
         }
@@ -272,6 +275,7 @@ namespace ExcelReportApplication
             catch
             {
                 // TBD: deal with exception when RowHeight can't be set via ws.Rows[row].RowHeight = height;
+                Error_Log.Add("Set_Column_Width exception with width: " + width.ToString()); // here is for setting break-point
             }
         }
 
@@ -284,6 +288,7 @@ namespace ExcelReportApplication
             catch
             {
                 // TBD: deal with exception when RowHeight can't be set via ws.Rows[row].RowHeight = height;
+                Error_Log.Add("Set_Row_Height exception with height: " + height.ToString()); // here is for setting break-point
             }
         }
 
@@ -298,6 +303,7 @@ namespace ExcelReportApplication
             {
                 // TBD: need to replace this workaround with better solution.
                 row_height = ws.Rows[1].RowHeight;
+                Error_Log.Add("Get_Row_Height exception with height: " + row_height.ToString()); // here is for setting break-point
             }
             return row_height;
         }
@@ -1395,7 +1401,15 @@ namespace ExcelReportApplication
         static public void Merge(Worksheet worksheet, int upper_row, int left_column, int bottom_row, int right_column)
         {
             Range merge_range = worksheet.Range[worksheet.Cells[upper_row, left_column], worksheet.Cells[bottom_row, right_column]];
-            merge_range.Merge(true);
+            try
+            {
+                merge_range.Merge(true);
+            }
+            catch (Exception ex)
+            {
+                Error_Log.Add("Merge exception of (" + ex.ToString() + ") at ared of: " + upper_row.ToString() + "," + left_column.ToString() + "," + bottom_row.ToString() + "," + right_column.ToString()); // here is for setting break-point
+                // already merged?
+            }
         }
 
         static public void UnMerge(Worksheet worksheet, int upper_row, int left_column, int bottom_row, int right_column)
