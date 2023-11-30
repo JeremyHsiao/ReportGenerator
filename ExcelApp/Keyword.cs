@@ -1691,6 +1691,29 @@ namespace ExcelReportApplication
                 }
 
                 String judgement_str = "", purpose_str = "", criteria_str = "";
+                // 3.3_minus 1: store text of purpose & criteia for updating into TC summary report
+                // always stored even it is not a key-word report.
+                int search_start_row = row_test_brief_start, search_end_row = row_test_brief_end;
+                int purpose_str_col = ExcelAction.ColumnNameToNumber('C');
+                int criteria_str_col = ExcelAction.ColumnNameToNumber('C');
+                for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
+                {
+                    String text = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, col_indentifier);
+                    if (CheckIfStringMeetsPurpose(text))
+                    {
+                        row_index++;
+                        purpose_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, purpose_str_col);
+                        continue;
+                    }
+                    else if (CheckIfStringMeetsCriteria(text))
+                    {
+                        row_index++;
+                        criteria_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, criteria_str_col);
+                        continue;
+                    }
+                }
+                judgement_str = ExcelAction.GetCellTrimmedString(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
+
                 if (keyword_lut_by_sheetname.ContainsKey(sheet_name) == true)
                 {
                     // if keyword exist, executing keyword-related part
@@ -1699,24 +1722,24 @@ namespace ExcelReportApplication
                     //    output: write color_description_list 
                     //         
 
-                    // 3.3.0: store text of purpose & criteia for updating into TC summary report
-                    int search_start_row = row_test_brief_start, search_end_row = row_test_brief_end;
-                    for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
-                    {
-                        String text = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, col_indentifier);
-                        if(CheckIfStringMeetsPurpose(text))
-                        {
-                            row_index++;
-                            purpose_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, ExcelAction.ColumnNameToNumber('C'));
-                            continue;
-                        }
-                        else if (CheckIfStringMeetsCriteria(text))
-                        {
-                            row_index++;
-                            criteria_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, ExcelAction.ColumnNameToNumber('C'));
-                            continue;
-                        }
-                    }
+                    //// 3.3.0: store text of purpose & criteia for updating into TC summary report
+                    //int search_start_row = row_test_brief_start, search_end_row = row_test_brief_end;
+                    //for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
+                    //{
+                    //    String text = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, col_indentifier);
+                    //    if(CheckIfStringMeetsPurpose(text))
+                    //    {
+                    //        row_index++;
+                    //        purpose_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, ExcelAction.ColumnNameToNumber('C'));
+                    //        continue;
+                    //    }
+                    //    else if (CheckIfStringMeetsCriteria(text))
+                    //    {
+                    //        row_index++;
+                    //        criteria_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, ExcelAction.ColumnNameToNumber('C'));
+                    //        continue;
+                    //    }
+                    //}
 
                     // 3.3.2 Write keyword-related formatted issue descriptions 
                     //       also count how many "Pass" or how many "Fail"
