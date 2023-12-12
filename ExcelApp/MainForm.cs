@@ -41,7 +41,8 @@ namespace ExcelReportApplication
             Update_Report_Linked_Issue,
             Update_Keyword_and_TC_Report,                   // Report H -- it is report 7 + 9
             Man_Power_Processing,                           // Report I -- man-power
-            Update_Repoart_A_then_Report_H                  // Report J -- it is report A +Ｈ
+            Update_Repoart_A_then_Report_H,                 // Report J -- it is report A +Ｈ
+            Update_Report_Linked_Issue_and_TC_Report,       // Report K -- simplified version of report H - no keyword at all, less format update/correction
         }
 
         public static ReportType[] ReportSelectableTable =
@@ -62,9 +63,10 @@ namespace ExcelReportApplication
             ReportType.RemoveInternalSheet, 
             //ReportType.TC_GroupSummaryReport,
             //ReportType.Update_Report_Linked_Issue,
-            ReportType.Update_Keyword_and_TC_Report,
+            ReportType.Update_Keyword_and_TC_Report,                // Report H
             //ReportType.Man_Power_Processing,
             ReportType.Update_Repoart_A_then_Report_H,
+            ReportType.Update_Report_Linked_Issue_and_TC_Report,    // Report K
         };
 
         //public static ReportType[] ReportSelectableTable =
@@ -130,9 +132,10 @@ namespace ExcelReportApplication
             "E.Remove Internal Sheets from Report",
             "F.Update Test Group Summary Report",
             "G.Update Report Linked Issue",
-            "H.Update Keyword Rerpot and TC summary (7+9)",
+            "H.Update Keyword Report and TC summary (7+9)",
             "I.Man-Power Processing",
             "J.Create Report, Update Report and TC Summary (A+H)",
+            "K.Update Report and TC summary (linked issue)",
             // out-of-boundary
             "Z.Final Report",
        };
@@ -273,6 +276,13 @@ namespace ExcelReportApplication
                 "Input:",  "  Jira Bug & TC file, Template (for Test case output), and Input Excel File",
                 "Output:", "  Updated reports specified within Input Excel File and TC summary with Linked issues",
             },
+            //  "K.Update Report and TC summary (linked issue)",
+            new String[] 
+            {
+                "Update report and TC Linked Issue (linked issue only)", 
+                "Input:",  "  Jira Bug & TC file, Template (for Test case output), and root-directory of reports to be updated",
+                "Output:", "  Updated reports under directories (named by root-directory-plus-datetime) and TC summary with Linked issues",
+            },
             // "out-of-boundary text",
             new String[] 
             {
@@ -412,7 +422,7 @@ namespace ExcelReportApplication
                 "Test Report Path",
                 "TC Template File",
             },
-            // "H.Update Keyword Rerpot and TC summary (7+9)",
+            // "H.Update Keyword Rerpot and TC summary (7+9)",  
             new String[] 
             {
                 "Jira Bug File", 
@@ -434,6 +444,14 @@ namespace ExcelReportApplication
                 "Jira Bug File", 
                 "Jira TC File",
                 "Input Excel File",         // this is file selection
+                "TC Template File",
+            },
+            // "K.Update Report and TC summary (linked issue)",
+            new String[] 
+            {
+                "Jira Bug File", 
+                "Jira TC File",
+                "Test Report Path",
                 "TC Template File",
             },
             // out-of-boundary-text
@@ -937,6 +955,58 @@ namespace ExcelReportApplication
             return true;
         }
 
+        private bool Execute_KeywordIssueGenerationTask_returning_report_path_simplified(String FileOrDirectoryName, Boolean IsDirectory, out String output_report_path)
+        {
+            List<String> file_list = new List<String>();
+            String source_dir;
+            output_report_path = "";
+            if (IsDirectory == false)
+            {
+                if ((ReportGenerator.IsGlobalIssueListEmpty()) || (!Storage.FileExists(FileOrDirectoryName)))
+                {
+                    // protection check
+                    return false;
+                }
+                file_list.Add(FileOrDirectoryName);
+                source_dir = Storage.GetDirectoryName(FileOrDirectoryName);
+            }
+            else
+            {
+                if ((ReportGenerator.IsGlobalIssueListEmpty()) || (!Storage.DirectoryExists(FileOrDirectoryName)))
+                {
+                    // protection check
+                    return false;
+                }
+                file_list = Storage.ListFilesUnderDirectory(FileOrDirectoryName);
+                //MsgWindow.AppendText("File found under directory " + FileOrDirectoryName + "\n");
+                //foreach (String filename in file_list)
+                //    MsgWindow.AppendText(filename + "\n");
+                source_dir = FileOrDirectoryName;
+            }
+            // filename check to exclude non-report files.
+            //List<String> report_list = Storage.FilterFilename(file_list);
+            // NOTE: FilterFilename() execution is now relocated within KeywordIssueGenerationTaskV4()
+            List<String> report_list = file_list;
+
+            // This issue description is needed for report purpose
+            //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
+
+            //// this is for keyword report, how to input linked issue report list???
+            //Dictionary<string, List<StyleString>> global_issue_description_list_severity =
+            //                    StyleString.GenerateIssueDescription_Keyword_Issue(ReportGenerator.ReadGlobalIssueList());
+            String out_dir = KeywordReport.TestReport_Default_Output_Dir;
+            if ((out_dir != "") && Storage.DirectoryExists(out_dir))
+            {
+                output_report_path = KeywordReport.TestReport_Default_Output_Dir;
+            }
+            else
+            {
+                output_report_path = Storage.GenerateDirectoryNameWithDateTime(source_dir);
+            }
+            KeywordReport.KeywordIssueGenerationTaskV4_simplified(report_list, source_dir, output_report_path);
+            return true;
+        }
+
         //private bool Execute_KeywordIssueGenerationTask_returning_report_path_update_bug_list(String FileOrDirectoryName, Boolean IsDirectory,  out String output_report_path)
         //{
         //    List<String> file_list = new List<String>();
@@ -1290,7 +1360,7 @@ namespace ExcelReportApplication
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         bRet = Execute_KeywordIssueGenerationTask(FileOrDirectoryName: txtReportFile.Text, IsDirectory: true);
                         break;
-                    case ReportType.KeywordIssue_Report_Directory:
+                    case ReportType.KeywordIssue_Report_Directory:                  // REport 7
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                         UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);     // Directory path here
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
@@ -1444,14 +1514,13 @@ namespace ExcelReportApplication
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
                         //bRet = Execute_CreateTestReportbyTestCaseTask(report_src_dir: src_dir, output_report_dir: dest_dir);
                         break;
-                    case ReportType.Update_Keyword_and_TC_Report:
+                    case ReportType.Update_Keyword_and_TC_Report: // Report H
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-
 
                         String report_output_path;
                         bRet = Execute_KeywordIssueGenerationTask_returning_report_path(txtReportFile.Text, true, out report_output_path);
@@ -1523,6 +1592,18 @@ namespace ExcelReportApplication
                         bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_output_path_2, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
 
 
+                        break;
+                    case ReportType.Update_Report_Linked_Issue_and_TC_Report: // Report K
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                        UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
+                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                        if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+
+                        String report_output_path_report_k;
+                        bRet = Execute_KeywordIssueGenerationTask_returning_report_path_simplified(txtReportFile.Text, true, out report_output_path_report_k);
+                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_output_path_report_k, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
                         break;
                     default:
                         MsgWindow.AppendText("Report Type has exception. Please check\n");
@@ -1714,6 +1795,12 @@ namespace ExcelReportApplication
                     SetEnable_ReportFile(true);
                     SetEnable_OutputTemplate(true);
                     break;
+                case ReportType.Update_Report_Linked_Issue_and_TC_Report:   // Report K
+                    SetEnable_BugFile(true);
+                    SetEnable_TCFile(true);
+                    SetEnable_ReportFile(true);
+                    SetEnable_OutputTemplate(true);
+                    break;
                 default:
                     // Shouldn't be here
                     break;
@@ -1815,6 +1902,12 @@ namespace ExcelReportApplication
                     // NOTE: Input Excel File is storted in txtReportFile for Report J
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("Report_A_Default_Excel");
+                    if (!btnSelectOutputTemplate_Clicked)
+                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
+                    break;
+                case ReportType.Update_Report_Linked_Issue_and_TC_Report: // Report K
+                    if (!btnSelectReportFile_Clicked)
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;

@@ -714,10 +714,11 @@ namespace ExcelReportApplication
 
                 // 4.1 Extend bug key string (if not empty) into long string with font settings
                 String links = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, links_col, IsTemplate: true);
+                List<Issue> linked_issue_list = new List<Issue>();
                 List<Issue> filtered_linked_issue_list = new List<Issue>();
                 if (String.IsNullOrWhiteSpace(links) == false)
                 {
-                    List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
+                    linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
                     // List of Issue filtered by status
                     filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
                     // Sort issue by Severity and Key value (A first then larger key first if same severity)
@@ -734,17 +735,11 @@ namespace ExcelReportApplication
                 // Update focus to current status cell
                 ExcelAction.TestCase_CellActivate(excel_row_index, status_col, IsTemplate: true);
 
+                // Update Status to judgement result if Status is "Finished"
                 if (current_status == TestCase.STR_FINISHED)
                 {
                     String status_string;
-                    if (filtered_linked_issue_list.Count == 0)
-                    {
-                        status_string = KeywordReport.PASS_str;
-                    }
-                    else
-                    {
-                        status_string = KeywordReport.FAIL_str;
-                    }
+                    status_string = KeywordReport.Judgement_Decision_by_Linked_Issue(linked_issue_list);
                     ExcelAction.SetTestCaseCell(excel_row_index, status_col, status_string, IsTemplate: true);
                 }
             }

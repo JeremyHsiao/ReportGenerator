@@ -1562,6 +1562,163 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
+        // Extracted from KeywordIssueGenerationTaskV4()
+        static public bool SingleReport_Processing(Worksheet result_worksheet, List<String> existing_report_filelist, String dest_filename)
+        {
+            String sheet_name = result_worksheet.Name;
+            // if sheetname is xxxxxxx.0, do group_summary_report)
+            if (sheet_name.Substring(sheet_name.Length - 2, 2) == ".0")
+            {
+                KeywordReport.Update_Group_Summary(result_worksheet, sheet_name, existing_report_filelist);
+            }
+            else
+            {
+                String judgement_str = "", purpose_str = "", criteria_str = "";
+                // 3.3_minus 1: store text of purpose & criteia for updating into TC summary report
+                // always stored even it is not a key-word report.
+                int search_start_row = row_test_brief_start, search_end_row = row_test_brief_end;
+                int purpose_str_col = ExcelAction.ColumnNameToNumber('C');
+                int criteria_str_col = ExcelAction.ColumnNameToNumber('C');
+                for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
+                {
+                    String text = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, col_indentifier);
+                    if (CheckIfStringMeetsPurpose(text))
+                    {
+                        row_index++;
+                        purpose_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, purpose_str_col);
+                        continue;
+                    }
+                    else if (CheckIfStringMeetsCriteria(text))
+                    {
+                        row_index++;
+                        criteria_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, criteria_str_col);
+                        continue;
+                    }
+                }
+                judgement_str = ExcelAction.GetCellTrimmedString(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
+
+                if (Replace_Conclusion)
+                {
+                    // Add: replace conclusion with Bug-list
+                    //ReplaceConclusionWithBugList(result_worksheet, keyword_issue_description_on_this_report); // should be linked issue in the future
+                    // Find the TC meets the sheet-name
+                    List<StyleString> linked_issue_description_on_this_report = new List<StyleString>();
+                    if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(sheet_name))
+                    {
+                        // key string of all linked issue
+                        String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].Links;
+                        // key string to List of Issue
+                        List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
+                        judgement_str = Judgement_Decision_by_Linked_Issue(linked_issue_list);
+                    }
+                    else
+                    {
+                        linked_issue_description_on_this_report.Clear();
+                        linked_issue_description_on_this_report.Add(KeywordReportHeader.blank_space);
+                    }
+                    ReplaceConclusionWithBugList(result_worksheet, linked_issue_description_on_this_report);
+                    //
+                    ExcelAction.CellActivate(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
+                    ExcelAction.SetCellValue(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, judgement_str);
+                }
+                // always update Test End Period to today
+                if (true)      // this part of code is only for old header mechanism before header template is available
+                {
+                    String end_date = DateTime.Now.ToString("yyyy/MM/dd");
+                    String text_to_check;
+                    int today_row = 0, today_col = 0, check_row, check_col;
+                    // Check format 1
+                    check_row = 8;
+                    check_col = ExcelAction.ColumnNameToNumber('J');
+                    text_to_check = ExcelAction.GetCellTrimmedString(result_worksheet, check_row, check_col);
+                    if (CheckIfStringMeetsTestPeriod(text_to_check))
+                    {
+                        today_row = 8;
+                        today_col = ExcelAction.ColumnNameToNumber('M');
+                    }
+                    else
+                    {
+                        // Check format 1
+                        check_row = 8;
+                        check_col = ExcelAction.ColumnNameToNumber('H');
+                        text_to_check = ExcelAction.GetCellTrimmedString(result_worksheet, check_row, check_col);
+                        if (CheckIfStringMeetsTestPeriod(text_to_check))
+                        {
+                            today_row = 8;
+                            today_col = ExcelAction.ColumnNameToNumber('L');
+                            end_date = "-             " + end_date;
+                        }
+                    }
+                    if ((today_row > 0) && (today_col > 0))
+                    {
+                        ExcelAction.SetCellValue(result_worksheet, today_row, today_col, end_date);
+                    }
+                }
+                //// update Part No.
+                //String default_part_no = "99.M2710.0A4-";
+                //String part_no = default_part_no + sheet_name;
+                //ExcelAction.SetCellValue(result_worksheet, Part_No_at_row, Part_No_at_col, part_no);
+
+                List<String> report_info = CombineReportInfo(judgement: judgement_str, purpose: purpose_str, criteria: criteria_str);
+                AppendReportInformation(dest_filename, report_info);
+
+            }
+            return true;
+        }
+
+        static public bool KeywordIssueGenerationTaskV4_simplified(List<String> file_list, String src_dir, String dest_dir = "")
+        {
+            // 0.1 List all files under report_root_dir.
+            // This is done outside and result is the input paramemter file_list
+            // 0.2 filename check to exclude non-report files.
+            List<String> existing_report_filelist = Storage.FilterFilename(file_list);
+            // Sorting report_file (file_list) in descending order so that x.0 report will be processed after all other x.n reprot
+            existing_report_filelist.Sort(TestPlan.Compare_Sheetname_by_Filename_Descending);
+
+            //
+            // 1. Create a temporary test plan (do_plan) to include all report files 
+            //
+            // 1.1 Init an empty plan
+            List<TestPlan> do_plan = new List<TestPlan>();
+
+            // 1.2 Create a temporary test plan to includes all files listed in List<String> report_filename
+            do_plan = TestPlan.CreateTempPlanFromFileList(existing_report_filelist);
+
+            foreach (TestPlan plan in do_plan)
+            {
+                String full_filename = plan.ExcelFile;
+                String sheet_name = plan.ExcelSheet;
+                // 3.1. Open Excel and find the sheet
+                // File exist check is done outside
+                Workbook wb_keyword_issue = ExcelAction.OpenExcelWorkbook(full_filename);
+                if (wb_keyword_issue == null)
+                {
+                    LogMessage.WriteLine("ERR: Open workbook in V4: " + full_filename);
+                    continue;
+                }
+
+                // 3.2 Open worksheet
+                Worksheet result_worksheet = ExcelAction.Find_Worksheet(wb_keyword_issue, sheet_name);
+                if (result_worksheet == null)
+                {
+                    LogMessage.WriteLine("ERR: Open worksheet in V4: " + full_filename + " sheet: " + sheet_name);
+                    continue;
+                }
+
+                String dest_filename = DecideDestinationFilename(src_dir, dest_dir, full_filename);
+                SingleReport_Processing(result_worksheet, existing_report_filelist, dest_filename);
+
+                // 3.4. Save the file to either 
+                //  (1) filename with yyyyMMddHHmmss if dest_dir is not specified
+                //  (2) the same filename but to the sub-folder of same strucure under new root-folder "dest_dir"
+                String dest_filename_dir = Storage.GetDirectoryName(dest_filename);
+                // if parent directory does not exist, create recursively all parents
+                Storage.CreateDirectory(dest_filename_dir, auto_parent_dir: true);
+                ExcelAction.CloseExcelWorkbook(wb_keyword_issue, SaveChanges: true, AsFilename: dest_filename);
+            }
+            return true;
+        }
+
         static public bool KeywordIssueGenerationTaskV4(List<String> file_list, String src_dir, String dest_dir = "")
         {
             // Clear keyword log report data-table
