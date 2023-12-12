@@ -427,9 +427,9 @@ namespace ExcelReportApplication
             ExcelAction.CloseIssueListExcel();
 
             // set template worksheet as active worksheet.
-            Worksheet tc_list_worksheet = ExcelAction.GetTestCaseWorksheet(IsTemplate: true);
-            tc_list_worksheet.Select();
-            tc_list_worksheet.Name = newTClist_sheetname;
+            Worksheet tc_template_worksheet = ExcelAction.GetTestCaseWorksheet(IsTemplate: true);
+            tc_template_worksheet.Select();
+            tc_template_worksheet.Name = newTClist_sheetname;
 
             return status;
         }
@@ -692,9 +692,73 @@ namespace ExcelReportApplication
             ExcelAction.CloseTestCaseExcel();
         }
 
+        static public Boolean WriteBacktoTCJiraExcelV3_simplified_branch_writing_template_by_TC()
+        {
+            // 4. Prepare data on test case excel and write into test-case (template)
+            Dictionary<string, int> template_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate: true);
+            int key_col = template_col_name_list[TestCase.col_Key];
+            int links_col = template_col_name_list[TestCase.col_LinkedIssue];
+            int summary_col = template_col_name_list[TestCase.col_Summary];
+            int status_col = template_col_name_list[TestCase.col_Status];
+            int last_row = ExcelAction.Get_Range_RowNumber(ExcelAction.GetTestCaseAllRange(IsTemplate: true));
+            // for 4.3 & 4.4
+            int col_end = ExcelAction.GetTestCaseExcelRange_Col(IsTemplate: true);
+
+            // Visit all rows and replace Bug-ID at Linked Issue with long description of Bug.
+            for (int excel_row_index = TestCase.DataBeginRow; excel_row_index <= last_row; excel_row_index++)
+            {
+                // Make sure Key of TC contains KeyPrefix
+                String tc_key = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, key_col, IsTemplate: true);
+                if (TestCase.CheckValidTC_By_KeyPrefix(tc_key) == false) { continue; }
+                if (ReportGenerator.GetTestcaseLUT_by_Key().ContainsKey(tc_key) == false) { continue; }
+
+                // 4.1 Extend bug key string (if not empty) into long string with font settings
+                String links = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, links_col, IsTemplate: true);
+                List<Issue> filtered_linked_issue_list = new List<Issue>();
+                if (String.IsNullOrWhiteSpace(links) == false)
+                {
+                    List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
+                    // List of Issue filtered by status
+                    filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
+                    // Sort issue by Severity and Key value (A first then larger key first if same severity)
+                    List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
+                    // Convert list of sorted linked issue to description list
+                    List<StyleString> str_list = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
+                    ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
+                }
+
+                // 4.2 update Status (if it is Finished) according to linked issue count
+
+                String current_status = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, status_col, IsTemplate: true);
+
+                // Update focus to current status cell
+                ExcelAction.TestCase_CellActivate(excel_row_index, status_col, IsTemplate: true);
+
+                if (current_status == TestCase.STR_FINISHED)
+                {
+                    String status_string;
+                    if (filtered_linked_issue_list.Count == 0)
+                    {
+                        status_string = KeywordReport.PASS_str;
+                    }
+                    else
+                    {
+                        status_string = KeywordReport.FAIL_str;
+                    }
+                    ExcelAction.SetTestCaseCell(excel_row_index, status_col, status_string, IsTemplate: true);
+                }
+            }
+
+            // 5. auto-fit-height of column links
+            ExcelAction.TestCase_AutoFit_Column(links_col, IsTemplate: true);
+
+            return true;
+        }
+
         // Difference with V3 -- Use linked issue status to update STATUS when it is FINISHED (instead of judgement_report as in V3)
         // Do not use keyword result
-        static public void WriteBacktoTCJiraExcelV3_simpliified_branch(String tclist_filename, String template_filename, String buglist_file)
+        /*
+        static public void WriteBacktoTCJiraExcelV3_simplified_branch(String tclist_filename, String template_filename, String buglist_file)
         {
             // Open original excel (read-only & corrupt-load) and write to another filename when closed
             ExcelAction.ExcelStatus status;
@@ -774,6 +838,177 @@ namespace ExcelReportApplication
             // Close Test Case Excel
             ExcelAction.CloseTestCaseExcel();
         }
+        */
+
+        static public Boolean OpenProcessBugExcel(String buglist_file)
+        {
+            String buglist_filename = Storage.GetFullPath(buglist_file);
+            if (!Storage.FileExists(buglist_filename))
+            {
+                MainForm.SystemLogAddLine("bug file doesn't exist: " + buglist_filename);
+                return false;
+            }
+
+            // open bug and process bug
+            List<Issue> ret_issue_list = new List<Issue>();
+            Boolean bug_open = Issue.OpenBugListExcel(buglist_filename);
+            if (bug_open == false)
+            {
+                MainForm.SystemLogAddLine("Bug file open failed");
+                return false;
+            }
+            ret_issue_list = Issue.GenerateIssueList_processing_data();
+            UpdateGlobalIssueList(ret_issue_list);
+            if (ReportGenerator.IsGlobalIssueListEmpty())
+            {
+                MainForm.SystemLogAddLine("Empty bug-list");
+                return false;
+            }
+            return true;
+        }
+
+        static public Boolean OpenProcessTeseCaseExcel(String tc_file)
+        {
+            String tc_filename = Storage.GetFullPath(tc_file);
+            if (!Storage.FileExists(tc_filename))
+            {
+                MainForm.SystemLogAddLine("TestCase file doesn't exist: " + tc_filename);
+                return false;
+            }
+            Boolean tc_open = TestCase.OpenTestCaseExcel(tc_filename);
+            if (tc_open == false)
+            {
+                MainForm.SystemLogAddLine("TestCase file open failed");
+                return false;
+            }
+            List<TestCase> ret_tc_list = new List<TestCase>();
+            ret_tc_list = TestCase.GenerateTestCaseList_processing_data_New();
+            ReportGenerator.UpdateGlobalTestcaseList(ret_tc_list);
+            ReportGenerator.SetTestcaseLUT_by_Key(TestCase.UpdateTCListLUT_by_Key(ret_tc_list));
+            ReportGenerator.SetTestcaseLUT_by_Sheetname(TestCase.UpdateTCListLUT_by_Sheetname(ret_tc_list));
+
+            if (ReportGenerator.IsGlobalTestcaseListEmpty())
+            {
+                MainForm.SystemLogAddLine("Empty TestCase");
+                return false;
+            }
+            return true;
+        }
+
+        static public Boolean OpenTCTemplatePasteBug(String template_file)
+        {
+            String template_filename = Storage.GetFullPath(template_file);
+            if (!Storage.FileExists(template_filename))
+            {
+                MainForm.SystemLogAddLine("TC Template file doesn't exist: " + template_filename);
+                return false;
+            }
+
+            Boolean tc_template_open = TestCase.OpenTCTemplateExcel(template_filename);
+            if (tc_template_open == false)
+            {
+                MainForm.SystemLogAddLine("TC Template file open failed");
+                return false;
+            }
+
+            String new_Buglist_sheetname = "BugList";
+            String buglist_date_string = ExcelAction.GetIssueListCellTrimmedString(3, 1);
+            String extracted_buglist_date = ExtractDate(buglist_date_string);
+            if (String.IsNullOrWhiteSpace(extracted_buglist_date) == false)
+            {
+                new_Buglist_sheetname += "_" + extracted_buglist_date;
+            }
+
+            String newTClist_sheetname = "TCList";
+            String tcglist_date_string = ExcelAction.GetTestCaseCellTrimmedString(3, 1, IsTemplate: false); // Use input TC as DATE
+            String extracted_tclist_date = ExtractDate(tcglist_date_string);
+            if (String.IsNullOrWhiteSpace(extracted_tclist_date) == false)
+            {
+                newTClist_sheetname += "_" + extracted_tclist_date;
+            }
+
+            Worksheet bug_list_worksheet = ExcelAction.GetIssueListWorksheet();
+            bug_list_worksheet.Name = new_Buglist_sheetname;
+            // copy-and-paste into template files.
+            ExcelAction.CopyBugListSheetIntoTestCaseTemplateWorkbook();
+
+            // set template worksheet as active worksheet.
+            Worksheet tc_list_worksheet = ExcelAction.GetTestCaseWorksheet(IsTemplate: true);
+            tc_list_worksheet.Select();
+            tc_list_worksheet.Name = newTClist_sheetname;
+
+            return true;
+        }
+
+        // Report 1 relocated to here
+        //
+        static public bool Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount_v2(String tc_file, String template_file, String buglist_file)
+        {
+            // open bug and process bug
+            if (OpenProcessBugExcel(buglist_file) == false)
+            {
+                return false;
+            }
+
+            // open tc and process tc
+            if (OpenProcessTeseCaseExcel(tc_file) == false)
+            {
+                return false;
+            }
+
+            // open template and copy bug into it
+            if (OpenTCTemplatePasteBug(template_file) == false)
+            {
+                return false;
+            }
+
+            // close bug excel
+            if (Issue.CloseBugListExcel() == false)
+            {
+                return false;
+            }
+
+            // copy tc to template
+            if (ExcelAction.CopyTestCaseIntoTemplate_v2() == false)
+            {
+                MainForm.SystemLogAddLine("Failed @ return of CopyTestCaseIntoTemplate_v2");
+                return false;
+            }
+
+            if (WriteBacktoTCJiraExcelV3_simplified_branch_writing_template_by_TC() == false)
+            {
+                MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_simpliified_branch_writing_template_by_TC");
+                return false;
+            }
+
+            // close tc
+            ExcelAction.CloseTestCaseExcel();
+
+            // save tempalte
+            // 6. Write to another filename with datetime (and close template file)
+            string dest_filename = Storage.GenerateFilenameWithDateTime(tc_file, FileExt: ".xlsx");
+            ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
+
+            return true;
+        }
+
+        /*
+        static public bool Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount(String tc_file, String template_file, String buglist_file)
+        {
+            if ((ReportGenerator.IsGlobalIssueListEmpty()) || (ReportGenerator.IsGlobalTestcaseListEmpty()) ||
+                (!Storage.FileExists(tc_file)) || (!Storage.FileExists(template_file) || (!Storage.FileExists(buglist_file))))
+            {
+                // protection check
+                // Bug/TC files must have been loaded
+                return false;
+            }
+
+            ReportGenerator.WriteBacktoTCJiraExcelV3_simplified_branch(tclist_filename: tc_file, template_filename: template_file, buglist_file: buglist_file);
+            return true;
+        }
+        */
+
+
 
         //
         // This demo finds out Test-case whose status is fail but all linked issues are closed (other issues are hidden)

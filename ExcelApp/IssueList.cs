@@ -440,6 +440,99 @@ namespace ExcelReportApplication
         static public Color Keyword_WAIVED_ISSUE_COLOR = Color.Black;
         static public Color Keyword_CLOSED_ISSUE_COLOR = Color.Black;
 
+        static public Boolean OpenBugListExcel(String buglist_filename)
+        {
+            ExcelAction.ExcelStatus status = ExcelAction.OpenIssueListExcel(buglist_filename);
+            if (status == ExcelAction.ExcelStatus.OK)
+            {
+                return true;
+            }
+            else if (status == ExcelAction.ExcelStatus.ERR_OpenIssueListExcel_Find_Worksheet)
+            {
+                status = ExcelAction.CloseIssueListExcel();
+                return false;
+            }
+            else
+            {
+                return false;
+            }
+         }
+
+        static public Boolean CloseBugListExcel()
+        {
+            ExcelAction.ExcelStatus status = ExcelAction.CloseIssueListExcel();
+            if (status == ExcelAction.ExcelStatus.OK)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static public List<Issue> GenerateIssueList_v2(string buglist_filename)
+        {
+            List<Issue> ret_issue_list = new List<Issue>();
+            Boolean status = OpenBugListExcel(buglist_filename);
+
+            if (status)
+            {
+                ret_issue_list = GenerateIssueList_processing_data();
+                status = CloseBugListExcel();
+                if (status==false)
+                {
+                    // To be debugged
+                }
+            }
+            else
+            {
+                // To be debugged
+            }
+            return ret_issue_list;
+        }
+
+        static public List<Issue> GenerateIssueList_processing_data()
+        {
+            List<Issue> ret_issue_list = new List<Issue>();
+
+            Dictionary<string, int> col_name_list = ExcelAction.CreateIssueListColumnIndex();
+            List<String> for_checking_repeated_key = new List<String>();
+
+            // Visit all rows and add content of IssueList
+            int ExcelLastRow = ExcelAction.GetIssueListAllRange().Row;
+            for (int excel_row_index = DataBeginRow; excel_row_index <= (ExcelLastRow - 1); excel_row_index++)  // Issue list until LastRow-1
+            {
+                List<String> members = new List<String>();
+                for (int member_index = 0; member_index < IssueListMemberCount; member_index++)
+                {
+                    String str;
+                    // If data of xxx column exists in Excel, store it.
+                    if (col_name_list.ContainsKey(IssueListMemberColumnName[member_index]))
+                    {
+                        str = ExcelAction.GetIssueListCellTrimmedString(excel_row_index, col_name_list[IssueListMemberColumnName[member_index]]);
+                    }
+                    // If not exist, fill an empty string to xxx
+                    else
+                    {
+                        str = "";
+                    }
+                    members.Add(str);
+                }
+                // Add issue only if key contains KeyPrefix (very likely a valid key value)
+                String key_str = members[(int)IssueListMemberIndex.KEY];
+                //if (members[(int)IssueListMemberIndex.KEY].Contains(KeyPrefix))
+                if ((String.IsNullOrWhiteSpace(key_str) == false) && (key_str.Contains(KeyPrefix)) && (for_checking_repeated_key.Contains(key_str) == false))
+                {
+                    ret_issue_list.Add(new Issue(members));
+                    for_checking_repeated_key.Add(key_str);
+                }
+            }
+
+            return ret_issue_list;
+        }
+
+        // This is the version to be revised -- separate excel open/close away from data processing
         static public List<Issue> GenerateIssueList(string buglist_filename)
         {
             List<Issue> ret_issue_list = new List<Issue>();

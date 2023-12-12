@@ -20,7 +20,7 @@ namespace ExcelReportApplication
         private String assignee;
         private String duedate;
         private String additionalinfo;
-        private String testcaseid;          
+        private String testcaseid;
         private String stepstoreproduce;
         private String created;
         private String purpose;
@@ -85,7 +85,7 @@ namespace ExcelReportApplication
             get { return hwversion; }   // get method
             set { hwversion = value; }  // set method
         }
-       
+
         public String Reporter   // property
         {
             get { return reporter; }   // get method
@@ -188,12 +188,12 @@ namespace ExcelReportApplication
         public TestCase()
         {
         }
-/*
-        public TestCase(String key, String group, String summary, String status, String links)
-        {
-            this.key = key; this.group = group; this.summary = summary; this.status = status; this.links = links;
-        }
-*/
+        /*
+                public TestCase(String key, String group, String summary, String status, String links)
+                {
+                    this.key = key; this.group = group; this.summary = summary; this.status = status; this.links = links;
+                }
+        */
         public TestCase(List<String> members)
         {
             this.key = members[(int)TestCaseMemberIndex.KEY];
@@ -244,7 +244,7 @@ namespace ExcelReportApplication
 
         public static int TestCaseMemberCount = Enum.GetNames(typeof(TestCaseMemberIndex)).Length;
 
-       // The sequence of this String[] must be aligned with enum TestCaseMemberIndex (except no need to have string for MAX_NO)
+        // The sequence of this String[] must be aligned with enum TestCaseMemberIndex (except no need to have string for MAX_NO)
         static String[] TestCaseMemberColumnName = 
         { 
             col_Key,
@@ -283,7 +283,7 @@ namespace ExcelReportApplication
         static public Boolean CheckValidTC_By_KeyPrefix(String tc_key)
         {
             Boolean ret = false;
-            if ((tc_key.Length > TestCase.KeyPrefix.Length) && (String.Compare(tc_key, 0, TestCase.KeyPrefix, 0, TestCase.KeyPrefix.Length) == 0)) 
+            if ((tc_key.Length > TestCase.KeyPrefix.Length) && (String.Compare(tc_key, 0, TestCase.KeyPrefix, 0, TestCase.KeyPrefix.Length) == 0))
             {
                 ret = true;
             }
@@ -303,6 +303,74 @@ namespace ExcelReportApplication
             }
 
             return ret;
+        }
+
+        static public List<TestCase> GenerateTestCaseList_data_processing()
+        {
+            List<TestCase> ret_tc_list = new List<TestCase>();
+
+            Dictionary<string, int> tc_col_name_list = ExcelAction.CreateTestCaseColumnIndex();
+
+            // Visit all rows and add content of TestCase
+            int ExcelLastRow = ExcelAction.Get_Range_RowNumber(ExcelAction.GetTestCaseAllRange());
+            for (int excel_row_index = DataBeginRow; excel_row_index <= ExcelLastRow; excel_row_index++)
+            {
+                List<String> members = new List<String>();
+                for (int member_index = 0; member_index < TestCaseMemberCount; member_index++)
+                {
+                    String str;
+                    // If data of xxx column exists in Excel, store it.
+                    if (tc_col_name_list.ContainsKey(TestCaseMemberColumnName[member_index]))
+                    {
+                        str = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, tc_col_name_list[TestCaseMemberColumnName[member_index]]);
+                    }
+                    // If not exist, fill an empty string to xxx
+                    else
+                    {
+                        str = "";
+                    }
+                    members.Add(str);
+                }
+                String tc_key = members[(int)TestCaseMemberIndex.KEY];
+                String summary = members[(int)TestCaseMemberIndex.SUMMARY];
+                // Add issue only if key contains KeyPrefix (very likely a valid key value)
+                //if (tc_key.Length < KeyPrefix.Length) { continue; } // If not a TC key in this row, go to next row
+                //if (String.Compare(tc_key, 0, KeyPrefix, 0, KeyPrefix.Length) != 0) { continue; }
+                //if (String.IsNullOrWhiteSpace(summary) == true) { continue; } // 2nd protection to prevent not a TC row
+
+                //if (members[(int)TestCaseMemberIndex.KEY].Contains(KeyPrefix))
+                if (CheckValidTC_By_Key_Summary(tc_key, summary))
+                {
+                    ret_tc_list.Add(new TestCase(members));
+                }
+            }
+
+            return ret_tc_list;
+        }
+
+
+
+        // This is the version to be revised -- separate excel open/close away from data processing
+        static public List<TestCase> GenerateTestCaseList_v2(string tclist_filename)
+        {
+            List<TestCase> ret_tc_list = new List<TestCase>();
+
+            Boolean tc_open = OpenTestCaseExcel(tclist_filename);
+
+            if (tc_open)
+            {
+                ret_tc_list = GenerateTestCaseList_data_processing();
+                Boolean status = CloseTestCaseExcel();
+                ReportGenerator.UpdateGlobalTestcaseList(ret_tc_list);
+                ReportGenerator.SetTestcaseLUT_by_Key(TestCase.UpdateTCListLUT_by_Key(ret_tc_list));
+                ReportGenerator.SetTestcaseLUT_by_Sheetname(TestCase.UpdateTCListLUT_by_Sheetname(ret_tc_list));
+            }
+            else 
+            {
+                // other error -- to be checked 
+            }
+
+            return ret_tc_list;
         }
 
         static public List<TestCase> GenerateTestCaseList(string tclist_filename)
@@ -370,6 +438,136 @@ namespace ExcelReportApplication
             return ret_tc_list;
         }
 
+        static public Boolean OpenTestCaseExcel(String tclist_filename)
+        {
+            ExcelAction.ExcelStatus status = ExcelAction.OpenTestCaseExcel(tclist_filename);
+            if (status == ExcelAction.ExcelStatus.OK)
+            {
+                return true;
+            }
+            else if (status == ExcelAction.ExcelStatus.ERR_OpenTestCaseExcel_Find_Worksheet)
+            {
+                // Worksheet not found -- data corruption -- need to check excel
+                status = ExcelAction.CloseTestCaseExcel();
+                if (status != ExcelAction.ExcelStatus.OK)
+                {
+                    // To be debugged
+                }
+                return false;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static public Boolean OpenTCTemplateExcel(String tclist_filename)
+        {
+            ExcelAction.ExcelStatus status = ExcelAction.OpenTestCaseExcel(tclist_filename, IsTemplate: true);
+            if (status == ExcelAction.ExcelStatus.OK)
+            {
+                return true;
+            }
+            else if (status == ExcelAction.ExcelStatus.ERR_OpenTestCaseExcel_Find_Worksheet)
+            {
+                // Worksheet not found -- data corruption -- need to check excel
+                status = ExcelAction.CloseTestCaseExcel(IsTemplate: true);
+                if (status != ExcelAction.ExcelStatus.OK)
+                {
+                    // To be debugged
+                }
+                return false;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static public Boolean CloseTestCaseExcel()
+        {
+            ExcelAction.ExcelStatus status = ExcelAction.CloseTestCaseExcel();
+            if (status == ExcelAction.ExcelStatus.OK)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static public Boolean CloseTCTemplateExcel()
+        {
+            ExcelAction.ExcelStatus status = ExcelAction.CloseTestCaseExcel(IsTemplate: true);
+            if (status == ExcelAction.ExcelStatus.OK)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        // Exce file is opened/closed by the caller function
+        static public List<TestCase> GenerateTestCaseList_processing_data_New()
+        {
+            List<TestCase> ret_tc_list = new List<TestCase>();
+
+            ExcelData_testcase = ExcelAction.InitTCExcelData();
+
+            // prepare LUT for member_index (from 0 in sequence) to column_index  
+            List<int> LUT_member_to_column_index = new List<int>();
+            foreach (String name in TestCaseMemberColumnName)
+            {
+                int index = ExcelData_testcase.Column_Name.IndexOf(name);
+                LUT_member_to_column_index.Add(index);
+            }
+
+            // Visit all rows and add content of TestCase
+            for (int line_index = 0; line_index < ExcelData_testcase.LineCount(); line_index++)
+            {
+                List<String> members = new List<String>();
+                foreach (int column_index in LUT_member_to_column_index)
+                {
+                    String str = ExcelData_testcase.GetCell(line_index, column_index);
+                    members.Add(str);
+                }
+
+                String tc_key = members[(int)TestCaseMemberIndex.KEY];
+                String summary = members[(int)TestCaseMemberIndex.SUMMARY];
+                if (CheckValidTC_By_Key_Summary(tc_key, summary))
+                {
+                    ret_tc_list.Add(new TestCase(members));
+                }
+            }
+
+            return ret_tc_list;
+        }
+
+        static public List<TestCase> GenerateTestCaseList_New_v2(string tclist_filename)
+        {
+            List<TestCase> ret_tc_list = new List<TestCase>();
+            Boolean tc_open = OpenTestCaseExcel(tclist_filename);
+
+            if (tc_open)
+            {
+                ret_tc_list = GenerateTestCaseList_processing_data_New();
+                Boolean status = CloseTestCaseExcel();
+                ReportGenerator.UpdateGlobalTestcaseList(ret_tc_list);
+                ReportGenerator.SetTestcaseLUT_by_Key(TestCase.UpdateTCListLUT_by_Key(ret_tc_list));
+                ReportGenerator.SetTestcaseLUT_by_Sheetname(TestCase.UpdateTCListLUT_by_Sheetname(ret_tc_list));
+            }
+            else
+            {
+                // other error -- to be checked 
+            }
+
+            return ret_tc_list;
+        }
+
+        // This is the version to be revised -- separate excel open/close away from data processing
         static public ExcelData ExcelData_testcase;
         static public List<TestCase> GenerateTestCaseList_New(string tclist_filename)
         {
@@ -390,7 +588,7 @@ namespace ExcelReportApplication
                 }
 
                 // Visit all rows and add content of TestCase
-                for ( int line_index = 0; line_index < ExcelData_testcase.LineCount(); line_index++)
+                for (int line_index = 0; line_index < ExcelData_testcase.LineCount(); line_index++)
                 {
                     List<String> members = new List<String>();
                     foreach (int column_index in LUT_member_to_column_index)

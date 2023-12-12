@@ -10,7 +10,7 @@ using System.Drawing;
 
 namespace ExcelReportApplication
 {
-    static class ExcelAction
+    static public class ExcelAction
     {
         static private Excel.Application excel_app;
         static private Workbook workbook_issuelist;
@@ -661,10 +661,12 @@ namespace ExcelReportApplication
                 {
                     // Open excel (read-only & corrupt-load)
                     wb_issuelist = ExcelAction.OpenExcelWorkbook(buglist_filename, XLS: true);
+                    MainForm.SystemLogAddLine("Bug file is XML");
                 }
                 else
                 {
                     wb_issuelist = ExcelAction.OpenExcelWorkbook(buglist_filename);
+                    MainForm.SystemLogAddLine("Bug file is XLS(X)");
                 }
 
                 if (wb_issuelist == null)
@@ -675,6 +677,7 @@ namespace ExcelReportApplication
                 Worksheet ws_buglist = ExcelAction.Find_Worksheet(wb_issuelist, Issue.SheetName);
                 if (ws_buglist == null)
                 {
+                    MainForm.SystemLogAddLine("Bug file does not have specified sheetname");
                     return ExcelStatus.ERR_OpenIssueListExcel_Find_Worksheet;
                 }
                 else
@@ -686,6 +689,7 @@ namespace ExcelReportApplication
             }
             catch
             {
+                MainForm.SystemLogAddLine("OpenIssueListExcel has exception");
                 return ExcelStatus.EX_OpenIssueListWorksheet;
             }
 
@@ -748,15 +752,18 @@ namespace ExcelReportApplication
                     {
                         // Open excel (read-only & corrupt-load)
                         wb_tc = ExcelAction.OpenExcelWorkbook(tclist_filename, XLS: true);
+                        MainForm.SystemLogAddLine("TestCase file is XML");
                     }
                     else
                     {
                         wb_tc = ExcelAction.OpenExcelWorkbook(tclist_filename);
+                        MainForm.SystemLogAddLine("TestCase file is XLS(X)");
                     }
                 }
                 else
                 {
                     wb_tc = ExcelAction.OpenExcelWorkbook(tclist_filename);
+                    MainForm.SystemLogAddLine("TC template file is XLS(X)");
                 }
 
                 if (wb_tc == null)
@@ -776,6 +783,14 @@ namespace ExcelReportApplication
 
                 if (ws_tclist == null)
                 {
+                    if (IsTemplate == false)
+                    {
+                        MainForm.SystemLogAddLine("TestCase file does not have specified sheetname");
+                    }
+                    else
+                    {
+                        MainForm.SystemLogAddLine("TC template does not have specified sheetname");
+                    }
                     return ExcelStatus.ERR_OpenTestCaseExcel_Find_Worksheet;
                 }
                 else
@@ -795,6 +810,7 @@ namespace ExcelReportApplication
             }
             catch
             {
+                MainForm.SystemLogAddLine("OpenTestCaseExcel has exception");
                 return ExcelStatus.EX_OpenTestCaseWorksheet;
             }
 

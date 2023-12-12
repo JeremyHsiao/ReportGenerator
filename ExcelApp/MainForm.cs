@@ -64,7 +64,7 @@ namespace ExcelReportApplication
             //ReportType.Update_Report_Linked_Issue,
             ReportType.Update_Keyword_and_TC_Report,
             //ReportType.Man_Power_Processing,
-            //ReportType.Update_Repoart_A_then_Report_H,
+            ReportType.Update_Repoart_A_then_Report_H,
         };
 
         //public static ReportType[] ReportSelectableTable =
@@ -837,20 +837,6 @@ namespace ExcelReportApplication
             return true;
         }
 
-        private bool Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount(String tc_file, String template_file, String buglist_file)
-        {
-            if ((ReportGenerator.IsGlobalIssueListEmpty()) || (ReportGenerator.IsGlobalTestcaseListEmpty()) ||
-                (!Storage.FileExists(tc_file)) || (!Storage.FileExists(template_file) || (!Storage.FileExists(buglist_file))))
-            {
-                // protection check
-                // Bug/TC files must have been loaded
-                return false;
-            }
-
-            ReportGenerator.WriteBacktoTCJiraExcelV3_simpliified_branch(tclist_filename: tc_file, template_filename: template_file, buglist_file: buglist_file);
-            return true;
-        }
-
         private bool Execute_WriteIssueDescriptionToSummary(String template_file)
         {
             if ((ReportGenerator.IsGlobalIssueListEmpty()) || (ReportGenerator.IsGlobalTestcaseListEmpty()) ||
@@ -1254,6 +1240,10 @@ namespace ExcelReportApplication
             return true;
         }
 
+        static public Queue<String> SYSTEM_LOG = new Queue<String>();
+        static public void SystemLogAdd(String log_string) { SYSTEM_LOG.Enqueue(log_string); }
+        static public void SystemLogAddLine(String log_string) { SystemLogAdd(log_string + "\r\n"); }
+
         private void btnCreateReport_Click(object sender, EventArgs e)
         {
             bool bRet;
@@ -1278,9 +1268,9 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
-                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                        if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        bRet = Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
+                        //if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;  // can be removed after v2
+                        //if (!LoadTCListIfEmpty(txtTCFile.Text)) break;  // can be removed after v2
+                        bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount_v2(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
                         break;
                     case ReportType.FullIssueDescription_Summary: // report 2 not used now
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
