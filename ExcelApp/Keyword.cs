@@ -1229,7 +1229,7 @@ namespace ExcelReportApplication
                 String text = ExcelAction.GetCellTrimmedString(ws, row_index, ExcelAction.ColumnNameToNumber("B"));
                 if (CheckIfStringMeetsConclusion(text))
                 {
-                    int col_start = ExcelAction.ColumnNameToNumber("C"), 
+                    int col_start = ExcelAction.ColumnNameToNumber("C"),
                         col_end = ExcelAction.ColumnNameToNumber("M");
                     // replace "conclusion:" with "Bug List:"
                     //ExcelAction.SetCellValue(ws, row_index, 2, "Bug List:");
@@ -1649,7 +1649,7 @@ namespace ExcelReportApplication
             }
 
             // Output keyword list log excel here.
-            String out_dir = (String.IsNullOrWhiteSpace(dest_dir)==false) ? dest_dir : src_dir;
+            String out_dir = (String.IsNullOrWhiteSpace(dest_dir) == false) ? dest_dir : src_dir;
             KeyWordListReport.OutputKeywordLog(out_dir, keyword_list, ReportGenerator.excel_not_report_log, output_keyword_issue: true);
             //KeyWordListReport.OutputKeywordLog(out_dir, keyword_list, ReportGenerator.excel_not_report_log, output_keyword_issue: false);
 
@@ -1906,28 +1906,7 @@ namespace ExcelReportApplication
                         String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].Links;
                         // key string to List of Issue
                         List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
-                        // List of Issue filtered by status
-                        List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
-                        // Sort issue by Severity and Key valie
-                        List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
-                        // Convert list of sorted linked issue to description list
-                        linked_issue_description_on_this_report = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
-                        // count of filtered issue
-                        IssueCount severity_count = IssueCount.IssueListStatistic(filtered_linked_issue_list);
-                        Boolean pass, fail, conditional_pass;
-                        GetKeywordConclusionResult(severity_count, out pass, out fail, out conditional_pass);
-                        if (fail)
-                        {
-                            judgement_str = FAIL_str;
-                        }
-                        else if (conditional_pass)
-                        {
-                            judgement_str = CONDITIONAL_PASS_str;
-                        }
-                        else
-                        {
-                            judgement_str = PASS_str;
-                        }
+                        judgement_str = Judgement_Decision_by_Linked_Issue(linked_issue_list);
                     }
                     else
                     {
@@ -2034,6 +2013,32 @@ namespace ExcelReportApplication
             return true;
         }
 
+        // Please input linked issue
+        static public String Judgement_Decision_by_Linked_Issue(List<Issue> linked_issue_list)
+        {
+            String judgement_str = " ";
+
+            // List of Issue filtered by status
+            List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
+            // count of filtered issue
+            IssueCount severity_count = IssueCount.IssueListStatistic(filtered_linked_issue_list);
+            Boolean pass, fail, conditional_pass;
+            GetKeywordConclusionResult(severity_count, out pass, out fail, out conditional_pass);
+            if (fail)
+            {
+                judgement_str = FAIL_str;
+            }
+            else if (conditional_pass)
+            {
+                judgement_str = CONDITIONAL_PASS_str;
+            }
+            else
+            {
+                judgement_str = PASS_str;
+            }
+            return judgement_str;
+        }
+
         static public String Judgement_According_to_Linked_Issue(String sheet_name)
         {
             String judgement_str = " ";
@@ -2043,24 +2048,7 @@ namespace ExcelReportApplication
                 String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].Links;
                 // key string to List of Issue
                 List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
-                // List of Issue filtered by status
-                List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
-                // count of filtered issue
-                IssueCount severity_count = IssueCount.IssueListStatistic(filtered_linked_issue_list);
-                Boolean pass, fail, conditional_pass;
-                GetKeywordConclusionResult(severity_count, out pass, out fail, out conditional_pass);
-                if (fail)
-                {
-                    judgement_str = FAIL_str;
-                }
-                else if (conditional_pass)
-                {
-                    judgement_str = CONDITIONAL_PASS_str;
-                }
-                else
-                {
-                    judgement_str = PASS_str;
-                }
+                judgement_str = Judgement_Decision_by_Linked_Issue(linked_issue_list);
             }
             return judgement_str;
         }
@@ -2491,7 +2479,7 @@ namespace ExcelReportApplication
                     for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
                     {
                         String text = ExcelAction.GetCellTrimmedString(ws_judgement, row_index, col_indentifier);
-                        if(CheckIfStringMeetsPurpose(text))
+                        if (CheckIfStringMeetsPurpose(text))
                         {
                             row_index++;
                             purpose_str = ExcelAction.GetCellTrimmedString(ws_judgement, row_index, ExcelAction.ColumnNameToNumber('C'));
