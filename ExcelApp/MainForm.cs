@@ -65,7 +65,7 @@ namespace ExcelReportApplication
             //ReportType.Update_Report_Linked_Issue,
             ReportType.Update_Keyword_and_TC_Report,                // Report H
             //ReportType.Man_Power_Processing,
-            ReportType.Update_Repoart_A_then_Report_H,
+            //ReportType.Update_Repoart_A_then_Report_H,
             ReportType.Update_Report_Linked_Issue_and_TC_Report,    // Report K
         };
 
