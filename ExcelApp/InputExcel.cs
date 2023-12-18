@@ -386,29 +386,29 @@ namespace ExcelReportApplication
             TC_LinkedIssue = LinkedIssue;
         }
 
-        static public void UpdateVariables(String filename = "", String sheetname = "", String assignee = "", String today = "", List<StyleString> LinkedIssue = null)
-        {
-            if (String.IsNullOrWhiteSpace(filename) == false)
-            {
-                ReportFileName = filename;
-            }
-            if (String.IsNullOrWhiteSpace(sheetname) == false)
-            {
-                ReportSheetName = sheetname;
-            }
-            if (String.IsNullOrWhiteSpace(assignee) == false)
-            {
-                Assignee = assignee;
-            }
-            if (String.IsNullOrWhiteSpace(today) == false)
-            {
-                Today = today;
-            }
-            if (LinkedIssue != null)
-            {
-                TC_LinkedIssue = LinkedIssue;
-            }
-        }
+        //static public void UpdateVariables(String filename = "", String sheetname = "", String assignee = "", String today = "", List<StyleString> LinkedIssue = null)
+        //{
+        //    if (String.IsNullOrWhiteSpace(filename) == false)
+        //    {
+        //        ReportFileName = filename;
+        //    }
+        //    if (String.IsNullOrWhiteSpace(sheetname) == false)
+        //    {
+        //        ReportSheetName = sheetname;
+        //    }
+        //    if (String.IsNullOrWhiteSpace(assignee) == false)
+        //    {
+        //        Assignee = assignee;
+        //    }
+        //    if (String.IsNullOrWhiteSpace(today) == false)
+        //    {
+        //        Today = today;
+        //    }
+        //    if (LinkedIssue != null)
+        //    {
+        //        TC_LinkedIssue = LinkedIssue;
+        //    }
+        //}
 
         static private Boolean CheckAndReplace(Worksheet ws, int row, int col, String from, String to)
         {
