@@ -188,7 +188,7 @@ namespace ExcelReportApplication
                 else // modifying contents so need to open excel
                 {
                     String today = DateTime.Now.ToString("yyyy/MM/dd");
-                    HeaderTemplate.UpdateVariables(today: today, assignee: assignee, LinkedIssue: StyleString.WhiteSpaceList());
+                    HeaderTemplate.UpdateVariables_TodayAssigneeLinkedIssue(today: today, assignee: assignee, LinkedIssue: StyleString.WhiteSpaceList());
                     success = TestReport.AutoCorrectReport_SingleFile(source_file: src, destination_file: dest, wb_template: wb, always_save: true);
                 }
 
@@ -371,6 +371,19 @@ namespace ExcelReportApplication
             Assignee = Variable_Assignee;
             Today = Variable_Today;
             TC_LinkedIssue = StyleString.StringToListOfStyleString(Variable_TC_LinkedIssue);
+        }
+
+        static public void UpdateVariables_FilenameSheetname(String filename, String sheetname)
+        {
+            ReportFileName = filename;
+            ReportSheetName = sheetname;
+        }
+
+        static public void UpdateVariables_TodayAssigneeLinkedIssue(String today, String assignee, List<StyleString> LinkedIssue)
+        {
+            Assignee = assignee;
+            Today = today;
+            TC_LinkedIssue = LinkedIssue;
         }
 
         static public void UpdateVariables(String filename = "", String sheetname = "", String assignee = "", String today = "", List<StyleString> LinkedIssue = null)

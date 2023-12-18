@@ -484,7 +484,7 @@ namespace ExcelReportApplication
                     Worksheet ws_template = ExcelAction.Find_Worksheet(wb_template, HeaderTemplate.SheetName_HeaderTemplate);
                     String filename = TestPlan.GetReportTitleAccordingToFilename(destination_file);
                     String sheetname = ws.Name;
-                    HeaderTemplate.UpdateVariables(filename: filename, sheetname: sheetname);
+                    HeaderTemplate.UpdateVariables_FilenameSheetname(filename: filename, sheetname: sheetname);
                     //HeaderTemplate.CopyAndUpdateHeader(ws_template, ws);
                     HeaderTemplate.CopyAndUpdateHeader_with_KEEP(ws_template, ws);
                 }
