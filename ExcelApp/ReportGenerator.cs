@@ -1321,11 +1321,8 @@ namespace ExcelReportApplication
         }
 
         // Report 1 relocated to here
-        //
-        static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount_v2(String tc_file, String template_file, String buglist_file)
+        static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount_v3(String tc_file)
         {
-            OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: tc_file, template_file: template_file, buglist_file: buglist_file);
-
             if (WriteBacktoTCJiraExcelV3_ProcessData() == false)
             {
                 MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_ProcessData()");
@@ -1343,11 +1340,32 @@ namespace ExcelReportApplication
             return true;
         }
 
-        // Report 9 relocated to here
-        static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByReport(String tc_file, String template_file, String buglist_file, String report_dir)
-        {
-            OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: tc_file, template_file: template_file, buglist_file: buglist_file);
+        //
+        //static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount_v2(String tc_file, String template_file, String buglist_file)
+        //{
+        //    OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: tc_file, template_file: template_file, buglist_file: buglist_file);
 
+        //    if (WriteBacktoTCJiraExcelV3_ProcessData() == false)
+        //    {
+        //        MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_ProcessData()");
+        //        return false;
+        //    }
+
+        //    // close tc
+        //    ExcelAction.CloseTestCaseExcel();
+
+        //    // save tempalte
+        //    // 6. Write to another filename with datetime (and close template file)
+        //    string dest_filename = Storage.GenerateFilenameWithDateTime(tc_file, FileExt: ".xlsx");
+        //    ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
+
+        //    return true;
+        //}
+
+
+        // Report 9 relocated to here
+        static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(String tc_file, String report_dir)
+        {
             if (ReportGenerator.WriteBacktoTCJiraExcelV3_ProcessData(judgement_report_dir: report_dir) == false)
             {
                 MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_simpliified_branch_writing_template_by_TC");
@@ -1364,6 +1382,27 @@ namespace ExcelReportApplication
 
             return true;
         }
+
+        //static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByReport(String tc_file, String template_file, String buglist_file, String report_dir)
+        //{
+        //    OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: tc_file, template_file: template_file, buglist_file: buglist_file);
+
+        //    if (ReportGenerator.WriteBacktoTCJiraExcelV3_ProcessData(judgement_report_dir: report_dir) == false)
+        //    {
+        //        MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_simpliified_branch_writing_template_by_TC");
+        //        return false;
+        //    }
+
+        //    // close tc
+        //    ExcelAction.CloseTestCaseExcel();
+
+        //    // save tempalte
+        //    // 6. Write to another filename with datetime (and close template file)
+        //    string dest_filename = Storage.GenerateFilenameWithDateTime(tc_file, FileExt: ".xlsx");
+        //    ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
+
+        //    return true;
+        //}
 
         /*
         static public bool Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount(String tc_file, String template_file, String buglist_file)

@@ -1396,9 +1396,15 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
-                        //if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;  // can be removed after v2
-                        //if (!LoadTCListIfEmpty(txtTCFile.Text)) break;  // can be removed after v2
-                        bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount_v2(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
+                        if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
+                        {
+                            MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
+                            bRet = false;
+                        }
+                        else
+                        {
+                            bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount_v3(tc_file: txtTCFile.Text);
+                        }
                         break;
                     case ReportType.FullIssueDescription_Summary: // report 2 not used now
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
@@ -1451,9 +1457,15 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
-                        //if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                        //if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport(tc_file: txtTCFile.Text, report_dir: txtReportFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
+                        if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
+                        {
+                            MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
+                            bRet = false;
+                        }
+                        else
+                        {
+                            bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_dir: txtReportFile.Text);
+                        }
                         break;
                     case ReportType.CreateCSTReport:                                    // Report A
                         //UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
@@ -1577,12 +1589,23 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
-                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                        if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+                        //if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                        //if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
 
-                        String report_output_path;
-                        bRet = Execute_KeywordIssueGenerationTask_returning_report_path(txtReportFile.Text, true, out report_output_path);
-                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_output_path, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
+                        String report_H_output_path;
+                        //bRet = Execute_KeywordIssueGenerationTask_returning_report_path(txtReportFile.Text, true, out report_output_path);
+                        //bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_output_path, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
+                        if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
+                        {
+                            MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
+                            bRet = false;
+                        }
+                        else
+                        {
+                            bRet = Execute_KeywordIssueGenerationTask_returning_report_path(txtReportFile.Text, true, out report_H_output_path);
+                            bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_dir: report_H_output_path);
+                        }
+
                         break;
                     case ReportType.Man_Power_Processing:
                         tabInfomation.SelectedTab = tabInfomation.TabPages[1];
@@ -1642,26 +1665,49 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
                         //UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
-                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                        if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+                        //if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                        //if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
 
-                        String report_output_path_2;
-                        bRet = Execute_KeywordIssueGenerationTask_returning_report_path(txtReportFile.Text, true, out report_output_path_2);
-                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_output_path_2, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
+                        String report_J_output_path;
+                        //bRet = Execute_KeywordIssueGenerationTask_returning_report_path(txtReportFile.Text, true, out report_J_output_path);
+                        //bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_J_output_path, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
+
+                        if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
+                        {
+                            MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
+                            bRet = false;
+                        }
+                        else
+                        {
+                            bRet = Execute_KeywordIssueGenerationTask_returning_report_path(txtReportFile.Text, true, out report_J_output_path);
+                            bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_dir: report_J_output_path);
+                        }
 
 
                         break;
-                    case ReportType.Update_Report_Linked_Issue_and_TC_Report: // Report K
+                    case ReportType.Update_Report_Linked_Issue_and_TC_Report: // Report K -- report H without keyword function
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
-                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                        if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+                        //if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                        //if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
 
                         String report_output_path_report_k;
-                        bRet = Execute_KeywordIssueGenerationTask_returning_report_path_simplified(txtReportFile.Text, true, out report_output_path_report_k);
-                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_output_path_report_k, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
+                        //bRet = Execute_KeywordIssueGenerationTask_returning_report_path_simplified(txtReportFile.Text, true, out report_output_path_report_k);
+                        //bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_output_path_report_k, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
+
+                        if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
+                        {
+                            MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
+                            bRet = false;
+                        }
+                        else
+                        {
+                            bRet = Execute_KeywordIssueGenerationTask_returning_report_path_simplified(txtReportFile.Text, true, out report_output_path_report_k);
+                            bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_dir: report_output_path_report_k);
+                        }
+
                         break;
                     default:
                         MsgWindow.AppendText("Report Type has exception. Please check\n");
