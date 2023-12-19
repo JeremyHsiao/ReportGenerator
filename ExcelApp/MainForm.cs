@@ -868,7 +868,7 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            if (ReportGenerator.WriteBacktoTCJiraExcelV3_rev2(judgement_report_dir: judgement_report_dir) == false)
+            if (ReportGenerator.WriteBacktoTCJiraExcelV3_merge_rev2_simplified_branch_writing_template_by_TC(judgement_report_dir: judgement_report_dir) == false)
             {
                 MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_simpliified_branch_writing_template_by_TC");
                 return false;
