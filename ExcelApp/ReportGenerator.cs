@@ -692,7 +692,7 @@ namespace ExcelReportApplication
             ExcelAction.CloseTestCaseExcel();
         }
 
-        static public Boolean WriteBacktoTCJiraExcelV3_merge_rev2_simplified_branch_writing_template_by_TC(String judgement_report_dir = "")
+        static public Boolean WriteBacktoTCJiraExcelV3_ProcessData(String judgement_report_dir = "")
         {
             // 2. Get report_list under judgement_report_dir -- (sheetname, fullname)
             Boolean report_is_available = false;
@@ -883,222 +883,225 @@ namespace ExcelReportApplication
             return true;
         }
 
-        static public Boolean WriteBacktoTCJiraExcelV3_rev2(String judgement_report_dir = "")
-        {
+        //static public Boolean WriteBacktoTCJiraExcelV3_rev2(String judgement_report_dir = "")
+        //{
 
-            // 2. Get report_list under judgement_report_dir -- (sheetname, fullname)
-            Dictionary<String, String> report_filelist_by_sheetname = new Dictionary<String, String>();
-            report_filelist_by_sheetname = GenerateReportListFullnameLUTbySheetname(judgement_report_dir);
+        //    // 2. Get report_list under judgement_report_dir -- (sheetname, fullname)
+        //    Dictionary<String, String> report_filelist_by_sheetname = new Dictionary<String, String>();
+        //    report_filelist_by_sheetname = GenerateReportListFullnameLUTbySheetname(judgement_report_dir);
 
-            // 4. Prepare data on test case excel and write into test-case (template)
-            Dictionary<string, int> template_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate: true);
-            int key_col = template_col_name_list[TestCase.col_Key];
-            int links_col = template_col_name_list[TestCase.col_LinkedIssue];
-            int summary_col = template_col_name_list[TestCase.col_Summary];
-            int status_col = template_col_name_list[TestCase.col_Status];
+        //    // 4. Prepare data on test case excel and write into test-case (template)
+        //    Dictionary<string, int> template_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate: true);
+        //    int key_col = template_col_name_list[TestCase.col_Key];
+        //    int links_col = template_col_name_list[TestCase.col_LinkedIssue];
+        //    int summary_col = template_col_name_list[TestCase.col_Summary];
+        //    int status_col = template_col_name_list[TestCase.col_Status];
 
-            // For filling purpose/criteria according to reports
-            int purpose_col, criteria_col;
-            if (template_col_name_list.TryGetValue(TestCase.col_Purpose, out purpose_col) == false)
-            {
-                purpose_col = 0;
-            }
-            if (template_col_name_list.TryGetValue(TestCase.col_Criteria, out criteria_col) == false)
-            {
-                criteria_col = 0;
-            }
-            // END
+        //    // For filling purpose/criteria according to reports
+        //    int purpose_col, criteria_col;
+        //    if (template_col_name_list.TryGetValue(TestCase.col_Purpose, out purpose_col) == false)
+        //    {
+        //        purpose_col = 0;
+        //    }
+        //    if (template_col_name_list.TryGetValue(TestCase.col_Criteria, out criteria_col) == false)
+        //    {
+        //        criteria_col = 0;
+        //    }
+        //    // END
 
-            int last_row = ExcelAction.Get_Range_RowNumber(ExcelAction.GetTestCaseAllRange(IsTemplate: true));
-            // for 4.3 & 4.4
-            int col_end = ExcelAction.GetTestCaseExcelRange_Col(IsTemplate: true);
-            List<TestPlanKeyword> keyword_list = KeywordReport.GetGlobalKeywordList();
-            Dictionary<String, List<TestPlanKeyword>> keyword_lut_by_Sheetname = KeywordReport.GenerateKeywordLUT_by_Sheetname(keyword_list);
+        //    int last_row = ExcelAction.Get_Range_RowNumber(ExcelAction.GetTestCaseAllRange(IsTemplate: true));
+        //    // for 4.3 & 4.4
+        //    int col_end = ExcelAction.GetTestCaseExcelRange_Col(IsTemplate: true);
+        //    List<TestPlanKeyword> keyword_list = KeywordReport.GetGlobalKeywordList();
+        //    Dictionary<String, List<TestPlanKeyword>> keyword_lut_by_Sheetname = KeywordReport.GenerateKeywordLUT_by_Sheetname(keyword_list);
 
-            // Visit all rows and replace Bug-ID at Linked Issue with long description of Bug.
-            for (int excel_row_index = TestCase.DataBeginRow; excel_row_index <= last_row; excel_row_index++)
-            {
-                // Make sure Key of TC contains KeyPrefix
-                String tc_key = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, key_col, IsTemplate: true);
-                if (TestCase.CheckValidTC_By_KeyPrefix(tc_key) == false) { continue; }
-                if (ReportGenerator.GetTestcaseLUT_by_Key().ContainsKey(tc_key) == false) { continue; }
+        //    // Visit all rows and replace Bug-ID at Linked Issue with long description of Bug.
+        //    for (int excel_row_index = TestCase.DataBeginRow; excel_row_index <= last_row; excel_row_index++)
+        //    {
+        //        // Make sure Key of TC contains KeyPrefix
+        //        String tc_key = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, key_col, IsTemplate: true);
+        //        if (TestCase.CheckValidTC_By_KeyPrefix(tc_key) == false) { continue; }
+        //        if (ReportGenerator.GetTestcaseLUT_by_Key().ContainsKey(tc_key) == false) { continue; }
 
-                String report_name = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, summary_col, IsTemplate: true);
-                //if (String.IsNullOrWhiteSpace(report_name) == true) { continue; } // 2nd protection to prevent not a TC row
-                if (TestCase.CheckValidTC_By_Key_Summary(tc_key, report_name) == false) { continue; }
-                String worksheet_name = TestPlan.GetSheetNameAccordingToSummary(report_name);
+        //        String report_name = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, summary_col, IsTemplate: true);
+        //        //if (String.IsNullOrWhiteSpace(report_name) == true) { continue; } // 2nd protection to prevent not a TC row
+        //        if (TestCase.CheckValidTC_By_Key_Summary(tc_key, report_name) == false) { continue; }
+        //        String worksheet_name = TestPlan.GetSheetNameAccordingToSummary(report_name);
 
-                // 4.1 Extend bug key string (if not empty) into long string with font settings
-                String links = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, links_col, IsTemplate: true);
-                List<Issue> linked_issue_list = new List<Issue>();
-                List<Issue> filtered_linked_issue_list = new List<Issue>();
-                if (String.IsNullOrWhiteSpace(links) == false)
-                {
-                    linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
-                    // List of Issue filtered by status
-                    filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
-                    // Sort issue by Severity and Key value (A first then larger key first if same severity)
-                    List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
-                    // Convert list of sorted linked issue to description list
-                    List<StyleString> str_list = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
-                    ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
-                }
+        //        // 4.1 Extend bug key string (if not empty) into long string with font settings
+        //        String links = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, links_col, IsTemplate: true);
+        //        List<Issue> linked_issue_list = new List<Issue>();
+        //        List<Issue> filtered_linked_issue_list = new List<Issue>();
+        //        if (String.IsNullOrWhiteSpace(links) == false)
+        //        {
+        //            linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
+        //            // List of Issue filtered by status
+        //            filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
+        //            // Sort issue by Severity and Key value (A first then larger key first if same severity)
+        //            List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
+        //            // Convert list of sorted linked issue to description list
+        //            List<StyleString> str_list = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
+        //            ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
+        //        }
 
-                // check if report is availablea, if yes, use report to update judgement & list keyword issue of this report
-                if (report_filelist_by_sheetname.ContainsKey(worksheet_name) == true)
-                {
-                    // 4.2 update Status (if it is Finished) according to judgement report (if report is available)
+        //        // check if report is availablea, if yes, use report to update judgement & list keyword issue of this report
+        //        if (report_filelist_by_sheetname.ContainsKey(worksheet_name) == true)
+        //        {
+        //            // 4.2 update Status (if it is Finished) according to judgement report (if report is available)
 
-                    String current_status = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, status_col, IsTemplate: true);
-                    String judgement_str, purpose_str, criteria_str;
-                    //Boolean update_status = false;
-                    String workbook_filename = report_filelist_by_sheetname[worksheet_name];
-                    //if (KeywordReport.CheckLookupReportJudgementResultExist()) 
-                    if (KeywordReport.CheckLookupReportInformationExist()) //
-                    {
-                        //judgement_str = KeywordReport.LookupReportJudgementResult(workbook_filename);
-                        List<String> report_info = KeywordReport.LookupReportInformation(workbook_filename);
-                        judgement_str = KeywordReport.GetJudgement(report_info);
-                        purpose_str = KeywordReport.GetPurpose(report_info);
-                        criteria_str = KeywordReport.GetCriteria(report_info);
-                    }
-                    else
-                    {
-                        KeywordReport.GetJudgementPurposeCriteriaValue(workbook_filename, worksheet_name, out judgement_str, out purpose_str, out criteria_str);
-                        //judgement_str = WriteBacktoTCJiraExcel_GetJudgementString(worksheet_name, workbook_filename);
-                    }
+        //            String current_status = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, status_col, IsTemplate: true);
+        //            String judgement_str, purpose_str, criteria_str;
+        //            //Boolean update_status = false;
+        //            String workbook_filename = report_filelist_by_sheetname[worksheet_name];
+        //            //if (KeywordReport.CheckLookupReportJudgementResultExist()) 
+        //            if (KeywordReport.CheckLookupReportInformationExist()) //
+        //            {
+        //                //judgement_str = KeywordReport.LookupReportJudgementResult(workbook_filename);
+        //                List<String> report_info = KeywordReport.LookupReportInformation(workbook_filename);
+        //                judgement_str = KeywordReport.GetJudgement(report_info);
+        //                purpose_str = KeywordReport.GetPurpose(report_info);
+        //                criteria_str = KeywordReport.GetCriteria(report_info);
+        //            }
+        //            else
+        //            {
+        //                KeywordReport.GetJudgementPurposeCriteriaValue(workbook_filename, worksheet_name, out judgement_str, out purpose_str, out criteria_str);
+        //                //judgement_str = WriteBacktoTCJiraExcel_GetJudgementString(worksheet_name, workbook_filename);
+        //            }
 
-                    // Update focus to current status cell
-                    ExcelAction.TestCase_CellActivate(excel_row_index, status_col, IsTemplate: true);
+        //            // Update focus to current status cell
+        //            ExcelAction.TestCase_CellActivate(excel_row_index, status_col, IsTemplate: true);
 
-                    if (current_status == TestCase.STR_FINISHED)
-                    {
-                        // update only of judgement_string is available.
-                        //if (judgement_str != "")
-                        if (String.IsNullOrWhiteSpace(judgement_str) == false)
-                        {
-                            ExcelAction.SetTestCaseCell(excel_row_index, status_col, judgement_str, IsTemplate: true);
-                        }
-                    }
-                    // 4.2.1 -- update purpose and criteria
-                    // check if purpose/criteria field exists and strings are not empty
-                    if ((purpose_col > 0) && (String.IsNullOrWhiteSpace(purpose_str) == false))
-                    {
-                        ExcelAction.SetTestCaseCell(excel_row_index, purpose_col, purpose_str, IsTemplate: true);
-                    }
-                    if ((criteria_col > 0) && (String.IsNullOrWhiteSpace(criteria_str) == false))
-                    {
-                        ExcelAction.SetTestCaseCell(excel_row_index, criteria_col, criteria_str, IsTemplate: true);
-                    }
+        //            if (current_status == TestCase.STR_FINISHED)
+        //            {
+        //                // update only of judgement_string is available.
+        //                //if (judgement_str != "")
+        //                if (String.IsNullOrWhiteSpace(judgement_str) == false)
+        //                {
+        //                    ExcelAction.SetTestCaseCell(excel_row_index, status_col, judgement_str, IsTemplate: true);
+        //                }
+        //            }
+        //            // 4.2.1 -- update purpose and criteria
+        //            // check if purpose/criteria field exists and strings are not empty
+        //            if ((purpose_col > 0) && (String.IsNullOrWhiteSpace(purpose_str) == false))
+        //            {
+        //                ExcelAction.SetTestCaseCell(excel_row_index, purpose_col, purpose_str, IsTemplate: true);
+        //            }
+        //            if ((criteria_col > 0) && (String.IsNullOrWhiteSpace(criteria_str) == false))
+        //            {
+        //                ExcelAction.SetTestCaseCell(excel_row_index, criteria_col, criteria_str, IsTemplate: true);
+        //            }
 
-                    // If keyword is available, add 2 extra columns of keyword result judgement and keyword issue list for reference
-                    if (KeywordReport.CheckGlobalKeywordListExist())
-                    {
-                        // 4.3 always fill judgement value for reference outside report border (if report is available)
-                        ExcelAction.SetTestCaseCell(excel_row_index, (col_end + 1), judgement_str, IsTemplate: true);
+        //            // If keyword is available, add 2 extra columns of keyword result judgement and keyword issue list for reference
+        //            if (KeywordReport.CheckGlobalKeywordListExist())
+        //            {
+        //                // 4.3 always fill judgement value for reference outside report border (if report is available)
+        //                ExcelAction.SetTestCaseCell(excel_row_index, (col_end + 1), judgement_str, IsTemplate: true);
 
-                        // 4.4 
-                        // get buglist from keyword report and show it.
+        //                // 4.4 
+        //                // get buglist from keyword report and show it.
 
-                        // but if worksheetname is not in LUT, go fornext worksheet
-                        if (keyword_lut_by_Sheetname.ContainsKey(worksheet_name) == false)
-                        {
-                            continue;
-                        }
+        //                // but if worksheetname is not in LUT, go fornext worksheet
+        //                if (keyword_lut_by_Sheetname.ContainsKey(worksheet_name) == false)
+        //                {
+        //                    continue;
+        //                }
 
-                        List<TestPlanKeyword> ws_keyword_list = keyword_lut_by_Sheetname[worksheet_name];
-                        if (ws_keyword_list.Count > 0)
-                        {
-                            List<StyleString> str_list = new List<StyleString>();
-                            StyleString new_line_str = new StyleString("\n");
-                            foreach (TestPlanKeyword keyword in ws_keyword_list)
-                            {
-                                // Only write to keyword on currently open sheet
-                                //if (keyword.Worksheet == sheet_name)
-                                {
-                                    if (keyword.IssueDescriptionList.Count > 0)
-                                    {
-                                        // write issue description list
-                                        str_list.AddRange(keyword.IssueDescriptionList);
-                                        str_list.Add(new_line_str);
-                                    }
-                                }
-                            }
-                            if (str_list.Count > 0) { str_list.RemoveAt(str_list.Count - 1); } // remove last '\n'
-                            ExcelAction.TestCase_WriteStyleString(excel_row_index, (col_end + 2), str_list, IsTemplate: true);
-                        }
-                    }
-                    //END
+        //                List<TestPlanKeyword> ws_keyword_list = keyword_lut_by_Sheetname[worksheet_name];
+        //                if (ws_keyword_list.Count > 0)
+        //                {
+        //                    List<StyleString> str_list = new List<StyleString>();
+        //                    StyleString new_line_str = new StyleString("\n");
+        //                    foreach (TestPlanKeyword keyword in ws_keyword_list)
+        //                    {
+        //                        // Only write to keyword on currently open sheet
+        //                        //if (keyword.Worksheet == sheet_name)
+        //                        {
+        //                            if (keyword.IssueDescriptionList.Count > 0)
+        //                            {
+        //                                // write issue description list
+        //                                str_list.AddRange(keyword.IssueDescriptionList);
+        //                                str_list.Add(new_line_str);
+        //                            }
+        //                        }
+        //                    }
+        //                    if (str_list.Count > 0) { str_list.RemoveAt(str_list.Count - 1); } // remove last '\n'
+        //                    ExcelAction.TestCase_WriteStyleString(excel_row_index, (col_end + 2), str_list, IsTemplate: true);
+        //                }
+        //            }
+        //            //END
 
-                }
-            }
+        //        }
+        //    }
 
-            // 5. auto-fit-height of column links
-            ExcelAction.TestCase_AutoFit_Column(links_col, IsTemplate: true);
+        //    // 5. auto-fit-height of column links
+        //    ExcelAction.TestCase_AutoFit_Column(links_col, IsTemplate: true);
 
-            return true;
-        }
+        //    return true;
+        //}
 
-        static public Boolean WriteBacktoTCJiraExcelV3_simplified_branch_writing_template_by_TC()
-        {
-            // 4. Prepare data on test case excel and write into test-case (template)
-            Dictionary<string, int> template_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate: true);
-            int key_col = template_col_name_list[TestCase.col_Key];
-            int links_col = template_col_name_list[TestCase.col_LinkedIssue];
-            int summary_col = template_col_name_list[TestCase.col_Summary];
-            int status_col = template_col_name_list[TestCase.col_Status];
-            int last_row = ExcelAction.Get_Range_RowNumber(ExcelAction.GetTestCaseAllRange(IsTemplate: true));
-            // for 4.3 & 4.4
-            int col_end = ExcelAction.GetTestCaseExcelRange_Col(IsTemplate: true);
+        //
 
-            // Visit all rows and replace Bug-ID at Linked Issue with long description of Bug.
-            for (int excel_row_index = TestCase.DataBeginRow; excel_row_index <= last_row; excel_row_index++)
-            {
-                // Make sure Key of TC contains KeyPrefix
-                String tc_key = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, key_col, IsTemplate: true);
-                if (TestCase.CheckValidTC_By_KeyPrefix(tc_key) == false) { continue; }
-                if (ReportGenerator.GetTestcaseLUT_by_Key().ContainsKey(tc_key) == false) { continue; }
+        //static public Boolean WriteBacktoTCJiraExcelV3_simplified_branch_writing_template_by_TC()
+        //{
+        //    // 4. Prepare data on test case excel and write into test-case (template)
+        //    Dictionary<string, int> template_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate: true);
+        //    int key_col = template_col_name_list[TestCase.col_Key];
+        //    int links_col = template_col_name_list[TestCase.col_LinkedIssue];
+        //    int summary_col = template_col_name_list[TestCase.col_Summary];
+        //    int status_col = template_col_name_list[TestCase.col_Status];
+        //    int last_row = ExcelAction.Get_Range_RowNumber(ExcelAction.GetTestCaseAllRange(IsTemplate: true));
+        //    // for 4.3 & 4.4
+        //    int col_end = ExcelAction.GetTestCaseExcelRange_Col(IsTemplate: true);
 
-                // 4.1 Extend bug key string (if not empty) into long string with font settings
-                String links = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, links_col, IsTemplate: true);
-                List<Issue> linked_issue_list = new List<Issue>();
-                List<Issue> filtered_linked_issue_list = new List<Issue>();
-                if (String.IsNullOrWhiteSpace(links) == false)
-                {
-                    linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
-                    // List of Issue filtered by status
-                    filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
-                    // Sort issue by Severity and Key value (A first then larger key first if same severity)
-                    List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
-                    // Convert list of sorted linked issue to description list
-                    List<StyleString> str_list = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
-                    ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
-                }
+        //    // Visit all rows and replace Bug-ID at Linked Issue with long description of Bug.
+        //    for (int excel_row_index = TestCase.DataBeginRow; excel_row_index <= last_row; excel_row_index++)
+        //    {
+        //        // Make sure Key of TC contains KeyPrefix
+        //        String tc_key = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, key_col, IsTemplate: true);
+        //        if (TestCase.CheckValidTC_By_KeyPrefix(tc_key) == false) { continue; }
+        //        if (ReportGenerator.GetTestcaseLUT_by_Key().ContainsKey(tc_key) == false) { continue; }
 
-                // 4.2 update Status (if it is Finished) according to linked issue count
+        //        // 4.1 Extend bug key string (if not empty) into long string with font settings
+        //        String links = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, links_col, IsTemplate: true);
+        //        List<Issue> linked_issue_list = new List<Issue>();
+        //        List<Issue> filtered_linked_issue_list = new List<Issue>();
+        //        if (String.IsNullOrWhiteSpace(links) == false)
+        //        {
+        //            linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
+        //            // List of Issue filtered by status
+        //            filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
+        //            // Sort issue by Severity and Key value (A first then larger key first if same severity)
+        //            List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
+        //            // Convert list of sorted linked issue to description list
+        //            List<StyleString> str_list = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
+        //            ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
+        //        }
 
-                String current_status = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, status_col, IsTemplate: true);
+        //        // 4.2 update Status (if it is Finished) according to linked issue count
 
-                // Update focus to current status cell
-                ExcelAction.TestCase_CellActivate(excel_row_index, status_col, IsTemplate: true);
+        //        String current_status = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, status_col, IsTemplate: true);
 
-                // Update Status to judgement result if Status is "Finished"
-                if (current_status == TestCase.STR_FINISHED)
-                {
-                    String status_string;
-                    status_string = KeywordReport.Judgement_Decision_by_Linked_Issue(linked_issue_list);
-                    ExcelAction.SetTestCaseCell(excel_row_index, status_col, status_string, IsTemplate: true);
-                }
-            }
+        //        // Update focus to current status cell
+        //        ExcelAction.TestCase_CellActivate(excel_row_index, status_col, IsTemplate: true);
 
-            // 5. auto-fit-height of column links
-            ExcelAction.TestCase_AutoFit_Column(links_col, IsTemplate: true);
+        //        // Update Status to judgement result if Status is "Finished"
+        //        if (current_status == TestCase.STR_FINISHED)
+        //        {
+        //            String status_string;
+        //            status_string = KeywordReport.Judgement_Decision_by_Linked_Issue(linked_issue_list);
+        //            ExcelAction.SetTestCaseCell(excel_row_index, status_col, status_string, IsTemplate: true);
+        //        }
+        //    }
 
-            return true;
-        }
+        //    // 5. auto-fit-height of column links
+        //    ExcelAction.TestCase_AutoFit_Column(links_col, IsTemplate: true);
+
+        //    return true;
+        //}
 
         // Difference with V3 -- Use linked issue status to update STATUS when it is FINISHED (instead of judgement_report as in V3)
         // Do not use keyword result
+
         /*
         static public void WriteBacktoTCJiraExcelV3_simplified_branch(String tclist_filename, String template_filename, String buglist_file)
         {
@@ -1282,9 +1285,7 @@ namespace ExcelReportApplication
             return true;
         }
 
-        // Report 1 relocated to here
-        //
-        static public bool Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount_v2(String tc_file, String template_file, String buglist_file)
+        static public Boolean OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(String tc_file, String template_file, String buglist_file)
         {
             // open bug and process bug
             if (OpenProcessBugExcel(buglist_file) == false)
@@ -1313,11 +1314,41 @@ namespace ExcelReportApplication
             // copy tc to template
             if (ExcelAction.CopyTestCaseIntoTemplate_v2() == false)
             {
-                MainForm.SystemLogAddLine("Failed @ return of CopyTestCaseIntoTemplate_v2");
+                MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_ProcessData()");
+                return false;
+            }
+            return true;
+        }
+
+        // Report 1 relocated to here
+        //
+        static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount_v2(String tc_file, String template_file, String buglist_file)
+        {
+            OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: tc_file, template_file: template_file, buglist_file: buglist_file);
+
+            if (WriteBacktoTCJiraExcelV3_ProcessData() == false)
+            {
+                MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_ProcessData()");
                 return false;
             }
 
-            if (WriteBacktoTCJiraExcelV3_merge_rev2_simplified_branch_writing_template_by_TC() == false)
+            // close tc
+            ExcelAction.CloseTestCaseExcel();
+
+            // save tempalte
+            // 6. Write to another filename with datetime (and close template file)
+            string dest_filename = Storage.GenerateFilenameWithDateTime(tc_file, FileExt: ".xlsx");
+            ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
+
+            return true;
+        }
+
+        // Report 9 relocated to here
+        static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByReport(String tc_file, String template_file, String buglist_file, String report_dir)
+        {
+            OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: tc_file, template_file: template_file, buglist_file: buglist_file);
+
+            if (ReportGenerator.WriteBacktoTCJiraExcelV3_ProcessData(judgement_report_dir: report_dir) == false)
             {
                 MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_simpliified_branch_writing_template_by_TC");
                 return false;

@@ -829,61 +829,61 @@ namespace ExcelReportApplication
             KeywordReport.ClearGlobalKeywordList();
         }
 
-        private bool Execute_WriteIssueDescriptionToTC_rev2(String tc_file, String template_file, String buglist_file, String judgement_report_dir = "")
-        {
-            if ((judgement_report_dir != "") && !Storage.DirectoryExists(judgement_report_dir))
-            {
-                // if judgement_report_dir has been specified, it must exist
-                return false;
-            }
+        //private bool Execute_WriteIssueDescriptionToTC_rev2(String tc_file, String template_file, String buglist_file, String judgement_report_dir = "")
+        //{
+        //    if ((judgement_report_dir != "") && !Storage.DirectoryExists(judgement_report_dir))
+        //    {
+        //        // if judgement_report_dir has been specified, it must exist
+        //        return false;
+        //    }
 
-            // open bug and process bug
-            if (ReportGenerator.OpenProcessBugExcel(buglist_file) == false)
-            {
-                return false;
-            }
+        //    // open bug and process bug
+        //    if (ReportGenerator.OpenProcessBugExcel(buglist_file) == false)
+        //    {
+        //        return false;
+        //    }
 
-            // open tc and process tc
-            if (ReportGenerator.OpenProcessTeseCaseExcel(tc_file) == false)
-            {
-                return false;
-            }
+        //    // open tc and process tc
+        //    if (ReportGenerator.OpenProcessTeseCaseExcel(tc_file) == false)
+        //    {
+        //        return false;
+        //    }
 
-            // open template and copy bug into it
-            if (ReportGenerator.OpenTCTemplatePasteBug(template_file) == false)
-            {
-                return false;
-            }
+        //    // open template and copy bug into it
+        //    if (ReportGenerator.OpenTCTemplatePasteBug(template_file) == false)
+        //    {
+        //        return false;
+        //    }
 
-            // close bug excel
-            if (Issue.CloseBugListExcel() == false)
-            {
-                return false;
-            }
+        //    // close bug excel
+        //    if (Issue.CloseBugListExcel() == false)
+        //    {
+        //        return false;
+        //    }
 
-            // copy tc to template
-            if (ExcelAction.CopyTestCaseIntoTemplate_v2() == false)
-            {
-                MainForm.SystemLogAddLine("Failed @ return of CopyTestCaseIntoTemplate_v2");
-                return false;
-            }
+        //    // copy tc to template
+        //    if (ExcelAction.CopyTestCaseIntoTemplate_v2() == false)
+        //    {
+        //        MainForm.SystemLogAddLine("Failed @ return of CopyTestCaseIntoTemplate_v2");
+        //        return false;
+        //    }
 
-            if (ReportGenerator.WriteBacktoTCJiraExcelV3_merge_rev2_simplified_branch_writing_template_by_TC(judgement_report_dir: judgement_report_dir) == false)
-            {
-                MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_simpliified_branch_writing_template_by_TC");
-                return false;
-            }
+        //    if (ReportGenerator.WriteBacktoTCJiraExcelV3_ProcessData(judgement_report_dir: judgement_report_dir) == false)
+        //    {
+        //        MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_simpliified_branch_writing_template_by_TC");
+        //        return false;
+        //    }
 
-            // close tc
-            ExcelAction.CloseTestCaseExcel();
+        //    // close tc
+        //    ExcelAction.CloseTestCaseExcel();
 
-            // save tempalte
-            // 6. Write to another filename with datetime (and close template file)
-            string dest_filename = Storage.GenerateFilenameWithDateTime(tc_file, FileExt: ".xlsx");
-            ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
+        //    // save tempalte
+        //    // 6. Write to another filename with datetime (and close template file)
+        //    string dest_filename = Storage.GenerateFilenameWithDateTime(tc_file, FileExt: ".xlsx");
+        //    ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
 
-            return true;
-        }
+        //    return true;
+        //}
 
         private bool Execute_WriteIssueDescriptionToTC(String tc_file, String template_file, String buglist_file, String judgement_report_dir = "")
         {
@@ -1453,7 +1453,7 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         //if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         //if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        bRet = Execute_WriteIssueDescriptionToTC_rev2(tc_file: txtTCFile.Text, judgement_report_dir: txtReportFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
+                        bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport(tc_file: txtTCFile.Text, report_dir: txtReportFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
                         break;
                     case ReportType.CreateCSTReport:                                    // Report A
                         //UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
