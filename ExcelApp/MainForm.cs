@@ -829,6 +829,62 @@ namespace ExcelReportApplication
             KeywordReport.ClearGlobalKeywordList();
         }
 
+        private bool Execute_WriteIssueDescriptionToTC_rev2(String tc_file, String template_file, String buglist_file, String judgement_report_dir = "")
+        {
+            if ((judgement_report_dir != "") && !Storage.DirectoryExists(judgement_report_dir))
+            {
+                // if judgement_report_dir has been specified, it must exist
+                return false;
+            }
+
+            // open bug and process bug
+            if (ReportGenerator.OpenProcessBugExcel(buglist_file) == false)
+            {
+                return false;
+            }
+
+            // open tc and process tc
+            if (ReportGenerator.OpenProcessTeseCaseExcel(tc_file) == false)
+            {
+                return false;
+            }
+
+            // open template and copy bug into it
+            if (ReportGenerator.OpenTCTemplatePasteBug(template_file) == false)
+            {
+                return false;
+            }
+
+            // close bug excel
+            if (Issue.CloseBugListExcel() == false)
+            {
+                return false;
+            }
+
+            // copy tc to template
+            if (ExcelAction.CopyTestCaseIntoTemplate_v2() == false)
+            {
+                MainForm.SystemLogAddLine("Failed @ return of CopyTestCaseIntoTemplate_v2");
+                return false;
+            }
+
+            if (ReportGenerator.WriteBacktoTCJiraExcelV3_rev2(judgement_report_dir: judgement_report_dir) == false)
+            {
+                MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_simpliified_branch_writing_template_by_TC");
+                return false;
+            }
+
+            // close tc
+            ExcelAction.CloseTestCaseExcel();
+
+            // save tempalte
+            // 6. Write to another filename with datetime (and close template file)
+            string dest_filename = Storage.GenerateFilenameWithDateTime(tc_file, FileExt: ".xlsx");
+            ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
+
+            return true;
+        }
+
         private bool Execute_WriteIssueDescriptionToTC(String tc_file, String template_file, String buglist_file, String judgement_report_dir = "")
         {
             if ((ReportGenerator.IsGlobalIssueListEmpty()) || (ReportGenerator.IsGlobalTestcaseListEmpty()) ||
@@ -1324,7 +1380,9 @@ namespace ExcelReportApplication
 
             UpdateUIDuringExecution(report_type: report_type, executing: true);
 
-            MsgWindow.AppendText("Executing: " + GetReportName(report_type) + ".\n");
+            String msg = "Executing: " + GetReportName(report_type) + ".\n";
+            MsgWindow.AppendText(msg);
+            SystemLogAddLine(msg);
 
             Boolean open_excel_ok = ExcelAction.OpenExcelApp();
             if (open_excel_ok)
@@ -1393,9 +1451,9 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
-                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                        if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: txtReportFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
+                        //if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
+                        //if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
+                        bRet = Execute_WriteIssueDescriptionToTC_rev2(tc_file: txtTCFile.Text, judgement_report_dir: txtReportFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
                         break;
                     case ReportType.CreateCSTReport:                                    // Report A
                         //UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
