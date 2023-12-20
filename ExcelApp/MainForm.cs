@@ -65,7 +65,7 @@ namespace ExcelReportApplication
             //ReportType.Update_Report_Linked_Issue,
             ReportType.Update_Keyword_and_TC_Report,                // Report H
             //ReportType.Man_Power_Processing,
-            //ReportType.Update_Repoart_A_then_Report_H,
+            ReportType.Update_Repoart_A_then_Report_H,
             ReportType.Update_Report_Linked_Issue_and_TC_Report,    // Report K
         };
 
@@ -90,6 +90,7 @@ namespace ExcelReportApplication
         //    ReportType.Update_Keyword_and_TC_Report,
         //    ReportType.Man_Power_Processing,
         //    ReportType.Update_Repoart_A_then_Report_H,
+        //    ReportType.Update_Report_Linked_Issue_and_TC_Report,
         //};
 
         public static int ReportTypeCount = Enum.GetNames(typeof(ReportType)).Length;
@@ -1251,6 +1252,7 @@ namespace ExcelReportApplication
             String init_dir;
             switch (report_type)
             {
+                // In case this field is for selecting file path instaed of directory path
                 case ReportType.KeywordIssue_Report_SingleFile:
                 case ReportType.Update_Repoart_A_then_Report_H:              //Report J = A + H
                     init_dir = Storage.GetFullPath(txtReportFile.Text);
@@ -1370,6 +1372,72 @@ namespace ExcelReportApplication
         static public void SystemLogAdd(String log_string) { SYSTEM_LOG.Enqueue(log_string); }
         static public void SystemLogAddLine(String log_string) { SystemLogAdd(log_string + "\r\n"); }
 
+        static private Stack<Boolean> temp_option_stack = new Stack<Boolean>();
+
+        static private void Report_A_Push_Option()
+        {
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template);
+            KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = false;
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = false;
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = false;
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = true;
+            //KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = false;
+            //KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = false;
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = false;
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = true;
+        }
+
+        static private void Report_A_Pop_Option()
+        {
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = temp_option_stack.Pop();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = temp_option_stack.Pop();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = temp_option_stack.Pop();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = temp_option_stack.Pop();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = temp_option_stack.Pop();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = temp_option_stack.Pop();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = temp_option_stack.Pop();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = temp_option_stack.Pop();
+        }
+
+        static private void Report_E_Push_Option()
+        {
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template);
+            KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = false;
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = true;
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = false;
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = false;
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = false;
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = false;
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = false;
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = false;
+        }
+
+        static private void Report_E_Pop_Option()
+        {
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = temp_option_stack.Pop();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = temp_option_stack.Pop();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = temp_option_stack.Pop();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = temp_option_stack.Pop();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = temp_option_stack.Pop();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = temp_option_stack.Pop();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = temp_option_stack.Pop();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = temp_option_stack.Pop();
+        }
+
         private void btnCreateReport_Click(object sender, EventArgs e)
         {
             bool bRet;
@@ -1387,8 +1455,6 @@ namespace ExcelReportApplication
             Boolean open_excel_ok = ExcelAction.OpenExcelApp();
             if (open_excel_ok)
             {
-                Stack<Boolean> temp_option_stack = new Stack<Boolean>();
-
                 // Must be updated if new report type added #NewReportType
                 switch (report_type)
                 {
@@ -1468,51 +1534,15 @@ namespace ExcelReportApplication
                         }
                         break;
                     case ReportType.CreateCSTReport:                                    // Report A
-                        //UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
-                        //UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
-                        //UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
-                        //UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
-                        //// based on tc, create report structure
-                        //if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        ////String dest_dir = Storage.GetFullPath(txtReportFile.Text),
-                        ////       src_dir = Storage.GetFullPath(txtOutputTemplate.Text);
-                        //String src_dir = Storage.GetFullPath(txtReportFile.Text),
-                        //       dest_dir = Storage.GetFullPath(txtOutputTemplate.Text);
-                        //bRet = Execute_CreateTestReportbyTestCaseTask(report_src_dir: src_dir, output_report_dir: dest_dir);
-                        // update report according to jira bug
-                        //if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                        // to-be-implemented
 
                         // update judgement and header
                         // to-be-implemented
 
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         // to-be-updated
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template);
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = false;
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = false;
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = false;
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = true;
-                        //KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = false;
-                        //KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = false;
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = false;
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = true;
+                        Report_A_Push_Option();
                         bRet = Execute_AutoCorrectTestReportByExcel_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = temp_option_stack.Pop();
+                        Report_A_Pop_Option();
                         break;
                     case ReportType.TC_AutoCorrectReport_By_Filename:
                         UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
@@ -1534,31 +1564,9 @@ namespace ExcelReportApplication
                     case ReportType.RemoveInternalSheet:                                        // Report E
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
                         // copy files only
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template);
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = false;
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = true;
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = false;
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = false;
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = false;
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = false;
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = false;
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = false;
+                        Report_E_Push_Option();
                         bRet = Execute_AutoCorrectTestReportByExcel_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = temp_option_stack.Pop();
+                        Report_E_Pop_Option();
                         break;
                     case ReportType.TC_GroupSummaryReport:
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
@@ -1633,45 +1641,17 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                         String report_j_input_excel_selected = txtOutputTemplate.Text;
                         // to-be-updated
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header);
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template);
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = false;
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = false;
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = false;
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = true;
-                        //KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = false;
-                        //KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = false;
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = false;
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = true;
-                        List<String> report_list;
-                        bRet = Execute_AutoCorrectTestReportByExcel_with_output_report_list_Task(Storage.GetFullPath(report_j_input_excel_selected), out report_list);
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = temp_option_stack.Pop();
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = temp_option_stack.Pop();
+                        Report_A_Push_Option();
+                        List<String> report_list_report_j;
+                        bRet = Execute_AutoCorrectTestReportByExcel_with_output_report_list_Task(Storage.GetFullPath(report_j_input_excel_selected), out report_list_report_j);
+                        Report_A_Pop_Option();
 
                         // copied from report H
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
-                        //UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
-                        //if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                        //if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
 
                         String report_J_output_path;
-                        //bRet = Execute_KeywordIssueGenerationTask_returning_report_path(txtReportFile.Text, true, out report_J_output_path);
-                        //bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_J_output_path, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
-
                         if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
                         {
                             MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
@@ -1683,19 +1663,14 @@ namespace ExcelReportApplication
                             bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_dir: report_J_output_path);
                         }
 
-
                         break;
                     case ReportType.Update_Report_Linked_Issue_and_TC_Report: // Report K -- report H without keyword function
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
-                        //if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                        //if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
 
                         String report_output_path_report_k;
-                        //bRet = Execute_KeywordIssueGenerationTask_returning_report_path_simplified(txtReportFile.Text, true, out report_output_path_report_k);
-                        //bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_output_path_report_k, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
 
                         if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
                         {
