@@ -1485,12 +1485,12 @@ namespace ExcelReportApplication
                         bRet = Execute_WriteIssueDescriptionToSummary(template_file: txtOutputTemplate.Text);
                         break;
                     case ReportType.CreateImportToJiraCSV:
-                        UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
                         //bRet = Execute_CreateStandardTestReportTask(main_file: txtOutputTemplate.Text);
                         break;
-                    case ReportType.KeywordIssue_Report_SingleFile:
-                        UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
-                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);    // File path here
+                    case ReportType.KeywordIssue_Report_SingleFile:                 // Report 4
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;  // File path here
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         bRet = Execute_KeywordIssueGenerationTask(FileOrDirectoryName: txtReportFile.Text, IsDirectory: true);
                         break;
@@ -1509,7 +1509,7 @@ namespace ExcelReportApplication
                         bRet = Execute_FindFailTCLinkedIssueAllClosed(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text);
                         break;
                     case ReportType.FindAllKeywordInReport:
-                        UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
+                        if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;  // Directory path here
                         //UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
                         //String main_file = txtStandardTestReport.Text;
                         //String file_dir = Storage.GetDirectoryName(main_file);
@@ -1518,7 +1518,7 @@ namespace ExcelReportApplication
                         bRet = Execute_ListAllDetailedTestPlanKeywordTask(report_root: report_root_dir, output_file: output_filename);
                         break;
                     case ReportType.Excel_Sheet_Name_Update_Tool:
-                        UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);     // Directory path here
+                        if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;  // Directory path here
                         // bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: true);
                         bRet = true;
                         break;
@@ -1573,9 +1573,9 @@ namespace ExcelReportApplication
                         Report_E_Pop_Option();
                         break;
                     case ReportType.TC_GroupSummaryReport:
-                        UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
-                        UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
-                        UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile);
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
+                        if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;  // Directory path here
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
                         // update tc_linked_issue_description
