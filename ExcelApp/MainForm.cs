@@ -1494,9 +1494,9 @@ namespace ExcelReportApplication
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         bRet = Execute_KeywordIssueGenerationTask(FileOrDirectoryName: txtReportFile.Text, IsDirectory: true);
                         break;
-                    case ReportType.KeywordIssue_Report_Directory:                  // REport 7
-                        UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
-                        UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);     // Directory path here
+                    case ReportType.KeywordIssue_Report_Directory:                  // Report 7
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
+                        if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;  // Directory path here
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         bRet = Execute_KeywordIssueGenerationTask(FileOrDirectoryName: txtReportFile.Text, IsDirectory: true);
                         break;
@@ -1525,7 +1525,7 @@ namespace ExcelReportApplication
                     case ReportType.FullIssueDescription_TC_report_judgement:           // Report 9
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
-                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;
+                        if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
                         if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
                         {
@@ -1549,7 +1549,7 @@ namespace ExcelReportApplication
                         Report_A_Pop_Option();
                         break;
                     case ReportType.TC_AutoCorrectReport_By_Filename:
-                        UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile);
+                        if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;  // Directory path here
                         bRet = Execute_AutoCorrectTestReportByFilename_Task(report_root: Storage.GetFullPath(txtReportFile.Text));
                         break;
                     case ReportType.TC_AutoCorrectReport_By_ExcelList:                          // Report C
@@ -1599,7 +1599,7 @@ namespace ExcelReportApplication
                     case ReportType.Update_Keyword_and_TC_Report: // Report H
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
-                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;
+                        if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
                         //if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         //if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
@@ -1665,7 +1665,7 @@ namespace ExcelReportApplication
                     case ReportType.Update_Report_Linked_Issue_and_TC_Report: // Report K -- report H without keyword function
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
-                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;
+                        if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
 
                         if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
