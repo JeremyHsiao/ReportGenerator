@@ -70,12 +70,14 @@ namespace ExcelReportApplication
         static public bool UpdateTestReportByOptionAndSaveAsAnother(String input_excel_file)
         {
             List<String> report_list;
-            return UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(input_excel_file, out report_list);
+            String destination_path_1st_row;
+            return UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(input_excel_file, out report_list, out destination_path_1st_row);
         }
         
-        static public bool UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(String input_excel_file, out List<String> output_report_list)
+        static public bool UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(String input_excel_file, out List<String> output_report_list, out String return_destination_path)
         {
             output_report_list = new List<String>();
+            return_destination_path = "";
 
             // open excel and read and close excel
             // Open Excel workbook
@@ -106,8 +108,9 @@ namespace ExcelReportApplication
             //public String destination_filename;
             Boolean bStillReadingExcel = true;
             // check title row
-            int row_index = 1, col_index = 1;
-            // TBD
+            const int row_start_index  = 1;
+            int row_index = row_start_index, col_index = 1;
+            // start data processing since 2nd row
             row_index++;
             col_index = 1;
             List<CopyReport> report_list = new List<CopyReport>();
@@ -133,6 +136,11 @@ namespace ExcelReportApplication
                 else
                 {
                     bStillReadingExcel = false;
+                    // If more than 1 row have data ==> get destination of 1st data row for return
+                    if (row_index >= (row_start_index + 1))
+                    {
+                        return_destination_path = report_list[0].destination_path;
+                    }
                 }
             }
             while (bStillReadingExcel);
