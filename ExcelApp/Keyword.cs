@@ -374,6 +374,7 @@ namespace ExcelReportApplication
         public static int col_keyword = col_indentifier + 1;
         public static int row_test_brief_start = 10;
         public static int row_test_brief_end = 22;
+        public static int row_default_conclusion_title = 21;
         public static int row_test_detail_start = 27;
         public static int col_default_report_right_border = ExcelAction.ColumnNameToNumber('N');
         public static String regexKeywordString = @"(?i)Item";
@@ -406,6 +407,7 @@ namespace ExcelReportApplication
         //public static int TotalCnt_at_row = 21, TotalCnt_at_col = 9;
         public static int ConditionalPass_string_at_row = 21, ConditionalPass_string_at_col = ExcelAction.ColumnNameToNumber('H');
         public static int ConditionalPassCnt_at_row = 21, ConditionalPassCnt_at_col = ExcelAction.ColumnNameToNumber('I');
+
 
         private static List<TestPlanKeyword> global_keyword_list = new List<TestPlanKeyword>();
         private static Boolean global_keyword_available;
@@ -1224,34 +1226,42 @@ namespace ExcelReportApplication
             ExcelAction.SetCellValue(result_worksheet, keyword.ResultAtRow, keyword.ResultAtColumn, pass_fail_str);
         }
 
-        static public Boolean ReplaceConclusionWithBugList(Worksheet ws, List<StyleString> bug_list_description)
+        static public int FindTitle_Conclusion(Worksheet ws)
         {
-            // find conclusion, if not found, row 21/22 as default
+            // find conclusion, if not found, row_default_conclusion_title as default
             int conclusion_start_row = row_test_brief_start, conclusion_end_row = row_test_brief_end;
-            for (int row_index = conclusion_start_row; row_index <= conclusion_end_row; row_index++)
+            for (int row_index = conclusion_end_row; row_index >= conclusion_start_row; row_index--)
             {
                 String text = ExcelAction.GetCellTrimmedString(ws, row_index, ExcelAction.ColumnNameToNumber("B"));
                 if (CheckIfStringMeetsConclusion(text))
                 {
-                    int col_start = ExcelAction.ColumnNameToNumber("C"),
-                        col_end = ExcelAction.ColumnNameToNumber("M");
-                    // replace "conclusion:" with "Bug List:"
-                    //ExcelAction.SetCellValue(ws, row_index, 2, "Bug List:");
-                    ExcelAction.ClearContent(ws, row_index, col_start, row_index + 1, col_end);
-                    // output linked issue at C2
-                    StyleString.WriteStyleString(ws, row_index + 1, 3, bug_list_description);
-                    ExcelAction.Merge(ws, row_index + 1, col_start, row_index + 1, col_end);
-                    int line_count = 1; // at least one line, add one if "\n" encountered
-                    foreach (StyleString style_string in bug_list_description)
-                    {
-                        if (style_string.Text.Contains("\n"))
-                        {
-                            line_count++;
-                        }
-                    }
-                    ExcelAction.Set_Row_Height(ws, row_index + 1, (StyleString.default_size + 1) * 2 * line_count * 0.75);
+                    return row_index;
                 }
             }
+            return row_default_conclusion_title;
+        }
+
+        static public Boolean ReplaceConclusionWithBugList(Worksheet ws, List<StyleString> bug_list_description)
+        {
+            int row_conclusion_title = FindTitle_Conclusion(ws);
+            int row_bug_list_description = row_conclusion_title + 1;
+
+            int col_start = ExcelAction.ColumnNameToNumber("C"),
+                col_end = ExcelAction.ColumnNameToNumber("M");
+
+            ExcelAction.ClearContent(ws, row_conclusion_title, col_start, row_bug_list_description, col_end);
+            // output linked issue at C2
+            StyleString.WriteStyleString(ws, row_conclusion_title + 1, 3, bug_list_description);
+            ExcelAction.Merge(ws, row_conclusion_title + 1, col_start, row_bug_list_description, col_end);
+            int line_count = 1; // at least one line, add one if "\n" encountered
+            foreach (StyleString style_string in bug_list_description)
+            {
+                if (style_string.Text.Contains("\n"))
+                {
+                    line_count++;
+                }
+            }
+            ExcelAction.Set_Row_Height(ws, row_bug_list_description, (StyleString.default_size + 1) * 2 * line_count * 0.75);
             return true;
         }
 
@@ -1296,7 +1306,7 @@ namespace ExcelReportApplication
             String regex = @"^(?i)\s*Conclusion:\s*$";
             return CheckIfStringMeetsRegexString(text_to_check, regex);
         }
-
+        
         static public Boolean CheckIfStringMeetsMethod(String text_to_check)
         {
             String regex = @"^(?i)\s*Method:\s*$";
@@ -1318,6 +1328,12 @@ namespace ExcelReportApplication
                 ret_bol = false;
             }
             return ret_bol;
+        }
+
+        static private Boolean CheckIfStringMeetsSampleSN(String text_to_check)
+        {
+            String regex = @"^(?i)\s*Sample S/N:\s*$";
+            return CheckIfStringMeetsRegexString(text_to_check, regex);
         }
 
         // Code for Report *.0
@@ -2584,6 +2600,62 @@ namespace ExcelReportApplication
             try
             {
                 ExcelAction.SetCellValue(ws, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, " ");
+                b_ret = true;
+            }
+            catch (Exception ex)
+            {
+            }
+            return b_ret;
+        }
+
+        static public Boolean UpdateSampleSN_to_common_string(Worksheet ws)
+        {
+            Boolean b_ret = UpdateSampleSN(ws, KeywordReport.DefaultKeywordReportHeader.Report_C_SampleSN_String);
+            return b_ret;
+        }
+
+        static public Boolean UpdateSampleSN(Worksheet ws, String new_sample_sn)
+        {
+            Boolean b_ret = false;
+            int SN_row = 0, SN_title_col = ExcelAction.ColumnNameToNumber("B"), SN_number_col = ExcelAction.ColumnNameToNumber("C");
+
+            // Find SN title
+            int conclusion_start_row = row_test_brief_start, conclusion_end_row = row_test_brief_end;
+            for (int row_index = (row_test_brief_end); row_index <= (row_test_brief_end + 3); row_index++)
+            {
+                String text = ExcelAction.GetCellTrimmedString(ws, row_index, SN_title_col);
+                if (CheckIfStringMeetsSampleSN(text))
+                {
+                    SN_row = row_index;
+                    break;
+                }
+            }
+
+            // If not found, insert it 2 rows below conclusion
+            if (SN_row == 0)
+            {
+                SN_row = FindTitle_Conclusion(ws) + 2;
+                // insert a new one
+                ExcelAction.Insert_Row(ws, SN_row);
+
+                String SN_Title ="Sample S/N:";
+                StyleString StyleString_SN_Title = new StyleString(SN_Title);
+                StyleString_SN_Title.FontStyle |= FontStyle.Bold;
+                //ExcelAction.SetCellValue(ws, SN_row, SN_title_col, SN_Title);
+                StyleString.WriteStyleString(ws, SN_row, SN_title_col, StyleString_SN_Title.ConvertToList());
+            }
+
+            // Update SN string
+            try
+            {
+                int col_start = SN_number_col,
+                    col_end = ExcelAction.ColumnNameToNumber("M");
+
+                ExcelAction.ClearContent(ws, SN_row, SN_number_col + 1, SN_row, col_end);
+                ExcelAction.CellTextAlignLeft(ws, SN_row, SN_number_col);
+                ExcelAction.SetCellValue(ws, SN_row, SN_number_col, new_sample_sn);
+                ExcelAction.Merge(ws, SN_row, col_start, SN_row, col_end);
+                
                 b_ret = true;
             }
             catch (Exception ex)

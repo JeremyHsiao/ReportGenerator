@@ -536,6 +536,17 @@ namespace ExcelReportApplication
                 file_has_been_updated = true;
             }
 
+            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion_Judgement)
+            {
+                file_has_been_updated = true;
+            }
+
+            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN)
+            {
+                KeywordReport.UpdateSampleSN_to_common_string(ws);
+                file_has_been_updated = true;
+            }
+
             if (KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal)
             {
                 // step 1: remove sheets which are not to be released
