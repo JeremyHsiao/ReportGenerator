@@ -281,6 +281,10 @@ namespace ExcelReportApplication
         public Boolean Report_C_Clear_Keyword_Result = true;
         public Boolean Report_C_Hide_Keyword_Result_Bug_Row = false;
         public Boolean Report_C_Update_Header_by_Template = false;
+        public Boolean Report_C_Update_Conclusion_Judgement = false;
+        public Boolean Report_C_Update_Sample_SN = false;
+        public String Report_C_SampleSN_String = "Refer to DUT_Allocation_Matrix table";
+        // Lagacy options - BEGIN
         public Boolean Report_C_Update_Full_Header = false;
         public String Report_Title = "Report_Name";
         public String Report_SheetName = "Report_Sheet_Name";
@@ -319,7 +323,7 @@ namespace ExcelReportApplication
         public Boolean Update_Judgement = true;
         public Boolean Update_Tested_by = true;
         public Boolean Update_Approved_by = true;
-
+        // Lagacy options - END
         public static int Title_at_row = 1, Title_at_col = ExcelAction.ColumnNameToNumber('A');
 
         public static int Period_Start_at_row = 8, Period_Start_at_col = ExcelAction.ColumnNameToNumber('L');
