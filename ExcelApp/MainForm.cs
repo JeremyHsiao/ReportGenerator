@@ -487,6 +487,7 @@ namespace ExcelReportApplication
         {
             String ret_str = "";
             ret_str += ReportGeneratorVersionString + "\r\n";
+            ret_str += "Config file format version: " + ConfigFileFormatVersionString + "\r\n\r\n";
             int report_type_index = (int)report_type;
             foreach (String str in ReportDescription[report_type_index])
             {
@@ -523,6 +524,8 @@ namespace ExcelReportApplication
 
         public void LoadConfigAll()
         {
+            ConfigFileFormatVersionString = XMLConfig.ReadAppSetting_String("CONFIG_FORMAT_VERSION");
+
             // config for default filename at MainForm
             this.txtBugFile.Text = XMLConfig.ReadAppSetting_String("workbook_BUG_Jira");
             this.txtTCFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Jira");
@@ -745,6 +748,7 @@ namespace ExcelReportApplication
         }
 
         static public String ReportGeneratorVersionString;
+        static public String ConfigFileFormatVersionString;
 
         private void MainForm_Load(object sender, EventArgs e)
         {
