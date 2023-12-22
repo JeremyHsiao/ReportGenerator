@@ -10,8 +10,10 @@ namespace ExcelReportApplication
 
     class XMLConfig
     {
+        // Updated to format 002
         private static String[] DefaultKeyValuePairList =
         {
+            @"CONFIG_FORMAT_VERSION",                   @"000", // DO NOT CHANGE THIS DEFAULT "000" -- all previous format are treated as 000
             @"workbook_BUG_Jira",                       @".\SampleData\Jira 2022-09-03T10_48.xls", 
             @"workbook_TC_Jira",                        @".\SampleData\TC_Jira 2022-09-03T11_07.xls",
             @"Keyword_default_report_dir",              @".\SampleData\EVT_Winnie_Keyword2.5_keyword\All function",
@@ -31,6 +33,10 @@ namespace ExcelReportApplication
             @"Report_C_Hide_Keyword_Result_Bug_Row",    @"false",
             @"Report_C_Replace_Conclusion",             @"false",
             @"Report_C_Update_Header_by_Template",      @"false",
+            @"Report_C_Update_Conclusion_Judgement",    @"false",
+            @"Report_C_Update_Sample_SN",               @"false", 
+            @"Report_C_SampleSN_String",                @"Refer to DUT_Allocation_Matrix table",
+            // lagacy options - BEGIN
             @"Report_C_Update_Full_Header",             @"false",
             @"Update_Report_Title_by_Sheetname",        @"false",
             @"Update_Model_Name",                       @"false",
@@ -68,6 +74,7 @@ namespace ExcelReportApplication
             @"Default_Tested_by",                       @" ", 
             @"Default_Approved_by",                     @"Jeremy Hsiao",
             @"Report_C_ReadHeaderItem",                 @"false",
+            // lagacy options - END
             @"Excel_Visible",                           @"true",
             @"Issue_Key_Prefix",                        @"-",
             @"BugList_ExportedSheetName",               @"general_report",
