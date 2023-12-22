@@ -834,6 +834,8 @@ namespace ExcelReportApplication
                             ExcelAction.SetTestCaseCell(excel_row_index, criteria_col, criteria_str, IsTemplate: true);
                         }
 
+                        // not use anymore, last available in ReportGenerator_V1.3.19.7(20231218)
+                        /*
                         // If keyword is available, add 2 extra columns of keyword result judgement and keyword issue list for reference
                         if (KeywordReport.CheckGlobalKeywordListExist())
                         {
@@ -872,7 +874,7 @@ namespace ExcelReportApplication
                             }
                         }
                         //END
-
+                        */
                     }
                 }
             }
