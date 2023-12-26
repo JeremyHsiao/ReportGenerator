@@ -1039,12 +1039,19 @@ namespace ExcelReportApplication
 
         private bool Execute_KeywordIssueGenerationTask_returning_report_path_simplified(String FileOrDirectoryName, Boolean IsDirectory, out String output_report_path)
         {
+            output_report_path = "";
+
+            if (ReportGenerator.IsGlobalIssueListEmpty())
+            {
+                // protection check
+                return false;
+            }
+
             List<String> file_list = new List<String>();
             String source_dir;
-            output_report_path = "";
             if (IsDirectory == false)
             {
-                if ((ReportGenerator.IsGlobalIssueListEmpty()) || (!Storage.FileExists(FileOrDirectoryName)))
+                if (!Storage.FileExists(FileOrDirectoryName))
                 {
                     // protection check
                     return false;
@@ -1054,7 +1061,7 @@ namespace ExcelReportApplication
             }
             else
             {
-                if ((ReportGenerator.IsGlobalIssueListEmpty()) || (!Storage.DirectoryExists(FileOrDirectoryName)))
+                if (!Storage.DirectoryExists(FileOrDirectoryName))
                 {
                     // protection check
                     return false;
@@ -1684,7 +1691,10 @@ namespace ExcelReportApplication
                         {
                             String report_output_path_report_k;
                             bRet = Execute_KeywordIssueGenerationTask_returning_report_path_simplified(txtReportFile.Text, true, out report_output_path_report_k);
-                            bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_dir: report_output_path_report_k);
+                            if (bRet == true)
+                            {
+                                bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_dir: report_output_path_report_k);
+                            }
                         }
 
                         break;
