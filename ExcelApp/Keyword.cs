@@ -2710,6 +2710,17 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
+        static public Boolean Update_Conclusion_Judgement(Worksheet ws)
+        {
+            Boolean b_ret = false;
+
+
+            b_ret = true;
+
+
+            return b_ret;
+        }
+
         // This function is used to get judgement result (only read and no update to report) of keyword report
         //static public Boolean GetJudgementValue(String report_workbook, String report_worksheet, out String judgement_str)
         static public Boolean GetJudgementPurposeCriteriaValue(String report_workbook, String report_worksheet, out String judgement_str, out String purpose_str, out String criteria_str)
