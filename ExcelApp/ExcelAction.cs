@@ -126,7 +126,7 @@ namespace ExcelReportApplication
                     }
                     catch (Exception ex)
                     {
-                        Error_Log.Add("CloseExcelWorkbook exception: "+ final_filename); // here is for setting break-point
+                        Error_Log.Add("CloseExcelWorkbook exception: " + final_filename); // here is for setting break-point
                     }
                 }
                 else
@@ -737,6 +737,8 @@ namespace ExcelReportApplication
                 workbook_issuelist = null;
                 return ExcelStatus.EX_SaveChangesAndCloseIssueListExcel;
             }
+            // Not needed because never reaching here
+            //return ExcelStatus.ERR_NOT_DEFINED;
         }
 
         // Excel Open/Close/Save for Test Case Excel
@@ -880,6 +882,8 @@ namespace ExcelReportApplication
             {
                 return ExcelStatus.EX_SaveChangesAndCloseTestCaseExcel;
             }
+            // Not needed because never reaching here
+            //return ExcelStatus.ERR_NOT_DEFINED;
         }
 
         // Copy Value2 of single cell or a range of cells
@@ -1032,27 +1036,28 @@ namespace ExcelReportApplication
             int Src_last_row = Get_Range_RowNumber(Src), Src_last_col = Get_Range_ColumnNumber(Src);
             int Dst_last_row = Get_Range_RowNumber(Dst), Dst_last_col = Get_Range_ColumnNumber(Dst);
 
-            // Make template (destination) row count == TestCase (source) row count
-            if (Src_last_row > Dst_last_row)
-            {
-                // Insert row into template file
-                int rows_to_insert = Src_last_row - Dst_last_row;
-                do
-                {
-                    Insert_Row(ws_Dst, TestCase.DataBeginRow + 1);
-                }
-                while (--rows_to_insert > 0);
-            }
-            else if (Src_last_row < Dst_last_row)
-            {
-                // Delete row from template file
-                int rows_to_delete = Dst_last_row - Src_last_row;
-                do
-                {
-                    Delete_Row(ws_Dst, TestCase.DataBeginRow);
-                }
-                while (--rows_to_delete > 0);
-            }
+            // Neither insert nor remove rows now. template file is responsible for setting up desired format
+            //// Make template (destination) row count == TestCase (source) row count
+            //if (Src_last_row > Dst_last_row)
+            //{
+            //    // Insert row into template file
+            //    int rows_to_insert = Src_last_row - Dst_last_row;
+            //    do
+            //    {
+            //        Insert_Row(ws_Dst, TestCase.DataBeginRow + 1);
+            //    }
+            //    while (--rows_to_insert > 0);
+            //}
+            //else if (Src_last_row < Dst_last_row)
+            //{
+            //    // Delete row from template file
+            //    int rows_to_delete = Dst_last_row - Src_last_row;
+            //    do
+            //    {
+            //        Delete_Row(ws_Dst, TestCase.DataBeginRow);
+            //    }
+            //    while (--rows_to_delete > 0);
+            //}
 
             // Copy [3,1] from tc to template
             //CopyValue2(ws_Src, ws_Dst, 3, 1);
@@ -1070,6 +1075,16 @@ namespace ExcelReportApplication
             Dictionary<string, int> src_col_name_list = ExcelAction.CreateTestCaseColumnIndex();
             Dictionary<string, int> dst_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate: true);
             int row_begin = TestCase.DataBeginRow, row_end = Src_last_row;
+
+            // reduce row_end by 1 when there isn't valid key value at last row.
+            String check_key, check_summary;
+            check_key = GetCellTrimmedString(ws_Src,row_end,src_col_name_list[TestCase.col_Key]);
+            check_summary = GetCellTrimmedString(ws_Src,row_end,src_col_name_list[TestCase.col_Summary]);
+            if(TestCase.CheckValidTC_By_Key_Summary(check_key,check_summary)==false)
+            {
+                row_end--;
+            }
+
             foreach (string col_name in dst_col_name_list.Keys)
             {
                 // check to prevent outputing unavailable columns in source to destination
@@ -1487,10 +1502,10 @@ namespace ExcelReportApplication
         static public ExcelData InitTCExcelData(bool IsTemplate = false)
         {
             ExcelData excel_data = new ExcelData();
-            Worksheet ws_tclist = (IsTemplate)?ws_tc_template:ws_testcase;
+            Worksheet ws_tclist = (IsTemplate) ? ws_tc_template : ws_testcase;
             excel_data.InitFromExcel(ws_tclist, TestCase.NameDefinitionRow, TestCase.DataBeginRow);
             return excel_data;
-       }
+        }
 
         //static public Workbook OpenCSV(String filename)
         //{
