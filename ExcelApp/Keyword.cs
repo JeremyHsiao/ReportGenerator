@@ -1583,7 +1583,7 @@ namespace ExcelReportApplication
         }
 
         // Extracted from KeywordIssueGenerationTaskV4()
-        static public bool SingleReport_Processing(Worksheet result_worksheet, List<String> existing_report_filelist, String dest_filename)
+        static public bool KeywordIssueGenerationTaskV4_simplified_SingleReport_Processing(Worksheet result_worksheet, List<String> existing_report_filelist, String dest_filename)
         {
             String sheet_name = result_worksheet.Name;
             // if sheetname is xxxxxxx.0, do group_summary_report)
@@ -1616,18 +1616,27 @@ namespace ExcelReportApplication
             }
             judgement_str = ExcelAction.GetCellTrimmedString(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
 
-            if (Replace_Conclusion)
+            //if (Replace_Conclusion)
+            if (true)    // always updating linked issue for non-keyword version of report 
             {
                 // Add: replace conclusion with Bug-list
                 //ReplaceConclusionWithBugList(result_worksheet, keyword_issue_description_on_this_report); // should be linked issue in the future
                 // Find the TC meets the sheet-name
                 List<StyleString> linked_issue_description_on_this_report = new List<StyleString>();
-                if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(sheet_name))
+                if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(sheet_name))          // if TC is available
                 {
-                    // key string of all linked issue
+                    // key string of all linked issues
                     String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].Links;
                     // key string to List of Issue
                     List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
+                    // List of Issue filtered by status
+                    List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
+                    // Sort issue by Severity and Key valie
+                    List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
+                    // Convert list of sorted linked issue to description list
+                    linked_issue_description_on_this_report = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
+                    
+                    // decide judgement result based on linked issue severity and count
                     judgement_str = Judgement_Decision_by_Linked_Issue(linked_issue_list);
                 }
                 else
@@ -1725,7 +1734,7 @@ namespace ExcelReportApplication
                 }
 
                 String dest_filename = DecideDestinationFilename(src_dir, dest_dir, full_filename);
-                SingleReport_Processing(result_worksheet, existing_report_filelist, dest_filename);
+                KeywordIssueGenerationTaskV4_simplified_SingleReport_Processing(result_worksheet, existing_report_filelist, dest_filename);
 
                 // 3.4. Save the file to either 
                 //  (1) filename with yyyyMMddHHmmss if dest_dir is not specified
@@ -2078,10 +2087,17 @@ namespace ExcelReportApplication
                     List<StyleString> linked_issue_description_on_this_report = new List<StyleString>();
                     if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(sheet_name))
                     {
-                        // key string of all linked issue
+                        // key string of all linked issues
                         String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].Links;
                         // key string to List of Issue
                         List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
+                        // List of Issue filtered by status
+                        List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
+                        // Sort issue by Severity and Key valie
+                        List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
+                        // Convert list of sorted linked issue to description list
+                        linked_issue_description_on_this_report = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
+                    
                         judgement_str = Judgement_Decision_by_Linked_Issue(linked_issue_list);
                     }
                     else
