@@ -14,6 +14,7 @@ namespace ExcelReportApplication
         private static String[] DefaultKeyValuePairList =
         {
             @"CONFIG_FORMAT_VERSION",                   @"000", // DO NOT CHANGE THIS DEFAULT "000" -- all previous format are treated as 000
+            @"CONFIG_DEFAULT_VALUE_VERSION",            @"000", // DO NOT CHANGE THIS DEFAULT "000" -- all previous default value are treated as 000
             @"workbook_BUG_Jira",                       @".\SampleData\Jira 2022-09-03T10_48.xls", 
             @"workbook_TC_Jira",                        @".\SampleData\TC_Jira 2022-09-03T11_07.xls",
             @"Keyword_default_report_dir",              @".\SampleData\EVT_Winnie_Keyword2.5_keyword\All function",

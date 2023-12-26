@@ -525,6 +525,7 @@ namespace ExcelReportApplication
         public void LoadConfigAll()
         {
             ConfigFileFormatVersionString = XMLConfig.ReadAppSetting_String("CONFIG_FORMAT_VERSION");
+            ConfigFileDefaultValueVersionString = XMLConfig.ReadAppSetting_String("CONFIG_DEFAULT_VALUE_VERSION");
 
             // config for default filename at MainForm
             this.txtBugFile.Text = XMLConfig.ReadAppSetting_String("workbook_BUG_Jira");
@@ -749,6 +750,7 @@ namespace ExcelReportApplication
 
         static public String ReportGeneratorVersionString;
         static public String ConfigFileFormatVersionString;
+        static public String ConfigFileDefaultValueVersionString;
 
         private void MainForm_Load(object sender, EventArgs e)
         {
