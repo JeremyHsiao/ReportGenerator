@@ -1306,7 +1306,7 @@ namespace ExcelReportApplication
             String regex = @"^(?i)\s*Conclusion:\s*$";
             return CheckIfStringMeetsRegexString(text_to_check, regex);
         }
-        
+
         static public Boolean CheckIfStringMeetsMethod(String text_to_check)
         {
             String regex = @"^(?i)\s*Method:\s*$";
@@ -1598,20 +1598,35 @@ namespace ExcelReportApplication
             int search_start_row = row_test_brief_start, search_end_row = row_test_brief_end;
             int purpose_str_col = ExcelAction.ColumnNameToNumber('C');
             int criteria_str_col = ExcelAction.ColumnNameToNumber('C');
+            Boolean purpose_found = false, criteria_found = false;
             for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
             {
                 String text = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, col_indentifier);
-                if (CheckIfStringMeetsPurpose(text))
+                if (purpose_found == false)
                 {
-                    row_index++;
-                    purpose_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, purpose_str_col);
-                    continue;
+                    if (CheckIfStringMeetsPurpose(text))
+                    {
+                        row_index++;
+                        purpose_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, purpose_str_col);
+                        purpose_found = true;
+                        if (criteria_found)
+                            break;
+                        else
+                            continue;
+                    }
                 }
-                else if (CheckIfStringMeetsCriteria(text))
+                if (criteria_found == false)
                 {
-                    row_index++;
-                    criteria_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, criteria_str_col);
-                    continue;
+                    if (CheckIfStringMeetsCriteria(text))
+                    {
+                        row_index++;
+                        criteria_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, criteria_str_col);
+                        criteria_found = true;
+                        if (purpose_found)
+                            break;
+                        else
+                            continue;
+                    }
                 }
             }
             judgement_str = ExcelAction.GetCellTrimmedString(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
@@ -1635,7 +1650,7 @@ namespace ExcelReportApplication
                     List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
                     // Convert list of sorted linked issue to description list
                     linked_issue_description_on_this_report = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
-                    
+
                     // decide judgement result based on linked issue severity and count
                     judgement_str = Judgement_Decision_by_Linked_Issue(linked_issue_list);
                 }
@@ -1881,20 +1896,35 @@ namespace ExcelReportApplication
                 int search_start_row = row_test_brief_start, search_end_row = row_test_brief_end;
                 int purpose_str_col = ExcelAction.ColumnNameToNumber('C');
                 int criteria_str_col = ExcelAction.ColumnNameToNumber('C');
+                Boolean purpose_found = false, criteria_found = false;
                 for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
                 {
                     String text = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, col_indentifier);
-                    if (CheckIfStringMeetsPurpose(text))
+                    if (purpose_found == false)
                     {
-                        row_index++;
-                        purpose_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, purpose_str_col);
-                        continue;
+                        if (CheckIfStringMeetsPurpose(text))
+                        {
+                            row_index++;
+                            purpose_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, purpose_str_col);
+                            purpose_found = true;
+                            if (criteria_found)
+                                break;
+                            else
+                                continue;
+                        }
                     }
-                    else if (CheckIfStringMeetsCriteria(text))
+                    if (criteria_found == false)
                     {
-                        row_index++;
-                        criteria_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, criteria_str_col);
-                        continue;
+                        if (CheckIfStringMeetsCriteria(text))
+                        {
+                            row_index++;
+                            criteria_str = ExcelAction.GetCellTrimmedString(result_worksheet, row_index, criteria_str_col);
+                            criteria_found = true;
+                            if (purpose_found)
+                                break;
+                            else
+                                continue;
+                        }
                     }
                 }
                 judgement_str = ExcelAction.GetCellTrimmedString(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
@@ -2097,7 +2127,7 @@ namespace ExcelReportApplication
                         List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
                         // Convert list of sorted linked issue to description list
                         linked_issue_description_on_this_report = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
-                    
+
                         judgement_str = Judgement_Decision_by_Linked_Issue(linked_issue_list);
                     }
                     else
@@ -2654,7 +2684,7 @@ namespace ExcelReportApplication
                 // insert a new one
                 ExcelAction.Insert_Row(ws, SN_row);
 
-                String SN_Title ="Sample S/N:";
+                String SN_Title = "Sample S/N:";
                 StyleString StyleString_SN_Title = new StyleString(SN_Title);
                 StyleString_SN_Title.FontStyle |= FontStyle.Bold;
                 //ExcelAction.SetCellValue(ws, SN_row, SN_title_col, SN_Title);
@@ -2671,7 +2701,7 @@ namespace ExcelReportApplication
                 ExcelAction.CellTextAlignLeft(ws, SN_row, SN_number_col);
                 ExcelAction.SetCellValue(ws, SN_row, SN_number_col, new_sample_sn);
                 ExcelAction.Merge(ws, SN_row, col_start, SN_row, col_end);
-                
+
                 b_ret = true;
             }
             catch (Exception ex)
