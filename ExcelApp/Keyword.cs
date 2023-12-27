@@ -2686,7 +2686,7 @@ namespace ExcelReportApplication
 
                 String SN_Title = "Sample S/N:";
                 StyleString StyleString_SN_Title = new StyleString(SN_Title);
-                StyleString_SN_Title.FontStyle |= FontStyle.Bold;
+                StyleString_SN_Title.FontStyle = FontStyle.Bold;
                 //ExcelAction.SetCellValue(ws, SN_row, SN_title_col, SN_Title);
                 StyleString.WriteStyleString(ws, SN_row, SN_title_col, StyleString_SN_Title.ConvertToList());
             }
@@ -2699,7 +2699,15 @@ namespace ExcelReportApplication
 
                 ExcelAction.ClearContent(ws, SN_row, SN_number_col + 1, SN_row, col_end);
                 ExcelAction.CellTextAlignLeft(ws, SN_row, SN_number_col);
-                ExcelAction.SetCellValue(ws, SN_row, SN_number_col, new_sample_sn);
+                
+                //ExcelAction.SetCellValue(ws, SN_row, SN_number_col, new_sample_sn);
+                String SN_Font = XMLConfig.ReadAppSetting_String("Report_C_SampleSN_String_Font");
+                int SN__FontSize = XMLConfig.ReadAppSetting_int("Report_C_SampleSN_String_FontSize");
+                Color SN_FontColor = XMLConfig.ReadAppSetting_Color("Report_C_SampleSN_String_FontColor");
+                FontStyle SN_FontStyle = XMLConfig.ReadAppSetting_FontStyle("Report_C_SampleSN_String_FontStyle");
+                StyleString style_string_new_sample_sn = new StyleString(new_sample_sn, SN_FontColor, SN_Font, SN__FontSize);
+                StyleString.WriteStyleString(ws, SN_row, SN_number_col, style_string_new_sample_sn.ConvertToList());
+
                 ExcelAction.Merge(ws, SN_row, col_start, SN_row, col_end);
 
                 b_ret = true;
