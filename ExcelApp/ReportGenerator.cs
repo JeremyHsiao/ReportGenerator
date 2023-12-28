@@ -715,7 +715,9 @@ namespace ExcelReportApplication
 
         //
         // Input: report list
-        //
+        // Output: (1) if report_list is empty or report_list contains no report file --> all test-case are checked and updated
+        //         (2) if report_list contains at least one report file --> only test-cases with corresponding report are checked and updated
+        // 
         static public Boolean WriteBacktoTCJiraExcelV3_ProcessData(List<String> report_list)
         {
             Boolean bRet = false;
@@ -731,7 +733,7 @@ namespace ExcelReportApplication
                     report_is_available = (report_filelist_by_sheetname.Count > 0) ? true : false;
                 }
             }
-            // if no report, criteria/purpose won't affected & status updated according to linked issue condition
+            // if no report, criteria/purpose won't affected AND all status updated according to linked issue condition
 
             // 4. Prepare data on test case excel and write into test-case (template)
             Dictionary<string, int> template_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate: true);
