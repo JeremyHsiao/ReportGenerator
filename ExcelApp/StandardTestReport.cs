@@ -584,6 +584,7 @@ namespace ExcelReportApplication
                             double new_row_height = 0.2;
                             ExcelAction.Set_Row_Height(wb.Sheets[1], row_index, new_row_height);
                             ExcelAction.Set_Row_Height(wb.Sheets[1], row_index + 1, new_row_height);
+                            file_has_been_updated = true;
                             break;
                         }
                     }
