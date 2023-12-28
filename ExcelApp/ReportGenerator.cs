@@ -434,35 +434,54 @@ namespace ExcelReportApplication
         //    return status;
         //}
 
-        static public Dictionary<String, String> GenerateReportListFullnameLUTbySheetname(String judgement_report_dir)
+        //
+        // Input: List of all reports
+        // Output: Dictionary of Sheetname to ReportFullFileName
+        //
+        static public Dictionary<String, String> GenerateReportListFullnameLUTbySheetname(List<String> report_list)
         {
-            Dictionary<String, String> report_list = new Dictionary<String, String>();
+            Dictionary<String, String> report_list_lut = new Dictionary<String, String>();
 
-            if (judgement_report_dir != "")
+            List<String> file_list = Storage.FilterFilename(report_list); // protection: remove non-report files (according to filename rule)
+            foreach (String name in file_list)
             {
-                List<String> all_file_list = Storage.ListFilesUnderDirectory(judgement_report_dir);
-                List<String> file_list = Storage.FilterFilename(all_file_list);
-                foreach (String name in file_list)
+                // File existing check protection (it is better also checked and giving warning before entering this function)
+                if (Storage.FileExists(name) == false)
+                    continue; // no warning here, simply skip this file.
+
+                String full_filename = Storage.GetFullPath(name);
+                String sheet_name = TestPlan.GetSheetNameAccordingToFilename(name);
+                try
                 {
-                    // File existing check protection (it is better also checked and giving warning before entering this function)
-                    if (Storage.FileExists(name) == false)
-                        continue; // no warning here, simply skip this file.
-
-                    String full_filename = Storage.GetFullPath(name);
-                    String sheet_name = TestPlan.GetSheetNameAccordingToFilename(name);
-                    try
-                    {
-                        report_list.Add(sheet_name, full_filename);
-                    }
-                    catch (ArgumentException)
-                    {
-                        LogMessage.WriteLine("Sheet name:" + sheet_name + " already exists in WriteBacktoTCJiraExcel_OpenExcel().");
-                    }
-
+                    report_list_lut.Add(sheet_name, full_filename);
                 }
+                catch (ArgumentException)
+                {
+                    LogMessage.WriteLine("Sheet name:" + sheet_name + " already exists in GenerateReportListFullnameLUTbySheetname(List<String>).");
+                }
+
             }
-            return report_list;
+            return report_list_lut;
         }
+
+        //
+        // Input: Root-directory (all reports under this path are all used)
+        // Output: Dictionary of Sheetname to ReportFullFileName
+        //
+        //
+        /*
+        static public Dictionary<String, String> GenerateReportListFullnameLUTbySheetname(String report_dir)
+        {
+            Dictionary<String, String> report_list_lut = new Dictionary<String, String>();
+
+            if (report_dir != "")
+            {
+                List<String> all_file_list = Storage.ListFilesUnderDirectory(report_dir);
+                report_list_lut = GenerateReportListFullnameLUTbySheetname(all_file_list);
+            }
+            return report_list_lut;
+        }
+        */
 
         //static public Boolean ConvertBugID_to_BugDescription(String links, out List<StyleString> Link_Issue_Detail)
         //{
@@ -518,6 +537,7 @@ namespace ExcelReportApplication
         //}
 
         // Split some part of V2 into sub-functions 
+        /*
         static public void WriteBacktoTCJiraExcelV3(String tclist_filename, String template_filename, String buglist_file, String judgement_report_dir = "")
         {
             // Open original excel (read-only & corrupt-load) and write to another filename when closed
@@ -691,14 +711,26 @@ namespace ExcelReportApplication
             // Close Test Case Excel
             ExcelAction.CloseTestCaseExcel();
         }
+        */
 
-        static public Boolean WriteBacktoTCJiraExcelV3_ProcessData(String judgement_report_dir = "")
+        //
+        // Input: report list
+        //
+        static public Boolean WriteBacktoTCJiraExcelV3_ProcessData(List<String> report_list)
         {
+            Boolean bRet = false;
+
             // 2. Get report_list under judgement_report_dir -- (sheetname, fullname)
             Boolean report_is_available = false;
             Dictionary<String, String> report_filelist_by_sheetname = new Dictionary<String, String>();
-            report_filelist_by_sheetname = GenerateReportListFullnameLUTbySheetname(judgement_report_dir);
-            report_is_available = (report_filelist_by_sheetname.Count > 0) ? true : false;
+            if (report_list != null)
+            {
+                if (report_list.Count > 0)
+                {
+                    report_filelist_by_sheetname = GenerateReportListFullnameLUTbySheetname(report_list);
+                    report_is_available = (report_filelist_by_sheetname.Count > 0) ? true : false;
+                }
+            }
             // if no report, criteria/purpose won't affected & status updated according to linked issue condition
 
             // 4. Prepare data on test case excel and write into test-case (template)
@@ -712,9 +744,9 @@ namespace ExcelReportApplication
             int col_end = ExcelAction.GetTestCaseExcelRange_Col(IsTemplate: true);
 
             // Only if reports are available
-            int purpose_col =0, criteria_col = 0;
-            List<TestPlanKeyword> keyword_list = new List<TestPlanKeyword> ();
-            Dictionary<String, List<TestPlanKeyword>> keyword_lut_by_Sheetname = new  Dictionary<String, List<TestPlanKeyword>>();
+            int purpose_col = 0, criteria_col = 0;
+            List<TestPlanKeyword> keyword_list = new List<TestPlanKeyword>();
+            Dictionary<String, List<TestPlanKeyword>> keyword_lut_by_Sheetname = new Dictionary<String, List<TestPlanKeyword>>();
             if (report_is_available)
             {
                 // For filling purpose/criteria according to reports
@@ -766,7 +798,7 @@ namespace ExcelReportApplication
                     ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
                 }
 
-                if (!report_is_available)
+                if (report_is_available == false)
                 {
                     // For no-report case
 
@@ -835,46 +867,7 @@ namespace ExcelReportApplication
                         }
 
                         // not use anymore, last available in ReportGenerator_V1.3.19.7(20231218)
-                        /*
-                        // If keyword is available, add 2 extra columns of keyword result judgement and keyword issue list for reference
-                        if (KeywordReport.CheckGlobalKeywordListExist())
-                        {
-                            // 4.3 always fill judgement value for reference outside report border (if report is available)
-                            ExcelAction.SetTestCaseCell(excel_row_index, (col_end + 1), judgement_str, IsTemplate: true);
-
-                            // 4.4 
-                            // get buglist from keyword report and show it.
-
-                            // but if worksheetname is not in LUT, go fornext worksheet
-                            if (keyword_lut_by_Sheetname.ContainsKey(worksheet_name) == false)
-                            {
-                                continue;
-                            }
-
-                            List<TestPlanKeyword> ws_keyword_list = keyword_lut_by_Sheetname[worksheet_name];
-                            if (ws_keyword_list.Count > 0)
-                            {
-                                List<StyleString> str_list = new List<StyleString>();
-                                StyleString new_line_str = new StyleString("\n");
-                                foreach (TestPlanKeyword keyword in ws_keyword_list)
-                                {
-                                    // Only write to keyword on currently open sheet
-                                    //if (keyword.Worksheet == sheet_name)
-                                    {
-                                        if (keyword.IssueDescriptionList.Count > 0)
-                                        {
-                                            // write issue description list
-                                            str_list.AddRange(keyword.IssueDescriptionList);
-                                            str_list.Add(new_line_str);
-                                        }
-                                    }
-                                }
-                                if (str_list.Count > 0) { str_list.RemoveAt(str_list.Count - 1); } // remove last '\n'
-                                ExcelAction.TestCase_WriteStyleString(excel_row_index, (col_end + 2), str_list, IsTemplate: true);
-                            }
-                        }
-                        //END
-                        */
+                        // get buglist from keyword report and show it.
                     }
                 }
             }
@@ -882,7 +875,8 @@ namespace ExcelReportApplication
             // 5. auto-fit-height of column links
             ExcelAction.TestCase_AutoFit_Column(links_col, IsTemplate: true);
 
-            return true;
+            bRet = true;
+            return bRet;
         }
 
         //static public Boolean WriteBacktoTCJiraExcelV3_rev2(String judgement_report_dir = "")
@@ -1325,7 +1319,9 @@ namespace ExcelReportApplication
         // Report 1 relocated to here
         static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount_v3(String tc_file)
         {
-            if (WriteBacktoTCJiraExcelV3_ProcessData() == false)
+            List<String> empty_report_list = new List<String>();
+            // no report has been referred at all in current report 1
+            if (WriteBacktoTCJiraExcelV3_ProcessData(empty_report_list) == false)
             {
                 MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_ProcessData()");
                 return false;
@@ -1368,10 +1364,27 @@ namespace ExcelReportApplication
         // Report 9 relocated to here
         static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(String tc_file, String report_dir)
         {
-            if (ReportGenerator.WriteBacktoTCJiraExcelV3_ProcessData(judgement_report_dir: report_dir) == false)
+            Boolean b_ret = false;
+
+            List<String> all_file_list = new List<String>();
+            if (String.IsNullOrWhiteSpace(report_dir))
             {
-                MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_simpliified_branch_writing_template_by_TC");
-                return false;
+                all_file_list = Storage.ListFilesUnderDirectory(report_dir);
+            }
+
+            b_ret = Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file, report_list: all_file_list);
+            return b_ret;
+        }
+
+        // newly created version -- report_list instead of report_dir
+        static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(String tc_file, List<String> report_list)
+        {
+            Boolean b_ret = false;
+
+            b_ret = ReportGenerator.WriteBacktoTCJiraExcelV3_ProcessData(report_list: report_list);
+            if (b_ret == false)
+            {
+                MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_ProcessData()");
             }
 
             // close tc
@@ -1382,7 +1395,7 @@ namespace ExcelReportApplication
             string dest_filename = Storage.GenerateFilenameWithDateTime(tc_file, FileExt: ".xlsx");
             ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
 
-            return true;
+            return b_ret;
         }
 
         //static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByReport(String tc_file, String template_file, String buglist_file, String report_dir)
