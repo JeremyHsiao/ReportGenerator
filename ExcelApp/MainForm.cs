@@ -913,6 +913,7 @@ namespace ExcelReportApplication
         //    return true;
         //}
 
+        /*
         private bool Execute_WriteIssueDescriptionToTC(String tc_file, String template_file, String buglist_file, String judgement_report_dir = "")
         {
             if ((ReportGenerator.IsGlobalIssueListEmpty()) || (ReportGenerator.IsGlobalTestcaseListEmpty()) ||
@@ -938,6 +939,7 @@ namespace ExcelReportApplication
             ReportGenerator.WriteBacktoTCJiraExcelV3(tclist_filename: tc_file, template_filename: template_file, buglist_file: buglist_file, judgement_report_dir: judgement_report_dir);
             return true;
         }
+        */
 
         private bool Execute_WriteIssueDescriptionToSummary(String template_file)
         {
@@ -1775,6 +1777,9 @@ namespace ExcelReportApplication
             msg = "Finished time: " + DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + ".\n";
             MsgWindow.AppendText(msg);
             SystemLogAddLine(msg);
+
+            MsgWindow.AppendText(SYSTEM_LOG.ToString());
+            SYSTEM_LOG.Clear();
 
             UpdateUIDuringExecution(report_type: report_type, executing: false);
         }
