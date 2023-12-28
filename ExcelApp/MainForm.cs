@@ -1472,6 +1472,10 @@ namespace ExcelReportApplication
             MsgWindow.AppendText(msg);
             SystemLogAddLine(msg);
 
+            msg = "Starting time: " + DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + ".\n";
+            MsgWindow.AppendText(msg);
+            SystemLogAddLine(msg);
+
             Boolean open_excel_ok = ExcelAction.OpenExcelApp();
             if (open_excel_ok)
             {
@@ -1650,9 +1654,15 @@ namespace ExcelReportApplication
                         }
                         break;
                     case ReportType.Update_Repoart_A_then_Report_H:                                    //Report J = A + H
+
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;
+
                         // copied from report A
                         // NOTE: Input Excel File is storted in txtReportFile for Report J
-                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;
+                        //if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;
                         String report_j_input_excel_selected = txtReportFile.Text;
                         String report_j_copied_report_root_path = "";
                         List<String> report_list_report_j;
@@ -1661,9 +1671,9 @@ namespace ExcelReportApplication
                         Report_A_Pop_Option();
 
                         // copied from report H
-                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
-                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
-                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
+                        //if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
+                        //if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
+                        //if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
 
                         if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
                         {
@@ -1677,7 +1687,24 @@ namespace ExcelReportApplication
                             bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_dir: report_J_processed_report_output_path);
                         }
 
+                        // new version to be checked
+                        //if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
+                        //{
+                        //    MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
+                        //    bRet = false;
+                        //}
+                        //else
+                        //{
+                        //    String report_j_input_excel_selected = txtReportFile.Text;
+                        //    String report_j_copied_report_root_path = "";
+                        //    List<String> report_list_report_j;
+                        //    Report_A_Push_Option();
+                        //    bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(report_j_input_excel_selected, out report_list_report_j, out report_j_copied_report_root_path);
+                        //    Report_A_Pop_Option();
+                        //    bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_list: report_list_report_j);
+                        //}
                         break;
+
                     case ReportType.Update_Report_Linked_Issue_and_TC_Report: // Report K -- report H without keyword function
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
@@ -1744,6 +1771,11 @@ namespace ExcelReportApplication
             ExcelAction.CloseExcelApp();
 
             MsgWindow.AppendText("Finished.\n");
+
+            msg = "Finished time: " + DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + ".\n";
+            MsgWindow.AppendText(msg);
+            SystemLogAddLine(msg);
+
             UpdateUIDuringExecution(report_type: report_type, executing: false);
         }
 
