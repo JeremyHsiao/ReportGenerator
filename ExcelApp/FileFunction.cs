@@ -149,8 +149,9 @@ namespace ExcelReportApplication
                 File.Copy(src, dst, overwrite: overwrite);
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                LogMessage.WriteLine(ex.ToString() + "@ Copy");
                 return false;
             }
         }
@@ -169,7 +170,7 @@ namespace ExcelReportApplication
             return ret;
         }
 
-        static public DirectoryInfo CreateDirectory(String new_dir, Boolean auto_parent_dir=false)
+        static public DirectoryInfo CreateDirectory(String new_dir, Boolean auto_parent_dir = false)
         {
             if (auto_parent_dir == false)
             {
@@ -179,13 +180,13 @@ namespace ExcelReportApplication
             {
                 String parent_dir = GetDirectoryName(new_dir);
                 Boolean parent_dir_exist = DirectoryExists(parent_dir);
-                if(parent_dir_exist==false)
+                if (parent_dir_exist == false)
                 {
                     // recursively create parent directory if not-existing.
-                    CreateDirectory(parent_dir, auto_parent_dir:true);
+                    CreateDirectory(parent_dir, auto_parent_dir: true);
                 }
                 return Directory.CreateDirectory(new_dir);
-            }   
+            }
         }
 
         static public String GetDirectoryName(String Filename)
@@ -195,8 +196,9 @@ namespace ExcelReportApplication
             {
                 ret = Path.GetDirectoryName(Filename);
             }
-            catch
+            catch (Exception ex)
             {
+                LogMessage.WriteLine(ex.ToString() + "@ GetDirectoryName");
                 // "" will be returned if exceptions
             }
             return ret;
@@ -209,8 +211,9 @@ namespace ExcelReportApplication
             {
                 ret = Path.GetFullPath(Filename);
             }
-            catch
+            catch (Exception ex)
             {
+                LogMessage.WriteLine(ex.ToString() + "@ GetFullPath");
                 // "" will be returned if exceptions
             }
             return ret;
@@ -224,8 +227,9 @@ namespace ExcelReportApplication
             {
                 ret = Path.GetFileName(Filename);
             }
-            catch
+            catch (Exception ex)
             {
+                LogMessage.WriteLine(ex.ToString() + "@ GetFileName");
                 // "" will be returned if exceptions
             }
             return ret;
@@ -238,8 +242,9 @@ namespace ExcelReportApplication
             {
                 ret = Path.GetFileNameWithoutExtension(Filename);
             }
-            catch
+            catch (Exception ex)
             {
+                LogMessage.WriteLine(ex.ToString() + "@ GetFileNameWithoutExtension");
                 // "" will be returned if exceptions
             }
             return ret;
@@ -252,8 +257,9 @@ namespace ExcelReportApplication
             {
                 ret = Path.GetExtension(Filename);
             }
-            catch
+            catch (Exception ex)
             {
+                LogMessage.WriteLine(ex.ToString() + "@ GetExtension");
                 // "" will be returned if exceptions
             }
             return ret;
@@ -266,8 +272,9 @@ namespace ExcelReportApplication
             {
                 ret = Directory.GetCurrentDirectory();
             }
-            catch
+            catch (Exception ex)
             {
+                LogMessage.WriteLine(ex.ToString() + "@ GetCurrentDirectory");
                 // @"C:\" will be returned if exceptions
             }
             return ret;
@@ -299,8 +306,9 @@ namespace ExcelReportApplication
                 // Filename ==  path + @"\" + name            + ext
                 // ret      ==  path + @"\" + name + "_" + dt + ext;
             }
-            catch
+            catch (Exception ex)
             {
+                LogMessage.WriteLine(ex.ToString() + "@ GenerateFilenameWithDateTime");
                 // "" will be returned if exceptions
             }
             return ret;
@@ -325,8 +333,9 @@ namespace ExcelReportApplication
                 // dir  ==  path + @"\"(?)
                 // ret  ==  path + "_" + dt;
             }
-            catch
+            catch (Exception ex)
             {
+                LogMessage.WriteLine(ex.ToString() + "@ GenerateDirectoryNameWithDateTime");
                 // "" will be returned if exceptions
             }
             return ret;
@@ -338,15 +347,21 @@ namespace ExcelReportApplication
         {
             List<String> ret_list = new List<String>();
 
-            // Get the list of files found in the directory.
-            string[] fileEntries = Directory.GetFiles(targetDirectory);
-            ret_list.AddRange(fileEntries);
+            try
+            {
+                // Get the list of files found in the directory.
+                string[] fileEntries = Directory.GetFiles(targetDirectory);
+                ret_list.AddRange(fileEntries);
 
-            // Recurse into subdirectories of this directory.
-            string[] subdirectoryEntries = Directory.GetDirectories(targetDirectory);
-            foreach (string subdirectory in subdirectoryEntries)
-                ret_list.AddRange(ListFilesUnderDirectory(subdirectory));
-
+                // Recurse into subdirectories of this directory.
+                string[] subdirectoryEntries = Directory.GetDirectories(targetDirectory);
+                foreach (string subdirectory in subdirectoryEntries)
+                    ret_list.AddRange(ListFilesUnderDirectory(subdirectory));
+            }
+            catch (Exception ex)
+            {
+                LogMessage.WriteLine("Exception: " + ex.ToString() + "@ ListFilesUnderDirectory");
+            }
             return ret_list;
         }
 
@@ -355,6 +370,9 @@ namespace ExcelReportApplication
             List<String> ret_list = new List<String>();
 
             // Get the list of files found in the directory.
+            List<String> file_list = ListFilesUnderDirectory(targetDirectory);
+            ret_list.AddRange(FilterFilename(file_list));
+            /*
             string[] fileEntries = Directory.GetFiles(targetDirectory);
             ret_list.AddRange(FilterFilename(fileEntries.ToList()));
 
@@ -364,6 +382,7 @@ namespace ExcelReportApplication
             {
                 ret_list.AddRange(ListCandidateReportFilesUnderDirectory(subdirectory));
             }
+            */
             return ret_list;
         }
 
@@ -372,6 +391,10 @@ namespace ExcelReportApplication
             List<String> ret_list = new List<String>();
 
             // Get the list of files found in the directory.
+            // Get the list of files found in the directory.
+            List<String> file_list = ListFilesUnderDirectory(targetDirectory);
+            ret_list.AddRange(FilterGroupSummaryFilename(file_list));
+            /*
             string[] fileEntries = Directory.GetFiles(targetDirectory);
             ret_list.AddRange(FilterGroupSummaryFilename(fileEntries.ToList()));
 
@@ -381,6 +404,7 @@ namespace ExcelReportApplication
             {
                 ret_list.AddRange(ListCandidateReportFilesUnderDirectory(subdirectory));
             }
+            */
             return ret_list;
         }
 
@@ -396,13 +420,13 @@ namespace ExcelReportApplication
         // 2. one or more pairs of (. + digits)
         // 3. at lease one "_" and allowable chars (including _) follow until ".xlsx"
         // 4. ".xlsx" is case-insensitive
-        
+
 
         static public bool IsReportFilename(String input_name)
         {
             string regexString = @"^(Other|[A-Za-z0-9]+)(\.[A-Za-z0-9]+)+_[\w\(\)\-_+&. ]+\.(?i:xlsx)$";
             RegexStringValidator myRegexValidator = new RegexStringValidator(regexString);
-            
+
             bool bret = false;
             String filename = Storage.GetFileName(input_name);
 
@@ -439,7 +463,7 @@ namespace ExcelReportApplication
         {
             string regexString = @"^(Other|[A-Za-z0-9]+)(\.0)(_[\w\(\)\-_+&. ]+)*\.(?i:xlsx)$";
             RegexStringValidator myRegexValidator = new RegexStringValidator(regexString);
-            
+
             bool bret = false;
             String filename = Storage.GetFileName(input_name);
 
@@ -496,8 +520,9 @@ namespace ExcelReportApplication
                 String combined = Path.Combine(path, Path.GetFileName(filename));
                 return combined;
             }
-            catch
+            catch (Exception ex)
             {
+                LogMessage.WriteLine(ex.ToString() + "@ GetValidFullFilename");
                 return "";
             }
         }
@@ -509,8 +534,9 @@ namespace ExcelReportApplication
                 String combined = Path.Combine(absolute_path, relative_path);
                 return combined;
             }
-            catch
+            catch (Exception ex)
             {
+                LogMessage.WriteLine(ex.ToString() + "@ CominePath");
                 return "";
             }
         }
