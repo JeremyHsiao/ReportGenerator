@@ -276,6 +276,7 @@ namespace ExcelReportApplication
     {
         public Boolean Report_C_CopyFileOnly = false;
         public Boolean Report_C_Remove_AUO_Internal = false;
+        public Boolean Report_C_Remove_AUO_Internal_remove_Method = false; 
         public Boolean Report_C_Replace_Conclusion = false;
         public Boolean Report_C_Update_Report_Sheetname = true;
         public Boolean Report_C_Clear_Keyword_Result = true;

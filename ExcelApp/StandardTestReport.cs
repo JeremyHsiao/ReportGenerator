@@ -570,18 +570,22 @@ namespace ExcelReportApplication
                     }
                 }
                 // step 2: remove contents on the sheet which are not to be released
-                //CheckIfStringMeetsMethod
-                int search_start_row = KeywordReport.row_test_brief_start, search_end_row = KeywordReport.row_test_brief_end;
-                for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
+                if (KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal_remove_Method)
                 {
-                    String text = ExcelAction.GetCellTrimmedString(wb.Sheets[1], row_index, KeywordReport.col_indentifier);
-                    if (KeywordReport.CheckIfStringMeetsMethod(text))
+
+                    //CheckIfStringMeetsMethod
+                    int search_start_row = KeywordReport.row_test_brief_start, search_end_row = KeywordReport.row_test_brief_end;
+                    for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
                     {
-                        ExcelAction.ClearContent(wb.Sheets[1], row_index, 1, row_index + 1, KeywordReport.col_default_report_right_border);
-                        double new_row_height = 0.2;
-                        ExcelAction.Set_Row_Height(wb.Sheets[1], row_index, new_row_height);
-                        ExcelAction.Set_Row_Height(wb.Sheets[1], row_index + 1, new_row_height);
-                        break;
+                        String text = ExcelAction.GetCellTrimmedString(wb.Sheets[1], row_index, KeywordReport.col_indentifier);
+                        if (KeywordReport.CheckIfStringMeetsMethod(text))
+                        {
+                            ExcelAction.ClearContent(wb.Sheets[1], row_index, 1, row_index + 1, KeywordReport.col_default_report_right_border);
+                            double new_row_height = 0.2;
+                            ExcelAction.Set_Row_Height(wb.Sheets[1], row_index, new_row_height);
+                            ExcelAction.Set_Row_Height(wb.Sheets[1], row_index + 1, new_row_height);
+                            break;
+                        }
                     }
                 }
             }
