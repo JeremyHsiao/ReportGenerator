@@ -1394,6 +1394,12 @@ namespace ExcelReportApplication
         static public Queue<String> SYSTEM_LOG = new Queue<String>();
         static public void SystemLogAdd(String log_string) { SYSTEM_LOG.Enqueue(log_string); }
         static public void SystemLogAddLine(String log_string) { SystemLogAdd(log_string + "\r\n"); }
+        static public List<String> SystemLogPopToListOfString() 
+        {
+            List<String> ret_list = SYSTEM_LOG.ToList();
+            SYSTEM_LOG.Clear();
+            return ret_list;
+        }
 
         static private Stack<Boolean> temp_option_stack = new Stack<Boolean>();
 
@@ -1795,8 +1801,11 @@ namespace ExcelReportApplication
             MsgWindow.AppendText(msg);
             SystemLogAddLine(msg);
 
-            MsgWindow.AppendText(SYSTEM_LOG.ToString());
-            SYSTEM_LOG.Clear();
+            List<String> system_log_strings = SystemLogPopToListOfString();
+            foreach (String str in system_log_strings)
+            {
+                MsgWindow.AppendText(str);
+            }
 
             UpdateUIDuringExecution(report_type: report_type, executing: false);
         }
