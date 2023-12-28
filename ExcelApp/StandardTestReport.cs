@@ -538,7 +538,7 @@ namespace ExcelReportApplication
 
             if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion_Judgement)
             {
-                KeywordReport.Update_Conclusion_Judgement(ws);
+                KeywordReport.Update_Conclusion_Judgement_by_linked_issue(ws);
                 file_has_been_updated = true;
             }
 

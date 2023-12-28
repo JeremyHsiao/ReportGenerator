@@ -1634,6 +1634,9 @@ namespace ExcelReportApplication
             //if (Replace_Conclusion)
             if (true)    // always updating linked issue for non-keyword version of report 
             {
+                Update_Conclusion_Judgement_by_linked_issue(result_worksheet);
+
+                /*
                 // Add: replace conclusion with Bug-list
                 //ReplaceConclusionWithBugList(result_worksheet, keyword_issue_description_on_this_report); // should be linked issue in the future
                 // Find the TC meets the sheet-name
@@ -1663,6 +1666,7 @@ namespace ExcelReportApplication
                 //
                 ExcelAction.CellActivate(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
                 ExcelAction.SetCellValue(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, judgement_str);
+                */
             }
             // always update Test End Period to today
             if (true)      // this part of code is only for old header mechanism before header template is available
@@ -2111,6 +2115,8 @@ namespace ExcelReportApplication
 
                 if (Replace_Conclusion)
                 {
+                    Update_Conclusion_Judgement_by_linked_issue(result_worksheet);
+                    /*
                     // Add: replace conclusion with Bug-list
                     //ReplaceConclusionWithBugList(result_worksheet, keyword_issue_description_on_this_report); // should be linked issue in the future
                     // Find the TC meets the sheet-name
@@ -2139,6 +2145,7 @@ namespace ExcelReportApplication
                     //
                     ExcelAction.CellActivate(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
                     ExcelAction.SetCellValue(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, judgement_str);
+                    */ 
                 }
 
                 // always update Test End Period to today
@@ -2718,13 +2725,47 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
-        static public Boolean Update_Conclusion_Judgement(Worksheet ws)
+        // Assumption:
+        //      1. Bug / TC has been opened and processed
+        //      2. Current worksheet is the report worksheet
+        //      3. If there isn't corresponding testcase, judgement/conclusion is set to empty
+        static public Boolean Update_Conclusion_Judgement_by_linked_issue(Worksheet ws)
         {
             Boolean b_ret = false;
 
+            String judgement_str;
+            String sheet_name = ws.Name;
 
-            b_ret = true;
+            judgement_str = ExcelAction.GetCellTrimmedString(ws, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
 
+            // Find the TC meets the sheet-name
+            List<StyleString> linked_issue_description_on_this_report = new List<StyleString>();
+            if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(sheet_name))          // if TC is available
+            {
+                // key string of all linked issues
+                String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].Links;
+                // key string to List of Issue
+                List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
+                // List of Issue filtered by status
+                List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
+                // Sort issue by Severity and Key valie
+                List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
+                // Convert list of sorted linked issue to description list
+                linked_issue_description_on_this_report = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
+
+                // decide judgement result based on linked issue severity and count
+                judgement_str = Judgement_Decision_by_Linked_Issue(linked_issue_list);
+            }
+            else
+            {
+                judgement_str = " ";
+                linked_issue_description_on_this_report.Clear();
+                linked_issue_description_on_this_report.Add(KeywordReportHeader.blank_space);
+            }
+            b_ret = ReplaceConclusionWithBugList(ws, linked_issue_description_on_this_report);
+            //
+            ExcelAction.CellActivate(ws, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
+            ExcelAction.SetCellValue(ws, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, judgement_str);
 
             return b_ret;
         }
