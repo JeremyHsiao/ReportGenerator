@@ -568,9 +568,14 @@ namespace ExcelReportApplication
             //}
             //ReportGenerator.fileter_status_list = ret_list;
             String links = XMLConfig.ReadAppSetting_String("LinkIssueFilterStatusString");
-            ReportGenerator.filter_status_list_linked_issue = SplitCommaSeparatedStringIntoList(links);
-            links = XMLConfig.ReadAppSetting_String("TestReport_FilterStatusString");
-            KeywordReport.filter_status_list = SplitCommaSeparatedStringIntoList(links);
+            ReportGenerator.List_of_status_to_filter_for_tc_linked_issue = SplitCommaSeparatedStringIntoList(links);
+            links = XMLConfig.ReadAppSetting_String("KeywordIssueFilterStatusString");
+            KeywordReport.KeywordIssue_filter_status_list = SplitCommaSeparatedStringIntoList(links);
+
+            links = XMLConfig.ReadAppSetting_String("TestReport_Default_Judgement");
+            KeywordReport.TestReport_Default_Judgement = links;
+            links = XMLConfig.ReadAppSetting_String("TestReport_Default_Conclusion");
+            KeywordReport.TestReport_Default_Conclusion = links;
             // End
 
             // config for default parameters used in Test Plan / Test Report

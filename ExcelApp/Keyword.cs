@@ -362,9 +362,9 @@ namespace ExcelReportApplication
         //public static int Period_End_at_row = 8, Period_End_at_col = ExcelAction.ColumnNameToNumber('M');
         //public static int Judgement_at_row = 9, Judgement_at_col = ExcelAction.ColumnNameToNumber('D');
         //public static int Judgement_string_at_row = 9, Judgement_string_at_col = 2;
-        public static StyleString blank_space = new StyleString(" ", ReportGenerator.LinkIssue_report_FontColor,
+        private static StyleString blank_space = new StyleString(" ", ReportGenerator.LinkIssue_report_FontColor,
                             ReportGenerator.LinkIssue_report_Font, ReportGenerator.LinkIssue_report_FontSize);
-
+        public static List<StyleString> blank_space_list = blank_space.ConvertToList();
     }
 
     public static class KeywordReport
@@ -389,7 +389,9 @@ namespace ExcelReportApplication
         public static String regexBugStatusString = @"^(?i)\s*Bug Status\s*$";
         public static String regexBugListString = @"^(?i)\s*Bug List\s*$";
 
-        static public List<String> filter_status_list = new List<String>();
+        static public List<String> KeywordIssue_filter_status_list = new List<String>();
+        public static String TestReport_Default_Judgement = "N/A";
+        public static String TestReport_Default_Conclusion = " ";
 
         public static String PASS_str = "Pass";
         public static String CONDITIONAL_PASS_str = "Conditional Pass";
@@ -1458,7 +1460,7 @@ namespace ExcelReportApplication
                 int col_index = GroupSummary_Title_No_Col;
                 String str_no = TestPlan.GetSheetNameAccordingToFilename(filename);
                 String str_test_item = TestPlan.GetReportTitleWithoutNumberAccordingToFilename(filename);
-                String str_judgement = KeywordReport.Judgement_According_to_Linked_Issue(str_no);
+                String str_judgement = KeywordReport.Judgement_Decision_by_TC_Linked_Issue(str_no);
                 List<StyleString> linked_issue_description = new List<StyleString>();
                 if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(str_no))
                 {
@@ -1467,7 +1469,7 @@ namespace ExcelReportApplication
                     // key string to List of Issue
                     List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
                     // List of Issue filtered by status
-                    List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
+                    List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.List_of_status_to_filter_for_tc_linked_issue);
                     // Sort issue by Severity and Key valie
                     List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
                     // Convert list of sorted linked issue to description list
@@ -1836,7 +1838,7 @@ namespace ExcelReportApplication
                 foreach (Issue issue in ReportGenerator.ReadGlobalIssueList())
                 {
                     // if status meets filter condition (mostly Closed_0), skip to next issue)
-                    if (filter_status_list.IndexOf(issue.Status) >= 0)
+                    if (KeywordIssue_filter_status_list.IndexOf(issue.Status) >= 0)
                     {
                         continue;
                     }
@@ -2244,12 +2246,12 @@ namespace ExcelReportApplication
         }
 
         // Please input linked issue
-        static public String Judgement_Decision_by_Linked_Issue(List<Issue> linked_issue_list)
+        static public String Judgement_Decision_by_Linked_Issue_List(List<Issue> linked_issue_list)
         {
-            String judgement_str = " ";
+            String judgement_str = KeywordReport.TestReport_Default_Judgement;
 
             // List of Issue filtered by status
-            List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
+            List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.List_of_status_to_filter_for_tc_linked_issue);
             // count of filtered issue
             IssueCount severity_count = IssueCount.IssueListStatistic(filtered_linked_issue_list);
             Boolean pass, fail, conditional_pass;
@@ -2269,16 +2271,17 @@ namespace ExcelReportApplication
             return judgement_str;
         }
 
-        static public String Judgement_According_to_Linked_Issue(String sheet_name)
+        static public String Judgement_Decision_by_TC_Linked_Issue(String sheet_name)
         {
-            String judgement_str = " ";
+            // return default if no corresponding TC
+            String judgement_str = KeywordReport.TestReport_Default_Judgement;
             if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(sheet_name))
             {
                 // key string of all linked issue
                 String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].Links;
                 // key string to List of Issue
                 List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
-                judgement_str = Judgement_Decision_by_Linked_Issue(linked_issue_list);
+                judgement_str = Judgement_Decision_by_Linked_Issue_List(linked_issue_list);
             }
             return judgement_str;
         }
@@ -2730,16 +2733,42 @@ namespace ExcelReportApplication
         //      1. Bug / TC has been opened and processed
         //      2. Current worksheet is the report worksheet
         //      3. If there isn't corresponding testcase, judgement/conclusion is set to empty
-        static public Boolean Update_Conclusion_Judgement_by_linked_issue(Worksheet ws)
+        static public Boolean Update_Conclusion_Judgement_by_linked_issue(Worksheet worksheet)
         {
             Boolean b_ret = false;
 
             String judgement_str;
-            String sheet_name = ws.Name;
+            List<StyleString> linked_issue_description_on_this_report;
 
-            judgement_str = ExcelAction.GetCellTrimmedString(ws, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
+            // update conclusion
+            b_ret = GetSortedFilteredLinkIssueAndJudgementString(worksheet, out linked_issue_description_on_this_report, out judgement_str);
+            b_ret = ReplaceConclusionWithBugList(worksheet, linked_issue_description_on_this_report);
 
-            // Find the TC meets the sheet-name
+            // update judgement
+            ExcelAction.CellActivate(worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
+            ExcelAction.SetCellValue(worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, judgement_str);
+
+            return b_ret;
+        }
+
+        static public Boolean Update_Conclusion_only_by_linked_issue(Worksheet worksheet)
+        {
+           
+            Boolean b_ret = false;
+            String judgement_str;           // obtained but not use in this function
+            List<StyleString> linked_issue_description_on_this_report;
+
+            // update conclusion
+            b_ret = GetSortedFilteredLinkIssueAndJudgementString(worksheet, out linked_issue_description_on_this_report, out judgement_str);
+            b_ret = ReplaceConclusionWithBugList(worksheet, linked_issue_description_on_this_report);
+
+            return b_ret;
+        }
+
+        /*
+        static public List<StyleString> GetLinkIssueFullDescription(Worksheet worksheet)
+        {
+            String sheet_name = worksheet.Name;
             List<StyleString> linked_issue_description_on_this_report = new List<StyleString>();
             if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(sheet_name))          // if TC is available
             {
@@ -2748,27 +2777,73 @@ namespace ExcelReportApplication
                 // key string to List of Issue
                 List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
                 // List of Issue filtered by status
-                List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
+                List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.List_of_status_to_filter_for_tc_linked_issue);
+                // Sort issue by Severity and Key valie
+                List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
+                // Convert list of sorted linked issue to description list
+                linked_issue_description_on_this_report = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
+            }
+            else
+            {
+                linked_issue_description_on_this_report.Clear();
+                linked_issue_description_on_this_report.Add(KeywordReportHeader.blank_space);
+            }
+            return linked_issue_description_on_this_report;
+        }
+        */
+
+        //
+        // return: false if corresponding report is not available (so returning default for both Return_Issue_List & Judgement_String)
+        // out: Return_Issue_List - sorted and filtered linked issue list
+        //      Judgement_String - judgement according to sorted/filtered linked issue
+        //
+        static public Boolean GetSortedFilteredLinkIssueAndJudgementString(Worksheet worksheet, out List<StyleString> Return_Issue_List, out String Judgement_String)
+        {
+            Boolean b_ret = false;
+
+            String sheet_name = worksheet.Name;
+            String judgement_str = KeywordReport.TestReport_Default_Judgement; 
+            StyleString default_conclusion = new StyleString( KeywordReport.TestReport_Default_Conclusion, ReportGenerator.LinkIssue_report_FontColor, 
+                            ReportGenerator.LinkIssue_report_Font, ReportGenerator.LinkIssue_report_FontSize);
+            List<StyleString> linked_issue_description_on_this_report = default_conclusion.ConvertToList();      
+
+            //judgement_str = ExcelAction.GetCellTrimmedString(worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
+
+            // Find the TC meets the sheet-name
+            if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(sheet_name))          // if TC is available
+            {
+                // key string of all linked issues
+                String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].Links;
+                // key string to List of Issue
+                List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
+                // List of Issue filtered by status
+                List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.List_of_status_to_filter_for_tc_linked_issue);
                 // Sort issue by Severity and Key valie
                 List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
                 // Convert list of sorted linked issue to description list
                 linked_issue_description_on_this_report = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
 
                 // decide judgement result based on linked issue severity and count
-                judgement_str = Judgement_Decision_by_Linked_Issue(linked_issue_list);
+                judgement_str = Judgement_Decision_by_Linked_Issue_List(linked_issue_list);
+
+                b_ret = true;
             }
             else
             {
-                judgement_str = " ";
-                linked_issue_description_on_this_report.Clear();
-                linked_issue_description_on_this_report.Add(KeywordReportHeader.blank_space);
+                // return default if no corresponding TC
+                LogMessage.WriteLine("Worksheet " + sheet_name + " not found in GetSortedFilteredLinkIssueAndJudgementString()");
+                //judgement_str = " ";
+                //linked_issue_description_on_this_report.Clear();
+                //linked_issue_description_on_this_report.Add(KeywordReportHeader.blank_space);
+                b_ret = false;
             }
-            b_ret = ReplaceConclusionWithBugList(ws, linked_issue_description_on_this_report);
-            //
-            ExcelAction.CellActivate(ws, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
-            ExcelAction.SetCellValue(ws, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, judgement_str);
+            // get data only here so no replace
+            //b_ret = ReplaceConclusionWithBugList(worksheet, linked_issue_description_on_this_report);
 
+            Judgement_String = judgement_str;
+            Return_Issue_List = linked_issue_description_on_this_report;
             return b_ret;
+
         }
 
         // This function is used to get judgement result (only read and no update to report) of keyword report

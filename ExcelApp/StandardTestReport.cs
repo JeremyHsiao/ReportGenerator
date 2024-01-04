@@ -493,7 +493,7 @@ namespace ExcelReportApplication
                 if (KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion == true)
                 {
                     //StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
-                    KeywordReport.ReplaceConclusionWithBugList(ws, KeywordReportHeader.blank_space.ConvertToList());
+                    KeywordReport.ReplaceConclusionWithBugList(ws, KeywordReportHeader.blank_space_list);
                     file_has_been_updated = true;
                 }
 
@@ -515,7 +515,7 @@ namespace ExcelReportApplication
                 if (KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion == true)
                 {
                     //StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
-                    KeywordReport.ReplaceConclusionWithBugList(ws, KeywordReportHeader.blank_space.ConvertToList());
+                    KeywordReport.ReplaceConclusionWithBugList(ws, KeywordReportHeader.blank_space_list);
                     file_has_been_updated = true;
                 }
 

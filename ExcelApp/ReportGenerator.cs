@@ -19,7 +19,7 @@ namespace ExcelReportApplication
         //static public Dictionary<string, List<StyleString>> global_issue_description_list = new Dictionary<string, List<StyleString>>(); // TC-related
         //static public Dictionary<string, List<StyleString>> global_issue_description_list_severity = new Dictionary<string, List<StyleString>>(); //keyword-related
         static private List<TestCase> global_testcase_list = new List<TestCase>();
-        static public List<String> filter_status_list_linked_issue = new List<String>();
+        static public List<String> List_of_status_to_filter_for_tc_linked_issue = new List<String>();
         static public List<ReportFileRecord> excel_not_report_log = new List<ReportFileRecord>();
 
         //static public Dictionary<string, Issue> lookup_BugList = new Dictionary<string, Issue>();
@@ -792,7 +792,7 @@ namespace ExcelReportApplication
                 {
                     linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
                     // List of Issue filtered by status
-                    filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
+                    filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.List_of_status_to_filter_for_tc_linked_issue);
                     // Sort issue by Severity and Key value (A first then larger key first if same severity)
                     List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
                     // Convert list of sorted linked issue to description list
@@ -815,7 +815,7 @@ namespace ExcelReportApplication
                     if (current_status == TestCase.STR_FINISHED)
                     {
                         String status_string;
-                        status_string = KeywordReport.Judgement_Decision_by_Linked_Issue(linked_issue_list);
+                        status_string = KeywordReport.Judgement_Decision_by_Linked_Issue_List(linked_issue_list);
                         ExcelAction.SetTestCaseCell(excel_row_index, status_col, status_string, IsTemplate: true);
                     }
                 }
