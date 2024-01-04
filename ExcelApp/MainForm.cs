@@ -636,7 +636,8 @@ namespace ExcelReportApplication
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Full_Header");
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Header_by_Template");
             KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = XMLConfig.ReadAppSetting_Boolean("Report_C_Replace_Conclusion");
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion_Judgement = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Conclusion_Judgement");
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Conclusion");
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Judgement");
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Sample_SN");
             KeywordReport.DefaultKeywordReportHeader.Report_C_SampleSN_String = XMLConfig.ReadAppSetting_String("Report_C_SampleSN_String");
 
@@ -1418,7 +1419,8 @@ namespace ExcelReportApplication
             temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion);
             temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header);
             temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion_Judgement);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement);
             temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN);
             KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = false;
             KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = false;
@@ -1428,14 +1430,16 @@ namespace ExcelReportApplication
             //KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = false;
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = false;
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = true;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion_Judgement = false;
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion = false;
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement = false;
             //KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN = false;
         }
 
         static private void Report_A_Pop_Option()
         {
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion_Judgement = temp_option_stack.Pop();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement = temp_option_stack.Pop();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion = temp_option_stack.Pop();
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = temp_option_stack.Pop();
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = temp_option_stack.Pop();
             KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = temp_option_stack.Pop();
@@ -1457,7 +1461,8 @@ namespace ExcelReportApplication
             temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion);
             temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header);
             temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion_Judgement);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement);
             temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN);
             KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = false;
             KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = true;
@@ -1468,14 +1473,16 @@ namespace ExcelReportApplication
             KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = false;
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = false;
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = false;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion_Judgement = false;
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion = false;
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement = false;
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN = false;
         }
 
         static private void Report_E_Pop_Option()
         {
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion_Judgement = temp_option_stack.Pop();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement = temp_option_stack.Pop();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion = temp_option_stack.Pop();
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = temp_option_stack.Pop();
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = temp_option_stack.Pop();
             KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = temp_option_stack.Pop();
@@ -1728,7 +1735,8 @@ namespace ExcelReportApplication
                         //    String report_j_copied_report_root_path = "";
                         //    List<String> report_list_report_j;
                         //    Report_A_Push_Option();
-                        //    KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion_Judgement = false;  // override report A option for new version
+                        //    KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion = false;  // override report A option for new version
+                        //    KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement = false;  // override report A option for new version
                         //    bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(report_j_input_excel_selected, out report_list_report_j, out report_j_copied_report_root_path);
                         //    Report_A_Pop_Option();
                         //    bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_list: report_list_report_j);

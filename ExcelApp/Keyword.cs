@@ -282,7 +282,8 @@ namespace ExcelReportApplication
         public Boolean Report_C_Clear_Keyword_Result = true;
         public Boolean Report_C_Hide_Keyword_Result_Bug_Row = false;
         public Boolean Report_C_Update_Header_by_Template = false;
-        public Boolean Report_C_Update_Conclusion_Judgement = false;
+        public Boolean Report_C_Update_Conclusion = false;
+        public Boolean Report_C_Update_Judgement = false;
         public Boolean Report_C_Update_Sample_SN = false;
         public String Report_C_SampleSN_String = "Refer to DUT_Allocation_Matrix table";
         // Lagacy options - BEGIN
@@ -2732,7 +2733,7 @@ namespace ExcelReportApplication
         // Assumption:
         //      1. Bug / TC has been opened and processed
         //      2. Current worksheet is the report worksheet
-        //      3. If there isn't corresponding testcase, judgement/conclusion is set to empty
+        //      3. If there isn't corresponding testcase, judgement/conclusion is set to default
         static public Boolean Update_Conclusion_Judgement_by_linked_issue(Worksheet worksheet)
         {
             Boolean b_ret = false;
@@ -2740,8 +2741,9 @@ namespace ExcelReportApplication
             String judgement_str;
             List<StyleString> linked_issue_description_on_this_report;
 
-            // update conclusion
             b_ret = GetSortedFilteredLinkIssueAndJudgementString(worksheet, out linked_issue_description_on_this_report, out judgement_str);
+
+            // update conclusion
             b_ret = ReplaceConclusionWithBugList(worksheet, linked_issue_description_on_this_report);
 
             // update judgement
@@ -2758,39 +2760,29 @@ namespace ExcelReportApplication
             String judgement_str;           // obtained but not use in this function
             List<StyleString> linked_issue_description_on_this_report;
 
-            // update conclusion
             b_ret = GetSortedFilteredLinkIssueAndJudgementString(worksheet, out linked_issue_description_on_this_report, out judgement_str);
+
+            // update conclusion
             b_ret = ReplaceConclusionWithBugList(worksheet, linked_issue_description_on_this_report);
 
             return b_ret;
         }
 
-        /*
-        static public List<StyleString> GetLinkIssueFullDescription(Worksheet worksheet)
+        static public Boolean Update_Judgement_only_by_linked_issue(Worksheet worksheet)
         {
-            String sheet_name = worksheet.Name;
-            List<StyleString> linked_issue_description_on_this_report = new List<StyleString>();
-            if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(sheet_name))          // if TC is available
-            {
-                // key string of all linked issues
-                String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].Links;
-                // key string to List of Issue
-                List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
-                // List of Issue filtered by status
-                List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.List_of_status_to_filter_for_tc_linked_issue);
-                // Sort issue by Severity and Key valie
-                List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
-                // Convert list of sorted linked issue to description list
-                linked_issue_description_on_this_report = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
-            }
-            else
-            {
-                linked_issue_description_on_this_report.Clear();
-                linked_issue_description_on_this_report.Add(KeywordReportHeader.blank_space);
-            }
-            return linked_issue_description_on_this_report;
+            Boolean b_ret = false;
+
+            String judgement_str;
+            List<StyleString> linked_issue_description_on_this_report;
+
+            b_ret = GetSortedFilteredLinkIssueAndJudgementString(worksheet, out linked_issue_description_on_this_report, out judgement_str);
+
+            // update judgement
+            ExcelAction.CellActivate(worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
+            ExcelAction.SetCellValue(worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, judgement_str);
+
+            return b_ret;
         }
-        */
 
         //
         // return: false if corresponding report is not available (so returning default for both Return_Issue_List & Judgement_String)

@@ -536,9 +536,15 @@ namespace ExcelReportApplication
                 file_has_been_updated = true;
             }
 
-            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion_Judgement)
+            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion)
             {
-                KeywordReport.Update_Conclusion_Judgement_by_linked_issue(ws);
+                KeywordReport.Update_Conclusion_only_by_linked_issue(ws);
+                file_has_been_updated = true;
+            }
+
+            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement)
+            {
+                KeywordReport.Update_Judgement_only_by_linked_issue(ws);
                 file_has_been_updated = true;
             }
 

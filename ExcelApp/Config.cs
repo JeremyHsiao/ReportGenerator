@@ -34,7 +34,8 @@ namespace ExcelReportApplication
             @"Report_C_Hide_Keyword_Result_Bug_Row",    @"false",
             @"Report_C_Replace_Conclusion",             @"false",
             @"Report_C_Update_Header_by_Template",      @"false",
-            @"Report_C_Update_Conclusion_Judgement",    @"false",
+            @"Report_C_Update_Conclusion",              @"false",
+            @"Report_C_Update_Judgement",               @"false",
             @"Report_C_Update_Sample_SN",               @"false", 
             @"Report_C_SampleSN_String",                @"Refer to DUT_Allocation_Matrix table",
             // lagacy options - BEGIN
