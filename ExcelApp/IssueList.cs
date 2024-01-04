@@ -429,16 +429,16 @@ namespace ExcelReportApplication
         // Key value
         static public string KeyPrefix = "BENSE";
 
-        static public string Keyword_report_Font = "Gill Sans MT";
-        static public int Keyword_report_FontSize = 12;
-        static public Color Keyword_report_FontColor = System.Drawing.Color.Black;
-        static public FontStyle Keyword_report_FontStyle = FontStyle.Regular;
-        static public Color Keyword_A_ISSUE_COLOR = Color.Red;
-        static public Color Keyword_B_ISSUE_COLOR = Color.Black;
-        static public Color Keyword_C_ISSUE_COLOR = Color.Black;
-        static public Color Keyword_D_ISSUE_COLOR = Color.Black;
-        static public Color Keyword_WAIVED_ISSUE_COLOR = Color.Black;
-        static public Color Keyword_CLOSED_ISSUE_COLOR = Color.Black;
+        static public string KeywordIssue_report_Font = "Gill Sans MT";
+        static public int KeywordIssue_report_FontSize = 12;
+        static public Color KeywordIssue_report_FontColor = System.Drawing.Color.Black;
+        static public FontStyle KeywordIssue_report_FontStyle = FontStyle.Regular;
+        static public Color KeywordIssue_A_ISSUE_COLOR = Color.Red;
+        static public Color KeywordIssue_B_ISSUE_COLOR = Color.Black;
+        static public Color KeywordIssue_C_ISSUE_COLOR = Color.Black;
+        static public Color KeywordIssue_D_ISSUE_COLOR = Color.Black;
+        static public Color KeywordIssue_WAIVED_ISSUE_COLOR = Color.Black;
+        static public Color KeywordIssue_CLOSED_ISSUE_COLOR = Color.Black;
 
         static public Boolean OpenBugListExcel(String buglist_filename)
         {
