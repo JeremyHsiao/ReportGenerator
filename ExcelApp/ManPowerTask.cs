@@ -85,9 +85,9 @@ namespace ExcelReportApplication
         public int Task_Start_Week;
         public int Task_End_Week;
         public Double ManHour;
-        public String Daily_Average_ManHour;
-        public Double daily_average_manhour_value;
-        public String Daily_ManHour_String;
+        public String Daily_Average_ManHour_string;
+        public Double Daily_Average_Manhour_value;
+        // public String Daily_ManHour_String;      // Not used in current implementation
         public String Project_Action_Owner_WeekOfYear_ManHour;
         public List<String> Category_List;
         static public int Max_Category_Count;
@@ -130,7 +130,9 @@ namespace ExcelReportApplication
 
         static public String Recent_Task_Project_Name;
 
-        static public int average_rounding_digit = 2;
+        // rounding digit for storing into variable "average_rounding_digit" after division calculation.
+        static public int average_rounding_digit = 3;
+        // rounding digit for storing into CSV data after weekly working-day * 
         static public String pSpecifier = "F1";   // floating-point with one digit after decimal
 
 
@@ -402,21 +404,21 @@ namespace ExcelReportApplication
                 if (workday_count > 0)
                 {
                     Double average_man_hour = Math.Round(ManHour / workday_count, ManPower.average_rounding_digit);
-                    Daily_Average_ManHour = average_man_hour.ToString(ManPower.pSpecifier);
-                    daily_average_manhour_value = average_man_hour;
+                    Daily_Average_ManHour_string = average_man_hour.ToString(ManPower.pSpecifier);
+                    Daily_Average_Manhour_value = average_man_hour;
                 }
                 else
                 {
                     // man-power plan needs to be checked and updated.
-                    Daily_Average_ManHour = empty_average_manhour;
-                    daily_average_manhour_value = empty_average_manhour_value;
+                    Daily_Average_ManHour_string = empty_average_manhour;
+                    Daily_Average_Manhour_value = empty_average_manhour_value;
                 }
             }
             else
             {
                 // man-power plan needs to be checked and updated.
-                Daily_Average_ManHour = empty_average_manhour;
-                daily_average_manhour_value = empty_average_manhour_value;
+                Daily_Average_ManHour_string = empty_average_manhour;
+                Daily_Average_Manhour_value = empty_average_manhour_value;
             }
         }
 
@@ -895,7 +897,7 @@ namespace ExcelReportApplication
                     int begin_wk_index = YearWeek.IndexOf(mp.Task_Start_Week);
                     int end_wk_index = YearWeek.IndexOf(mp.Task_End_Week);
                     int current_wk_index = begin_wk_index;
-                    Double daily_average_manhour_value = mp.daily_average_manhour_value;
+                    Double daily_average_manhour_value = mp.Daily_Average_Manhour_value;
                     // for 1st week
                     if (current_wk_index == begin_wk_index)
                     {
@@ -1014,7 +1016,7 @@ namespace ExcelReportApplication
                     int begin_wk_index = YearWeek.IndexOf(mp.Task_Start_Week);
                     int end_wk_index = YearWeek.IndexOf(mp.Task_End_Week);
                     int current_wk_index = begin_wk_index;
-                    Double daily_average_manhour_value = mp.daily_average_manhour_value;
+                    Double daily_average_manhour_value = mp.Daily_Average_Manhour_value;
                     // for 1st week
                     if (current_wk_index == begin_wk_index)
                     {
