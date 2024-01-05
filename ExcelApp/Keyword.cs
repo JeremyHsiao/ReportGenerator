@@ -381,10 +381,10 @@ namespace ExcelReportApplication
         public static int col_default_report_right_border = ExcelAction.ColumnNameToNumber('N');
         public static String regexKeywordString = @"(?i)Item";
         public static int row_offset_result_title = 1;                                // offset from the row of identifier regex "Item"
-        public static int row_offset_bugstatus_title = row_offset_result_title;       // offset from the row of identifier regex "Item"
-        public static int row_offset_buglist_title = row_offset_result_title + 1;     // offset from the row of identifier regex "Item"
         public static int col_offset_result_title = 1;                                // offset from the column of identifier regex "Item"
+        public static int row_offset_bugstatus_title = row_offset_result_title;       // offset from the row of identifier regex "Item"
         public static int col_offset_bugstatus_title = col_offset_result_title + 2;   // offset from the column of identifier regex "Item"
+        public static int row_offset_buglist_title = row_offset_result_title + 1;     // offset from the row of identifier regex "Item"
         public static int col_offset_buglist_title = col_offset_result_title;         // offset from the column of identifier regex "Item"
         public static String regexResultString = @"^(?i)\s*Result\s*$";
         public static String regexBugStatusString = @"^(?i)\s*Bug Status\s*$";
@@ -399,10 +399,10 @@ namespace ExcelReportApplication
         public static String FAIL_str = "Fail";
         public static String WAIVED_str = "Waived";
 
-        public static Boolean Replace_Conclusion = false;
-        public static Boolean Hide_Keyword_Result_Bug = false;
+        public static Boolean KeywordIssue_Replace_Conclusion = false;
+        public static Boolean KeywordIssue_Hide_Result_Bug = false;
 
-        public static Boolean Auto_Correct_Sheetname = false;
+        public static Boolean KeywordIssue_Auto_Correct_Sheetname = false;
 
         public static KeywordReportHeader DefaultKeywordReportHeader = new KeywordReportHeader();
 
@@ -2054,7 +2054,7 @@ namespace ExcelReportApplication
                                 ExcelAction.CellTextAlignUpperLeft(result_worksheet, keyword.BugListAtRow, keyword.BugListAtColumn);
                             }
 
-                            if (Hide_Keyword_Result_Bug)
+                            if (KeywordIssue_Hide_Result_Bug)
                             {
                                 double new_row_height = 0.2;
                                 // Check cell, hide if met
@@ -2117,7 +2117,7 @@ namespace ExcelReportApplication
                 //    HeaderTemplate.ReplaceHeaderVariableWithValue(result_worksheet);
                 //}
 
-                if (Replace_Conclusion)
+                if (KeywordIssue_Replace_Conclusion)
                 {
                     Update_Conclusion_Judgement_by_linked_issue(result_worksheet);
                     /*
@@ -2205,7 +2205,7 @@ namespace ExcelReportApplication
             }
 
             // Output updated report with recommended sheetname.
-            if (KeywordReport.Auto_Correct_Sheetname == true)
+            if (KeywordReport.KeywordIssue_Auto_Correct_Sheetname == true)
             {
                 // ReportGenerator.excel_not_report_log
                 foreach (ReportFileRecord item in ReportGenerator.excel_not_report_log)
@@ -3029,7 +3029,7 @@ namespace ExcelReportApplication
 
 
             // Output updated report with recommended sheetname.
-            if (KeywordReport.Auto_Correct_Sheetname == true)
+            if (KeywordReport.KeywordIssue_Auto_Correct_Sheetname == true)
             {
                 String dest_dir = Storage.GenerateDirectoryNameWithDateTime(report_root_dir);
                 // ReportGenerator.excel_not_report_log

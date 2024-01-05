@@ -581,10 +581,17 @@ namespace ExcelReportApplication
             // config for default parameters used in Test Plan / Test Report
             TestPlan.NameDefinitionRow_TestPlan = XMLConfig.ReadAppSetting_int("TestPlan_Row_NameDefine");
             TestPlan.DataBeginRow_TestPlan = XMLConfig.ReadAppSetting_int("TestPlan_Row_DataBegin");
-            KeywordReport.row_test_detail_start = XMLConfig.ReadAppSetting_int("TestReport_Row_UserStart");
-            KeywordReport.col_indentifier = XMLConfig.ReadAppSetting_int("TestReport_Column_Keyword_Indentifier");
-            KeywordReport.col_keyword = XMLConfig.ReadAppSetting_int("TestReport_Column_Keyword_Location");
-            KeywordReport.regexKeywordString = XMLConfig.ReadAppSetting_String("TestReport_Regex_Keyword_Indentifier");
+            KeywordReport.row_test_detail_start = XMLConfig.ReadAppSetting_int("KeywordIssue_Row_UserStart");
+            KeywordReport.col_indentifier = XMLConfig.ReadAppSetting_int("KeywordIssue_Column_Keyword_Indentifier");
+            KeywordReport.col_keyword = XMLConfig.ReadAppSetting_int("KeywordIssue_Column_Keyword_Location");
+            KeywordReport.regexKeywordString = XMLConfig.ReadAppSetting_String("KeywordIssue_Regex_Keyword_Indentifier");
+            KeywordReport.row_offset_result_title = XMLConfig.ReadAppSetting_int("KeywordIssue_Result_Title_Offset_Row");
+            KeywordReport.col_offset_result_title = XMLConfig.ReadAppSetting_int("KeywordIssue_Result_Title_Offset_Col");
+            KeywordReport.row_offset_bugstatus_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugStatus_Title_Offset_Row");
+            KeywordReport.col_offset_bugstatus_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugStatus_Title_Offset_Col");
+            KeywordReport.row_offset_buglist_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugList_Title_Offset_Row");
+            KeywordReport.col_offset_buglist_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugList_Title_Offset_Col");
+
             // end of config
 
             // config for default output directory of test report (keyword report)
@@ -618,16 +625,16 @@ namespace ExcelReportApplication
             Issue.KeywordIssue_report_FontSize = XMLConfig.ReadAppSetting_int("KeywordIssue_report_FontSize");
             Issue.KeywordIssue_report_FontColor = XMLConfig.ReadAppSetting_Color("KeywordIssue_report_FontColor");
             Issue.KeywordIssue_report_FontStyle = XMLConfig.ReadAppSetting_FontStyle("KeywordIssue_report_FontStyle");
-            Issue.KeywordIssue_A_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("KeywordIssue_report_A_Issue_Color");
-            Issue.KeywordIssue_B_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("KeywordIssue_report_B_Issue_Color");
-            Issue.KeywordIssue_C_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("KeywordIssue_report_C_Issue_Color");
-            Issue.KeywordIssue_D_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("KeywordIssue_report_D_Issue_Color");
+            Issue.KeywordIssue_A_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("KeywordIssue_A_Issue_Color");
+            Issue.KeywordIssue_B_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("KeywordIssue_B_Issue_Color");
+            Issue.KeywordIssue_C_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("KeywordIssue_C_Issue_Color");
+            Issue.KeywordIssue_D_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("KeywordIssue_D_Issue_Color");
             Issue.KeywordIssue_WAIVED_ISSUE_COLOR = Issue.KeywordIssue_report_FontColor;
             Issue.KeywordIssue_CLOSED_ISSUE_COLOR = Issue.KeywordIssue_report_FontColor;
 
-            KeywordReport.Replace_Conclusion = XMLConfig.ReadAppSetting_Boolean("Keyword_report_replace_conclusion");
-            KeywordReport.Hide_Keyword_Result_Bug = XMLConfig.ReadAppSetting_Boolean("Keyword_report_Hide_Keyword_Result_Bug");
-            KeywordReport.Auto_Correct_Sheetname = XMLConfig.ReadAppSetting_Boolean("Keyword_Auto_Correct_Worksheet");
+            KeywordReport.KeywordIssue_Replace_Conclusion = XMLConfig.ReadAppSetting_Boolean("KeywordIssue_report_replace_conclusion");
+            KeywordReport.KeywordIssue_Hide_Result_Bug = XMLConfig.ReadAppSetting_Boolean("KeywordIssue_report_Hide_Result_Bug");
+            KeywordReport.KeywordIssue_Auto_Correct_Sheetname = XMLConfig.ReadAppSetting_Boolean("KeywordIssue_report_Correct_Worksheet");
 
             // config for report C
             KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = XMLConfig.ReadAppSetting_Boolean("Report_C_CopyFileOnly");
