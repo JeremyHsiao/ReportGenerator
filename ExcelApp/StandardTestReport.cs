@@ -373,6 +373,8 @@ namespace ExcelReportApplication
         //}
 
         // Copy and Clear judgement -- to be used for copying part/full of report from existing projects
+        
+        /*
         static public bool CopyReportClearJudgement_SingleFile(String source_file, String destination_file = "")
         {
             Boolean file_has_been_updated = false;
@@ -425,6 +427,7 @@ namespace ExcelReportApplication
 
             return file_has_been_updated;
         }
+        */
 
         static public bool AutoCorrectReport_SingleFile(String source_file, String destination_file, Workbook wb_template, Boolean always_save = false)
         {
