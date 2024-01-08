@@ -13,13 +13,14 @@ namespace ExcelReportApplication
         public String source_path;
         public String source_folder;
         public String source_group;
-        public String source_filename;
+        public String source_report;
         public String destination_path;
         public String destination_folder;
         public String destination_group;
-        public String destination_filename;
+        public String destination_report;
         public String destination_assignee;
 
+        /*
         public String Get_SRC_Directory()
         {
             String path = this.source_path;
@@ -47,20 +48,33 @@ namespace ExcelReportApplication
             }
             return path;
         }
+        */
 
         public String Get_SRC_FullFilePath()
         {
-            String path = this.Get_SRC_Directory();
-            String file = this.source_filename + ".xlsx";
-            String fullfilepath = Storage.GetValidFullFilename(path, file);
+            String path = source_path;
+            String folder = source_folder;
+            String group = source_group;
+            String report = source_report;
+
+            String filename = report + ".xlsx"; 
+            String filedir;
+            Storage.CominePath(path, folder, group, out filedir);
+            String fullfilepath = Storage.GetValidFullFilename(filedir, filename);
             return fullfilepath;
         }
 
         public String Get_DEST_FullFilePath()
         {
-            String path = this.Get_DEST_Directory();
-            String file = this.destination_filename + ".xlsx";
-            String fullfilepath = Storage.GetValidFullFilename(path, file);
+            String path = destination_path;
+            String folder = destination_folder;
+            String group = destination_group;
+            String report = destination_report;
+
+            String filename = report + ".xlsx";
+            String filedir;
+            Storage.CominePath(path, folder, group, out filedir);
+            String fullfilepath = Storage.GetValidFullFilename(filedir, filename);
             return fullfilepath;
         }
 
@@ -123,11 +137,11 @@ namespace ExcelReportApplication
                 {
                     ctp.source_folder = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
                     ctp.source_group = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
-                    ctp.source_filename = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
+                    ctp.source_report = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
                     ctp.destination_path = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
                     ctp.destination_folder = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
                     ctp.destination_group = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
-                    ctp.destination_filename = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
+                    ctp.destination_report = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
                     ctp.destination_assignee = ExcelAction.GetCellTrimmedString(ws, row_index, col_index);
                     report_list.Add(ctp);
                     row_index++;
@@ -155,12 +169,12 @@ namespace ExcelReportApplication
             List<String> report_to_be_copied_list_assignee = new List<String>();
             foreach (CopyReport copy_report in report_list)
             {
-                String src_path = copy_report.Get_SRC_Directory();
+                //String src_path = copy_report.Get_SRC_Directory();
                 String src_fullfilename = copy_report.Get_SRC_FullFilePath();
                 if (!Storage.FileExists(src_fullfilename))
                     continue;
 
-                String dest_path = copy_report.Get_DEST_Directory();
+                //String dest_path = copy_report.Get_DEST_Directory();
                 String dest_fullfilename = copy_report.Get_DEST_FullFilePath();
                 report_to_be_copied_list_src.Add(src_fullfilename);
                 report_to_be_copied_list_dest.Add(dest_fullfilename);

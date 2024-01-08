@@ -527,6 +527,7 @@ namespace ExcelReportApplication
             }
         }
 
+        /*
         static public String CominePath(String absolute_path, String relative_path)
         {
             try
@@ -538,6 +539,23 @@ namespace ExcelReportApplication
             {
                 LogMessage.WriteLine(ex.ToString() + "@ CominePath");
                 return "";
+            }
+        }
+        */
+
+        static public Boolean CominePath(String path, String folder, String group, out String combined_path)
+        {
+            combined_path = "";
+            try
+            {
+                String fullpath = Path.Combine(path, folder, group);
+                combined_path = fullpath;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogMessage.WriteLine(ex.ToString() + "@ CominePath");
+                return false;
             }
         }
 
