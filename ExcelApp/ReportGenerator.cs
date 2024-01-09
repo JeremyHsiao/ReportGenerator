@@ -747,8 +747,8 @@ namespace ExcelReportApplication
 
             // Only if reports are available
             int purpose_col = 0, criteria_col = 0;
-            List<TestPlanKeyword> keyword_list = new List<TestPlanKeyword>();
-            Dictionary<String, List<TestPlanKeyword>> keyword_lut_by_Sheetname = new Dictionary<String, List<TestPlanKeyword>>();
+            List<TestReportKeyword> keyword_list = new List<TestReportKeyword>();
+            Dictionary<String, List<TestReportKeyword>> keyword_lut_by_Sheetname = new Dictionary<String, List<TestReportKeyword>>();
             if (report_is_available)
             {
                 // For filling purpose/criteria according to reports
