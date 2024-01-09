@@ -211,19 +211,19 @@ namespace ExcelReportApplication
                 "Input:",  "  Issue List + Test Case + Template (for Test case output)",
                 "Output:", "  Test Case in the format of template file with linked issue in full description",
             },
-            // "A.Jira Test Report Creator",
+            // "A.CST Test Report Creator",
             new String[] 
             {
                 "Create CST Report", 
                 "Input:",  "  Input excel file",
                 "Output:", "  Reports copied and renamed (filename / worksheet name) according to input excel file",
             },
-            // "B.Auto-correct report header",
+            // "B.CST Test Report Creator + update judgement link isssue...etc",
             new String[] 
             {
-                "Worksheet name & 1st row (header) will be auto-corrected.", 
-                "Input:",  "  Root Directory of test reports",
-                "Output:", "  Auto-corrected test reports",
+                "Create CST Report + linked issue / judgement...etc and update TC Linked Issue", 
+                "Input:",  "  Jira Bug & TC file, Template (for Test case output), and Input Excel File",
+                "Output:", "  Updated reports specified within Input Excel File and TC summary with Linked issues",
             },
             // "C.Create New Model Report",
             new String[] 
@@ -386,13 +386,13 @@ namespace ExcelReportApplication
                 "Test Report Path",
                 "Input Excel File",
             },
-            // "B.Auto-correct report header",
+            // "B.CST Test Report Creator + update judgement link isssue...etc",
             new String[] 
             {
                 "Jira Bug File", 
                 "Jira TC File",
-                "Source Report Path",
-                "Output Report Path",
+                "Input Excel File",         // this is file selection
+                "TC Template File",
             },
             // "C.Create New Model Report",
             new String[] 
@@ -1297,8 +1297,9 @@ namespace ExcelReportApplication
             {
                 // In case this field is for selecting file path instaed of directory path
                 case ReportType.KeywordIssue_Report_SingleFile:
+                case ReportType.FinalCSTReport:                              //Report B   
                 case ReportType.Update_Repoart_A_then_Report_H:              //Report J = A + H
-                case ReportType.Update_Repoart_A_then_Report_K:              //Report J = A + H
+                case ReportType.Update_Repoart_A_then_Report_K:              //Report K
                     init_dir = Storage.GetFullPath(txtReportFile.Text);
                     sel_file = true;  // Here select file instead of directory
                     break;
@@ -1431,13 +1432,13 @@ namespace ExcelReportApplication
             TestReport.Option.Report_C_Remove_AUO_Internal = false;
             TestReport.Option.Report_C_Update_Report_Sheetname = false;
             TestReport.Option.Report_C_Clear_Keyword_Result = true;
-            //KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = false;
-            //KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = false;
+            //TestReport.Option.Report_C_Hide_Keyword_Result_Bug_Row = false;
+            //TestReport.Option.Report_C_Replace_Conclusion = false;
             TestReport.Option.Report_C_Update_Full_Header = false;
             TestReport.Option.Report_C_Update_Header_by_Template = true;
             TestReport.Option.Report_C_Update_Conclusion = false;
             TestReport.Option.Report_C_Update_Judgement = false;
-            //KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN = false;
+            //TestReport.Option.Report_C_Update_Sample_SN = false;
         }
 
         static private void Report_A_Pop_Option()
@@ -1616,33 +1617,28 @@ namespace ExcelReportApplication
                         Report_A_Pop_Option();
                         break;
                     case ReportType.FinalCSTReport:                                     // Report B
-                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
-                        Report_A_Push_Option();
-                        bRet = ConfigurableReportUpdate_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
-                        Report_A_Pop_Option();
 
-                        // new version to be checked
-                        //if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
-                        //if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
-                        //if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
-                        //if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;
-                        //if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
-                        //{
-                        //    MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
-                        //    bRet = false;
-                        //}
-                        //else
-                        //{
-                        //    String report_j_input_excel_selected = txtReportFile.Text;
-                        //    String report_j_copied_report_root_path = "";
-                        //    List<String> report_list_report_j;
-                        //    Report_A_Push_Option();
-                        //    KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion = false;  // override report A option for new version
-                        //    KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement = false;  // override report A option for new version
-                        //    bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(report_j_input_excel_selected, out report_list_report_j, out report_j_copied_report_root_path);
-                        //    Report_A_Pop_Option();
-                        //    bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_list: report_list_report_j);
-                        //}
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;
+                        if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
+                        {
+                            MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
+                            bRet = false;
+                        }
+                        else
+                        {
+                            String InputExcel = txtReportFile.Text;
+                            String ReturnDestinationPaht = "";
+                            List<String> DestinationReportList;
+                            Report_A_Push_Option();
+                            TestReport.Option.Report_C_Update_Conclusion = true;  // override report A option for new version
+                            TestReport.Option.Report_C_Update_Judgement = true;  // override report A option for new version
+                            bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(InputExcel, out DestinationReportList, out ReturnDestinationPaht);
+                            Report_A_Pop_Option();
+                            bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_list: DestinationReportList);
+                        }
                         
                         break;
                     case ReportType.ConfigurableReportUpdate:                          // Report C
@@ -1977,10 +1973,10 @@ namespace ExcelReportApplication
                     SetEnable_ReportFile(false);
                     SetEnable_OutputTemplate(true);
                     break;
-                case ReportType.FinalCSTReport:
-                    SetEnable_BugFile(false);
-                    SetEnable_TCFile(false);
-                    SetEnable_ReportFile(false);
+                case ReportType.FinalCSTReport:             // Report B - refer to report J
+                    SetEnable_BugFile(true);
+                    SetEnable_TCFile(true);
+                    SetEnable_ReportFile(true);
                     SetEnable_OutputTemplate(true);
                     break;
                 case ReportType.ConfigurableReportUpdate:
@@ -2102,9 +2098,11 @@ namespace ExcelReportApplication
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_A_Default_Excel");
                     break;
-                case ReportType.FinalCSTReport:
+                case ReportType.FinalCSTReport:                 // Report B - refer to report J
+                    if (!btnSelectReportFile_Clicked)
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Report_A_Default_Excel");
                     if (!btnSelectOutputTemplate_Clicked)
-                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_A_Default_Excel");
+                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
                 case ReportType.ConfigurableReportUpdate:      // Report C
                     if (!btnSelectOutputTemplate_Clicked)
