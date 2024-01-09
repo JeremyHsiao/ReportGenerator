@@ -24,7 +24,7 @@ namespace ExcelReportApplication
     //    MAX_NO
     //};
 
-    public class TestPlanKeyword
+    public class TestReportKeyword
     {
         private String keyword;
         private String workbook;
@@ -52,8 +52,8 @@ namespace ExcelReportApplication
             issue_description_list = new List<StyleString>(); tc_description_list = new List<StyleString>();
         }
 
-        public TestPlanKeyword() { TestPlanKeywordInit(); }
-        public TestPlanKeyword(String Keyword, String Workbook = "", String Worksheet = "", int AtRow = 0, int AtColumn = 0,
+        public TestReportKeyword() { TestPlanKeywordInit(); }
+        public TestReportKeyword(String Keyword, String Workbook = "", String Worksheet = "", int AtRow = 0, int AtColumn = 0,
                                 int ResultListAtRow = 0, int ResultListAtColumn = 0, int BugStatusAtRow = 0, int BugStatusAtColumn = 0,
                                 int BugListAtRow = 0, int BugListAtColumn = 0)
         {
@@ -436,18 +436,18 @@ namespace ExcelReportApplication
         public static int ConditionalPassCnt_at_row = 21, ConditionalPassCnt_at_col = ExcelAction.ColumnNameToNumber('I');
 
 
-        private static List<TestPlanKeyword> global_keyword_list = new List<TestPlanKeyword>();
+        private static List<TestReportKeyword> global_keyword_list = new List<TestReportKeyword>();
         private static Boolean global_keyword_available;
         public static Boolean CheckGlobalKeywordListExist()
         {
             return global_keyword_available;
         }
-        public static void SetGlobalKeywordList(List<TestPlanKeyword> keyword_list)
+        public static void SetGlobalKeywordList(List<TestReportKeyword> keyword_list)
         {
             global_keyword_list = keyword_list;
             global_keyword_available = true;
         }
-        public static List<TestPlanKeyword> GetGlobalKeywordList()
+        public static List<TestReportKeyword> GetGlobalKeywordList()
         {
             if (global_keyword_available)
             {
@@ -455,7 +455,7 @@ namespace ExcelReportApplication
             }
             else
             {
-                return new List<TestPlanKeyword>();
+                return new List<TestReportKeyword>();
             }
         }
         public static void ClearGlobalKeywordList()
@@ -537,7 +537,7 @@ namespace ExcelReportApplication
         }
 
         // Visit report content and find out all keywords
-        static public List<TestPlanKeyword> ListKeyword_SingleReport(TestPlan plan)
+        static public List<TestReportKeyword> ListKeyword_SingleReport(TestPlan plan)
         {
             //
             // 2. Find out Printable Area
@@ -620,7 +620,7 @@ namespace ExcelReportApplication
                 }
             }
 
-            List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
+            List<TestReportKeyword> ret = new List<TestReportKeyword>();
             foreach (String key in KeywordAtRow.Keys)
             {
                 int row_keyword = KeywordAtRow[key];
@@ -631,16 +631,16 @@ namespace ExcelReportApplication
                 row_bug_list = row_keyword + 2;
                 col_result = col_bug_list = col_keyword + 1;
                 col_bug_status = col_keyword + 3;
-                ret.Add(new TestPlanKeyword(key, plan.ExcelFile, plan.ExcelSheet, KeywordAtRow[key], col_keyword,
+                ret.Add(new TestReportKeyword(key, plan.ExcelFile, plan.ExcelSheet, KeywordAtRow[key], col_keyword,
                     row_result, col_result, row_bug_status, col_bug_status, row_bug_list, col_bug_list));
             }
             return ret;
         }
 
         // Visit all reports and find out all keywords -- make use of ListKeyword_SingleReport()
-        static public List<TestPlanKeyword> ListAllKeyword(List<TestPlan> DoPlan)
+        static public List<TestReportKeyword> ListAllKeyword(List<TestPlan> DoPlan)
         {
-            List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
+            List<TestReportKeyword> ret = new List<TestReportKeyword>();
             List<ReportFileRecord> ret_not_report_log = new List<ReportFileRecord>();
 
             foreach (TestPlan plan in DoPlan)
@@ -654,7 +654,7 @@ namespace ExcelReportApplication
                 test_plan_status = plan.OpenDetailExcel();
                 if (test_plan_status == TestPlan.ExcelStatus.OK)
                 {
-                    List<TestPlanKeyword> plan_keyword = ListKeyword_SingleReport(plan);
+                    List<TestReportKeyword> plan_keyword = ListKeyword_SingleReport(plan);
                     plan.CloseDetailExcel();
                     if (plan_keyword != null)
                     {
@@ -745,12 +745,12 @@ namespace ExcelReportApplication
         //}
 
         // List all duplicated keywords based on complete keyword-list
-        static public List<TestPlanKeyword> ListAllDuplicatedKeyword(List<TestPlanKeyword> keyword_list)
+        static public List<TestReportKeyword> ListAllDuplicatedKeyword(List<TestReportKeyword> keyword_list)
         {
-            Dictionary<String, TestPlanKeyword> for_checking_duplicated = new Dictionary<String, TestPlanKeyword>();
-            Dictionary<String, List<TestPlanKeyword>> dic_ret_kw_list = new Dictionary<String, List<TestPlanKeyword>>();
+            Dictionary<String, TestReportKeyword> for_checking_duplicated = new Dictionary<String, TestReportKeyword>();
+            Dictionary<String, List<TestReportKeyword>> dic_ret_kw_list = new Dictionary<String, List<TestReportKeyword>>();
 
-            foreach (TestPlanKeyword keyword in keyword_list)
+            foreach (TestReportKeyword keyword in keyword_list)
             {
                 String kw = keyword.Keyword;
                 if (for_checking_duplicated.ContainsKey(kw))
@@ -761,7 +761,7 @@ namespace ExcelReportApplication
                     {
                         // 1st time duplicated so that not available in dic_ret_kw_list
                         // then it is necessary to create a new item in dic_ret_kw_list
-                        List<TestPlanKeyword> new_duplicated_list = new List<TestPlanKeyword>();
+                        List<TestReportKeyword> new_duplicated_list = new List<TestReportKeyword>();
                         new_duplicated_list.Add(for_checking_duplicated[kw]);
                         dic_ret_kw_list.Add(kw, new_duplicated_list);
                     }
@@ -777,7 +777,7 @@ namespace ExcelReportApplication
                 }
             }
 
-            List<TestPlanKeyword> ret_dup_kw_list = new List<TestPlanKeyword>();
+            List<TestReportKeyword> ret_dup_kw_list = new List<TestReportKeyword>();
             foreach (String kw in dic_ret_kw_list.Keys)
             {
                 ret_dup_kw_list.AddRange(dic_ret_kw_list[kw]);
@@ -786,11 +786,11 @@ namespace ExcelReportApplication
         }
 
         // List all duplicated keywords based on complete keyword-list
-        static public List<String> ListDuplicatedKeywordString(List<TestPlanKeyword> keyword_list)
+        static public List<String> ListDuplicatedKeywordString(List<TestReportKeyword> keyword_list)
         {
             SortedSet<String> check_duplicated_keyword = new SortedSet<String>();
-            List<TestPlanKeyword> duplicate_keyword_list = ListAllDuplicatedKeyword(keyword_list);
-            foreach (TestPlanKeyword keyword in duplicate_keyword_list)
+            List<TestReportKeyword> duplicate_keyword_list = ListAllDuplicatedKeyword(keyword_list);
+            foreach (TestReportKeyword keyword in duplicate_keyword_list)
             {
                 check_duplicated_keyword.Add(keyword.Keyword);
             }
@@ -1141,7 +1141,7 @@ namespace ExcelReportApplication
         //    return bRet;
         //}
 
-        static public void WriteBugCountOnKeywordReport(TestPlanKeyword keyword, Worksheet result_worksheet, IssueCount severity_count)
+        static public void WriteBugCountOnKeywordReport(TestReportKeyword keyword, Worksheet result_worksheet, IssueCount severity_count)
         {
             // Write severity count of all keywrod isseus
             List<StyleString> bug_status_string = new List<StyleString>();
@@ -1232,7 +1232,7 @@ namespace ExcelReportApplication
             }
         }
 
-        static public void WriteKeywordConclusionOnKeywordReport(TestPlanKeyword keyword, Worksheet result_worksheet, IssueCount severity_count)
+        static public void WriteKeywordConclusionOnKeywordReport(TestReportKeyword keyword, Worksheet result_worksheet, IssueCount severity_count)
         {
             String pass_fail_str;
             Boolean pass, fail, conditional_pass;
@@ -1834,7 +1834,7 @@ namespace ExcelReportApplication
             //
             // 2.1. Find keyword for all selected file (as listed in temprary test plan)
             //
-            List<TestPlanKeyword> keyword_list = ListAllKeyword(do_plan);
+            List<TestReportKeyword> keyword_list = ListAllKeyword(do_plan);
             // Clear global_keyword_list here
             ClearGlobalKeywordList();
 
@@ -1853,7 +1853,7 @@ namespace ExcelReportApplication
                 issue.KeywordList.Clear();
             }
             // Go throught each keyword, search all issues containing this keyword and add issue-id so that it can be extened into description list.
-            foreach (TestPlanKeyword keyword in keyword_list)
+            foreach (TestReportKeyword keyword in keyword_list)
             {
                 List<StyleString> description_list;
                 //List<String> id_list = new List<String>();
@@ -1888,7 +1888,7 @@ namespace ExcelReportApplication
             //global_keyword_list = keyword_list;
             //global_keyword_available = true;
             SetGlobalKeywordList(keyword_list);
-            Dictionary<String, List<TestPlanKeyword>> keyword_lut_by_sheetname = GenerateKeywordLUT_by_Sheetname(keyword_list);
+            Dictionary<String, List<TestReportKeyword>> keyword_lut_by_sheetname = GenerateKeywordLUT_by_Sheetname(keyword_list);
 
             //
             // 3. Go throught each report excel and generate keyword report for each one.
@@ -1995,7 +1995,7 @@ namespace ExcelReportApplication
                     //foreach (TestPlanKeyword keyword in keyword_list)
                     //foreach (TestPlanKeyword keyword in ws_keyword_list)
                     List<StyleString> keyword_issue_description_on_this_report = new List<StyleString>();
-                    foreach (TestPlanKeyword keyword in keyword_lut_by_sheetname[sheet_name])
+                    foreach (TestReportKeyword keyword in keyword_lut_by_sheetname[sheet_name])
                     {
                         // Only write to keyword on currently open sheet
                         //if (keyword.Worksheet == sheet_name)
@@ -2609,8 +2609,8 @@ namespace ExcelReportApplication
                 TestPlan tp = TestPlan.CreateTempPlanFromFile(excel_filename);
                 tp.TestPlanWorksheet = ws;
                 tp.ExcelSheet = ws.Name;
-                List<TestPlanKeyword> keyword_list = ListKeyword_SingleReport(tp);
-                foreach (TestPlanKeyword keyword in keyword_list)
+                List<TestReportKeyword> keyword_list = ListKeyword_SingleReport(tp);
+                foreach (TestReportKeyword keyword in keyword_list)
                 {
                     double new_row_height = 0.2;
                     ExcelAction.Set_Row_Height(ws, keyword.BugListAtRow, new_row_height);
@@ -2633,8 +2633,8 @@ namespace ExcelReportApplication
                 TestPlan tp = TestPlan.CreateTempPlanFromFile(excel_filename);
                 tp.TestPlanWorksheet = ws;
                 tp.ExcelSheet = ws.Name;
-                List<TestPlanKeyword> keyword_list = ListKeyword_SingleReport(tp);
-                foreach (TestPlanKeyword keyword in keyword_list)
+                List<TestReportKeyword> keyword_list = ListKeyword_SingleReport(tp);
+                foreach (TestReportKeyword keyword in keyword_list)
                 {
                     ExcelAction.SetCellValue(ws, keyword.ResultAtRow, keyword.ResultAtColumn, " ");
                     int temp_col = keyword.BugStatusAtColumn;
@@ -3008,7 +3008,7 @@ namespace ExcelReportApplication
         // Input: Standard Test Report main file
         // Output: keyword list of all "Do" test-plans
         //
-        static public List<TestPlanKeyword> ListAllDetailedTestPlanKeywordTask(String report_root_dir, String output_filename)
+        static public List<TestReportKeyword> ListAllDetailedTestPlanKeywordTask(String report_root_dir, String output_filename)
         {
             // Clear keyword log report data-table
             ReportGenerator.excel_not_report_log.Clear();
@@ -3045,7 +3045,7 @@ namespace ExcelReportApplication
             //
             // 2.1. Find keyword for all selected file (as listed in temprary test plan)
             //
-            List<TestPlanKeyword> keyword_list = ListAllKeyword(do_plan);
+            List<TestReportKeyword> keyword_list = ListAllKeyword(do_plan);
 
             // Output keyword list log excel here.
             KeyWordListReport.OutputKeywordLog(report_root_dir, keyword_list, ReportGenerator.excel_not_report_log, output_filename);
@@ -3094,18 +3094,18 @@ namespace ExcelReportApplication
             return keyword_list;
         }
 
-        static public Dictionary<String, List<TestPlanKeyword>> GenerateKeywordLUT_by_Sheetname(List<TestPlanKeyword> keyword_list)
+        static public Dictionary<String, List<TestReportKeyword>> GenerateKeywordLUT_by_Sheetname(List<TestReportKeyword> keyword_list)
         {
-            Dictionary<String, List<TestPlanKeyword>> ret_dic = new Dictionary<String, List<TestPlanKeyword>>();
+            Dictionary<String, List<TestReportKeyword>> ret_dic = new Dictionary<String, List<TestReportKeyword>>();
 
-            foreach (TestPlanKeyword tpk in keyword_list)
+            foreach (TestReportKeyword tpk in keyword_list)
             {
                 String sheet = tpk.Worksheet;
 
                 // if key (current) exists in dictionary, add new dictionary pair (keyword, sheetname-list) with value is empty List.
                 if (ret_dic.ContainsKey(sheet) == false)
                 {
-                    ret_dic.Add(sheet, new List<TestPlanKeyword>());
+                    ret_dic.Add(sheet, new List<TestReportKeyword>());
                 }
                 // Add item (sheet) into the list of dictionary pair (keyword, sheetname-list)
                 ret_dic[sheet].Add(tpk);

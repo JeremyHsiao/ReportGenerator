@@ -1193,7 +1193,7 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            List<TestPlanKeyword> keyword_list = TestReport.ListAllDetailedTestPlanKeywordTask(report_root, output_file);
+            List<TestReportKeyword> keyword_list = TestReport.ListAllDetailedTestPlanKeywordTask(report_root, output_file);
 
             return true;
         }
