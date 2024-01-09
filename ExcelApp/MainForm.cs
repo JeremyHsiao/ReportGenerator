@@ -1206,7 +1206,7 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            TestReport.AutoCorrectReport_by_Folder(report_root: report_root, Output_dir: Storage.GenerateDirectoryNameWithDateTime(report_root));
+            KeywordReport.AutoCorrectReport_by_Folder(report_root: report_root, Output_dir: Storage.GenerateDirectoryNameWithDateTime(report_root));
 
             return true;
         }

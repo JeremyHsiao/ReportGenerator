@@ -272,7 +272,24 @@ namespace ExcelReportApplication
         //}
     }
 
-    public class KeywordReportHeader
+    public class ReportBooleanOption
+    {
+        public Boolean CopyFileOnly = false;
+        public Boolean Remove_AUO_Internal = false;
+        public Boolean Remove_AUO_Internal_remove_Method = false;
+        public Boolean Replace_Conclusion = false;
+        public Boolean Update_Report_Sheetname = true;
+        public Boolean Clear_Keyword_Result = true;
+        public Boolean Hide_Keyword_Result_Bug_Row = false;
+        public Boolean Update_Header_by_Template = false;
+        public Boolean Update_Conclusion = false;
+        public Boolean Update_Judgement = false;
+        public Boolean Update_Sample_SN = false;
+        // Lagacy options - BEGIN
+        public Boolean Report_C_Update_Full_Header = false;
+    }
+
+    public class TestReportOption
     {
         public Boolean Report_C_CopyFileOnly = false;
         public Boolean Report_C_Remove_AUO_Internal = false;
@@ -410,7 +427,7 @@ namespace ExcelReportApplication
 
         public static Boolean KeywordIssue_Auto_Correct_Sheetname = false;
 
-        public static KeywordReportHeader DefaultKeywordReportHeader = new KeywordReportHeader();
+        public static TestReportOption DefaultKeywordReportHeader = new TestReportOption();
 
         public static int PassCnt_at_row = 21, PassCnt_at_col = ExcelAction.ColumnNameToNumber('E');
         public static int FailCnt_at_row = 21, FailCnt_at_col = ExcelAction.ColumnNameToNumber('G');
@@ -1639,7 +1656,7 @@ namespace ExcelReportApplication
                     }
                 }
             }
-            judgement_str = ExcelAction.GetCellTrimmedString(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
+            judgement_str = ExcelAction.GetCellTrimmedString(result_worksheet, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col);
 
             //if (Replace_Conclusion)
             if (true)    // always updating linked issue for non-keyword version of report 
@@ -1941,7 +1958,7 @@ namespace ExcelReportApplication
                         }
                     }
                 }
-                judgement_str = ExcelAction.GetCellTrimmedString(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
+                judgement_str = ExcelAction.GetCellTrimmedString(result_worksheet, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col);
 
                 if (keyword_lut_by_sheetname.ContainsKey(sheet_name) == true)
                 {
@@ -2112,7 +2129,7 @@ namespace ExcelReportApplication
                     ExcelAction.SetCellValue(result_worksheet, FailCnt_at_row, FailCnt_at_col, fail_count);
                     ExcelAction.SetCellValue(result_worksheet, ConditionalPass_string_at_row, ConditionalPass_string_at_col, CONDITIONAL_PASS_str + ":");
                     ExcelAction.SetCellValue(result_worksheet, ConditionalPassCnt_at_row, ConditionalPassCnt_at_col, conditional_pass_count);
-                    ExcelAction.SetCellValue(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, judgement_str);
+                    ExcelAction.SetCellValue(result_worksheet, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col, judgement_str);
 
                     // End of updating keyword result
                 }
@@ -2294,11 +2311,11 @@ namespace ExcelReportApplication
         }
 
         // to be finished
-        static public Boolean ReadKeywordReportHeader_full(Worksheet report_worksheet, out KeywordReportHeader out_header)
+        static public Boolean ReadKeywordReportHeader_full(Worksheet report_worksheet, out TestReportOption out_header)
         {
-            out_header = new KeywordReportHeader();
-            out_header.Report_Title = ExcelAction.GetCellTrimmedString(report_worksheet, KeywordReportHeader.Title_at_row, KeywordReportHeader.Title_at_col);
-            out_header.Model_Name = ExcelAction.GetCellTrimmedString(report_worksheet, KeywordReportHeader.Model_Name_at_row, KeywordReportHeader.Model_Name_at_col);
+            out_header = new TestReportOption();
+            out_header.Report_Title = ExcelAction.GetCellTrimmedString(report_worksheet, TestReportOption.Title_at_row, TestReportOption.Title_at_col);
+            out_header.Model_Name = ExcelAction.GetCellTrimmedString(report_worksheet, TestReportOption.Model_Name_at_row, TestReportOption.Model_Name_at_col);
             ////@"Update_Part_No",                          @"true",
             //if (KeywordReport.DefaultKeywordReportHeader.Update_Part_No)
             //{
@@ -2398,7 +2415,7 @@ namespace ExcelReportApplication
             return true;
         }
 
-        static public Boolean UpdateKeywordReportHeader_full(Worksheet report_worksheet, KeywordReportHeader header)
+        static public Boolean UpdateKeywordReportHeader_full(Worksheet report_worksheet, TestReportOption header)
         {
             Boolean b_ret = false;
             try
@@ -2406,111 +2423,111 @@ namespace ExcelReportApplication
                 //@"Update_Report_Title_by_Sheetname",        @"true",
                 if (KeywordReport.DefaultKeywordReportHeader.Update_Report_Title_by_Sheetname)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Title_at_row, KeywordReportHeader.Title_at_col, header.Report_Title);
+                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Title_at_row, TestReportOption.Title_at_col, header.Report_Title);
                     ExcelAction.SetFontColorToWhite(report_worksheet, 1, 1, 1, 1);  // A1 only
                 }
 
                 //@"Update_Model_Name",                       @"true",
                 if (KeywordReport.DefaultKeywordReportHeader.Update_Model_Name)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Model_Name_at_row, KeywordReportHeader.Model_Name_at_col, header.Model_Name);
+                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Model_Name_at_row, TestReportOption.Model_Name_at_col, header.Model_Name);
                 }
 
                 //@"Update_Part_No",                          @"true",
                 if (KeywordReport.DefaultKeywordReportHeader.Update_Part_No)
                 {
                     String output_part_no = header.Part_No + "-" + header.Report_SheetName;
-                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Part_No_at_row, KeywordReportHeader.Part_No_at_col, output_part_no);
+                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Part_No_at_row, TestReportOption.Part_No_at_col, output_part_no);
                 }
 
                 //@"Update_Panel_Module",                     @"true",
                 if (KeywordReport.DefaultKeywordReportHeader.Update_Panel_Module)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Panel_Module_at_row, KeywordReportHeader.Panel_Module_at_col, header.Panel_Module);
+                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Panel_Module_at_row, TestReportOption.Panel_Module_at_col, header.Panel_Module);
                 }
 
                 //@"Update_TCON_Board",                       @"true",
                 if (KeywordReport.DefaultKeywordReportHeader.Update_TCON_Board)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.TCON_Board_at_row, KeywordReportHeader.TCON_Board_at_col, header.TCON_Board);
+                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.TCON_Board_at_row, TestReportOption.TCON_Board_at_col, header.TCON_Board);
                 }
 
                 //@"Update_AD_Board",                         @"true",
                 if (KeywordReport.DefaultKeywordReportHeader.Update_AD_Board)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.AD_Board_at_row, KeywordReportHeader.AD_Board_at_col, header.AD_Board);
+                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.AD_Board_at_row, TestReportOption.AD_Board_at_col, header.AD_Board);
                 }
 
                 //@"Update_Power_Board",                      @"true",
                 if (KeywordReport.DefaultKeywordReportHeader.Update_Power_Board)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Power_Board_at_row, KeywordReportHeader.Power_Board_at_col, header.Power_Board);
+                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Power_Board_at_row, TestReportOption.Power_Board_at_col, header.Power_Board);
                 }
 
                 //@"Update_Smart_BD_OS_Version",              @"true",
                 if (KeywordReport.DefaultKeywordReportHeader.Update_Smart_BD_OS_Version)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Smart_BD_OS_Version_at_row, KeywordReportHeader.Smart_BD_OS_Version_at_col, header.Smart_BD_OS_Version);
+                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Smart_BD_OS_Version_at_row, TestReportOption.Smart_BD_OS_Version_at_col, header.Smart_BD_OS_Version);
                 }
 
                 //@"Update_Touch_Sensor",                     @"true",
                 if (KeywordReport.DefaultKeywordReportHeader.Update_Touch_Sensor)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Touch_Sensor_at_row, KeywordReportHeader.Touch_Sensor_at_col, header.Touch_Sensor);
+                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Touch_Sensor_at_row, TestReportOption.Touch_Sensor_at_col, header.Touch_Sensor);
                 }
 
                 //@"Update_Speaker_AQ_Version",               @"true",
                 if (KeywordReport.DefaultKeywordReportHeader.Update_Speaker_AQ_Version)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Speaker_AQ_Version_at_row, KeywordReportHeader.Speaker_AQ_Version_at_col, header.Speaker_AQ_Version);
+                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Speaker_AQ_Version_at_row, TestReportOption.Speaker_AQ_Version_at_col, header.Speaker_AQ_Version);
                 }
 
                 //@"Update_SW_PQ_Version",                    @"true",
                 if (KeywordReport.DefaultKeywordReportHeader.Update_SW_PQ_Version)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.SW_PQ_Version_at_row, KeywordReportHeader.SW_PQ_Version_at_col, header.SW_PQ_Version);
+                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.SW_PQ_Version_at_row, TestReportOption.SW_PQ_Version_at_col, header.SW_PQ_Version);
                 }
 
                 //@"Update_Test_Stage",                       @"true",
                 if (KeywordReport.DefaultKeywordReportHeader.Update_Test_Stage)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Test_Stage_at_row, KeywordReportHeader.Test_Stage_at_col, header.Test_Stage);
+                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Test_Stage_at_row, TestReportOption.Test_Stage_at_col, header.Test_Stage);
                 }
 
                 //@"Update_Test_QTY_SN",                      @"true",
                 if (KeywordReport.DefaultKeywordReportHeader.Update_Test_QTY_SN)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Test_QTY_SN_at_row, KeywordReportHeader.Test_QTY_SN_at_col, header.Test_QTY_SN);
+                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Test_QTY_SN_at_row, TestReportOption.Test_QTY_SN_at_col, header.Test_QTY_SN);
                 }
 
                 //@"Update_Test_Period_Begin",                @"true",
                 if (KeywordReport.DefaultKeywordReportHeader.Update_Test_Period_Begin)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Test_Period_Begin_at_row, KeywordReportHeader.Test_Period_Begin_at_col, header.Test_Period_Begin);
+                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Test_Period_Begin_at_row, TestReportOption.Test_Period_Begin_at_col, header.Test_Period_Begin);
                 }
 
                 //@"Update_Test_Period_End",                  @"true",
                 if (KeywordReport.DefaultKeywordReportHeader.Update_Test_Period_End)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Test_Period_End_at_row, KeywordReportHeader.Test_Period_End_at_col, header.Test_Period_End);
+                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Test_Period_End_at_row, TestReportOption.Test_Period_End_at_col, header.Test_Period_End);
                 }
 
                 //@"Update_Judgement",                        @"true",
                 if (KeywordReport.DefaultKeywordReportHeader.Update_Judgement)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, header.Judgement);
+                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col, header.Judgement);
                 }
 
                 //@"Update_Tested_by",                        @"true",
                 if (KeywordReport.DefaultKeywordReportHeader.Update_Tested_by)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Tested_by_at_row, KeywordReportHeader.Tested_by_at_col, header.Tested_by);
+                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Tested_by_at_row, TestReportOption.Tested_by_at_col, header.Tested_by);
                 }
 
                 //@"Update_Approved_by",                      @"true",
                 if (KeywordReport.DefaultKeywordReportHeader.Update_Approved_by)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, KeywordReportHeader.Approved_by_at_row, KeywordReportHeader.Approved_by_at_col, header.Approved_by);
+                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Approved_by_at_row, TestReportOption.Approved_by_at_col, header.Approved_by);
                 }
 
                 b_ret = true;
@@ -2663,7 +2680,7 @@ namespace ExcelReportApplication
             Boolean b_ret = false;
             try
             {
-                ExcelAction.SetCellValue(ws, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, " ");
+                ExcelAction.SetCellValue(ws, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col, " ");
                 b_ret = true;
             }
             catch (Exception ex)
@@ -2753,8 +2770,8 @@ namespace ExcelReportApplication
             b_ret = ReplaceConclusionWithBugList(worksheet, linked_issue_description_on_this_report);
 
             // update judgement
-            ExcelAction.CellActivate(worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
-            ExcelAction.SetCellValue(worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, judgement_str);
+            ExcelAction.CellActivate(worksheet, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col);
+            ExcelAction.SetCellValue(worksheet, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col, judgement_str);
 
             return b_ret;
         }
@@ -2784,8 +2801,8 @@ namespace ExcelReportApplication
             b_ret = GetSortedFilteredLinkIssueAndJudgementString(worksheet, out linked_issue_description_on_this_report, out judgement_str);
 
             // update judgement
-            ExcelAction.CellActivate(worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
-            ExcelAction.SetCellValue(worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, judgement_str);
+            ExcelAction.CellActivate(worksheet, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col);
+            ExcelAction.SetCellValue(worksheet, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col, judgement_str);
 
             return b_ret;
         }
@@ -2874,7 +2891,7 @@ namespace ExcelReportApplication
                 else
                 {
                     // 3. Get Judgement value
-                    Object obj = ExcelAction.GetCellValue(ws_judgement, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
+                    Object obj = ExcelAction.GetCellValue(ws_judgement, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col);
                     if (obj != null)
                     {
                         judgement_str = (String)obj;
@@ -3095,5 +3112,292 @@ namespace ExcelReportApplication
             }
             return ret_dic;
         }
+
+        static public Boolean AutoCorrectReport_SingleFile(String source_file, String destination_file, Workbook wb_template, Boolean always_save = false)
+        {
+            TestReportOption out_header; // not used for this version of API.
+            return AutoCorrectReport_SingleFile(source_file, destination_file, wb_template, out out_header, always_save);
+        }
+
+        // Copy and update worksheet name & header & bug-result (configurable) -- to be used for starting a new project based on reports from anywhere
+        static public Boolean AutoCorrectReport_SingleFile(String source_file, String destination_file, Workbook wb_template, out TestReportOption out_header, Boolean always_save = false)
+        {
+            Boolean file_has_been_updated = false;
+            out_header = new TestReportOption();
+
+            destination_file = Storage.GetFullPath(destination_file);
+            if (Storage.IsReportFilename(destination_file) == false)
+            {
+                // Do nothing if new filename does not look like a report filename.
+                return file_has_been_updated;
+            }
+
+            // Open Excel workbook
+            source_file = Storage.GetFullPath(source_file);
+            Workbook wb = ExcelAction.OpenExcelWorkbook(filename: source_file, ReadOnly: false);
+            if (wb == null)
+            {
+                LogMessage.WriteLine("ERR: Open workbook in AutoCorrectReport_SingleFile(): " + source_file);
+                return false;
+            }
+
+            // If valid sheet_name does not exist, use first worksheet .
+            String current_sheet_name = TestPlan.GetSheetNameAccordingToFilename(source_file);
+            KeywordReport.DefaultKeywordReportHeader.Report_SheetName = current_sheet_name;
+            Worksheet ws;
+            if (ExcelAction.WorksheetExist(wb, current_sheet_name) == false)
+            {
+                ws = wb.Sheets[1];
+            }
+            else
+            {
+                ws = ExcelAction.Find_Worksheet(wb, current_sheet_name);
+            }
+
+            // Update sheetname (when the option is true)
+            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname)
+            {
+                String new_sheet_name = TestPlan.GetSheetNameAccordingToFilename(destination_file);
+                ws.Name = new_sheet_name;
+                KeywordReport.DefaultKeywordReportHeader.Report_SheetName = new_sheet_name;
+                file_has_been_updated = true;
+            }
+
+            //Report_C_Update_Header_by_Template
+            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template == true)
+            {
+                if (ExcelAction.WorksheetExist(wb_template, HeaderTemplate.SheetName_HeaderTemplate))
+                {
+                    Worksheet ws_template = ExcelAction.Find_Worksheet(wb_template, HeaderTemplate.SheetName_HeaderTemplate);
+                    String filename = TestPlan.GetReportTitleAccordingToFilename(destination_file);
+                    String sheetname = ws.Name;
+                    HeaderTemplate.UpdateVariables_FilenameSheetname(filename: filename, sheetname: sheetname);
+                    //HeaderTemplate.CopyAndUpdateHeader(ws_template, ws);
+                    HeaderTemplate.CopyAndUpdateHeader_with_KEEP(ws_template, ws);
+                }
+
+                //Report_C_Replace_Conclusion
+                if (KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion == true)
+                {
+                    //StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
+                    KeywordReport.ReplaceConclusionWithBugList(ws, TestReportOption.blank_space_list);
+                    file_has_been_updated = true;
+                }
+
+            }
+            else
+            {
+                // Update header (when the option is true)
+                if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header == true)
+                {
+                    String new_title = TestPlan.GetReportTitleAccordingToFilename(destination_file);
+                    KeywordReport.DefaultKeywordReportHeader.Report_Title = new_title;
+                    // sheet-name is not defined as part of header --> it should be part of excel report (eg. filename, sheetname)
+                    //KeywordReport.DefaultKeywordReportHeader.Report_SheetName = new_sheet_name;
+                    KeywordReport.UpdateKeywordReportHeader_full(ws, KeywordReport.DefaultKeywordReportHeader);
+                    file_has_been_updated = true;
+                }
+
+                //Report_C_Replace_Conclusion
+                if (KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion == true)
+                {
+                    //StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
+                    KeywordReport.ReplaceConclusionWithBugList(ws, TestReportOption.blank_space_list);
+                    file_has_been_updated = true;
+                }
+
+                // Clear bug-list, bug-count, Pass/Fail/Conditional_Pass count, judgement
+                if (KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result)
+                {
+                    KeywordReport.ClearKeywordBugResult(source_file, ws);
+                    KeywordReport.ClearReportBugCount(ws);
+                    KeywordReport.ClearJudgement(ws);
+                    file_has_been_updated = true;
+                }
+            }
+
+            // Hide keyword result/bug-list row -- after clear because it is un-hide after clear
+            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row)
+            {
+                KeywordReport.HideKeywordResultBugRow(source_file, ws);
+                file_has_been_updated = true;
+            }
+
+            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion)
+            {
+                KeywordReport.Update_Conclusion_only_by_linked_issue(ws);
+                file_has_been_updated = true;
+            }
+
+            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement)
+            {
+                KeywordReport.Update_Judgement_only_by_linked_issue(ws);
+                file_has_been_updated = true;
+            }
+
+            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN)
+            {
+                KeywordReport.UpdateSampleSN_to_common_string(ws);
+                file_has_been_updated = true;
+            }
+
+            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal)
+            {
+                // step 1: remove sheets which are not to be released
+                String sheet_name_to_keep = ws.Name;
+                if (wb.Sheets.Count > 1)
+                {
+                    // work-sheet can be deleted only when there are two or more sheets
+                    for (int sheet_index = wb.Sheets.Count; sheet_index > 0; sheet_index--)
+                    {
+                        String temp_sheet_name = wb.Sheets[sheet_index].Name;
+                        if (temp_sheet_name.Length >= sheet_name_to_keep.Length)
+                        {
+                            if (temp_sheet_name.Substring(0, sheet_name_to_keep.Length) == sheet_name_to_keep)
+                            {
+                                continue;
+                            }
+                        }
+                        wb.Sheets[sheet_index].Delete();
+                        file_has_been_updated = true;
+                    }
+                }
+                // step 2: remove contents on the sheet which are not to be released
+                if (KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal_remove_Method)
+                {
+
+                    //CheckIfStringMeetsMethod
+                    int search_start_row = KeywordReport.row_test_brief_start, search_end_row = KeywordReport.row_test_brief_end;
+                    for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
+                    {
+                        String text = ExcelAction.GetCellTrimmedString(wb.Sheets[1], row_index, KeywordReport.col_indentifier);
+                        if (KeywordReport.CheckIfStringMeetsMethod(text))
+                        {
+                            ExcelAction.ClearContent(wb.Sheets[1], row_index, 1, row_index + 1, KeywordReport.col_default_report_right_border);
+                            double new_row_height = 0.2;
+                            ExcelAction.Set_Row_Height(wb.Sheets[1], row_index, new_row_height);
+                            ExcelAction.Set_Row_Height(wb.Sheets[1], row_index + 1, new_row_height);
+                            file_has_been_updated = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if ((file_has_been_updated) || (always_save))
+            {
+                // Something has been updated or always save (ex: to copy file & update) ==> save to excel file
+                String destination_dir = Storage.GetDirectoryName(destination_file);
+                // if parent directory does not exist, create recursively all parents
+                if (Storage.DirectoryExists(destination_dir) == false)
+                {
+                    Storage.CreateDirectory(destination_dir, auto_parent_dir: true);
+                }
+                ExcelAction.SaveExcelWorkbook(wb, filename: destination_file);
+            }
+            else
+            {
+                // Doing nothing here.
+            }
+            // Close Excel workbook
+            ExcelAction.CloseExcelWorkbook(wb);
+
+            return file_has_been_updated;
+        }
+
+        static public Boolean AutoCorrectReport_by_Folder(String report_root, String Output_dir)
+        {
+            Boolean b_ret = false;
+
+            // 0.1 List all files under report_root_dir.
+            List<String> file_list = Storage.ListFilesUnderDirectory(report_root);
+            // 0.2 filename check to exclude non-report files.
+            List<String> report_filename = Storage.FilterFilename(file_list);
+
+            foreach (String source_report in report_filename)
+            {
+                String dest_filename = KeywordReport.DecideDestinationFilename(report_root, Output_dir, source_report); // replace folder name
+                b_ret |= AutoCorrectReport_SingleFile(source_file: source_report, destination_file: dest_filename, wb_template: new Workbook(), always_save: true);
+            }
+
+            return b_ret;
+        }
+
+        //static public Boolean AutoCorrectReport(String report_root, String Output_dir = "")
+        //{
+        //    Boolean b_ret = false;
+
+        //    // 0.1 List all files under report_root_dir.
+        //    List<String> file_list = Storage.ListFilesUnderDirectory(report_root);
+        //    // 0.2 filename check to exclude non-report files.
+        //    List<String> report_filename = Storage.FilterFilename(file_list);
+
+        //    //Output_dir = Storage.GetFullPath(Output_dir);
+
+        //    // 1.1 Init an empty plan
+        //    List<TestPlan> do_plan = new List<TestPlan>();
+
+        //    // 1.2 Create a temporary test plan to includes report_file
+        //    do_plan = TestPlan.CreateTempPlanFromFileList(report_filename);
+        //    Boolean output_to_different_path = ((Output_dir=="")||(report_root==Output_dir))?false:true;
+
+        //    foreach (TestPlan plan in do_plan)
+        //    {
+        //        String path = Storage.GetDirectoryName(plan.ExcelFile);
+        //        String filename = Storage.GetFileName(plan.ExcelFile);
+        //        String full_filename = Storage.GetFullPath(plan.ExcelFile);
+        //        String sheet_name = plan.ExcelSheet;
+        //        Boolean file_has_been_updated = output_to_different_path;
+
+        //        // Open Excel workbood
+        //        Workbook wb = ExcelAction.OpenExcelWorkbook(filename: full_filename, ReadOnly: false);
+        //        if (wb == null)
+        //        {
+        //            ConsoleWarning("ERR: Open workbook in AutoCorrectReport(): " + full_filename);
+        //            continue;
+        //        }
+
+        //        // If valid sheet_name does not exist, use first worksheet and rename it.
+        //        Worksheet ws;
+        //        if (ExcelAction.WorksheetExist(wb, sheet_name) == false)
+        //        {
+        //            ws = wb.Sheets[1];
+        //            ws.Name = sheet_name;
+        //            file_has_been_updated = true;
+        //        }
+        //        else
+        //        {
+        //            ws = ExcelAction.Find_Worksheet(wb, sheet_name);
+        //        }
+
+        //        // Update header 
+        //        String new_title = TestPlan.GetReportTitleAccordingToFilename(filename);
+        //        String existing_title = ExcelAction.GetCellTrimmedString(ws, TestReport.Title_at_row, TestReport.Title_at_col);
+        //        if (existing_title != new_title)
+        //        {
+        //            TestReport.UpdateReportHeader(ws,Title: new_title);
+        //            file_has_been_updated = true;
+        //        }
+
+        //        if (file_has_been_updated)
+        //        {
+        //            String dest_filename;
+        //            // Something has been updated, save to excel file
+
+        //            dest_filename = DecideDestinationFilename(report_root, Output_dir, full_filename);
+        //            String dest_filename_dir = Storage.GetDirectoryName(dest_filename);
+        //            // if parent directory does not exist, create recursively all parents
+        //            Storage.CreateDirectory(dest_filename_dir, auto_parent_dir: true);
+        //            ExcelAction.SaveExcelWorkbook(wb, filename: dest_filename);
+        //            b_ret = true;
+        //        }
+        //        ExcelAction.CloseExcelWorkbook(wb);
+        //    }
+        //    return b_ret;
+        //}
+
+        //static public ReadReport(String root_dir)
+        //{
+        //}
     }
 }
