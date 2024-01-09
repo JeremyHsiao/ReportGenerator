@@ -762,8 +762,8 @@ namespace ExcelReportApplication
                 }
                 // END
 
-                keyword_list = KeywordReport.GetGlobalKeywordList();
-                keyword_lut_by_Sheetname = KeywordReport.GenerateKeywordLUT_by_Sheetname(keyword_list);
+                keyword_list = TestReport.GetGlobalKeywordList();
+                keyword_lut_by_Sheetname = TestReport.GenerateKeywordLUT_by_Sheetname(keyword_list);
             }
 
             // Visit all rows and replace Bug-ID at Linked Issue with long description of Bug.
@@ -815,7 +815,7 @@ namespace ExcelReportApplication
                     if (current_status == TestCase.STR_FINISHED)
                     {
                         String status_string;
-                        status_string = KeywordReport.Judgement_Decision_by_Linked_Issue_List(linked_issue_list);
+                        status_string = TestReport.Judgement_Decision_by_Linked_Issue_List(linked_issue_list);
                         ExcelAction.SetTestCaseCell(excel_row_index, status_col, status_string, IsTemplate: true);
                     }
                 }
@@ -831,17 +831,17 @@ namespace ExcelReportApplication
                         //Boolean update_status = false;
                         String workbook_filename = report_filelist_by_sheetname[worksheet_name];
                         //if (KeywordReport.CheckLookupReportJudgementResultExist()) 
-                        if (KeywordReport.CheckLookupReportInformationExist()) //
+                        if (TestReport.CheckLookupReportInformationExist()) //
                         {
                             //judgement_str = KeywordReport.LookupReportJudgementResult(workbook_filename);
-                            List<String> report_info = KeywordReport.LookupReportInformation(workbook_filename);
-                            judgement_str = KeywordReport.GetJudgement(report_info);
-                            purpose_str = KeywordReport.GetPurpose(report_info);
-                            criteria_str = KeywordReport.GetCriteria(report_info);
+                            List<String> report_info = TestReport.LookupReportInformation(workbook_filename);
+                            judgement_str = TestReport.GetJudgement(report_info);
+                            purpose_str = TestReport.GetPurpose(report_info);
+                            criteria_str = TestReport.GetCriteria(report_info);
                         }
                         else
                         {
-                            KeywordReport.GetJudgementPurposeCriteriaValue(workbook_filename, worksheet_name, out judgement_str, out purpose_str, out criteria_str);
+                            TestReport.GetJudgementPurposeCriteriaValue(workbook_filename, worksheet_name, out judgement_str, out purpose_str, out criteria_str);
                             //judgement_str = WriteBacktoTCJiraExcel_GetJudgementString(worksheet_name, workbook_filename);
                         }
 

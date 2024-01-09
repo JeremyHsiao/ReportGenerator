@@ -196,7 +196,7 @@ namespace ExcelReportApplication
                 Boolean success = false;
 
                 // if only copying files, no need to open excel
-                if (KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly)
+                if (TestReport.Option.Report_C_CopyFileOnly)
                 {
                     String source_file = src, destination_file = dest;
                     String destination_dir = Storage.GetDirectoryName(destination_file);
@@ -211,7 +211,7 @@ namespace ExcelReportApplication
                 {
                     String today = DateTime.Now.ToString("yyyy/MM/dd");
                     HeaderTemplate.UpdateVariables_TodayAssigneeLinkedIssue(today: today, assignee: assignee, LinkedIssue: StyleString.WhiteSpaceList());
-                    success = KeywordReport.AutoCorrectReport_SingleFile(source_file: src, destination_file: dest, wb_template: wb, always_save: true);
+                    success = TestReport.AutoCorrectReport_SingleFile(source_file: src, destination_file: dest, wb_template: wb, always_save: true);
                 }
 
                 if (success)

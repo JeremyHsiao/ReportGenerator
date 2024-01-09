@@ -570,32 +570,32 @@ namespace ExcelReportApplication
             String links = XMLConfig.ReadAppSetting_String("LinkIssueFilterStatusString");
             ReportGenerator.List_of_status_to_filter_for_tc_linked_issue = SplitCommaSeparatedStringIntoList(links);
             links = XMLConfig.ReadAppSetting_String("KeywordIssueFilterStatusString");
-            KeywordReport.KeywordIssue_filter_status_list = SplitCommaSeparatedStringIntoList(links);
+            TestReport.KeywordIssue_filter_status_list = SplitCommaSeparatedStringIntoList(links);
 
             links = XMLConfig.ReadAppSetting_String("TestReport_Default_Judgement");
-            KeywordReport.TestReport_Default_Judgement = links;
+            TestReport.TestReport_Default_Judgement = links;
             links = XMLConfig.ReadAppSetting_String("TestReport_Default_Conclusion");
-            KeywordReport.TestReport_Default_Conclusion = links;
+            TestReport.TestReport_Default_Conclusion = links;
             // End
 
             // config for default parameters used in Test Plan / Test Report
             TestPlan.NameDefinitionRow_TestPlan = XMLConfig.ReadAppSetting_int("TestPlan_Row_NameDefine");
             TestPlan.DataBeginRow_TestPlan = XMLConfig.ReadAppSetting_int("TestPlan_Row_DataBegin");
-            KeywordReport.row_test_detail_start = XMLConfig.ReadAppSetting_int("KeywordIssue_Row_UserStart");
-            KeywordReport.col_indentifier = XMLConfig.ReadAppSetting_int("KeywordIssue_Column_Keyword_Indentifier");
-            KeywordReport.col_keyword = XMLConfig.ReadAppSetting_int("KeywordIssue_Column_Keyword_Location");
-            KeywordReport.regexKeywordString = XMLConfig.ReadAppSetting_String("KeywordIssue_Regex_Keyword_Indentifier");
-            KeywordReport.row_offset_result_title = XMLConfig.ReadAppSetting_int("KeywordIssue_Result_Title_Offset_Row");
-            KeywordReport.col_offset_result_title = XMLConfig.ReadAppSetting_int("KeywordIssue_Result_Title_Offset_Col");
-            KeywordReport.row_offset_bugstatus_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugStatus_Title_Offset_Row");
-            KeywordReport.col_offset_bugstatus_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugStatus_Title_Offset_Col");
-            KeywordReport.row_offset_buglist_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugList_Title_Offset_Row");
-            KeywordReport.col_offset_buglist_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugList_Title_Offset_Col");
+            TestReport.row_test_detail_start = XMLConfig.ReadAppSetting_int("KeywordIssue_Row_UserStart");
+            TestReport.col_indentifier = XMLConfig.ReadAppSetting_int("KeywordIssue_Column_Keyword_Indentifier");
+            TestReport.col_keyword = XMLConfig.ReadAppSetting_int("KeywordIssue_Column_Keyword_Location");
+            TestReport.regexKeywordString = XMLConfig.ReadAppSetting_String("KeywordIssue_Regex_Keyword_Indentifier");
+            TestReport.row_offset_result_title = XMLConfig.ReadAppSetting_int("KeywordIssue_Result_Title_Offset_Row");
+            TestReport.col_offset_result_title = XMLConfig.ReadAppSetting_int("KeywordIssue_Result_Title_Offset_Col");
+            TestReport.row_offset_bugstatus_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugStatus_Title_Offset_Row");
+            TestReport.col_offset_bugstatus_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugStatus_Title_Offset_Col");
+            TestReport.row_offset_buglist_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugList_Title_Offset_Row");
+            TestReport.col_offset_buglist_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugList_Title_Offset_Col");
 
             // end of config
 
             // config for default output directory of test report (keyword report)
-            KeywordReport.TestReport_Default_Output_Dir = XMLConfig.ReadAppSetting_String("TestReport_Default_Output_Dir");
+            TestReport.TestReport_Default_Output_Dir = XMLConfig.ReadAppSetting_String("TestReport_Default_Output_Dir");
 
             // config for excel report output (also linked issue)
             StyleString.default_font = XMLConfig.ReadAppSetting_String("default_report_Font");
@@ -632,67 +632,67 @@ namespace ExcelReportApplication
             Issue.KeywordIssue_WAIVED_ISSUE_COLOR = Issue.KeywordIssue_report_FontColor;
             Issue.KeywordIssue_CLOSED_ISSUE_COLOR = Issue.KeywordIssue_report_FontColor;
 
-            KeywordReport.KeywordIssue_Replace_Conclusion = XMLConfig.ReadAppSetting_Boolean("KeywordIssue_report_replace_conclusion");
-            KeywordReport.KeywordIssue_Hide_Result_Bug = XMLConfig.ReadAppSetting_Boolean("KeywordIssue_report_Hide_Result_Bug");
-            KeywordReport.KeywordIssue_Auto_Correct_Sheetname = XMLConfig.ReadAppSetting_Boolean("KeywordIssue_report_Correct_Worksheet");
+            TestReport.KeywordIssue_Replace_Conclusion = XMLConfig.ReadAppSetting_Boolean("KeywordIssue_report_replace_conclusion");
+            TestReport.KeywordIssue_Hide_Result_Bug = XMLConfig.ReadAppSetting_Boolean("KeywordIssue_report_Hide_Result_Bug");
+            TestReport.KeywordIssue_Auto_Correct_Sheetname = XMLConfig.ReadAppSetting_Boolean("KeywordIssue_report_Correct_Worksheet");
 
             // config for report C
-            KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = XMLConfig.ReadAppSetting_Boolean("Report_C_CopyFileOnly");
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = XMLConfig.ReadAppSetting_Boolean("Report_C_Remove_AUO_Internal");
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal_remove_Method = XMLConfig.ReadAppSetting_Boolean("Report_C_Remove_AUO_Internal_remove_Method");  
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Full_Header");
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Header_by_Template");
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = XMLConfig.ReadAppSetting_Boolean("Report_C_Replace_Conclusion");
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Conclusion");
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Judgement");
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Sample_SN");
+            TestReport.Option.Report_C_CopyFileOnly = XMLConfig.ReadAppSetting_Boolean("Report_C_CopyFileOnly");
+            TestReport.Option.Report_C_Remove_AUO_Internal = XMLConfig.ReadAppSetting_Boolean("Report_C_Remove_AUO_Internal");
+            TestReport.Option.Report_C_Remove_AUO_Internal_remove_Method = XMLConfig.ReadAppSetting_Boolean("Report_C_Remove_AUO_Internal_remove_Method");  
+            TestReport.Option.Report_C_Update_Full_Header = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Full_Header");
+            TestReport.Option.Report_C_Update_Header_by_Template = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Header_by_Template");
+            TestReport.Option.Report_C_Replace_Conclusion = XMLConfig.ReadAppSetting_Boolean("Report_C_Replace_Conclusion");
+            TestReport.Option.Report_C_Update_Conclusion = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Conclusion");
+            TestReport.Option.Report_C_Update_Judgement = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Judgement");
+            TestReport.Option.Report_C_Update_Sample_SN = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Sample_SN");
 
-            KeywordReport.DefaultKeywordReportHeader.SampleSN_String = XMLConfig.ReadAppSetting_String("SampleSN_String");
-            KeywordReport.DefaultKeywordReportHeader.SN_Font = XMLConfig.ReadAppSetting_String("SampleSN_String");
-            KeywordReport.DefaultKeywordReportHeader.SN_FontSize = XMLConfig.ReadAppSetting_int("SampleSN_String_FontSize");
-            KeywordReport.DefaultKeywordReportHeader.SN_FontColor = XMLConfig.ReadAppSetting_Color("SampleSN_String_FontColor");
-            KeywordReport.DefaultKeywordReportHeader.SN_FontStyle = XMLConfig.ReadAppSetting_FontStyle("SampleSN_String_FontStyle");
+            TestReport.Option.SampleSN_String = XMLConfig.ReadAppSetting_String("SampleSN_String");
+            TestReport.Option.SN_Font = XMLConfig.ReadAppSetting_String("SampleSN_String");
+            TestReport.Option.SN_FontSize = XMLConfig.ReadAppSetting_int("SampleSN_String_FontSize");
+            TestReport.Option.SN_FontColor = XMLConfig.ReadAppSetting_Color("SampleSN_String_FontColor");
+            TestReport.Option.SN_FontStyle = XMLConfig.ReadAppSetting_FontStyle("SampleSN_String_FontStyle");
 
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Report_Sheetname");
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = XMLConfig.ReadAppSetting_Boolean("Report_C_Clear_Keyword_Result");
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = XMLConfig.ReadAppSetting_Boolean("Report_C_Hide_Keyword_Result_Bug_Row");
+            TestReport.Option.Report_C_Update_Report_Sheetname = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Report_Sheetname");
+            TestReport.Option.Report_C_Clear_Keyword_Result = XMLConfig.ReadAppSetting_Boolean("Report_C_Clear_Keyword_Result");
+            TestReport.Option.Report_C_Hide_Keyword_Result_Bug_Row = XMLConfig.ReadAppSetting_Boolean("Report_C_Hide_Keyword_Result_Bug_Row");
             // config for header above line 21
-            KeywordReport.DefaultKeywordReportHeader.Model_Name = XMLConfig.ReadAppSetting_String("Default_Model_Name");
-            KeywordReport.DefaultKeywordReportHeader.Part_No = XMLConfig.ReadAppSetting_String("Default_Part_No");
-            KeywordReport.DefaultKeywordReportHeader.Panel_Module = XMLConfig.ReadAppSetting_String("Default_Panel_Module");
-            KeywordReport.DefaultKeywordReportHeader.TCON_Board = XMLConfig.ReadAppSetting_String("Default_TCON_Board");
-            KeywordReport.DefaultKeywordReportHeader.AD_Board = XMLConfig.ReadAppSetting_String("Default_AD_Board");
-            KeywordReport.DefaultKeywordReportHeader.Power_Board = XMLConfig.ReadAppSetting_String("Default_Power_Board");
-            KeywordReport.DefaultKeywordReportHeader.Smart_BD_OS_Version = XMLConfig.ReadAppSetting_String("Default_Smart_BD_OS_Version");
-            KeywordReport.DefaultKeywordReportHeader.Touch_Sensor = XMLConfig.ReadAppSetting_String("Default_Touch_Sensor");
-            KeywordReport.DefaultKeywordReportHeader.Speaker_AQ_Version = XMLConfig.ReadAppSetting_String("Default_Speaker_AQ_Version");
-            KeywordReport.DefaultKeywordReportHeader.SW_PQ_Version = XMLConfig.ReadAppSetting_String("Default_SW_PQ_Version");
-            KeywordReport.DefaultKeywordReportHeader.Test_Stage = XMLConfig.ReadAppSetting_String("Default_Test_Stage");
-            KeywordReport.DefaultKeywordReportHeader.Test_QTY_SN = XMLConfig.ReadAppSetting_String("Default_Test_QTY_SN");
-            KeywordReport.DefaultKeywordReportHeader.Test_Period_Begin = XMLConfig.ReadAppSetting_String("Default_Test_Period_Begin");
-            KeywordReport.DefaultKeywordReportHeader.Test_Period_End = XMLConfig.ReadAppSetting_String("Default_Test_Period_End");
-            KeywordReport.DefaultKeywordReportHeader.Judgement = XMLConfig.ReadAppSetting_String("Default_Judgement");
-            KeywordReport.DefaultKeywordReportHeader.Tested_by = XMLConfig.ReadAppSetting_String("Default_Tested_by");
-            KeywordReport.DefaultKeywordReportHeader.Approved_by = XMLConfig.ReadAppSetting_String("Default_Approved_by");
+            TestReport.Option.Model_Name = XMLConfig.ReadAppSetting_String("Default_Model_Name");
+            TestReport.Option.Part_No = XMLConfig.ReadAppSetting_String("Default_Part_No");
+            TestReport.Option.Panel_Module = XMLConfig.ReadAppSetting_String("Default_Panel_Module");
+            TestReport.Option.TCON_Board = XMLConfig.ReadAppSetting_String("Default_TCON_Board");
+            TestReport.Option.AD_Board = XMLConfig.ReadAppSetting_String("Default_AD_Board");
+            TestReport.Option.Power_Board = XMLConfig.ReadAppSetting_String("Default_Power_Board");
+            TestReport.Option.Smart_BD_OS_Version = XMLConfig.ReadAppSetting_String("Default_Smart_BD_OS_Version");
+            TestReport.Option.Touch_Sensor = XMLConfig.ReadAppSetting_String("Default_Touch_Sensor");
+            TestReport.Option.Speaker_AQ_Version = XMLConfig.ReadAppSetting_String("Default_Speaker_AQ_Version");
+            TestReport.Option.SW_PQ_Version = XMLConfig.ReadAppSetting_String("Default_SW_PQ_Version");
+            TestReport.Option.Test_Stage = XMLConfig.ReadAppSetting_String("Default_Test_Stage");
+            TestReport.Option.Test_QTY_SN = XMLConfig.ReadAppSetting_String("Default_Test_QTY_SN");
+            TestReport.Option.Test_Period_Begin = XMLConfig.ReadAppSetting_String("Default_Test_Period_Begin");
+            TestReport.Option.Test_Period_End = XMLConfig.ReadAppSetting_String("Default_Test_Period_End");
+            TestReport.Option.Judgement = XMLConfig.ReadAppSetting_String("Default_Judgement");
+            TestReport.Option.Tested_by = XMLConfig.ReadAppSetting_String("Default_Tested_by");
+            TestReport.Option.Approved_by = XMLConfig.ReadAppSetting_String("Default_Approved_by");
 
-            KeywordReport.DefaultKeywordReportHeader.Update_Report_Title_by_Sheetname = XMLConfig.ReadAppSetting_Boolean("Update_Report_Title_by_Sheetname");
-            KeywordReport.DefaultKeywordReportHeader.Update_Model_Name = XMLConfig.ReadAppSetting_Boolean("Update_Model_Name");
-            KeywordReport.DefaultKeywordReportHeader.Update_Part_No = XMLConfig.ReadAppSetting_Boolean("Update_Part_No");
-            KeywordReport.DefaultKeywordReportHeader.Update_Panel_Module = XMLConfig.ReadAppSetting_Boolean("Update_Panel_Module");
-            KeywordReport.DefaultKeywordReportHeader.Update_TCON_Board = XMLConfig.ReadAppSetting_Boolean("Update_TCON_Board");
-            KeywordReport.DefaultKeywordReportHeader.Update_AD_Board = XMLConfig.ReadAppSetting_Boolean("Update_AD_Board");
-            KeywordReport.DefaultKeywordReportHeader.Update_Power_Board = XMLConfig.ReadAppSetting_Boolean("Update_Power_Board");
-            KeywordReport.DefaultKeywordReportHeader.Update_Smart_BD_OS_Version = XMLConfig.ReadAppSetting_Boolean("Update_Smart_BD_OS_Version");
-            KeywordReport.DefaultKeywordReportHeader.Update_Touch_Sensor = XMLConfig.ReadAppSetting_Boolean("Update_Touch_Sensor");
-            KeywordReport.DefaultKeywordReportHeader.Update_Speaker_AQ_Version = XMLConfig.ReadAppSetting_Boolean("Update_Speaker_AQ_Version");
-            KeywordReport.DefaultKeywordReportHeader.Update_SW_PQ_Version = XMLConfig.ReadAppSetting_Boolean("Update_SW_PQ_Version");
-            KeywordReport.DefaultKeywordReportHeader.Update_Test_Stage = XMLConfig.ReadAppSetting_Boolean("Update_Test_Stage");
-            KeywordReport.DefaultKeywordReportHeader.Update_Test_QTY_SN = XMLConfig.ReadAppSetting_Boolean("Update_Test_QTY_SN");
-            KeywordReport.DefaultKeywordReportHeader.Update_Test_Period_Begin = XMLConfig.ReadAppSetting_Boolean("Update_Test_Period_Begin");
-            KeywordReport.DefaultKeywordReportHeader.Update_Test_Period_End = XMLConfig.ReadAppSetting_Boolean("Update_Test_Period_End");
-            KeywordReport.DefaultKeywordReportHeader.Update_Judgement = XMLConfig.ReadAppSetting_Boolean("Update_Judgement");
-            KeywordReport.DefaultKeywordReportHeader.Update_Tested_by = XMLConfig.ReadAppSetting_Boolean("Update_Tested_by");
-            KeywordReport.DefaultKeywordReportHeader.Update_Approved_by = XMLConfig.ReadAppSetting_Boolean("Update_Approved_by");
+            TestReport.Option.Update_Report_Title_by_Sheetname = XMLConfig.ReadAppSetting_Boolean("Update_Report_Title_by_Sheetname");
+            TestReport.Option.Update_Model_Name = XMLConfig.ReadAppSetting_Boolean("Update_Model_Name");
+            TestReport.Option.Update_Part_No = XMLConfig.ReadAppSetting_Boolean("Update_Part_No");
+            TestReport.Option.Update_Panel_Module = XMLConfig.ReadAppSetting_Boolean("Update_Panel_Module");
+            TestReport.Option.Update_TCON_Board = XMLConfig.ReadAppSetting_Boolean("Update_TCON_Board");
+            TestReport.Option.Update_AD_Board = XMLConfig.ReadAppSetting_Boolean("Update_AD_Board");
+            TestReport.Option.Update_Power_Board = XMLConfig.ReadAppSetting_Boolean("Update_Power_Board");
+            TestReport.Option.Update_Smart_BD_OS_Version = XMLConfig.ReadAppSetting_Boolean("Update_Smart_BD_OS_Version");
+            TestReport.Option.Update_Touch_Sensor = XMLConfig.ReadAppSetting_Boolean("Update_Touch_Sensor");
+            TestReport.Option.Update_Speaker_AQ_Version = XMLConfig.ReadAppSetting_Boolean("Update_Speaker_AQ_Version");
+            TestReport.Option.Update_SW_PQ_Version = XMLConfig.ReadAppSetting_Boolean("Update_SW_PQ_Version");
+            TestReport.Option.Update_Test_Stage = XMLConfig.ReadAppSetting_Boolean("Update_Test_Stage");
+            TestReport.Option.Update_Test_QTY_SN = XMLConfig.ReadAppSetting_Boolean("Update_Test_QTY_SN");
+            TestReport.Option.Update_Test_Period_Begin = XMLConfig.ReadAppSetting_Boolean("Update_Test_Period_Begin");
+            TestReport.Option.Update_Test_Period_End = XMLConfig.ReadAppSetting_Boolean("Update_Test_Period_End");
+            TestReport.Option.Update_Judgement = XMLConfig.ReadAppSetting_Boolean("Update_Judgement");
+            TestReport.Option.Update_Tested_by = XMLConfig.ReadAppSetting_Boolean("Update_Tested_by");
+            TestReport.Option.Update_Approved_by = XMLConfig.ReadAppSetting_Boolean("Update_Approved_by");
             // end config for keyword report
         }
 
@@ -853,7 +853,7 @@ namespace ExcelReportApplication
         {
             ReportGenerator.ClearGlobalIssueList();
             //ReportGenerator.lookup_BugList.Clear();
-            KeywordReport.ClearGlobalKeywordList();
+            TestReport.ClearGlobalKeywordList();
         }
 
         private Boolean LoadTCListIfEmpty(String filename)
@@ -873,7 +873,7 @@ namespace ExcelReportApplication
             ReportGenerator.ClearGlobalTestcaseList();
             ReportGenerator.ClearTestcaseLUT_by_Key();
             ReportGenerator.ClearTestcaseLUT_by_Sheetname();
-            KeywordReport.ClearGlobalKeywordList();
+            TestReport.ClearGlobalKeywordList();
         }
 
         //private bool Execute_WriteIssueDescriptionToTC_rev2(String tc_file, String template_file, String buglist_file, String judgement_report_dir = "")
@@ -1047,16 +1047,16 @@ namespace ExcelReportApplication
             //// this is for keyword report, how to input linked issue report list???
             //Dictionary<string, List<StyleString>> global_issue_description_list_severity =
             //                    StyleString.GenerateIssueDescription_Keyword_Issue(ReportGenerator.ReadGlobalIssueList());
-            String out_dir = KeywordReport.TestReport_Default_Output_Dir;
+            String out_dir = TestReport.TestReport_Default_Output_Dir;
             if ((out_dir != "") && Storage.DirectoryExists(out_dir))
             {
-                output_report_path = KeywordReport.TestReport_Default_Output_Dir;
+                output_report_path = TestReport.TestReport_Default_Output_Dir;
             }
             else
             {
                 output_report_path = Storage.GenerateDirectoryNameWithDateTime(source_dir);
             }
-            KeywordReport.KeywordIssueGenerationTaskV4(report_list, source_dir, output_report_path);
+            TestReport.KeywordIssueGenerationTaskV4(report_list, source_dir, output_report_path);
             return true;
         }
 
@@ -1106,16 +1106,16 @@ namespace ExcelReportApplication
             //// this is for keyword report, how to input linked issue report list???
             //Dictionary<string, List<StyleString>> global_issue_description_list_severity =
             //                    StyleString.GenerateIssueDescription_Keyword_Issue(ReportGenerator.ReadGlobalIssueList());
-            String out_dir = KeywordReport.TestReport_Default_Output_Dir;
+            String out_dir = TestReport.TestReport_Default_Output_Dir;
             if ((out_dir != "") && Storage.DirectoryExists(out_dir))
             {
-                output_report_path = KeywordReport.TestReport_Default_Output_Dir;
+                output_report_path = TestReport.TestReport_Default_Output_Dir;
             }
             else
             {
                 output_report_path = Storage.GenerateDirectoryNameWithDateTime(source_dir);
             }
-            KeywordReport.KeywordIssueGenerationTaskV4_simplified(report_list, source_dir, output_report_path);
+            TestReport.KeywordIssueGenerationTaskV4_simplified(report_list, source_dir, output_report_path);
             return true;
         }
 
@@ -1193,7 +1193,7 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            List<TestPlanKeyword> keyword_list = KeywordReport.ListAllDetailedTestPlanKeywordTask(report_root, output_file);
+            List<TestPlanKeyword> keyword_list = TestReport.ListAllDetailedTestPlanKeywordTask(report_root, output_file);
 
             return true;
         }
@@ -1206,7 +1206,7 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            KeywordReport.AutoCorrectReport_by_Folder(report_root: report_root, Output_dir: Storage.GenerateDirectoryNameWithDateTime(report_root));
+            TestReport.AutoCorrectReport_by_Folder(report_root: report_root, Output_dir: Storage.GenerateDirectoryNameWithDateTime(report_root));
 
             return true;
         }
@@ -1245,7 +1245,7 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            KeywordReport.Update_Group_Summary(report_path);
+            TestReport.Update_Group_Summary(report_path);
 
             return true;
         }
@@ -1424,16 +1424,16 @@ namespace ExcelReportApplication
         static private void Report_A_Push_Option()
         {
             Push_Option_All();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = false;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = false;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = false;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = true;
+            TestReport.Option.Report_C_CopyFileOnly = false;
+            TestReport.Option.Report_C_Remove_AUO_Internal = false;
+            TestReport.Option.Report_C_Update_Report_Sheetname = false;
+            TestReport.Option.Report_C_Clear_Keyword_Result = true;
             //KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = false;
             //KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = false;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = false;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = true;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion = false;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement = false;
+            TestReport.Option.Report_C_Update_Full_Header = false;
+            TestReport.Option.Report_C_Update_Header_by_Template = true;
+            TestReport.Option.Report_C_Update_Conclusion = false;
+            TestReport.Option.Report_C_Update_Judgement = false;
             //KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN = false;
         }
 
@@ -1445,18 +1445,18 @@ namespace ExcelReportApplication
         static private void Report_E_Push_Option()
         {
             Push_Option_All();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = false;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = true;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal_remove_Method = false;  // For TP
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = false;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = false;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = false;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = false;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = false;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = false;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion = false;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement = false;
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN = false;
+            TestReport.Option.Report_C_CopyFileOnly = false;
+            TestReport.Option.Report_C_Remove_AUO_Internal = true;
+            TestReport.Option.Report_C_Remove_AUO_Internal_remove_Method = false;  // For TP
+            TestReport.Option.Report_C_Update_Report_Sheetname = false;
+            TestReport.Option.Report_C_Clear_Keyword_Result = false;
+            TestReport.Option.Report_C_Hide_Keyword_Result_Bug_Row = false;
+            TestReport.Option.Report_C_Replace_Conclusion = false;
+            TestReport.Option.Report_C_Update_Full_Header = false;
+            TestReport.Option.Report_C_Update_Header_by_Template = false;
+            TestReport.Option.Report_C_Update_Conclusion = false;
+            TestReport.Option.Report_C_Update_Judgement = false;
+            TestReport.Option.Report_C_Update_Sample_SN = false;
         }
 
         static private void Report_E_Pop_Option()
@@ -1467,7 +1467,7 @@ namespace ExcelReportApplication
         static private void Report_D_Push_Option()
         {
             Push_Option_All();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = true;
+            TestReport.Option.Report_C_CopyFileOnly = true;
         }
 
         static private void Report_D_Pop_Option()
@@ -1477,34 +1477,34 @@ namespace ExcelReportApplication
 
         static private void Push_Option_All()
         {
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal_remove_Method);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN);
+            temp_option_stack.Push(TestReport.Option.Report_C_CopyFileOnly);
+            temp_option_stack.Push(TestReport.Option.Report_C_Remove_AUO_Internal);
+            temp_option_stack.Push(TestReport.Option.Report_C_Remove_AUO_Internal_remove_Method);
+            temp_option_stack.Push(TestReport.Option.Report_C_Update_Report_Sheetname);
+            temp_option_stack.Push(TestReport.Option.Report_C_Clear_Keyword_Result);
+            temp_option_stack.Push(TestReport.Option.Report_C_Hide_Keyword_Result_Bug_Row);
+            temp_option_stack.Push(TestReport.Option.Report_C_Replace_Conclusion);
+            temp_option_stack.Push(TestReport.Option.Report_C_Update_Full_Header);
+            temp_option_stack.Push(TestReport.Option.Report_C_Update_Header_by_Template);
+            temp_option_stack.Push(TestReport.Option.Report_C_Update_Conclusion);
+            temp_option_stack.Push(TestReport.Option.Report_C_Update_Judgement);
+            temp_option_stack.Push(TestReport.Option.Report_C_Update_Sample_SN);
         }
 
         static private void Pop_Option_All()
         {
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal_remove_Method = temp_option_stack.Pop(); // 
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = temp_option_stack.Pop();
+            TestReport.Option.Report_C_Update_Sample_SN = temp_option_stack.Pop();
+            TestReport.Option.Report_C_Update_Judgement = temp_option_stack.Pop();
+            TestReport.Option.Report_C_Update_Conclusion = temp_option_stack.Pop();
+            TestReport.Option.Report_C_Update_Header_by_Template = temp_option_stack.Pop();
+            TestReport.Option.Report_C_Update_Full_Header = temp_option_stack.Pop();
+            TestReport.Option.Report_C_Replace_Conclusion = temp_option_stack.Pop();
+            TestReport.Option.Report_C_Hide_Keyword_Result_Bug_Row = temp_option_stack.Pop();
+            TestReport.Option.Report_C_Clear_Keyword_Result = temp_option_stack.Pop();
+            TestReport.Option.Report_C_Update_Report_Sheetname = temp_option_stack.Pop();
+            TestReport.Option.Report_C_Remove_AUO_Internal_remove_Method = temp_option_stack.Pop(); // 
+            TestReport.Option.Report_C_Remove_AUO_Internal = temp_option_stack.Pop();
+            TestReport.Option.Report_C_CopyFileOnly = temp_option_stack.Pop();
         }
 
         private void btnCreateReport_Click(object sender, EventArgs e)

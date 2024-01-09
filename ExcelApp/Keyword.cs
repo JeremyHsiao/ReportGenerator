@@ -272,7 +272,7 @@ namespace ExcelReportApplication
         //}
     }
 
-    public class ReportBooleanOption
+    public class TestReportBooleanOption
     {
         public Boolean CopyFileOnly = false;
         public Boolean Remove_AUO_Internal = false;
@@ -391,7 +391,7 @@ namespace ExcelReportApplication
         public static List<StyleString> blank_space_list = blank_space.ConvertToList();
     }
 
-    public static class KeywordReport
+    public static class TestReport
     {
         static public String TestReport_Default_Output_Dir = "";
 
@@ -427,7 +427,7 @@ namespace ExcelReportApplication
 
         public static Boolean KeywordIssue_Auto_Correct_Sheetname = false;
 
-        public static TestReportOption DefaultKeywordReportHeader = new TestReportOption();
+        public static TestReportOption Option = new TestReportOption();
 
         public static int PassCnt_at_row = 21, PassCnt_at_col = ExcelAction.ColumnNameToNumber('E');
         public static int FailCnt_at_row = 21, FailCnt_at_col = ExcelAction.ColumnNameToNumber('G');
@@ -1484,7 +1484,7 @@ namespace ExcelReportApplication
                 int col_index = GroupSummary_Title_No_Col;
                 String str_no = TestPlan.GetSheetNameAccordingToFilename(filename);
                 String str_test_item = TestPlan.GetReportTitleWithoutNumberAccordingToFilename(filename);
-                String str_judgement = KeywordReport.Judgement_Decision_by_TC_Linked_Issue(str_no);
+                String str_judgement = TestReport.Judgement_Decision_by_TC_Linked_Issue(str_no);
                 List<StyleString> linked_issue_description = new List<StyleString>();
                 if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(str_no))
                 {
@@ -1616,7 +1616,7 @@ namespace ExcelReportApplication
             // if sheetname is xxxxxxx.0, do group_summary_report)
             if (sheet_name.Substring(sheet_name.Length - 2, 2) == ".0")
             {
-                KeywordReport.Update_Group_Summary(result_worksheet, sheet_name, existing_report_filelist);
+                TestReport.Update_Group_Summary(result_worksheet, sheet_name, existing_report_filelist);
             }
 
             String judgement_str = "", purpose_str = "", criteria_str = "";
@@ -1918,7 +1918,7 @@ namespace ExcelReportApplication
                 // if sheetname is xxxxxxx.0, do group_summary_report)
                 if (sheet_name.Substring(sheet_name.Length - 2, 2) == ".0")
                 {
-                    KeywordReport.Update_Group_Summary(result_worksheet, sheet_name, existing_report_filelist);
+                    TestReport.Update_Group_Summary(result_worksheet, sheet_name, existing_report_filelist);
                 }
 
                 String judgement_str = "", purpose_str = "", criteria_str = "";
@@ -2228,7 +2228,7 @@ namespace ExcelReportApplication
             }
 
             // Output updated report with recommended sheetname.
-            if (KeywordReport.KeywordIssue_Auto_Correct_Sheetname == true)
+            if (TestReport.KeywordIssue_Auto_Correct_Sheetname == true)
             {
                 // ReportGenerator.excel_not_report_log
                 foreach (ReportFileRecord item in ReportGenerator.excel_not_report_log)
@@ -2272,7 +2272,7 @@ namespace ExcelReportApplication
         // Please input linked issue
         static public String Judgement_Decision_by_Linked_Issue_List(List<Issue> linked_issue_list)
         {
-            String judgement_str = KeywordReport.TestReport_Default_Judgement;
+            String judgement_str = TestReport.TestReport_Default_Judgement;
 
             // List of Issue filtered by status
             List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.List_of_status_to_filter_for_tc_linked_issue);
@@ -2298,7 +2298,7 @@ namespace ExcelReportApplication
         static public String Judgement_Decision_by_TC_Linked_Issue(String sheet_name)
         {
             // return default if no corresponding TC
-            String judgement_str = KeywordReport.TestReport_Default_Judgement;
+            String judgement_str = TestReport.TestReport_Default_Judgement;
             if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(sheet_name))
             {
                 // key string of all linked issue
@@ -2421,111 +2421,111 @@ namespace ExcelReportApplication
             try
             {
                 //@"Update_Report_Title_by_Sheetname",        @"true",
-                if (KeywordReport.DefaultKeywordReportHeader.Update_Report_Title_by_Sheetname)
+                if (TestReport.Option.Update_Report_Title_by_Sheetname)
                 {
                     ExcelAction.SetCellValue(report_worksheet, TestReportOption.Title_at_row, TestReportOption.Title_at_col, header.Report_Title);
                     ExcelAction.SetFontColorToWhite(report_worksheet, 1, 1, 1, 1);  // A1 only
                 }
 
                 //@"Update_Model_Name",                       @"true",
-                if (KeywordReport.DefaultKeywordReportHeader.Update_Model_Name)
+                if (TestReport.Option.Update_Model_Name)
                 {
                     ExcelAction.SetCellValue(report_worksheet, TestReportOption.Model_Name_at_row, TestReportOption.Model_Name_at_col, header.Model_Name);
                 }
 
                 //@"Update_Part_No",                          @"true",
-                if (KeywordReport.DefaultKeywordReportHeader.Update_Part_No)
+                if (TestReport.Option.Update_Part_No)
                 {
                     String output_part_no = header.Part_No + "-" + header.Report_SheetName;
                     ExcelAction.SetCellValue(report_worksheet, TestReportOption.Part_No_at_row, TestReportOption.Part_No_at_col, output_part_no);
                 }
 
                 //@"Update_Panel_Module",                     @"true",
-                if (KeywordReport.DefaultKeywordReportHeader.Update_Panel_Module)
+                if (TestReport.Option.Update_Panel_Module)
                 {
                     ExcelAction.SetCellValue(report_worksheet, TestReportOption.Panel_Module_at_row, TestReportOption.Panel_Module_at_col, header.Panel_Module);
                 }
 
                 //@"Update_TCON_Board",                       @"true",
-                if (KeywordReport.DefaultKeywordReportHeader.Update_TCON_Board)
+                if (TestReport.Option.Update_TCON_Board)
                 {
                     ExcelAction.SetCellValue(report_worksheet, TestReportOption.TCON_Board_at_row, TestReportOption.TCON_Board_at_col, header.TCON_Board);
                 }
 
                 //@"Update_AD_Board",                         @"true",
-                if (KeywordReport.DefaultKeywordReportHeader.Update_AD_Board)
+                if (TestReport.Option.Update_AD_Board)
                 {
                     ExcelAction.SetCellValue(report_worksheet, TestReportOption.AD_Board_at_row, TestReportOption.AD_Board_at_col, header.AD_Board);
                 }
 
                 //@"Update_Power_Board",                      @"true",
-                if (KeywordReport.DefaultKeywordReportHeader.Update_Power_Board)
+                if (TestReport.Option.Update_Power_Board)
                 {
                     ExcelAction.SetCellValue(report_worksheet, TestReportOption.Power_Board_at_row, TestReportOption.Power_Board_at_col, header.Power_Board);
                 }
 
                 //@"Update_Smart_BD_OS_Version",              @"true",
-                if (KeywordReport.DefaultKeywordReportHeader.Update_Smart_BD_OS_Version)
+                if (TestReport.Option.Update_Smart_BD_OS_Version)
                 {
                     ExcelAction.SetCellValue(report_worksheet, TestReportOption.Smart_BD_OS_Version_at_row, TestReportOption.Smart_BD_OS_Version_at_col, header.Smart_BD_OS_Version);
                 }
 
                 //@"Update_Touch_Sensor",                     @"true",
-                if (KeywordReport.DefaultKeywordReportHeader.Update_Touch_Sensor)
+                if (TestReport.Option.Update_Touch_Sensor)
                 {
                     ExcelAction.SetCellValue(report_worksheet, TestReportOption.Touch_Sensor_at_row, TestReportOption.Touch_Sensor_at_col, header.Touch_Sensor);
                 }
 
                 //@"Update_Speaker_AQ_Version",               @"true",
-                if (KeywordReport.DefaultKeywordReportHeader.Update_Speaker_AQ_Version)
+                if (TestReport.Option.Update_Speaker_AQ_Version)
                 {
                     ExcelAction.SetCellValue(report_worksheet, TestReportOption.Speaker_AQ_Version_at_row, TestReportOption.Speaker_AQ_Version_at_col, header.Speaker_AQ_Version);
                 }
 
                 //@"Update_SW_PQ_Version",                    @"true",
-                if (KeywordReport.DefaultKeywordReportHeader.Update_SW_PQ_Version)
+                if (TestReport.Option.Update_SW_PQ_Version)
                 {
                     ExcelAction.SetCellValue(report_worksheet, TestReportOption.SW_PQ_Version_at_row, TestReportOption.SW_PQ_Version_at_col, header.SW_PQ_Version);
                 }
 
                 //@"Update_Test_Stage",                       @"true",
-                if (KeywordReport.DefaultKeywordReportHeader.Update_Test_Stage)
+                if (TestReport.Option.Update_Test_Stage)
                 {
                     ExcelAction.SetCellValue(report_worksheet, TestReportOption.Test_Stage_at_row, TestReportOption.Test_Stage_at_col, header.Test_Stage);
                 }
 
                 //@"Update_Test_QTY_SN",                      @"true",
-                if (KeywordReport.DefaultKeywordReportHeader.Update_Test_QTY_SN)
+                if (TestReport.Option.Update_Test_QTY_SN)
                 {
                     ExcelAction.SetCellValue(report_worksheet, TestReportOption.Test_QTY_SN_at_row, TestReportOption.Test_QTY_SN_at_col, header.Test_QTY_SN);
                 }
 
                 //@"Update_Test_Period_Begin",                @"true",
-                if (KeywordReport.DefaultKeywordReportHeader.Update_Test_Period_Begin)
+                if (TestReport.Option.Update_Test_Period_Begin)
                 {
                     ExcelAction.SetCellValue(report_worksheet, TestReportOption.Test_Period_Begin_at_row, TestReportOption.Test_Period_Begin_at_col, header.Test_Period_Begin);
                 }
 
                 //@"Update_Test_Period_End",                  @"true",
-                if (KeywordReport.DefaultKeywordReportHeader.Update_Test_Period_End)
+                if (TestReport.Option.Update_Test_Period_End)
                 {
                     ExcelAction.SetCellValue(report_worksheet, TestReportOption.Test_Period_End_at_row, TestReportOption.Test_Period_End_at_col, header.Test_Period_End);
                 }
 
                 //@"Update_Judgement",                        @"true",
-                if (KeywordReport.DefaultKeywordReportHeader.Update_Judgement)
+                if (TestReport.Option.Update_Judgement)
                 {
                     ExcelAction.SetCellValue(report_worksheet, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col, header.Judgement);
                 }
 
                 //@"Update_Tested_by",                        @"true",
-                if (KeywordReport.DefaultKeywordReportHeader.Update_Tested_by)
+                if (TestReport.Option.Update_Tested_by)
                 {
                     ExcelAction.SetCellValue(report_worksheet, TestReportOption.Tested_by_at_row, TestReportOption.Tested_by_at_col, header.Tested_by);
                 }
 
                 //@"Update_Approved_by",                      @"true",
-                if (KeywordReport.DefaultKeywordReportHeader.Update_Approved_by)
+                if (TestReport.Option.Update_Approved_by)
                 {
                     ExcelAction.SetCellValue(report_worksheet, TestReportOption.Approved_by_at_row, TestReportOption.Approved_by_at_col, header.Approved_by);
                 }
@@ -2691,7 +2691,7 @@ namespace ExcelReportApplication
 
         static public Boolean UpdateSampleSN_to_common_string(Worksheet ws)
         {
-            Boolean b_ret = UpdateSampleSN(ws, DefaultKeywordReportHeader.SampleSN_String);
+            Boolean b_ret = UpdateSampleSN(ws, Option.SampleSN_String);
             return b_ret;
         }
 
@@ -2740,7 +2740,7 @@ namespace ExcelReportApplication
                 //int SN__FontSize = XMLConfig.ReadAppSetting_int("SampleSN_String_FontSize");
                 //Color SN_FontColor = XMLConfig.ReadAppSetting_Color("SampleSN_String_FontColor");
                 //FontStyle SN_FontStyle = XMLConfig.ReadAppSetting_FontStyle("SampleSN_String_FontStyle");
-                StyleString style_string_new_sample_sn = new StyleString(new_sample_sn, DefaultKeywordReportHeader.SN_FontColor, DefaultKeywordReportHeader.SN_Font, DefaultKeywordReportHeader.SN_FontSize, DefaultKeywordReportHeader.SN_FontStyle);
+                StyleString style_string_new_sample_sn = new StyleString(new_sample_sn, Option.SN_FontColor, Option.SN_Font, Option.SN_FontSize, Option.SN_FontStyle);
                 StyleString.WriteStyleString(ws, SN_row, SN_number_col, style_string_new_sample_sn.ConvertToList());
 
                 ExcelAction.Merge(ws, SN_row, col_start, SN_row, col_end);
@@ -2817,8 +2817,8 @@ namespace ExcelReportApplication
             Boolean b_ret = false;
 
             String sheet_name = worksheet.Name;
-            String judgement_str = KeywordReport.TestReport_Default_Judgement; 
-            StyleString default_conclusion = new StyleString( KeywordReport.TestReport_Default_Conclusion, ReportGenerator.LinkIssue_report_FontColor, 
+            String judgement_str = TestReport.TestReport_Default_Judgement; 
+            StyleString default_conclusion = new StyleString( TestReport.TestReport_Default_Conclusion, ReportGenerator.LinkIssue_report_FontColor, 
                             ReportGenerator.LinkIssue_report_Font, ReportGenerator.LinkIssue_report_FontSize);
             List<StyleString> linked_issue_description_on_this_report = default_conclusion.ConvertToList();      
 
@@ -3052,7 +3052,7 @@ namespace ExcelReportApplication
 
 
             // Output updated report with recommended sheetname.
-            if (KeywordReport.KeywordIssue_Auto_Correct_Sheetname == true)
+            if (TestReport.KeywordIssue_Auto_Correct_Sheetname == true)
             {
                 String dest_dir = Storage.GenerateDirectoryNameWithDateTime(report_root_dir);
                 // ReportGenerator.excel_not_report_log
@@ -3143,7 +3143,7 @@ namespace ExcelReportApplication
 
             // If valid sheet_name does not exist, use first worksheet .
             String current_sheet_name = TestPlan.GetSheetNameAccordingToFilename(source_file);
-            KeywordReport.DefaultKeywordReportHeader.Report_SheetName = current_sheet_name;
+            TestReport.Option.Report_SheetName = current_sheet_name;
             Worksheet ws;
             if (ExcelAction.WorksheetExist(wb, current_sheet_name) == false)
             {
@@ -3155,16 +3155,16 @@ namespace ExcelReportApplication
             }
 
             // Update sheetname (when the option is true)
-            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname)
+            if (TestReport.Option.Report_C_Update_Report_Sheetname)
             {
                 String new_sheet_name = TestPlan.GetSheetNameAccordingToFilename(destination_file);
                 ws.Name = new_sheet_name;
-                KeywordReport.DefaultKeywordReportHeader.Report_SheetName = new_sheet_name;
+                TestReport.Option.Report_SheetName = new_sheet_name;
                 file_has_been_updated = true;
             }
 
             //Report_C_Update_Header_by_Template
-            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template == true)
+            if (TestReport.Option.Report_C_Update_Header_by_Template == true)
             {
                 if (ExcelAction.WorksheetExist(wb_template, HeaderTemplate.SheetName_HeaderTemplate))
                 {
@@ -3177,10 +3177,10 @@ namespace ExcelReportApplication
                 }
 
                 //Report_C_Replace_Conclusion
-                if (KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion == true)
+                if (TestReport.Option.Report_C_Replace_Conclusion == true)
                 {
                     //StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
-                    KeywordReport.ReplaceConclusionWithBugList(ws, TestReportOption.blank_space_list);
+                    TestReport.ReplaceConclusionWithBugList(ws, TestReportOption.blank_space_list);
                     file_has_been_updated = true;
                 }
 
@@ -3188,60 +3188,60 @@ namespace ExcelReportApplication
             else
             {
                 // Update header (when the option is true)
-                if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header == true)
+                if (TestReport.Option.Report_C_Update_Full_Header == true)
                 {
                     String new_title = TestPlan.GetReportTitleAccordingToFilename(destination_file);
-                    KeywordReport.DefaultKeywordReportHeader.Report_Title = new_title;
+                    TestReport.Option.Report_Title = new_title;
                     // sheet-name is not defined as part of header --> it should be part of excel report (eg. filename, sheetname)
                     //KeywordReport.DefaultKeywordReportHeader.Report_SheetName = new_sheet_name;
-                    KeywordReport.UpdateKeywordReportHeader_full(ws, KeywordReport.DefaultKeywordReportHeader);
+                    TestReport.UpdateKeywordReportHeader_full(ws, TestReport.Option);
                     file_has_been_updated = true;
                 }
 
                 //Report_C_Replace_Conclusion
-                if (KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion == true)
+                if (TestReport.Option.Report_C_Replace_Conclusion == true)
                 {
                     //StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
-                    KeywordReport.ReplaceConclusionWithBugList(ws, TestReportOption.blank_space_list);
+                    TestReport.ReplaceConclusionWithBugList(ws, TestReportOption.blank_space_list);
                     file_has_been_updated = true;
                 }
 
                 // Clear bug-list, bug-count, Pass/Fail/Conditional_Pass count, judgement
-                if (KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result)
+                if (TestReport.Option.Report_C_Clear_Keyword_Result)
                 {
-                    KeywordReport.ClearKeywordBugResult(source_file, ws);
-                    KeywordReport.ClearReportBugCount(ws);
-                    KeywordReport.ClearJudgement(ws);
+                    TestReport.ClearKeywordBugResult(source_file, ws);
+                    TestReport.ClearReportBugCount(ws);
+                    TestReport.ClearJudgement(ws);
                     file_has_been_updated = true;
                 }
             }
 
             // Hide keyword result/bug-list row -- after clear because it is un-hide after clear
-            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row)
+            if (TestReport.Option.Report_C_Hide_Keyword_Result_Bug_Row)
             {
-                KeywordReport.HideKeywordResultBugRow(source_file, ws);
+                TestReport.HideKeywordResultBugRow(source_file, ws);
                 file_has_been_updated = true;
             }
 
-            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion)
+            if (TestReport.Option.Report_C_Update_Conclusion)
             {
-                KeywordReport.Update_Conclusion_only_by_linked_issue(ws);
+                TestReport.Update_Conclusion_only_by_linked_issue(ws);
                 file_has_been_updated = true;
             }
 
-            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement)
+            if (TestReport.Option.Report_C_Update_Judgement)
             {
-                KeywordReport.Update_Judgement_only_by_linked_issue(ws);
+                TestReport.Update_Judgement_only_by_linked_issue(ws);
                 file_has_been_updated = true;
             }
 
-            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN)
+            if (TestReport.Option.Report_C_Update_Sample_SN)
             {
-                KeywordReport.UpdateSampleSN_to_common_string(ws);
+                TestReport.UpdateSampleSN_to_common_string(ws);
                 file_has_been_updated = true;
             }
 
-            if (KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal)
+            if (TestReport.Option.Report_C_Remove_AUO_Internal)
             {
                 // step 1: remove sheets which are not to be released
                 String sheet_name_to_keep = ws.Name;
@@ -3263,17 +3263,17 @@ namespace ExcelReportApplication
                     }
                 }
                 // step 2: remove contents on the sheet which are not to be released
-                if (KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal_remove_Method)
+                if (TestReport.Option.Report_C_Remove_AUO_Internal_remove_Method)
                 {
 
                     //CheckIfStringMeetsMethod
-                    int search_start_row = KeywordReport.row_test_brief_start, search_end_row = KeywordReport.row_test_brief_end;
+                    int search_start_row = TestReport.row_test_brief_start, search_end_row = TestReport.row_test_brief_end;
                     for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
                     {
-                        String text = ExcelAction.GetCellTrimmedString(wb.Sheets[1], row_index, KeywordReport.col_indentifier);
-                        if (KeywordReport.CheckIfStringMeetsMethod(text))
+                        String text = ExcelAction.GetCellTrimmedString(wb.Sheets[1], row_index, TestReport.col_indentifier);
+                        if (TestReport.CheckIfStringMeetsMethod(text))
                         {
-                            ExcelAction.ClearContent(wb.Sheets[1], row_index, 1, row_index + 1, KeywordReport.col_default_report_right_border);
+                            ExcelAction.ClearContent(wb.Sheets[1], row_index, 1, row_index + 1, TestReport.col_default_report_right_border);
                             double new_row_height = 0.2;
                             ExcelAction.Set_Row_Height(wb.Sheets[1], row_index, new_row_height);
                             ExcelAction.Set_Row_Height(wb.Sheets[1], row_index + 1, new_row_height);
@@ -3316,7 +3316,7 @@ namespace ExcelReportApplication
 
             foreach (String source_report in report_filename)
             {
-                String dest_filename = KeywordReport.DecideDestinationFilename(report_root, Output_dir, source_report); // replace folder name
+                String dest_filename = TestReport.DecideDestinationFilename(report_root, Output_dir, source_report); // replace folder name
                 b_ret |= AutoCorrectReport_SingleFile(source_file: source_report, destination_file: dest_filename, wb_template: new Workbook(), always_save: true);
             }
 

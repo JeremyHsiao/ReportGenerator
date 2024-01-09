@@ -205,7 +205,7 @@ namespace ExcelReportApplication
             output_keyword_list_table.Add(row_list);
 
             // list keyword string of all duplicated keyword
-            List<String> duplicate_keyword_str_list = KeywordReport.ListDuplicatedKeywordString(keyword_list);
+            List<String> duplicate_keyword_str_list = TestReport.ListDuplicatedKeywordString(keyword_list);
 
             foreach (TestPlanKeyword keyword_data in keyword_list)
             {

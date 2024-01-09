@@ -513,7 +513,7 @@ Returns or sets the type of underline applied to the font.
                     str = key + issue.Summary + "(" + issue.Severity + ")";
                     if (is_waived)
                     {
-                        str += "(" + KeywordReport.WAIVED_str + ")";
+                        str += "(" + TestReport.WAIVED_str + ")";
                     }
                     StyleString style_str = new StyleString(str, color_by_severity, Issue.KeywordIssue_report_Font,
                                                 Issue.KeywordIssue_report_FontSize, Issue.KeywordIssue_report_FontStyle);
@@ -664,7 +664,7 @@ Returns or sets the type of underline applied to the font.
                 str = key + issue.Summary + "(" + issue.Severity + ")";
                 if (is_waived)
                 {
-                    str += "(" + KeywordReport.WAIVED_str + ")";
+                    str += "(" + TestReport.WAIVED_str + ")";
                 }
                 StyleString style_str = new StyleString(str, color_by_severity, ReportGenerator.LinkIssue_report_Font,
                                             ReportGenerator.LinkIssue_report_FontSize, ReportGenerator.LinkIssue_report_FontStyle);
