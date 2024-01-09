@@ -7,7 +7,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace ExcelReportApplication
 {
-    class TestReportHeader
+    class StandardTestReportHeader
     {
         private String title;
         private String model_name;
@@ -21,7 +21,7 @@ namespace ExcelReportApplication
         private String judgement;
     }
 
-    public enum Header_Update
+    public enum StandardTestREportHeader_Update
     {
         Title = 1 << 0,
         Judgement = 1 << 1,
@@ -31,7 +31,7 @@ namespace ExcelReportApplication
         By_Template = 1 << 31,
     }
 
-    class TestReport
+    class StandareTestReport
     {
         static List<TestPlan> global_tp = new List<TestPlan>();
         static public string SheetName_TestPlan = "Test Plan";
