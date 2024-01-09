@@ -1418,17 +1418,7 @@ namespace ExcelReportApplication
 
         static private void Report_A_Push_Option()
         {
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN);
+            Push_Option_All();
             KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = false;
             KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = false;
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = false;
@@ -1444,33 +1434,12 @@ namespace ExcelReportApplication
 
         static private void Report_A_Pop_Option()
         {
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = temp_option_stack.Pop();
-            KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = temp_option_stack.Pop();
+            Pop_Option_All();
         }
 
         static private void Report_E_Push_Option()
         {
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal_remove_Method);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement);
-            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN);
+            Push_Option_All();
             KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = false;
             KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal = true;
             KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal_remove_Method = false;  // For TP
@@ -1486,6 +1455,38 @@ namespace ExcelReportApplication
         }
 
         static private void Report_E_Pop_Option()
+        {
+            Pop_Option_All();
+        }
+
+        static private void Report_D_Push_Option()
+        {
+            Push_Option_All();
+            KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = true;
+        }
+
+        static private void Report_D_Pop_Option()
+        {
+            Pop_Option_All();
+        }
+
+        static private void Push_Option_All()
+        {
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Remove_AUO_Internal_remove_Method);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Hide_Keyword_Result_Bug_Row);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Replace_Conclusion);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Full_Header);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Header_by_Template);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement);
+            temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN);
+        }
+
+        static private void Pop_Option_All()
         {
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN = temp_option_stack.Pop();
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement = temp_option_stack.Pop();
@@ -1623,10 +1624,9 @@ namespace ExcelReportApplication
                     case ReportType.CopyReportOnly:                                             // Report D
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
                         // copy files only
-                        temp_option_stack.Push(KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly);
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = true;
+                        Report_D_Push_Option();
                         bRet = Execute_AutoCorrectTestReportByExcel_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
-                        KeywordReport.DefaultKeywordReportHeader.Report_C_CopyFileOnly = temp_option_stack.Pop();
+                        Report_D_Pop_Option();
                         break;
                     case ReportType.RemoveInternalSheet:                                        // Report E
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
