@@ -275,6 +275,8 @@ namespace ExcelReportApplication
     public class TestReportBooleanOption
     {
         public Boolean CopyFileOnly = false;
+        public Boolean Report_C_Copy_Worksheet_AtTheBeginning = false;
+        public Boolean Report_C_Copy_Worksheet_AtTheEnd = false;
         public Boolean Remove_AUO_Internal = false;
         public Boolean Remove_AUO_Internal_remove_Method = false;
         public Boolean Replace_Conclusion = false;
@@ -292,6 +294,8 @@ namespace ExcelReportApplication
     public class TestReportOption
     {
         public Boolean Report_C_CopyFileOnly = false;
+        public Boolean Report_C_Copy_Worksheet_AtTheBeginning = false;
+        public Boolean Report_C_Copy_Worksheet_AtTheEnd = false;
         public Boolean Report_C_Remove_AUO_Internal = false;
         public Boolean Report_C_Remove_AUO_Internal_remove_Method = false; 
         public Boolean Report_C_Replace_Conclusion = false;

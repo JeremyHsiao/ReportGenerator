@@ -639,6 +639,8 @@ namespace ExcelReportApplication
 
             // config for report C
             TestReport.Option.Report_C_CopyFileOnly = XMLConfig.ReadAppSetting_Boolean("Report_C_CopyFileOnly");
+            TestReport.Option.Report_C_Copy_Worksheet_AtTheBeginning = XMLConfig.ReadAppSetting_Boolean("Report_C_Copy_Worksheet_AtTheBeginning");
+            TestReport.Option.Report_C_Copy_Worksheet_AtTheEnd = XMLConfig.ReadAppSetting_Boolean("Report_C_Copy_Worksheet_AtTheEnd");
             TestReport.Option.Report_C_Remove_AUO_Internal = XMLConfig.ReadAppSetting_Boolean("Report_C_Remove_AUO_Internal");
             TestReport.Option.Report_C_Remove_AUO_Internal_remove_Method = XMLConfig.ReadAppSetting_Boolean("Report_C_Remove_AUO_Internal_remove_Method");  
             TestReport.Option.Report_C_Update_Full_Header = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Full_Header");
@@ -1429,6 +1431,8 @@ namespace ExcelReportApplication
         {
             Push_Option_All();
             TestReport.Option.Report_C_CopyFileOnly = false;
+            TestReport.Option.Report_C_Copy_Worksheet_AtTheBeginning = false;
+            TestReport.Option.Report_C_Copy_Worksheet_AtTheEnd = false;
             TestReport.Option.Report_C_Remove_AUO_Internal = false;
             TestReport.Option.Report_C_Update_Report_Sheetname = false;
             TestReport.Option.Report_C_Clear_Keyword_Result = true;
@@ -1450,6 +1454,8 @@ namespace ExcelReportApplication
         {
             Push_Option_All();
             TestReport.Option.Report_C_CopyFileOnly = false;
+            TestReport.Option.Report_C_Copy_Worksheet_AtTheBeginning = false;
+            TestReport.Option.Report_C_Copy_Worksheet_AtTheEnd = false;
             TestReport.Option.Report_C_Remove_AUO_Internal = true;
             TestReport.Option.Report_C_Remove_AUO_Internal_remove_Method = false;  // For TP
             TestReport.Option.Report_C_Update_Report_Sheetname = false;
@@ -1482,6 +1488,8 @@ namespace ExcelReportApplication
         static private void Push_Option_All()
         {
             temp_option_stack.Push(TestReport.Option.Report_C_CopyFileOnly);
+            temp_option_stack.Push(TestReport.Option.Report_C_Copy_Worksheet_AtTheBeginning);
+            temp_option_stack.Push(TestReport.Option.Report_C_Copy_Worksheet_AtTheEnd);
             temp_option_stack.Push(TestReport.Option.Report_C_Remove_AUO_Internal);
             temp_option_stack.Push(TestReport.Option.Report_C_Remove_AUO_Internal_remove_Method);
             temp_option_stack.Push(TestReport.Option.Report_C_Update_Report_Sheetname);
@@ -1508,6 +1516,8 @@ namespace ExcelReportApplication
             TestReport.Option.Report_C_Update_Report_Sheetname = temp_option_stack.Pop();
             TestReport.Option.Report_C_Remove_AUO_Internal_remove_Method = temp_option_stack.Pop(); // 
             TestReport.Option.Report_C_Remove_AUO_Internal = temp_option_stack.Pop();
+            TestReport.Option.Report_C_Copy_Worksheet_AtTheEnd = temp_option_stack.Pop();
+            TestReport.Option.Report_C_Copy_Worksheet_AtTheBeginning = temp_option_stack.Pop();
             TestReport.Option.Report_C_CopyFileOnly = temp_option_stack.Pop();
         }
 

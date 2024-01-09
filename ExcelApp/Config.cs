@@ -28,6 +28,8 @@ namespace ExcelReportApplication
             @"InputExcel_Sheetname_Bug",                @"Bug",
             @"InputExcel_Sheetname_TestCase",           @"TestCase",
             @"Report_C_CopyFileOnly",                   @"false",
+            @"Report_C_Copy_Worksheet_AtTheBeginning",  @"false",
+            @"Report_C_Copy_Worksheet_AtTheEnd",        @"false",
             @"Report_C_Remove_AUO_Internal",            @"false",
             @"Report_C_Update_Report_Sheetname",        @"true",
             @"Report_C_Clear_Keyword_Result",           @"false",
