@@ -646,7 +646,12 @@ namespace ExcelReportApplication
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Conclusion");
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Judgement");
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Sample_SN");
+
             KeywordReport.DefaultKeywordReportHeader.SampleSN_String = XMLConfig.ReadAppSetting_String("SampleSN_String");
+            KeywordReport.DefaultKeywordReportHeader.SN_Font = XMLConfig.ReadAppSetting_String("SampleSN_String");
+            KeywordReport.DefaultKeywordReportHeader.SN_FontSize = XMLConfig.ReadAppSetting_int("SampleSN_String_FontSize");
+            KeywordReport.DefaultKeywordReportHeader.SN_FontColor = XMLConfig.ReadAppSetting_Color("SampleSN_String_FontColor");
+            KeywordReport.DefaultKeywordReportHeader.SN_FontStyle = XMLConfig.ReadAppSetting_FontStyle("SampleSN_String_FontStyle");
 
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Report_Sheetname");
             KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = XMLConfig.ReadAppSetting_Boolean("Report_C_Clear_Keyword_Result");
