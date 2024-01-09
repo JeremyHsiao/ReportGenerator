@@ -285,7 +285,7 @@ namespace ExcelReportApplication
         public Boolean Report_C_Update_Conclusion = false;
         public Boolean Report_C_Update_Judgement = false;
         public Boolean Report_C_Update_Sample_SN = false;
-        public String Report_C_SampleSN_String = "Refer to DUT_Allocation_Matrix table";
+        public String SampleSN_String = "Refer to DUT_Allocation_Matrix table";
         // Lagacy options - BEGIN
         public Boolean Report_C_Update_Full_Header = false;
         public String Report_Title = "Report_Name";
@@ -2668,7 +2668,7 @@ namespace ExcelReportApplication
 
         static public Boolean UpdateSampleSN_to_common_string(Worksheet ws)
         {
-            Boolean b_ret = UpdateSampleSN(ws, KeywordReport.DefaultKeywordReportHeader.Report_C_SampleSN_String);
+            Boolean b_ret = UpdateSampleSN(ws, KeywordReport.DefaultKeywordReportHeader.SampleSN_String);
             return b_ret;
         }
 
@@ -2713,10 +2713,10 @@ namespace ExcelReportApplication
                 ExcelAction.CellTextAlignLeft(ws, SN_row, SN_number_col);
                 
                 //ExcelAction.SetCellValue(ws, SN_row, SN_number_col, new_sample_sn);
-                String SN_Font = XMLConfig.ReadAppSetting_String("Report_C_SampleSN_String_Font");
-                int SN__FontSize = XMLConfig.ReadAppSetting_int("Report_C_SampleSN_String_FontSize");
-                Color SN_FontColor = XMLConfig.ReadAppSetting_Color("Report_C_SampleSN_String_FontColor");
-                FontStyle SN_FontStyle = XMLConfig.ReadAppSetting_FontStyle("Report_C_SampleSN_String_FontStyle");
+                String SN_Font = XMLConfig.ReadAppSetting_String("SampleSN_String_Font");
+                int SN__FontSize = XMLConfig.ReadAppSetting_int("SampleSN_String_FontSize");
+                Color SN_FontColor = XMLConfig.ReadAppSetting_Color("SampleSN_String_FontColor");
+                FontStyle SN_FontStyle = XMLConfig.ReadAppSetting_FontStyle("SampleSN_String_FontStyle");
                 StyleString style_string_new_sample_sn = new StyleString(new_sample_sn, SN_FontColor, SN_Font, SN__FontSize);
                 StyleString.WriteStyleString(ws, SN_row, SN_number_col, style_string_new_sample_sn.ConvertToList());
 

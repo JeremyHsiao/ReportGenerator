@@ -646,7 +646,7 @@ namespace ExcelReportApplication
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Conclusion");
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Judgement");
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Sample_SN = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Sample_SN");
-            KeywordReport.DefaultKeywordReportHeader.Report_C_SampleSN_String = XMLConfig.ReadAppSetting_String("Report_C_SampleSN_String");
+            KeywordReport.DefaultKeywordReportHeader.SampleSN_String = XMLConfig.ReadAppSetting_String("SampleSN_String");
 
             KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Report_Sheetname = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Report_Sheetname");
             KeywordReport.DefaultKeywordReportHeader.Report_C_Clear_Keyword_Result = XMLConfig.ReadAppSetting_Boolean("Report_C_Clear_Keyword_Result");

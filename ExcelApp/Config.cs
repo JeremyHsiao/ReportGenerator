@@ -37,7 +37,12 @@ namespace ExcelReportApplication
             @"Report_C_Update_Conclusion",              @"false",
             @"Report_C_Update_Judgement",               @"false",
             @"Report_C_Update_Sample_SN",               @"false", 
-            @"Report_C_SampleSN_String",                @"Refer to DUT_Allocation_Matrix table",
+            @"SampleSN_String",                         @"Refer to DUT_Allocation_Matrix table",
+            @"SampleSN_String_FontSize",                @"12",
+            @"SampleSN_String_FontColor",               @"Black",
+            @"SampleSN_String_FontStyle",               @"Regular",
+            @"SampleSN_String_Font",                    @"Gill Sans MT",
+
             // lagacy options - BEGIN
             @"Report_C_Update_Full_Header",             @"false",
             @"Update_Report_Title_by_Sheetname",        @"false",
