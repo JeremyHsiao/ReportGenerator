@@ -33,7 +33,7 @@ namespace ExcelReportApplication
             Excel_Sheet_Name_Update_Tool,
             FullIssueDescription_TC_report_judgement,       // Report 9 -- Update TC linked issue, according to reports, update Test Purpose, Test Criteria and Testcase Status.
             CreateCSTReport,                                // Report A -- Create CST
-            TC_AutoCorrectReport_By_Filename,
+            FinalCSTReport,                                 // Report B -- Create CST + update linked issue & judgement + copy worksheet at beginning/ending (options)
             ConfigurableReportUpdate,                       // Report C
             CopyReportOnly,                                 // Report D -- copy only version of report C
             RemoveInternalSheet,                            // Report E -- remove internalsheet version of report C
@@ -58,7 +58,7 @@ namespace ExcelReportApplication
             //ReportType.Excel_Sheet_Name_Update_Tool,
             ReportType.FullIssueDescription_TC_report_judgement,    // report 9
             ReportType.CreateCSTReport,                             // report A
-            //ReportType.TC_AutoCorrectReport_By_Filename,
+            ReportType.FinalCSTReport,                              // Report B -- Create CST + update linked issue & judgement + copy worksheet at beginning/ending (options)
             ReportType.ConfigurableReportUpdate, 
             ReportType.CopyReportOnly,
             ReportType.RemoveInternalSheet, 
@@ -75,16 +75,16 @@ namespace ExcelReportApplication
         //{
         //    ReportType.FullIssueDescription_TC,
         //    ReportType.FullIssueDescription_Summary,
-        //    ReportType.StandardTestReportCreation,
+        //    ReportType.CreateImportToJiraCSV,
         //    ReportType.KeywordIssue_Report_SingleFile,
         //    ReportType.TC_Likely_Passed,
         //    ReportType.FindAllKeywordInReport,
         //    ReportType.KeywordIssue_Report_Directory,
         //    ReportType.Excel_Sheet_Name_Update_Tool,
         //    ReportType.FullIssueDescription_TC_report_judgement,
-        //    ReportType.TC_TestReportCreation,
-        //    ReportType.TC_AutoCorrectReport_By_Filename,
-        //    ReportType.ReportUpdate_FullFunction,
+        //    ReportType.CreateCSTReport,
+        //    ReportType.FinalCSTReport,
+        //    ReportType.ConfigurableReportUpdate,
         //    ReportType.CopyReportOnly,
         //    ReportType.RemoveInternalSheet, 
         //    ReportType.TC_GroupSummaryReport,
@@ -93,6 +93,7 @@ namespace ExcelReportApplication
         //    ReportType.Man_Power_Processing,
         //    ReportType.Update_Repoart_A_then_Report_H,
         //    ReportType.Update_Report_Linked_Issue_and_TC_Report,
+        //    ReportType.Update_Repoart_A_then_Report_K,
         //};
 
         public static int ReportTypeCount = Enum.GetNames(typeof(ReportType)).Length;
@@ -129,7 +130,7 @@ namespace ExcelReportApplication
             "8.Excel sheet name update tool",
             "9.TC issue/judgement",
             "A.Create CST Report",
-            "B.Auto-correct report header",
+            "B.Create CST Report and update conclusion",
             "C.Configurable Report Processor",
             "D.Copy Report Only",
             "E.Remove Internal Sheets from Report",
@@ -1198,6 +1199,7 @@ namespace ExcelReportApplication
             return true;
         }
 
+        /*
         private bool Execute_AutoCorrectTestReportByFilename_Task(String report_root)
         {
             if (!Storage.DirectoryExists(report_root))
@@ -1210,6 +1212,7 @@ namespace ExcelReportApplication
 
             return true;
         }
+*/
 
         private bool ConfigurableReportUpdate_Task(String excel_input_file)
         {
@@ -1607,19 +1610,40 @@ namespace ExcelReportApplication
                         }
                         break;
                     case ReportType.CreateCSTReport:                                    // Report A
-
-                        // update judgement and header
-                        // to-be-implemented
-
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
-                        // to-be-updated
                         Report_A_Push_Option();
                         bRet = ConfigurableReportUpdate_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
                         Report_A_Pop_Option();
                         break;
-                    case ReportType.TC_AutoCorrectReport_By_Filename:
-                        if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;  // Directory path here
-                        bRet = Execute_AutoCorrectTestReportByFilename_Task(report_root: Storage.GetFullPath(txtReportFile.Text));
+                    case ReportType.FinalCSTReport:                                     // Report B
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
+                        Report_A_Push_Option();
+                        bRet = ConfigurableReportUpdate_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
+                        Report_A_Pop_Option();
+
+                        // new version to be checked
+                        //if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
+                        //if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
+                        //if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
+                        //if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;
+                        //if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
+                        //{
+                        //    MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
+                        //    bRet = false;
+                        //}
+                        //else
+                        //{
+                        //    String report_j_input_excel_selected = txtReportFile.Text;
+                        //    String report_j_copied_report_root_path = "";
+                        //    List<String> report_list_report_j;
+                        //    Report_A_Push_Option();
+                        //    KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion = false;  // override report A option for new version
+                        //    KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement = false;  // override report A option for new version
+                        //    bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(report_j_input_excel_selected, out report_list_report_j, out report_j_copied_report_root_path);
+                        //    Report_A_Pop_Option();
+                        //    bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_list: report_list_report_j);
+                        //}
+                        
                         break;
                     case ReportType.ConfigurableReportUpdate:                          // Report C
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
@@ -1953,11 +1977,11 @@ namespace ExcelReportApplication
                     SetEnable_ReportFile(false);
                     SetEnable_OutputTemplate(true);
                     break;
-                case ReportType.TC_AutoCorrectReport_By_Filename:
+                case ReportType.FinalCSTReport:
                     SetEnable_BugFile(false);
                     SetEnable_TCFile(false);
-                    SetEnable_ReportFile(true);
-                    SetEnable_OutputTemplate(false);
+                    SetEnable_ReportFile(false);
+                    SetEnable_OutputTemplate(true);
                     break;
                 case ReportType.ConfigurableReportUpdate:
                     SetEnable_BugFile(false);
@@ -2078,9 +2102,9 @@ namespace ExcelReportApplication
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_A_Default_Excel");
                     break;
-                case ReportType.TC_AutoCorrectReport_By_Filename:
-                    if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                case ReportType.FinalCSTReport:
+                    if (!btnSelectOutputTemplate_Clicked)
+                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_A_Default_Excel");
                     break;
                 case ReportType.ConfigurableReportUpdate:      // Report C
                     if (!btnSelectOutputTemplate_Clicked)

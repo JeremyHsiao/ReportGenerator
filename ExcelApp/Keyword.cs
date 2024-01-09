@@ -3309,6 +3309,7 @@ namespace ExcelReportApplication
             return file_has_been_updated;
         }
 
+        /*
         static public Boolean AutoCorrectReport_by_Folder(String report_root, String Output_dir)
         {
             Boolean b_ret = false;
@@ -3326,6 +3327,7 @@ namespace ExcelReportApplication
 
             return b_ret;
         }
+        */
 
         //static public Boolean AutoCorrectReport(String report_root, String Output_dir = "")
         //{
