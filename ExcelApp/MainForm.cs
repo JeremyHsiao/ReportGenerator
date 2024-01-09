@@ -34,14 +34,14 @@ namespace ExcelReportApplication
             FullIssueDescription_TC_report_judgement,       // Report 9 -- Update TC linked issue, according to reports, update Test Purpose, Test Criteria and Testcase Status.
             CreateCSTReport,                                // Report A -- Create CST
             TC_AutoCorrectReport_By_Filename,
-            TC_AutoCorrectReport_By_ExcelList,              // Report C
+            ConfigurableReportUpdate,                       // Report C
             CopyReportOnly,                                 // Report D -- copy only version of report C
             RemoveInternalSheet,                            // Report E -- remove internalsheet version of report C
             TC_GroupSummaryReport,                          // Report F -- Not used
             Update_Report_Linked_Issue,
             Update_Keyword_and_TC_Report,                   // Report H -- it is report 7 + 9
             Man_Power_Processing,                           // Report I -- man-power
-            Update_Repoart_A_then_Report_H,                 // Report J -- it is report A + Ｈ
+            Update_Repoart_A_then_Report_H,                 // Report J -- it is report A + H
             Update_Report_Linked_Issue_and_TC_Report,       // Report K -- simplified version of report H - no keyword at all, less format update/correction on report 7 + Report 9
             Update_Repoart_A_then_Report_K,                 // Report L -- it is report A + K
         }
@@ -59,7 +59,7 @@ namespace ExcelReportApplication
             ReportType.FullIssueDescription_TC_report_judgement,    // report 9
             ReportType.CreateCSTReport,                             // report A
             //ReportType.TC_AutoCorrectReport_By_Filename,
-            ReportType.TC_AutoCorrectReport_By_ExcelList, 
+            ReportType.ConfigurableReportUpdate, 
             ReportType.CopyReportOnly,
             ReportType.RemoveInternalSheet, 
             //ReportType.TC_GroupSummaryReport,
@@ -84,7 +84,7 @@ namespace ExcelReportApplication
         //    ReportType.FullIssueDescription_TC_report_judgement,
         //    ReportType.TC_TestReportCreation,
         //    ReportType.TC_AutoCorrectReport_By_Filename,
-        //    ReportType.TC_AutoCorrectReport_By_ExcelList,
+        //    ReportType.ReportUpdate_FullFunction,
         //    ReportType.CopyReportOnly,
         //    ReportType.RemoveInternalSheet, 
         //    ReportType.TC_GroupSummaryReport,
@@ -130,7 +130,7 @@ namespace ExcelReportApplication
             "9.TC issue/judgement",
             "A.Create CST Report",
             "B.Auto-correct report header",
-            "C.Create New Model Report",
+            "C.Configurable Report Processor",
             "D.Copy Report Only",
             "E.Remove Internal Sheets from Report",
             "F.Update Test Group Summary Report",
@@ -227,9 +227,9 @@ namespace ExcelReportApplication
             // "C.Create New Model Report",
             new String[] 
             {
-                "Create New Model Report", 
+                "Configurable Report Function", 
                 "Input:",  "  Input excel file",
-                "Output:", "  Reports copied and renamed (filename / worksheet name) according to input excel file",
+                "Output:", "  Reports copied and renamed (filename / worksheet name) and contents are updated according to input excel file and option/template",
             },
             // "D.Copy Report Only",
             new String[] 
@@ -1211,7 +1211,7 @@ namespace ExcelReportApplication
             return true;
         }
 
-        private bool Execute_AutoCorrectTestReportByExcel_Task(String excel_input_file)
+        private bool ConfigurableReportUpdate_Task(String excel_input_file)
         {
             if (!Storage.FileExists(excel_input_file))
             {
@@ -1614,30 +1614,30 @@ namespace ExcelReportApplication
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
                         // to-be-updated
                         Report_A_Push_Option();
-                        bRet = Execute_AutoCorrectTestReportByExcel_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
+                        bRet = ConfigurableReportUpdate_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
                         Report_A_Pop_Option();
                         break;
                     case ReportType.TC_AutoCorrectReport_By_Filename:
                         if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;  // Directory path here
                         bRet = Execute_AutoCorrectTestReportByFilename_Task(report_root: Storage.GetFullPath(txtReportFile.Text));
                         break;
-                    case ReportType.TC_AutoCorrectReport_By_ExcelList:                          // Report C
+                    case ReportType.ConfigurableReportUpdate:                          // Report C
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
                         // to-be-updated
-                        bRet = Execute_AutoCorrectTestReportByExcel_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
+                        bRet = ConfigurableReportUpdate_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
                         break;
                     case ReportType.CopyReportOnly:                                             // Report D
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
                         // copy files only
                         Report_D_Push_Option();
-                        bRet = Execute_AutoCorrectTestReportByExcel_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
+                        bRet = ConfigurableReportUpdate_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
                         Report_D_Pop_Option();
                         break;
                     case ReportType.RemoveInternalSheet:                                        // Report E
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
                         // copy files only
                         Report_E_Push_Option();
-                        bRet = Execute_AutoCorrectTestReportByExcel_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
+                        bRet = ConfigurableReportUpdate_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
                         Report_E_Pop_Option();
                         break;
                     case ReportType.TC_GroupSummaryReport:
@@ -1959,7 +1959,7 @@ namespace ExcelReportApplication
                     SetEnable_ReportFile(true);
                     SetEnable_OutputTemplate(false);
                     break;
-                case ReportType.TC_AutoCorrectReport_By_ExcelList:
+                case ReportType.ConfigurableReportUpdate:
                     SetEnable_BugFile(false);
                     SetEnable_TCFile(false);
                     SetEnable_ReportFile(false);
@@ -2082,7 +2082,7 @@ namespace ExcelReportApplication
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
                     break;
-                case ReportType.TC_AutoCorrectReport_By_ExcelList:      // Report C
+                case ReportType.ConfigurableReportUpdate:      // Report C
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_C_Default_Excel");
                     break;
