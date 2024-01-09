@@ -349,6 +349,13 @@ namespace ExcelReportApplication
         public Boolean Update_Tested_by = true;
         public Boolean Update_Approved_by = true;
         // Lagacy options - END
+    }
+
+    public static class TestReport
+    {
+        static public String TestReport_Default_Output_Dir = "";
+
+        // From TestReportOption - BEGIN
         public static int Title_at_row = 1, Title_at_col = ExcelAction.ColumnNameToNumber('A');
 
         public static int Period_Start_at_row = 8, Period_Start_at_col = ExcelAction.ColumnNameToNumber('L');
@@ -389,11 +396,8 @@ namespace ExcelReportApplication
         private static StyleString blank_space = new StyleString(" ", ReportGenerator.LinkIssue_report_FontColor,
                             ReportGenerator.LinkIssue_report_Font, ReportGenerator.LinkIssue_report_FontSize);
         public static List<StyleString> blank_space_list = blank_space.ConvertToList();
-    }
-
-    public static class TestReport
-    {
-        static public String TestReport_Default_Output_Dir = "";
+        
+        // From TestReportOption - END
 
         public static int col_indentifier = ExcelAction.ColumnNameToNumber('B');
         public static int col_keyword = col_indentifier + 1;
@@ -1656,7 +1660,7 @@ namespace ExcelReportApplication
                     }
                 }
             }
-            judgement_str = ExcelAction.GetCellTrimmedString(result_worksheet, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col);
+            judgement_str = ExcelAction.GetCellTrimmedString(result_worksheet, TestReport.Judgement_at_row, TestReport.Judgement_at_col);
 
             //if (Replace_Conclusion)
             if (true)    // always updating linked issue for non-keyword version of report 
@@ -1958,7 +1962,7 @@ namespace ExcelReportApplication
                         }
                     }
                 }
-                judgement_str = ExcelAction.GetCellTrimmedString(result_worksheet, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col);
+                judgement_str = ExcelAction.GetCellTrimmedString(result_worksheet, TestReport.Judgement_at_row, TestReport.Judgement_at_col);
 
                 if (keyword_lut_by_sheetname.ContainsKey(sheet_name) == true)
                 {
@@ -2129,7 +2133,7 @@ namespace ExcelReportApplication
                     ExcelAction.SetCellValue(result_worksheet, FailCnt_at_row, FailCnt_at_col, fail_count);
                     ExcelAction.SetCellValue(result_worksheet, ConditionalPass_string_at_row, ConditionalPass_string_at_col, CONDITIONAL_PASS_str + ":");
                     ExcelAction.SetCellValue(result_worksheet, ConditionalPassCnt_at_row, ConditionalPassCnt_at_col, conditional_pass_count);
-                    ExcelAction.SetCellValue(result_worksheet, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col, judgement_str);
+                    ExcelAction.SetCellValue(result_worksheet, TestReport.Judgement_at_row, TestReport.Judgement_at_col, judgement_str);
 
                     // End of updating keyword result
                 }
@@ -2314,8 +2318,8 @@ namespace ExcelReportApplication
         static public Boolean ReadKeywordReportHeader_full(Worksheet report_worksheet, out TestReportOption out_header)
         {
             out_header = new TestReportOption();
-            out_header.Report_Title = ExcelAction.GetCellTrimmedString(report_worksheet, TestReportOption.Title_at_row, TestReportOption.Title_at_col);
-            out_header.Model_Name = ExcelAction.GetCellTrimmedString(report_worksheet, TestReportOption.Model_Name_at_row, TestReportOption.Model_Name_at_col);
+            out_header.Report_Title = ExcelAction.GetCellTrimmedString(report_worksheet, TestReport.Title_at_row, TestReport.Title_at_col);
+            out_header.Model_Name = ExcelAction.GetCellTrimmedString(report_worksheet, TestReport.Model_Name_at_row, TestReport.Model_Name_at_col);
             ////@"Update_Part_No",                          @"true",
             //if (KeywordReport.DefaultKeywordReportHeader.Update_Part_No)
             //{
@@ -2423,111 +2427,111 @@ namespace ExcelReportApplication
                 //@"Update_Report_Title_by_Sheetname",        @"true",
                 if (TestReport.Option.Update_Report_Title_by_Sheetname)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Title_at_row, TestReportOption.Title_at_col, header.Report_Title);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Title_at_row, TestReport.Title_at_col, header.Report_Title);
                     ExcelAction.SetFontColorToWhite(report_worksheet, 1, 1, 1, 1);  // A1 only
                 }
 
                 //@"Update_Model_Name",                       @"true",
                 if (TestReport.Option.Update_Model_Name)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Model_Name_at_row, TestReportOption.Model_Name_at_col, header.Model_Name);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Model_Name_at_row, TestReport.Model_Name_at_col, header.Model_Name);
                 }
 
                 //@"Update_Part_No",                          @"true",
                 if (TestReport.Option.Update_Part_No)
                 {
                     String output_part_no = header.Part_No + "-" + header.Report_SheetName;
-                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Part_No_at_row, TestReportOption.Part_No_at_col, output_part_no);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Part_No_at_row, TestReport.Part_No_at_col, output_part_no);
                 }
 
                 //@"Update_Panel_Module",                     @"true",
                 if (TestReport.Option.Update_Panel_Module)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Panel_Module_at_row, TestReportOption.Panel_Module_at_col, header.Panel_Module);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Panel_Module_at_row, TestReport.Panel_Module_at_col, header.Panel_Module);
                 }
 
                 //@"Update_TCON_Board",                       @"true",
                 if (TestReport.Option.Update_TCON_Board)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.TCON_Board_at_row, TestReportOption.TCON_Board_at_col, header.TCON_Board);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.TCON_Board_at_row, TestReport.TCON_Board_at_col, header.TCON_Board);
                 }
 
                 //@"Update_AD_Board",                         @"true",
                 if (TestReport.Option.Update_AD_Board)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.AD_Board_at_row, TestReportOption.AD_Board_at_col, header.AD_Board);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.AD_Board_at_row, TestReport.AD_Board_at_col, header.AD_Board);
                 }
 
                 //@"Update_Power_Board",                      @"true",
                 if (TestReport.Option.Update_Power_Board)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Power_Board_at_row, TestReportOption.Power_Board_at_col, header.Power_Board);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Power_Board_at_row, TestReport.Power_Board_at_col, header.Power_Board);
                 }
 
                 //@"Update_Smart_BD_OS_Version",              @"true",
                 if (TestReport.Option.Update_Smart_BD_OS_Version)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Smart_BD_OS_Version_at_row, TestReportOption.Smart_BD_OS_Version_at_col, header.Smart_BD_OS_Version);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Smart_BD_OS_Version_at_row, TestReport.Smart_BD_OS_Version_at_col, header.Smart_BD_OS_Version);
                 }
 
                 //@"Update_Touch_Sensor",                     @"true",
                 if (TestReport.Option.Update_Touch_Sensor)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Touch_Sensor_at_row, TestReportOption.Touch_Sensor_at_col, header.Touch_Sensor);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Touch_Sensor_at_row, TestReport.Touch_Sensor_at_col, header.Touch_Sensor);
                 }
 
                 //@"Update_Speaker_AQ_Version",               @"true",
                 if (TestReport.Option.Update_Speaker_AQ_Version)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Speaker_AQ_Version_at_row, TestReportOption.Speaker_AQ_Version_at_col, header.Speaker_AQ_Version);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Speaker_AQ_Version_at_row, TestReport.Speaker_AQ_Version_at_col, header.Speaker_AQ_Version);
                 }
 
                 //@"Update_SW_PQ_Version",                    @"true",
                 if (TestReport.Option.Update_SW_PQ_Version)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.SW_PQ_Version_at_row, TestReportOption.SW_PQ_Version_at_col, header.SW_PQ_Version);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.SW_PQ_Version_at_row, TestReport.SW_PQ_Version_at_col, header.SW_PQ_Version);
                 }
 
                 //@"Update_Test_Stage",                       @"true",
                 if (TestReport.Option.Update_Test_Stage)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Test_Stage_at_row, TestReportOption.Test_Stage_at_col, header.Test_Stage);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Test_Stage_at_row, TestReport.Test_Stage_at_col, header.Test_Stage);
                 }
 
                 //@"Update_Test_QTY_SN",                      @"true",
                 if (TestReport.Option.Update_Test_QTY_SN)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Test_QTY_SN_at_row, TestReportOption.Test_QTY_SN_at_col, header.Test_QTY_SN);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Test_QTY_SN_at_row, TestReport.Test_QTY_SN_at_col, header.Test_QTY_SN);
                 }
 
                 //@"Update_Test_Period_Begin",                @"true",
                 if (TestReport.Option.Update_Test_Period_Begin)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Test_Period_Begin_at_row, TestReportOption.Test_Period_Begin_at_col, header.Test_Period_Begin);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Test_Period_Begin_at_row, TestReport.Test_Period_Begin_at_col, header.Test_Period_Begin);
                 }
 
                 //@"Update_Test_Period_End",                  @"true",
                 if (TestReport.Option.Update_Test_Period_End)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Test_Period_End_at_row, TestReportOption.Test_Period_End_at_col, header.Test_Period_End);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Test_Period_End_at_row, TestReport.Test_Period_End_at_col, header.Test_Period_End);
                 }
 
                 //@"Update_Judgement",                        @"true",
                 if (TestReport.Option.Update_Judgement)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col, header.Judgement);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Judgement_at_row, TestReport.Judgement_at_col, header.Judgement);
                 }
 
                 //@"Update_Tested_by",                        @"true",
                 if (TestReport.Option.Update_Tested_by)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Tested_by_at_row, TestReportOption.Tested_by_at_col, header.Tested_by);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Tested_by_at_row, TestReport.Tested_by_at_col, header.Tested_by);
                 }
 
                 //@"Update_Approved_by",                      @"true",
                 if (TestReport.Option.Update_Approved_by)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReportOption.Approved_by_at_row, TestReportOption.Approved_by_at_col, header.Approved_by);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Approved_by_at_row, TestReport.Approved_by_at_col, header.Approved_by);
                 }
 
                 b_ret = true;
@@ -2680,7 +2684,7 @@ namespace ExcelReportApplication
             Boolean b_ret = false;
             try
             {
-                ExcelAction.SetCellValue(ws, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col, " ");
+                ExcelAction.SetCellValue(ws, TestReport.Judgement_at_row, TestReport.Judgement_at_col, " ");
                 b_ret = true;
             }
             catch (Exception ex)
@@ -2770,8 +2774,8 @@ namespace ExcelReportApplication
             b_ret = ReplaceConclusionWithBugList(worksheet, linked_issue_description_on_this_report);
 
             // update judgement
-            ExcelAction.CellActivate(worksheet, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col);
-            ExcelAction.SetCellValue(worksheet, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col, judgement_str);
+            ExcelAction.CellActivate(worksheet, TestReport.Judgement_at_row, TestReport.Judgement_at_col);
+            ExcelAction.SetCellValue(worksheet, TestReport.Judgement_at_row, TestReport.Judgement_at_col, judgement_str);
 
             return b_ret;
         }
@@ -2801,8 +2805,8 @@ namespace ExcelReportApplication
             b_ret = GetSortedFilteredLinkIssueAndJudgementString(worksheet, out linked_issue_description_on_this_report, out judgement_str);
 
             // update judgement
-            ExcelAction.CellActivate(worksheet, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col);
-            ExcelAction.SetCellValue(worksheet, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col, judgement_str);
+            ExcelAction.CellActivate(worksheet, TestReport.Judgement_at_row, TestReport.Judgement_at_col);
+            ExcelAction.SetCellValue(worksheet, TestReport.Judgement_at_row, TestReport.Judgement_at_col, judgement_str);
 
             return b_ret;
         }
@@ -2891,7 +2895,7 @@ namespace ExcelReportApplication
                 else
                 {
                     // 3. Get Judgement value
-                    Object obj = ExcelAction.GetCellValue(ws_judgement, TestReportOption.Judgement_at_row, TestReportOption.Judgement_at_col);
+                    Object obj = ExcelAction.GetCellValue(ws_judgement, TestReport.Judgement_at_row, TestReport.Judgement_at_col);
                     if (obj != null)
                     {
                         judgement_str = (String)obj;
@@ -3180,7 +3184,7 @@ namespace ExcelReportApplication
                 if (TestReport.Option.Report_C_Replace_Conclusion == true)
                 {
                     //StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
-                    TestReport.ReplaceConclusionWithBugList(ws, TestReportOption.blank_space_list);
+                    TestReport.ReplaceConclusionWithBugList(ws, TestReport.blank_space_list);
                     file_has_been_updated = true;
                 }
 
@@ -3202,7 +3206,7 @@ namespace ExcelReportApplication
                 if (TestReport.Option.Report_C_Replace_Conclusion == true)
                 {
                     //StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
-                    TestReport.ReplaceConclusionWithBugList(ws, TestReportOption.blank_space_list);
+                    TestReport.ReplaceConclusionWithBugList(ws, TestReport.blank_space_list);
                     file_has_been_updated = true;
                 }
 
