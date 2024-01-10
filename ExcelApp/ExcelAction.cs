@@ -1502,7 +1502,7 @@ namespace ExcelReportApplication
         // Assumption: (as default value)
         //  1. Report to be copied is sheet 1
         //  2. copied to sheet 2, sheetname is month/date/hour/minute
-        static public Boolean CopyReportSheetAsHistory(Workbook workbook_report, int ReportIndex = 1, int DestinationIndex = 2)
+        static public Boolean CopyReportSheetAsHistory(Workbook workbook_report, String sheetname_append_string, int ReportIndex = 1, int DestinationIndex = 2)
         {
             Boolean b_ret = false;
 
@@ -1520,7 +1520,7 @@ namespace ExcelReportApplication
                     source.Copy(After: workbook_report.Worksheets[DestinationIndex]);
                 }
                 Worksheet copied = workbook_report.Worksheets[++DestinationIndex];
-                copied.Name = source.Name + DateTime.Now.ToString(TestReport.Option.Copy_Report_DateTime_Format);       // ex: 08011600 for August 01 16:00 
+                copied.Name = source.Name + sheetname_append_string;
                 source.Select();
                 b_ret = true;
             }

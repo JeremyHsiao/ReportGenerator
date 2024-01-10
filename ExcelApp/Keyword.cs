@@ -321,7 +321,8 @@ namespace ExcelReportApplication
         public int SN_FontSize = 12;
         public Color SN_FontColor = Color.Black;
         public FontStyle SN_FontStyle = FontStyle.Regular;
-        public String Copy_Report_DateTime_Format = "_MMddHHmm";
+        public String Copy_Report_DateTime_Format_AtTheBeginning = "_MMddHHmm_01";
+        public String Copy_Report_DateTime_Format_AtTheEnd = "_MMddHHmm_02";
 
         // Lagacy options - BEGIN
         public Boolean Report_C_Update_Full_Header = false;
@@ -374,7 +375,8 @@ namespace ExcelReportApplication
             SN_FontSize = XMLConfig.ReadAppSetting_int("SampleSN_String_FontSize");
             SN_FontColor = XMLConfig.ReadAppSetting_Color("SampleSN_String_FontColor");
             SN_FontStyle = XMLConfig.ReadAppSetting_FontStyle("SampleSN_String_FontStyle");
-            Copy_Report_DateTime_Format = XMLConfig.ReadAppSetting_String("Copy_Report_DateTime_Format");
+            Copy_Report_DateTime_Format_AtTheBeginning = XMLConfig.ReadAppSetting_String("Copy_Report_DateTime_Format_AtTheBeginning");
+            Copy_Report_DateTime_Format_AtTheEnd = XMLConfig.ReadAppSetting_String("Copy_Report_DateTime_Format_AtTheEnd");
 
             // config for header above line 21
             Model_Name = XMLConfig.ReadAppSetting_String("Default_Model_Name");
@@ -1337,6 +1339,9 @@ namespace ExcelReportApplication
             return row_default_conclusion_title;
         }
 
+        //
+        // This Function clear the content of linked issue & old version of pass/fail/conditional pass 
+        //
         static public Boolean ReplaceConclusionWithBugList(Worksheet ws, List<StyleString> bug_list_description)
         {
             int row_conclusion_title = FindTitle_Conclusion(ws);
@@ -1347,7 +1352,7 @@ namespace ExcelReportApplication
 
             ExcelAction.ClearContent(ws, row_conclusion_title, col_start, row_bug_list_description, col_end);
             // output linked issue at C2
-            StyleString.WriteStyleString(ws, row_conclusion_title + 1, 3, bug_list_description);
+            StyleString.WriteStyleString(ws, row_conclusion_title + 1, col_start, bug_list_description);
             ExcelAction.Merge(ws, row_conclusion_title + 1, col_start, row_bug_list_description, col_end);
             int line_count = 1; // at least one line, add one if "\n" encountered
             foreach (StyleString style_string in bug_list_description)
@@ -3182,6 +3187,36 @@ namespace ExcelReportApplication
             return ret_dic;
         }
 
+        static public Boolean OpenReportWorksheet(String source_file, out Workbook ReportWorkbook,out Worksheet ReportWorksheet)
+        {
+            // Open Excel workbook
+            source_file = Storage.GetFullPath(source_file);
+            Workbook wb = ExcelAction.OpenExcelWorkbook(filename: source_file, ReadOnly: false);
+            if (wb == null)
+            {
+                LogMessage.WriteLine("ERR: Open workbook in OpenReportWorksheet(): " + source_file);
+                ReportWorkbook = null;
+                ReportWorksheet = null;
+                return false;
+            }
+
+            ReportWorkbook = wb;
+            // If valid sheet_name does not exist, use first worksheet .
+            String current_sheet_name = TestPlan.GetSheetNameAccordingToFilename(source_file);
+            TestReport.Option.Report_SheetName = current_sheet_name;
+            Worksheet ws;
+            if (ExcelAction.WorksheetExist(ReportWorkbook, current_sheet_name) == false)
+            {
+                ws = ReportWorkbook.Sheets[1];
+            }
+            else
+            {
+                ws = ExcelAction.Find_Worksheet(ReportWorkbook, current_sheet_name);
+            }
+            ReportWorksheet = ws;
+            return true;
+        }
+
         static public Boolean AutoCorrectReport_SingleFile(String source_file, String destination_file, Workbook wb_template, Boolean always_save = false)
         {
             TestReportOption out_header; // not used for this version of API.
@@ -3201,26 +3236,23 @@ namespace ExcelReportApplication
                 return file_has_been_updated;
             }
 
-            // Open Excel workbook
-            source_file = Storage.GetFullPath(source_file);
-            Workbook wb = ExcelAction.OpenExcelWorkbook(filename: source_file, ReadOnly: false);
-            if (wb == null)
+            Workbook wb;
+            Worksheet ws;
+            if (OpenReportWorksheet(source_file, out wb, out ws) == false)
             {
-                LogMessage.WriteLine("ERR: Open workbook in AutoCorrectReport_SingleFile(): " + source_file);
-                return false;
+                // Do nothing if opening excel & finding worksheett failed
+                return file_has_been_updated;
             }
 
-            // If valid sheet_name does not exist, use first worksheet .
-            String current_sheet_name = TestPlan.GetSheetNameAccordingToFilename(source_file);
-            TestReport.Option.Report_SheetName = current_sheet_name;
-            Worksheet ws;
-            if (ExcelAction.WorksheetExist(wb, current_sheet_name) == false)
+            DateTime dt = DateTime.Now;
+            String worksheet_append_string_pre = dt.ToString(TestReport.Option.Copy_Report_DateTime_Format_AtTheBeginning);      
+            String worksheet_append_string_post = dt.ToString(TestReport.Option.Copy_Report_DateTime_Format_AtTheEnd);      
+
+            // copy existing report before processing
+            if (TestReport.Option.FunctionC.Copy_Worksheet_AtTheBeginning)
             {
-                ws = wb.Sheets[1];
-            }
-            else
-            {
-                ws = ExcelAction.Find_Worksheet(wb, current_sheet_name);
+                ExcelAction.CopyReportSheetAsHistory(wb, worksheet_append_string_pre);
+                file_has_been_updated = true;
             }
 
             // Update sheetname (when the option is true)
@@ -3334,7 +3366,6 @@ namespace ExcelReportApplication
                 // step 2: remove contents on the sheet which are not to be released
                 if (TestReport.Option.FunctionC.Remove_AUO_Internal_remove_Method)
                 {
-
                     //CheckIfStringMeetsMethod
                     int search_start_row = TestReport.row_test_brief_start, search_end_row = TestReport.row_test_brief_end;
                     for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
@@ -3351,6 +3382,13 @@ namespace ExcelReportApplication
                         }
                     }
                 }
+            }
+
+            // copy existing report before processing
+            if (TestReport.Option.FunctionC.Copy_Worksheet_AtTheEnd)
+            {
+                ExcelAction.CopyReportSheetAsHistory(wb, worksheet_append_string_post);
+                file_has_been_updated = true;
             }
 
             if ((file_has_been_updated) || (always_save))
