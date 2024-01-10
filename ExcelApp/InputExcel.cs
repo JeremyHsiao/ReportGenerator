@@ -196,7 +196,7 @@ namespace ExcelReportApplication
                 Boolean success = false;
 
                 // if only copying files, no need to open excel
-                if (TestReport.Option.Report_C_CopyFileOnly)
+                if (TestReport.Option.FunctionC.CopyFileOnly)
                 {
                     String source_file = src, destination_file = dest;
                     String destination_dir = Storage.GetDirectoryName(destination_file);

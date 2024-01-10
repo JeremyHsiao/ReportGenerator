@@ -637,18 +637,8 @@ namespace ExcelReportApplication
             TestReport.KeywordIssue_Hide_Result_Bug = XMLConfig.ReadAppSetting_Boolean("KeywordIssue_report_Hide_Result_Bug");
             TestReport.KeywordIssue_Auto_Correct_Sheetname = XMLConfig.ReadAppSetting_Boolean("KeywordIssue_report_Correct_Worksheet");
 
-            // config for report C
-            TestReport.Option.Report_C_CopyFileOnly = XMLConfig.ReadAppSetting_Boolean("Report_C_CopyFileOnly");
-            TestReport.Option.Report_C_Copy_Worksheet_AtTheBeginning = XMLConfig.ReadAppSetting_Boolean("Report_C_Copy_Worksheet_AtTheBeginning");
-            TestReport.Option.Report_C_Copy_Worksheet_AtTheEnd = XMLConfig.ReadAppSetting_Boolean("Report_C_Copy_Worksheet_AtTheEnd");
-            TestReport.Option.Report_C_Remove_AUO_Internal = XMLConfig.ReadAppSetting_Boolean("Report_C_Remove_AUO_Internal");
-            TestReport.Option.Report_C_Remove_AUO_Internal_remove_Method = XMLConfig.ReadAppSetting_Boolean("Report_C_Remove_AUO_Internal_remove_Method");  
-            TestReport.Option.Report_C_Update_Full_Header = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Full_Header");
-            TestReport.Option.Report_C_Update_Header_by_Template = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Header_by_Template");
-            TestReport.Option.Report_C_Replace_Conclusion = XMLConfig.ReadAppSetting_Boolean("Report_C_Replace_Conclusion");
-            TestReport.Option.Report_C_Update_Conclusion = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Conclusion");
-            TestReport.Option.Report_C_Update_Judgement = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Judgement");
-            TestReport.Option.Report_C_Update_Sample_SN = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Sample_SN");
+            TestReport.Option.FunctionC.LoadFromConfig();
+            TestReport.Option.FunctionC_DefaultByXML = TestReport.Option.FunctionC;
 
             TestReport.Option.SampleSN_String = XMLConfig.ReadAppSetting_String("SampleSN_String");
             TestReport.Option.SN_Font = XMLConfig.ReadAppSetting_String("SampleSN_String");
@@ -656,10 +646,7 @@ namespace ExcelReportApplication
             TestReport.Option.SN_FontColor = XMLConfig.ReadAppSetting_Color("SampleSN_String_FontColor");
             TestReport.Option.SN_FontStyle = XMLConfig.ReadAppSetting_FontStyle("SampleSN_String_FontStyle");
 
-            TestReport.Option.Report_C_Update_Report_Sheetname = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Report_Sheetname");
-            TestReport.Option.Report_C_Clear_Keyword_Result = XMLConfig.ReadAppSetting_Boolean("Report_C_Clear_Keyword_Result");
-            TestReport.Option.Report_C_Hide_Keyword_Result_Bug_Row = XMLConfig.ReadAppSetting_Boolean("Report_C_Hide_Keyword_Result_Bug_Row");
-            // config for header above line 21
+           // config for header above line 21
             TestReport.Option.Model_Name = XMLConfig.ReadAppSetting_String("Default_Model_Name");
             TestReport.Option.Part_No = XMLConfig.ReadAppSetting_String("Default_Part_No");
             TestReport.Option.Panel_Module = XMLConfig.ReadAppSetting_String("Default_Panel_Module");
@@ -1425,24 +1412,23 @@ namespace ExcelReportApplication
             return ret_list;
         }
 
-        static private Stack<Boolean> temp_option_stack = new Stack<Boolean>();
+        //static private Stack<Boolean> temp_option_stack = new Stack<Boolean>();
 
         static private void Report_A_Push_Option()
         {
             Push_Option_All();
-            TestReport.Option.Report_C_CopyFileOnly = false;
-            TestReport.Option.Report_C_Copy_Worksheet_AtTheBeginning = false;
-            TestReport.Option.Report_C_Copy_Worksheet_AtTheEnd = false;
-            TestReport.Option.Report_C_Remove_AUO_Internal = false;
-            TestReport.Option.Report_C_Update_Report_Sheetname = false;
-            TestReport.Option.Report_C_Clear_Keyword_Result = true;
-            //TestReport.Option.Report_C_Hide_Keyword_Result_Bug_Row = false;
-            //TestReport.Option.Report_C_Replace_Conclusion = false;
-            TestReport.Option.Report_C_Update_Full_Header = false;
-            TestReport.Option.Report_C_Update_Header_by_Template = true;
-            TestReport.Option.Report_C_Update_Conclusion = false;
-            TestReport.Option.Report_C_Update_Judgement = false;
-            //TestReport.Option.Report_C_Update_Sample_SN = false;
+            TestReport.Option.FunctionC.CopyFileOnly = false;
+            TestReport.Option.FunctionC.Copy_Worksheet_AtTheBeginning = false;
+            TestReport.Option.FunctionC.Copy_Worksheet_AtTheEnd = false;
+            TestReport.Option.FunctionC.Remove_AUO_Internal = false;
+            TestReport.Option.FunctionC.Update_Report_Sheetname = false;
+            TestReport.Option.FunctionC.Clear_Keyword_Result = true;
+            //TestReport.Option.FunctionC.Hide_Keyword_Result_Bug_Row = false;
+            //TestReport.Option.FunctionC.Replace_Conclusion = false;
+            TestReport.Option.FunctionC.Update_Header_by_Template = true;
+            TestReport.Option.FunctionC.Update_Conclusion = false;
+            TestReport.Option.FunctionC.Update_Judgement = false;
+            //TestReport.Option.FunctionC.Update_Sample_SN = false;
         }
 
         static private void Report_A_Pop_Option()
@@ -1453,20 +1439,20 @@ namespace ExcelReportApplication
         static private void Report_E_Push_Option()
         {
             Push_Option_All();
-            TestReport.Option.Report_C_CopyFileOnly = false;
-            TestReport.Option.Report_C_Copy_Worksheet_AtTheBeginning = false;
-            TestReport.Option.Report_C_Copy_Worksheet_AtTheEnd = false;
-            TestReport.Option.Report_C_Remove_AUO_Internal = true;
-            TestReport.Option.Report_C_Remove_AUO_Internal_remove_Method = false;  // For TP
-            TestReport.Option.Report_C_Update_Report_Sheetname = false;
-            TestReport.Option.Report_C_Clear_Keyword_Result = false;
-            TestReport.Option.Report_C_Hide_Keyword_Result_Bug_Row = false;
-            TestReport.Option.Report_C_Replace_Conclusion = false;
-            TestReport.Option.Report_C_Update_Full_Header = false;
-            TestReport.Option.Report_C_Update_Header_by_Template = false;
-            TestReport.Option.Report_C_Update_Conclusion = false;
-            TestReport.Option.Report_C_Update_Judgement = false;
-            TestReport.Option.Report_C_Update_Sample_SN = false;
+            TestReport.Option.FunctionC.CopyFileOnly = false;
+            TestReport.Option.FunctionC.Copy_Worksheet_AtTheBeginning = false;
+            TestReport.Option.FunctionC.Copy_Worksheet_AtTheEnd = false;
+            TestReport.Option.FunctionC.Remove_AUO_Internal = true;
+            TestReport.Option.FunctionC.Remove_AUO_Internal_remove_Method = false;  // For TP
+            TestReport.Option.FunctionC.Update_Report_Sheetname = false;
+            TestReport.Option.FunctionC.Clear_Keyword_Result = false;
+            TestReport.Option.FunctionC.Hide_Keyword_Result_Bug_Row = false;
+            TestReport.Option.FunctionC.Replace_Conclusion = false;
+            TestReport.Option.FunctionC.Update_Header_by_Template = false;
+            TestReport.Option.FunctionC.Update_Conclusion = false;
+            TestReport.Option.FunctionC.Update_Judgement = false;
+            TestReport.Option.FunctionC.Update_Sample_SN = false;
+            TestReport.Option.FunctionC.Update_Full_Header = false; // Lagacy option
         }
 
         static private void Report_E_Pop_Option()
@@ -1477,7 +1463,7 @@ namespace ExcelReportApplication
         static private void Report_D_Push_Option()
         {
             Push_Option_All();
-            TestReport.Option.Report_C_CopyFileOnly = true;
+            TestReport.Option.FunctionC.CopyFileOnly = true;
         }
 
         static private void Report_D_Pop_Option()
@@ -1487,38 +1473,44 @@ namespace ExcelReportApplication
 
         static private void Push_Option_All()
         {
-            temp_option_stack.Push(TestReport.Option.Report_C_CopyFileOnly);
-            temp_option_stack.Push(TestReport.Option.Report_C_Copy_Worksheet_AtTheBeginning);
-            temp_option_stack.Push(TestReport.Option.Report_C_Copy_Worksheet_AtTheEnd);
-            temp_option_stack.Push(TestReport.Option.Report_C_Remove_AUO_Internal);
-            temp_option_stack.Push(TestReport.Option.Report_C_Remove_AUO_Internal_remove_Method);
-            temp_option_stack.Push(TestReport.Option.Report_C_Update_Report_Sheetname);
-            temp_option_stack.Push(TestReport.Option.Report_C_Clear_Keyword_Result);
-            temp_option_stack.Push(TestReport.Option.Report_C_Hide_Keyword_Result_Bug_Row);
-            temp_option_stack.Push(TestReport.Option.Report_C_Replace_Conclusion);
-            temp_option_stack.Push(TestReport.Option.Report_C_Update_Full_Header);
-            temp_option_stack.Push(TestReport.Option.Report_C_Update_Header_by_Template);
-            temp_option_stack.Push(TestReport.Option.Report_C_Update_Conclusion);
-            temp_option_stack.Push(TestReport.Option.Report_C_Update_Judgement);
-            temp_option_stack.Push(TestReport.Option.Report_C_Update_Sample_SN);
+            /*
+            temp_option_stack.Push(TestReport.Option.FunctionC.CopyFileOnly);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Copy_Worksheet_AtTheBeginning);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Copy_Worksheet_AtTheEnd);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Remove_AUO_Internal);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Remove_AUO_Internal_remove_Method);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Update_Report_Sheetname);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Clear_Keyword_Result);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Hide_Keyword_Result_Bug_Row);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Replace_Conclusion);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Update_Header_by_Template);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Update_Conclusion);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Update_Judgement);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Update_Sample_SN);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Update_Full_Header);// Lagacy option
+            */
         }
 
         static private void Pop_Option_All()
         {
-            TestReport.Option.Report_C_Update_Sample_SN = temp_option_stack.Pop();
-            TestReport.Option.Report_C_Update_Judgement = temp_option_stack.Pop();
-            TestReport.Option.Report_C_Update_Conclusion = temp_option_stack.Pop();
-            TestReport.Option.Report_C_Update_Header_by_Template = temp_option_stack.Pop();
-            TestReport.Option.Report_C_Update_Full_Header = temp_option_stack.Pop();
-            TestReport.Option.Report_C_Replace_Conclusion = temp_option_stack.Pop();
-            TestReport.Option.Report_C_Hide_Keyword_Result_Bug_Row = temp_option_stack.Pop();
-            TestReport.Option.Report_C_Clear_Keyword_Result = temp_option_stack.Pop();
-            TestReport.Option.Report_C_Update_Report_Sheetname = temp_option_stack.Pop();
-            TestReport.Option.Report_C_Remove_AUO_Internal_remove_Method = temp_option_stack.Pop(); // 
-            TestReport.Option.Report_C_Remove_AUO_Internal = temp_option_stack.Pop();
-            TestReport.Option.Report_C_Copy_Worksheet_AtTheEnd = temp_option_stack.Pop();
-            TestReport.Option.Report_C_Copy_Worksheet_AtTheBeginning = temp_option_stack.Pop();
-            TestReport.Option.Report_C_CopyFileOnly = temp_option_stack.Pop();
+            TestReport.Option.FunctionC = TestReport.Option.FunctionC_DefaultByXML;
+            /*
+            TestReport.Option.FunctionC.Update_Full_Header = temp_option_stack.Pop();// Lagacy option
+            TestReport.Option.FunctionC.Update_Sample_SN = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Update_Judgement = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Update_Conclusion = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Update_Header_by_Template = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Update_Full_Header = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Replace_Conclusion = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Hide_Keyword_Result_Bug_Row = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Clear_Keyword_Result = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Update_Report_Sheetname = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Remove_AUO_Internal_remove_Method = temp_option_stack.Pop(); // 
+            TestReport.Option.FunctionC.Remove_AUO_Internal = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Copy_Worksheet_AtTheEnd = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Copy_Worksheet_AtTheBeginning = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.CopyFileOnly = temp_option_stack.Pop();
+            */
         }
 
         private void btnCreateReport_Click(object sender, EventArgs e)
@@ -1643,8 +1635,8 @@ namespace ExcelReportApplication
                             String ReturnDestinationPaht = "";
                             List<String> DestinationReportList;
                             Report_A_Push_Option();
-                            TestReport.Option.Report_C_Update_Conclusion = true;  // override report A option for new version
-                            TestReport.Option.Report_C_Update_Judgement = true;  // override report A option for new version
+                            TestReport.Option.FunctionC.Update_Conclusion = true;  // override report A option for new version
+                            TestReport.Option.FunctionC.Update_Judgement = true;  // override report A option for new version
                             bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(InputExcel, out DestinationReportList, out ReturnDestinationPaht);
                             Report_A_Pop_Option();
                             bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_list: DestinationReportList);
@@ -1777,8 +1769,8 @@ namespace ExcelReportApplication
                         //    String report_j_copied_report_root_path = "";
                         //    List<String> report_list_report_j;
                         //    Report_A_Push_Option();
-                        //    KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Conclusion = false;  // override report A option for new version
-                        //    KeywordReport.DefaultKeywordReportHeader.Report_C_Update_Judgement = false;  // override report A option for new version
+                        //    KeywordReport.DefaultKeywordReportHeader.FunctionC.Update_Conclusion = false;  // override report A option for new version
+                        //    KeywordReport.DefaultKeywordReportHeader.FunctionC.Update_Judgement = false;  // override report A option for new version
                         //    bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(report_j_input_excel_selected, out report_list_report_j, out report_j_copied_report_root_path);
                         //    Report_A_Pop_Option();
                         //    bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_list: report_list_report_j);

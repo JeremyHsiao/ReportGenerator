@@ -275,8 +275,8 @@ namespace ExcelReportApplication
     public class TestReportBooleanOption
     {
         public Boolean CopyFileOnly = false;
-        public Boolean Report_C_Copy_Worksheet_AtTheBeginning = false;
-        public Boolean Report_C_Copy_Worksheet_AtTheEnd = false;
+        public Boolean Copy_Worksheet_AtTheBeginning = false;
+        public Boolean Copy_Worksheet_AtTheEnd = false;
         public Boolean Remove_AUO_Internal = false;
         public Boolean Remove_AUO_Internal_remove_Method = false;
         public Boolean Replace_Conclusion = false;
@@ -288,31 +288,38 @@ namespace ExcelReportApplication
         public Boolean Update_Judgement = false;
         public Boolean Update_Sample_SN = false;
         // Lagacy options - BEGIN
-        public Boolean Report_C_Update_Full_Header = false;
+        public Boolean Update_Full_Header = false;
+        // Lagacy options - END
+
+        public void LoadFromConfig()
+        {
+            CopyFileOnly = XMLConfig.ReadAppSetting_Boolean("Report_C_CopyFileOnly");
+            Copy_Worksheet_AtTheBeginning = XMLConfig.ReadAppSetting_Boolean("Report_C_Copy_Worksheet_AtTheBeginning");
+            Copy_Worksheet_AtTheEnd = XMLConfig.ReadAppSetting_Boolean("Report_C_Copy_Worksheet_AtTheEnd");
+            Remove_AUO_Internal = XMLConfig.ReadAppSetting_Boolean("Report_C_Remove_AUO_Internal");
+            Remove_AUO_Internal_remove_Method = XMLConfig.ReadAppSetting_Boolean("Report_C_Remove_AUO_Internal_remove_Method");
+            Update_Report_Sheetname = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Report_Sheetname");
+            Clear_Keyword_Result = XMLConfig.ReadAppSetting_Boolean("Report_C_Clear_Keyword_Result");
+            Hide_Keyword_Result_Bug_Row = XMLConfig.ReadAppSetting_Boolean("Report_C_Hide_Keyword_Result_Bug_Row");
+            Update_Header_by_Template = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Header_by_Template");
+            Replace_Conclusion = XMLConfig.ReadAppSetting_Boolean("Report_C_Replace_Conclusion");
+            Update_Conclusion = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Conclusion");
+            Update_Judgement = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Judgement");
+            Update_Sample_SN = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Sample_SN");
+            Update_Full_Header = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Full_Header");  // options not used anymore
+        }
     }
 
     public class TestReportOption
     {
-        public Boolean Report_C_CopyFileOnly = false;
-        public Boolean Report_C_Copy_Worksheet_AtTheBeginning = false;
-        public Boolean Report_C_Copy_Worksheet_AtTheEnd = false;
-        public Boolean Report_C_Remove_AUO_Internal = false;
-        public Boolean Report_C_Remove_AUO_Internal_remove_Method = false; 
-        public Boolean Report_C_Replace_Conclusion = false;
-        public Boolean Report_C_Update_Report_Sheetname = true;
-        public Boolean Report_C_Clear_Keyword_Result = true;
-        public Boolean Report_C_Hide_Keyword_Result_Bug_Row = false;
-        public Boolean Report_C_Update_Header_by_Template = false;
-        public Boolean Report_C_Update_Conclusion = false;
-        public Boolean Report_C_Update_Judgement = false;
-        public Boolean Report_C_Update_Sample_SN = false;
+        public TestReportBooleanOption FunctionC, FunctionC_DefaultByXML, FunctionC_DefaultByCode;
 
         public String SampleSN_String = "Refer to DUT_Allocation_Matrix table";
         public String SN_Font = "Gill Sans MT";
         public int SN_FontSize = 12;
         public Color SN_FontColor = Color.Black;
         public FontStyle SN_FontStyle = FontStyle.Regular;
-        
+
         // Lagacy options - BEGIN
         public Boolean Report_C_Update_Full_Header = false;
         public String Report_Title = "Report_Name";
@@ -400,7 +407,7 @@ namespace ExcelReportApplication
         private static StyleString blank_space = new StyleString(" ", ReportGenerator.LinkIssue_report_FontColor,
                             ReportGenerator.LinkIssue_report_Font, ReportGenerator.LinkIssue_report_FontSize);
         public static List<StyleString> blank_space_list = blank_space.ConvertToList();
-        
+
         // From TestReportOption - END
 
         public static int col_indentifier = ExcelAction.ColumnNameToNumber('B');
@@ -2180,7 +2187,7 @@ namespace ExcelReportApplication
                     //
                     ExcelAction.CellActivate(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
                     ExcelAction.SetCellValue(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, judgement_str);
-                    */ 
+                    */
                 }
 
                 // always update Test End Period to today
@@ -2742,7 +2749,7 @@ namespace ExcelReportApplication
 
                 ExcelAction.ClearContent(ws, SN_row, SN_number_col + 1, SN_row, col_end);
                 ExcelAction.CellTextAlignLeft(ws, SN_row, SN_number_col);
-                
+
                 //ExcelAction.SetCellValue(ws, SN_row, SN_number_col, new_sample_sn);
                 //String SN_Font = XMLConfig.ReadAppSetting_String("SampleSN_String_Font");
                 //int SN__FontSize = XMLConfig.ReadAppSetting_int("SampleSN_String_FontSize");
@@ -2786,7 +2793,7 @@ namespace ExcelReportApplication
 
         static public Boolean Update_Conclusion_only_by_linked_issue(Worksheet worksheet)
         {
-           
+
             Boolean b_ret = false;
             String judgement_str;           // obtained but not use in this function
             List<StyleString> linked_issue_description_on_this_report;
@@ -2825,10 +2832,10 @@ namespace ExcelReportApplication
             Boolean b_ret = false;
 
             String sheet_name = worksheet.Name;
-            String judgement_str = TestReport.TestReport_Default_Judgement; 
-            StyleString default_conclusion = new StyleString( TestReport.TestReport_Default_Conclusion, ReportGenerator.LinkIssue_report_FontColor, 
+            String judgement_str = TestReport.TestReport_Default_Judgement;
+            StyleString default_conclusion = new StyleString(TestReport.TestReport_Default_Conclusion, ReportGenerator.LinkIssue_report_FontColor,
                             ReportGenerator.LinkIssue_report_Font, ReportGenerator.LinkIssue_report_FontSize);
-            List<StyleString> linked_issue_description_on_this_report = default_conclusion.ConvertToList();      
+            List<StyleString> linked_issue_description_on_this_report = default_conclusion.ConvertToList();
 
             //judgement_str = ExcelAction.GetCellTrimmedString(worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
 
@@ -3163,7 +3170,7 @@ namespace ExcelReportApplication
             }
 
             // Update sheetname (when the option is true)
-            if (TestReport.Option.Report_C_Update_Report_Sheetname)
+            if (TestReport.Option.FunctionC.Update_Report_Sheetname)
             {
                 String new_sheet_name = TestPlan.GetSheetNameAccordingToFilename(destination_file);
                 ws.Name = new_sheet_name;
@@ -3172,7 +3179,7 @@ namespace ExcelReportApplication
             }
 
             //Report_C_Update_Header_by_Template
-            if (TestReport.Option.Report_C_Update_Header_by_Template == true)
+            if (TestReport.Option.FunctionC.Update_Header_by_Template == true)
             {
                 if (ExcelAction.WorksheetExist(wb_template, HeaderTemplate.SheetName_HeaderTemplate))
                 {
@@ -3185,7 +3192,7 @@ namespace ExcelReportApplication
                 }
 
                 //Report_C_Replace_Conclusion
-                if (TestReport.Option.Report_C_Replace_Conclusion == true)
+                if (TestReport.Option.FunctionC.Replace_Conclusion == true)
                 {
                     //StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
                     TestReport.ReplaceConclusionWithBugList(ws, TestReport.blank_space_list);
@@ -3196,7 +3203,7 @@ namespace ExcelReportApplication
             else
             {
                 // Update header (when the option is true)
-                if (TestReport.Option.Report_C_Update_Full_Header == true)
+                if (TestReport.Option.FunctionC.Update_Full_Header == true)
                 {
                     String new_title = TestPlan.GetReportTitleAccordingToFilename(destination_file);
                     TestReport.Option.Report_Title = new_title;
@@ -3207,7 +3214,7 @@ namespace ExcelReportApplication
                 }
 
                 //Report_C_Replace_Conclusion
-                if (TestReport.Option.Report_C_Replace_Conclusion == true)
+                if (TestReport.Option.FunctionC.Replace_Conclusion == true)
                 {
                     //StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
                     TestReport.ReplaceConclusionWithBugList(ws, TestReport.blank_space_list);
@@ -3215,7 +3222,7 @@ namespace ExcelReportApplication
                 }
 
                 // Clear bug-list, bug-count, Pass/Fail/Conditional_Pass count, judgement
-                if (TestReport.Option.Report_C_Clear_Keyword_Result)
+                if (TestReport.Option.FunctionC.Clear_Keyword_Result)
                 {
                     TestReport.ClearKeywordBugResult(source_file, ws);
                     TestReport.ClearReportBugCount(ws);
@@ -3225,31 +3232,31 @@ namespace ExcelReportApplication
             }
 
             // Hide keyword result/bug-list row -- after clear because it is un-hide after clear
-            if (TestReport.Option.Report_C_Hide_Keyword_Result_Bug_Row)
+            if (TestReport.Option.FunctionC.Hide_Keyword_Result_Bug_Row)
             {
                 TestReport.HideKeywordResultBugRow(source_file, ws);
                 file_has_been_updated = true;
             }
 
-            if (TestReport.Option.Report_C_Update_Conclusion)
+            if (TestReport.Option.FunctionC.Update_Conclusion)
             {
                 TestReport.Update_Conclusion_only_by_linked_issue(ws);
                 file_has_been_updated = true;
             }
 
-            if (TestReport.Option.Report_C_Update_Judgement)
+            if (TestReport.Option.FunctionC.Update_Judgement)
             {
                 TestReport.Update_Judgement_only_by_linked_issue(ws);
                 file_has_been_updated = true;
             }
 
-            if (TestReport.Option.Report_C_Update_Sample_SN)
+            if (TestReport.Option.FunctionC.Update_Sample_SN)
             {
                 TestReport.UpdateSampleSN_to_common_string(ws);
                 file_has_been_updated = true;
             }
 
-            if (TestReport.Option.Report_C_Remove_AUO_Internal)
+            if (TestReport.Option.FunctionC.Remove_AUO_Internal)
             {
                 // step 1: remove sheets which are not to be released
                 String sheet_name_to_keep = ws.Name;
@@ -3271,7 +3278,7 @@ namespace ExcelReportApplication
                     }
                 }
                 // step 2: remove contents on the sheet which are not to be released
-                if (TestReport.Option.Report_C_Remove_AUO_Internal_remove_Method)
+                if (TestReport.Option.FunctionC.Remove_AUO_Internal_remove_Method)
                 {
 
                     //CheckIfStringMeetsMethod
