@@ -645,6 +645,7 @@ namespace ExcelReportApplication
             TestReport.Option.SN_FontSize = XMLConfig.ReadAppSetting_int("SampleSN_String_FontSize");
             TestReport.Option.SN_FontColor = XMLConfig.ReadAppSetting_Color("SampleSN_String_FontColor");
             TestReport.Option.SN_FontStyle = XMLConfig.ReadAppSetting_FontStyle("SampleSN_String_FontStyle");
+            TestReport.Option.Copy_Report_DateTime_Format = XMLConfig.ReadAppSetting_String("Copy_Report_DateTime_Format");
 
            // config for header above line 21
             TestReport.Option.Model_Name = XMLConfig.ReadAppSetting_String("Default_Model_Name");

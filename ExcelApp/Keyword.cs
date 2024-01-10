@@ -319,6 +319,7 @@ namespace ExcelReportApplication
         public int SN_FontSize = 12;
         public Color SN_FontColor = Color.Black;
         public FontStyle SN_FontStyle = FontStyle.Regular;
+        public String Copy_Report_DateTime_Format = "_MMddHHmm";
 
         // Lagacy options - BEGIN
         public Boolean Report_C_Update_Full_Header = false;

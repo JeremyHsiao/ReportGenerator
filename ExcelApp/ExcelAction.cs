@@ -1499,6 +1499,34 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
+        // Assumption: (as default value)
+        //  1. Report to be copied is sheet 1
+        //  2. copied to sheet 2, sheetname is month/date/hour/minute
+        static public Boolean CopyReportSheetAsHistory(Workbook workbook_report, int ReportIndex = 1, int DestinationIndex = 2)
+        {
+            Boolean b_ret = false;
+
+            int current_worksheet_count = workbook_report.Worksheets.Count;
+            DestinationIndex--;
+            if ( (ReportIndex > 0) && (ReportIndex <= current_worksheet_count) && (DestinationIndex >= 0) && (DestinationIndex <= (current_worksheet_count)) )
+            {
+                Worksheet source = workbook_report.Worksheets[ReportIndex];
+                if (DestinationIndex == 0)      // insert at 0 to become 1st worksheet
+                {
+                    source.Copy(Before: workbook_report.Worksheets[1]);
+                }
+                else
+                {
+                    source.Copy(After: workbook_report.Worksheets[DestinationIndex]);
+                }
+                Worksheet copied = workbook_report.Worksheets[++DestinationIndex];
+                copied.Name = source.Name + DateTime.Now.ToString(TestReport.Option.Copy_Report_DateTime_Format);       // ex: 08011600 for August 01 16:00 
+                source.Select();
+                b_ret = true;
+            }
+
+            return b_ret;
+        }
         static public ExcelData InitTCExcelData(bool IsTemplate = false)
         {
             ExcelData excel_data = new ExcelData();

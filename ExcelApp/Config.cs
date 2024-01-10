@@ -44,6 +44,7 @@ namespace ExcelReportApplication
             @"SampleSN_String_FontColor",               @"Black",
             @"SampleSN_String_FontStyle",               @"Regular",
             @"SampleSN_String_Font",                    @"Gill Sans MT",
+            @"Copy_Report_DateTime_Format",             @"_MMddHHmm",
 
             // lagacy options - BEGIN
             @"Report_C_Update_Full_Header",             @"false",
