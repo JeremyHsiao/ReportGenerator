@@ -361,6 +361,54 @@ namespace ExcelReportApplication
         public Boolean Update_Tested_by = true;
         public Boolean Update_Approved_by = true;
         // Lagacy options - END
+
+        public void LoadFromConfig()
+        {
+            SampleSN_String = XMLConfig.ReadAppSetting_String("SampleSN_String");
+            SN_Font = XMLConfig.ReadAppSetting_String("SampleSN_String");
+            SN_FontSize = XMLConfig.ReadAppSetting_int("SampleSN_String_FontSize");
+            SN_FontColor = XMLConfig.ReadAppSetting_Color("SampleSN_String_FontColor");
+            SN_FontStyle = XMLConfig.ReadAppSetting_FontStyle("SampleSN_String_FontStyle");
+            Copy_Report_DateTime_Format = XMLConfig.ReadAppSetting_String("Copy_Report_DateTime_Format");
+
+            // config for header above line 21
+            Model_Name = XMLConfig.ReadAppSetting_String("Default_Model_Name");
+            Part_No = XMLConfig.ReadAppSetting_String("Default_Part_No");
+            Panel_Module = XMLConfig.ReadAppSetting_String("Default_Panel_Module");
+            TCON_Board = XMLConfig.ReadAppSetting_String("Default_TCON_Board");
+            AD_Board = XMLConfig.ReadAppSetting_String("Default_AD_Board");
+            Power_Board = XMLConfig.ReadAppSetting_String("Default_Power_Board");
+            Smart_BD_OS_Version = XMLConfig.ReadAppSetting_String("Default_Smart_BD_OS_Version");
+            Touch_Sensor = XMLConfig.ReadAppSetting_String("Default_Touch_Sensor");
+            Speaker_AQ_Version = XMLConfig.ReadAppSetting_String("Default_Speaker_AQ_Version");
+            SW_PQ_Version = XMLConfig.ReadAppSetting_String("Default_SW_PQ_Version");
+            Test_Stage = XMLConfig.ReadAppSetting_String("Default_Test_Stage");
+            Test_QTY_SN = XMLConfig.ReadAppSetting_String("Default_Test_QTY_SN");
+            Test_Period_Begin = XMLConfig.ReadAppSetting_String("Default_Test_Period_Begin");
+            Test_Period_End = XMLConfig.ReadAppSetting_String("Default_Test_Period_End");
+            Judgement = XMLConfig.ReadAppSetting_String("Default_Judgement");
+            Tested_by = XMLConfig.ReadAppSetting_String("Default_Tested_by");
+            Approved_by = XMLConfig.ReadAppSetting_String("Default_Approved_by");
+
+            Update_Report_Title_by_Sheetname = XMLConfig.ReadAppSetting_Boolean("Update_Report_Title_by_Sheetname");
+            Update_Model_Name = XMLConfig.ReadAppSetting_Boolean("Update_Model_Name");
+            Update_Part_No = XMLConfig.ReadAppSetting_Boolean("Update_Part_No");
+            Update_Panel_Module = XMLConfig.ReadAppSetting_Boolean("Update_Panel_Module");
+            Update_TCON_Board = XMLConfig.ReadAppSetting_Boolean("Update_TCON_Board");
+            Update_AD_Board = XMLConfig.ReadAppSetting_Boolean("Update_AD_Board");
+            Update_Power_Board = XMLConfig.ReadAppSetting_Boolean("Update_Power_Board");
+            Update_Smart_BD_OS_Version = XMLConfig.ReadAppSetting_Boolean("Update_Smart_BD_OS_Version");
+            Update_Touch_Sensor = XMLConfig.ReadAppSetting_Boolean("Update_Touch_Sensor");
+            Update_Speaker_AQ_Version = XMLConfig.ReadAppSetting_Boolean("Update_Speaker_AQ_Version");
+            Update_SW_PQ_Version = XMLConfig.ReadAppSetting_Boolean("Update_SW_PQ_Version");
+            Update_Test_Stage = XMLConfig.ReadAppSetting_Boolean("Update_Test_Stage");
+            Update_Test_QTY_SN = XMLConfig.ReadAppSetting_Boolean("Update_Test_QTY_SN");
+            Update_Test_Period_Begin = XMLConfig.ReadAppSetting_Boolean("Update_Test_Period_Begin");
+            Update_Test_Period_End = XMLConfig.ReadAppSetting_Boolean("Update_Test_Period_End");
+            Update_Judgement = XMLConfig.ReadAppSetting_Boolean("Update_Judgement");
+            Update_Tested_by = XMLConfig.ReadAppSetting_Boolean("Update_Tested_by");
+            Update_Approved_by = XMLConfig.ReadAppSetting_Boolean("Update_Approved_by");
+        }
     }
 
     public static class TestReport

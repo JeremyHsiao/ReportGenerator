@@ -537,12 +537,6 @@ namespace ExcelReportApplication
             // config for default ExcelAction settings
             ExcelAction.ExcelVisible = XMLConfig.ReadAppSetting_Boolean("Excel_Visible");
 
-            // config for issue list
-            Issue.KeyPrefix = XMLConfig.ReadAppSetting_String("Issue_Key_Prefix");
-            Issue.SheetName = XMLConfig.ReadAppSetting_String("BugList_ExportedSheetName");
-            Issue.NameDefinitionRow = XMLConfig.ReadAppSetting_int("Issue_Row_NameDefine");
-            Issue.DataBeginRow = XMLConfig.ReadAppSetting_int("Issue_Row_DataBegin");
-
             // config for test-case
             TestCase.KeyPrefix = XMLConfig.ReadAppSetting_String("TC_Key_Prefix");
             TestCase.SheetName = XMLConfig.ReadAppSetting_String("TCList_ExportedSheetName");
@@ -630,50 +624,7 @@ namespace ExcelReportApplication
             TestReport.Option.FunctionC.LoadFromConfig();
             TestReport.Option.FunctionC_DefaultByXML = TestReport.Option.FunctionC;
 
-            TestReport.Option.SampleSN_String = XMLConfig.ReadAppSetting_String("SampleSN_String");
-            TestReport.Option.SN_Font = XMLConfig.ReadAppSetting_String("SampleSN_String");
-            TestReport.Option.SN_FontSize = XMLConfig.ReadAppSetting_int("SampleSN_String_FontSize");
-            TestReport.Option.SN_FontColor = XMLConfig.ReadAppSetting_Color("SampleSN_String_FontColor");
-            TestReport.Option.SN_FontStyle = XMLConfig.ReadAppSetting_FontStyle("SampleSN_String_FontStyle");
-            TestReport.Option.Copy_Report_DateTime_Format = XMLConfig.ReadAppSetting_String("Copy_Report_DateTime_Format");
-
-           // config for header above line 21
-            TestReport.Option.Model_Name = XMLConfig.ReadAppSetting_String("Default_Model_Name");
-            TestReport.Option.Part_No = XMLConfig.ReadAppSetting_String("Default_Part_No");
-            TestReport.Option.Panel_Module = XMLConfig.ReadAppSetting_String("Default_Panel_Module");
-            TestReport.Option.TCON_Board = XMLConfig.ReadAppSetting_String("Default_TCON_Board");
-            TestReport.Option.AD_Board = XMLConfig.ReadAppSetting_String("Default_AD_Board");
-            TestReport.Option.Power_Board = XMLConfig.ReadAppSetting_String("Default_Power_Board");
-            TestReport.Option.Smart_BD_OS_Version = XMLConfig.ReadAppSetting_String("Default_Smart_BD_OS_Version");
-            TestReport.Option.Touch_Sensor = XMLConfig.ReadAppSetting_String("Default_Touch_Sensor");
-            TestReport.Option.Speaker_AQ_Version = XMLConfig.ReadAppSetting_String("Default_Speaker_AQ_Version");
-            TestReport.Option.SW_PQ_Version = XMLConfig.ReadAppSetting_String("Default_SW_PQ_Version");
-            TestReport.Option.Test_Stage = XMLConfig.ReadAppSetting_String("Default_Test_Stage");
-            TestReport.Option.Test_QTY_SN = XMLConfig.ReadAppSetting_String("Default_Test_QTY_SN");
-            TestReport.Option.Test_Period_Begin = XMLConfig.ReadAppSetting_String("Default_Test_Period_Begin");
-            TestReport.Option.Test_Period_End = XMLConfig.ReadAppSetting_String("Default_Test_Period_End");
-            TestReport.Option.Judgement = XMLConfig.ReadAppSetting_String("Default_Judgement");
-            TestReport.Option.Tested_by = XMLConfig.ReadAppSetting_String("Default_Tested_by");
-            TestReport.Option.Approved_by = XMLConfig.ReadAppSetting_String("Default_Approved_by");
-
-            TestReport.Option.Update_Report_Title_by_Sheetname = XMLConfig.ReadAppSetting_Boolean("Update_Report_Title_by_Sheetname");
-            TestReport.Option.Update_Model_Name = XMLConfig.ReadAppSetting_Boolean("Update_Model_Name");
-            TestReport.Option.Update_Part_No = XMLConfig.ReadAppSetting_Boolean("Update_Part_No");
-            TestReport.Option.Update_Panel_Module = XMLConfig.ReadAppSetting_Boolean("Update_Panel_Module");
-            TestReport.Option.Update_TCON_Board = XMLConfig.ReadAppSetting_Boolean("Update_TCON_Board");
-            TestReport.Option.Update_AD_Board = XMLConfig.ReadAppSetting_Boolean("Update_AD_Board");
-            TestReport.Option.Update_Power_Board = XMLConfig.ReadAppSetting_Boolean("Update_Power_Board");
-            TestReport.Option.Update_Smart_BD_OS_Version = XMLConfig.ReadAppSetting_Boolean("Update_Smart_BD_OS_Version");
-            TestReport.Option.Update_Touch_Sensor = XMLConfig.ReadAppSetting_Boolean("Update_Touch_Sensor");
-            TestReport.Option.Update_Speaker_AQ_Version = XMLConfig.ReadAppSetting_Boolean("Update_Speaker_AQ_Version");
-            TestReport.Option.Update_SW_PQ_Version = XMLConfig.ReadAppSetting_Boolean("Update_SW_PQ_Version");
-            TestReport.Option.Update_Test_Stage = XMLConfig.ReadAppSetting_Boolean("Update_Test_Stage");
-            TestReport.Option.Update_Test_QTY_SN = XMLConfig.ReadAppSetting_Boolean("Update_Test_QTY_SN");
-            TestReport.Option.Update_Test_Period_Begin = XMLConfig.ReadAppSetting_Boolean("Update_Test_Period_Begin");
-            TestReport.Option.Update_Test_Period_End = XMLConfig.ReadAppSetting_Boolean("Update_Test_Period_End");
-            TestReport.Option.Update_Judgement = XMLConfig.ReadAppSetting_Boolean("Update_Judgement");
-            TestReport.Option.Update_Tested_by = XMLConfig.ReadAppSetting_Boolean("Update_Tested_by");
-            TestReport.Option.Update_Approved_by = XMLConfig.ReadAppSetting_Boolean("Update_Approved_by");
+            TestReport.Option.LoadFromConfig();
             // end config for keyword report
         }
 
