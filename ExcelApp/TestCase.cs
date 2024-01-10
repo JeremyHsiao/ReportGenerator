@@ -280,6 +280,16 @@ namespace ExcelReportApplication
         static public string TemplateSheetName = "TC_List";
         static public string KeyPrefix = "T";
 
+        static public void LoadFromXML()
+        {
+            // config for test-case
+            KeyPrefix = XMLConfig.ReadAppSetting_String("TC_Key_Prefix");
+            SheetName = XMLConfig.ReadAppSetting_String("TCList_ExportedSheetName");
+            TemplateSheetName = XMLConfig.ReadAppSetting_String("TC_SheetName");
+            NameDefinitionRow = XMLConfig.ReadAppSetting_int("TC_Row_NameDefine");
+            DataBeginRow = XMLConfig.ReadAppSetting_int("TC_Row_DataBegin");
+        }
+
         static public Boolean CheckValidTC_By_KeyPrefix(String tc_key)
         {
             Boolean ret = false;

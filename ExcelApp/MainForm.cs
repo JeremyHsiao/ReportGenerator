@@ -537,12 +537,7 @@ namespace ExcelReportApplication
             // config for default ExcelAction settings
             ExcelAction.ExcelVisible = XMLConfig.ReadAppSetting_Boolean("Excel_Visible");
 
-            // config for test-case
-            TestCase.KeyPrefix = XMLConfig.ReadAppSetting_String("TC_Key_Prefix");
-            TestCase.SheetName = XMLConfig.ReadAppSetting_String("TCList_ExportedSheetName");
-            TestCase.TemplateSheetName = XMLConfig.ReadAppSetting_String("TC_SheetName");
-            TestCase.NameDefinitionRow = XMLConfig.ReadAppSetting_int("TC_Row_NameDefine");
-            TestCase.DataBeginRow = XMLConfig.ReadAppSetting_int("TC_Row_DataBegin");
+            TestCase.LoadFromXML();
 
             // Status string to decompose into list of string
             // Begin
