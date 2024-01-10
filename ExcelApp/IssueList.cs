@@ -440,6 +440,21 @@ namespace ExcelReportApplication
         static public Color KeywordIssue_WAIVED_ISSUE_COLOR = Color.Black;
         static public Color KeywordIssue_CLOSED_ISSUE_COLOR = Color.Black;
 
+        static public void LoadFromXML()
+        {
+            // config for keyword report
+            KeywordIssue_report_Font = XMLConfig.ReadAppSetting_String("KeywordIssue_report_Font");
+            KeywordIssue_report_FontSize = XMLConfig.ReadAppSetting_int("KeywordIssue_report_FontSize");
+            KeywordIssue_report_FontColor = XMLConfig.ReadAppSetting_Color("KeywordIssue_report_FontColor");
+            KeywordIssue_report_FontStyle = XMLConfig.ReadAppSetting_FontStyle("KeywordIssue_report_FontStyle");
+            KeywordIssue_A_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("KeywordIssue_A_Issue_Color");
+            KeywordIssue_B_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("KeywordIssue_B_Issue_Color");
+            KeywordIssue_C_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("KeywordIssue_C_Issue_Color");
+            KeywordIssue_D_ISSUE_COLOR = XMLConfig.ReadAppSetting_Color("KeywordIssue_D_Issue_Color");
+            KeywordIssue_WAIVED_ISSUE_COLOR = Issue.KeywordIssue_report_FontColor;
+            KeywordIssue_CLOSED_ISSUE_COLOR = Issue.KeywordIssue_report_FontColor;
+        }
+
         static public Boolean OpenBugListExcel(String buglist_filename)
         {
             ExcelAction.ExcelStatus status = ExcelAction.OpenIssueListExcel(buglist_filename);
