@@ -312,7 +312,9 @@ namespace ExcelReportApplication
 
     public class TestReportOption
     {
-        public TestReportBooleanOption FunctionC, FunctionC_DefaultByXML, FunctionC_DefaultByCode;
+        public TestReportBooleanOption FunctionC = new TestReportBooleanOption();
+        public TestReportBooleanOption FunctionC_DefaultByXML = new TestReportBooleanOption();
+        public TestReportBooleanOption FunctionC_DefaultByCode = new TestReportBooleanOption();
 
         public String SampleSN_String = "Refer to DUT_Allocation_Matrix table";
         public String SN_Font = "Gill Sans MT";
@@ -364,6 +366,9 @@ namespace ExcelReportApplication
 
         public void LoadFromConfig()
         {
+            FunctionC.LoadFromConfig();
+            FunctionC_DefaultByXML = TestReport.Option.FunctionC;
+
             SampleSN_String = XMLConfig.ReadAppSetting_String("SampleSN_String");
             SN_Font = XMLConfig.ReadAppSetting_String("SampleSN_String");
             SN_FontSize = XMLConfig.ReadAppSetting_int("SampleSN_String_FontSize");

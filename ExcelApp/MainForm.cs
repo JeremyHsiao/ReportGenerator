@@ -616,9 +616,6 @@ namespace ExcelReportApplication
             TestReport.KeywordIssue_Hide_Result_Bug = XMLConfig.ReadAppSetting_Boolean("KeywordIssue_report_Hide_Result_Bug");
             TestReport.KeywordIssue_Auto_Correct_Sheetname = XMLConfig.ReadAppSetting_Boolean("KeywordIssue_report_Correct_Worksheet");
 
-            TestReport.Option.FunctionC.LoadFromConfig();
-            TestReport.Option.FunctionC_DefaultByXML = TestReport.Option.FunctionC;
-
             TestReport.Option.LoadFromConfig();
             // end config for keyword report
         }
