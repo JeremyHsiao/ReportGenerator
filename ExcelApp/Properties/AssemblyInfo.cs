@@ -8,10 +8,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Report Generator")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("AUO Corporation")]
 [assembly: AssemblyProduct("Report Generator")]
-[assembly: AssemblyCopyright("Copyright ©  2023 AUO Corporation")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCopyright("Copyright ©  2024 AUO Corporation")]
+[assembly: AssemblyTrademark("AUO")]
 [assembly: AssemblyCulture("")]
 
 // 將 ComVisible 設定為 false 會使得這個組件中的型別
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // 您可以指定所有的值，也可以依照以下的方式，使用 '*' 將組建和修訂編號
 // 指定為預設值:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.3.19.10")]
-[assembly: AssemblyFileVersion("1.3.19.10")]
+[assembly: AssemblyVersion("1.3.20.0")]
+[assembly: AssemblyFileVersion("1.3.20.0")]
