@@ -1569,6 +1569,8 @@ namespace ExcelReportApplication
                             String ReturnDestinationPaht = "";
                             List<String> DestinationReportList;
                             Report_A_Push_Option();
+                            TestReport.Option.FunctionC.Copy_Worksheet_AtTheBeginning = true;
+                            //TestReport.Option.FunctionC.Copy_Worksheet_AtTheEnd = true;
                             TestReport.Option.FunctionC.Update_Conclusion = true;  // override report A option for new version
                             TestReport.Option.FunctionC.Update_Judgement = true;  // override report A option for new version
                             bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(InputExcel, out DestinationReportList, out ReturnDestinationPaht);
