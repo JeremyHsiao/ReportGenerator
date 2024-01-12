@@ -1093,6 +1093,7 @@ namespace ExcelReportApplication
         //    return true;
         //}
 
+        /*
         private bool Execute_FindFailTCLinkedIssueAllClosed(String tc_file, String template_file)
         {
             if ((ReportGenerator.IsGlobalIssueListEmpty()) || (ReportGenerator.IsGlobalTestcaseListEmpty()) ||
@@ -1108,6 +1109,7 @@ namespace ExcelReportApplication
             ReportGenerator.FindFailTCLinkedIssueAllClosed(tc_file, template_file, ReportGenerator.ReadGlobalIssueList());
             return true;
         }
+        */
 
         private bool Execute_ListAllDetailedTestPlanKeywordTask(String report_root, String output_file = "")
         {
@@ -1513,9 +1515,11 @@ namespace ExcelReportApplication
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
                         UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
+                        /*
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
                         bRet = Execute_FindFailTCLinkedIssueAllClosed(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text);
+                        */
                         break;
                     case ReportType.FindAllKeywordInReport:
                         if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;  // Directory path here

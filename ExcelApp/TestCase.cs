@@ -530,6 +530,7 @@ namespace ExcelReportApplication
             ExcelData_testcase = ExcelAction.InitTCExcelData();
 
             // prepare LUT for member_index (from 0 in sequence) to column_index  
+            // LUT: from name to column index, for exmaple, "Summry" is C
             List<int> LUT_member_to_column_index = new List<int>();
             foreach (String name in TestCaseMemberColumnName)
             {
@@ -547,6 +548,7 @@ namespace ExcelReportApplication
                     members.Add(str);
                 }
 
+                // check valid key & summary before storing a test-case
                 String tc_key = members[(int)TestCaseMemberIndex.KEY];
                 String summary = members[(int)TestCaseMemberIndex.SUMMARY];
                 if (CheckValidTC_By_Key_Summary(tc_key, summary))

@@ -960,6 +960,7 @@ namespace ExcelReportApplication
             range.Characters.Font.Color = System.Drawing.Color.White; ;
         }
 
+        /*
         // Copy value2 of Test-Case Excel (tc_data) to Test-Case-Template Excel.
         // Result: Test-Case Excel data shown in the format of Test-Case-Template
         static public bool CopyTestCaseIntoTemplate()
@@ -1015,6 +1016,7 @@ namespace ExcelReportApplication
 
             return true;
         }
+        */
 
         // This version doesn't assume that columns item/sequence are both the same.
         // 1. adjust rows of tc_template to be the same as test-case excel (by inserting/deleting rows)

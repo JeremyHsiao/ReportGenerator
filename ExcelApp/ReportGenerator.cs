@@ -1314,7 +1314,7 @@ namespace ExcelReportApplication
             // copy tc to template
             if (ExcelAction.CopyTestCaseIntoTemplate_v2() == false)
             {
-                MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_ProcessData()");
+                MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
                 return false;
             }
             return true;
@@ -1322,7 +1322,7 @@ namespace ExcelReportApplication
 
         // Report 1 relocated to here
         static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount_v3(String tc_file)
-        {
+        {                                                                                                                                                                   
             List<String> empty_report_list = new List<String>();
             // no report has been referred at all in current report 1
             if (WriteBacktoTCJiraExcelV3_ProcessData(empty_report_list) == false)
@@ -1440,7 +1440,7 @@ namespace ExcelReportApplication
         */
 
 
-
+        /*
         //
         // This demo finds out Test-case whose status is fail but all linked issues are closed (other issues are hidden)
         //
@@ -1578,5 +1578,6 @@ namespace ExcelReportApplication
             }
         }
 
+        */
     }
 }
