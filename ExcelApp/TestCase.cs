@@ -383,6 +383,7 @@ namespace ExcelReportApplication
             return ret_tc_list;
         }
 
+        /*
         static public List<TestCase> GenerateTestCaseList(string tclist_filename)
         {
             List<TestCase> ret_tc_list = new List<TestCase>();
@@ -447,6 +448,7 @@ namespace ExcelReportApplication
             ReportGenerator.SetTestcaseLUT_by_Sheetname(TestCase.UpdateTCListLUT_by_Sheetname(ret_tc_list));
             return ret_tc_list;
         }
+        */
 
         static public Boolean OpenTestCaseExcel(String tclist_filename)
         {
@@ -556,6 +558,7 @@ namespace ExcelReportApplication
             return ret_tc_list;
         }
 
+        /*
         static public List<TestCase> GenerateTestCaseList_New_v2(string tclist_filename)
         {
             List<TestCase> ret_tc_list = new List<TestCase>();
@@ -576,6 +579,7 @@ namespace ExcelReportApplication
 
             return ret_tc_list;
         }
+        */
 
         // This is the version to be revised -- separate excel open/close away from data processing
         static public ExcelData ExcelData_testcase;

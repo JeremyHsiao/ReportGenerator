@@ -316,6 +316,7 @@ namespace ExcelReportApplication
             return ret_string;
         }
 
+/*
         static public ExcelAction.ExcelStatus WriteBacktoTCJiraExcel_OpenExcel(String tclist_filename, String template_filename, String buglist_file)
         {
             ExcelAction.ExcelStatus status;
@@ -373,6 +374,7 @@ namespace ExcelReportApplication
 
             return status;
         }
+*/
 
         // to-be updated later
         //
