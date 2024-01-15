@@ -691,6 +691,26 @@ namespace ExcelReportApplication
         //    return updated_tc;
         //}
 
+        static public List<TestCase> KeyStringToListOfTestCase(String testcase_key_string, List<TestCase> testcase_source)
+        {
+            List<TestCase> ret_list = new List<TestCase>();
+            List<String> testcase_key_list = ReportGenerator.Split_String_To_ListOfString(testcase_key_string);
+            foreach (TestCase testcase in testcase_source)
+            {
+                if (testcase_key_list.IndexOf(testcase.Key) >= 0)
+                {
+                    // testcase found & added
+                    ret_list.Add(testcase);
+                }
+            }
+            return ret_list;
+        }
 
+        public List<TestCase> ToList()
+        {
+            List<TestCase> ret_list = new List<TestCase>();
+            ret_list.Add(this);
+            return ret_list;
+        }
     }
 }
