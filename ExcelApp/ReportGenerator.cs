@@ -88,7 +88,7 @@ namespace ExcelReportApplication
             global_issue_list.Clear();
         }
 
-        static public List<TestCase> ReadGlobalTestcaseList()
+        static public List<TestCase> ReadGlobalTestCaseList()
         {
             return global_testcase_list;
         }
@@ -106,6 +106,40 @@ namespace ExcelReportApplication
         static public void ClearGlobalTestcaseList()
         {
             global_testcase_list.Clear();
+        }
+
+        static private String[] separators = { "," };
+
+        static public List<String> Split_String_To_ListOfString(String links)
+        {
+            List<String> ret_list = new List<String>();
+            // protection
+            //if ((links == null) || (links == "")) return ret_list;   // return empty new object
+            if (String.IsNullOrWhiteSpace(links)) return ret_list;   // return empty new object
+            // Separate keys into string[]
+            String[] issues = links.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            if (issues == null) return ret_list;
+            // string[] to List<String> (trimmed) and return
+            foreach (String str in issues)
+            {
+                ret_list.Add(str.Trim());
+            }
+            return ret_list;
+        }
+
+        static public String Combine_ListOfString_to_String(List<String> list)
+        {
+            String ret = "";
+            // protection
+            if (list == null) return ret;
+            if (list.Count == 0) return ret;
+            foreach (String str in list)
+            {
+                ret += str + separators[0] + " ";
+            }
+            ret.Trim(); // remove " " at beginning & end
+            if (ret[ret.Length - 1] == ',') { ret.Remove(ret.Length - 1); }// remove last "," 
+            return ret;
         }
 
         //private static List<String> GetGlobalIssueKey(List<Issue> issue_list)
@@ -878,6 +912,35 @@ namespace ExcelReportApplication
 
             // 5. auto-fit-height of column links
             ExcelAction.TestCase_AutoFit_Column(links_col, IsTemplate: true);
+
+            bRet = true;
+            return bRet;
+        }
+
+        static public Boolean ProcessBugListToExtendTestCase(Worksheet worksheet_buglist)
+        {
+            Boolean bRet = false;
+
+            Dictionary<string, int> buglist_col_name_list = ExcelAction.CreateBugListColumnIndex();
+            int key_col = buglist_col_name_list[Issue.col_Key];
+            int links_col = buglist_col_name_list[Issue.col_LinkedIssue];
+            int last_row = ExcelAction.Get_Range_RowNumber(ExcelAction.GetIssueListAllRange());
+            int col_end = ExcelAction.GetBugListExcelRange_Col();
+
+            // Visit all rows and replace Testcase Key at Linked Issue with Testcase Summary - in reverse order
+            for (int excel_row_index = last_row; excel_row_index >= TestCase.DataBeginRow; excel_row_index--)
+            {
+                String links = ExcelAction.GetIssueListCellTrimmedString(excel_row_index, links_col);
+                List<TestCase> linked_tc_list = new List<TestCase>();
+                linked_tc_list = TestCase.KeyStringToListOfTestCase(links, ReportGenerator.ReadGlobalTestCaseList());
+                foreach (TestCase tc in linked_tc_list)
+                {
+                    List<StyleString> str_list = StyleString.TestCaseList_To_TestCaseSummary(tc.ToList());
+                    StyleString.WriteStyleString(worksheet_buglist, excel_row_index, links_col, str_list);
+                    ExcelAction.Insert_Row(worksheet_buglist, excel_row_index);
+                    // need to copy after insert
+                }
+            }
 
             bRet = true;
             return bRet;

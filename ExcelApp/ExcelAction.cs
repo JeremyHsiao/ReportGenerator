@@ -649,6 +649,18 @@ namespace ExcelReportApplication
             return col_end;
         }
 
+        static public Dictionary<string, int> CreateBugListColumnIndex()
+        {
+            return CreateTableColumnIndex(ws_issuelist, Issue.NameDefinitionRow);
+        }
+
+        static public int GetBugListExcelRange_Col()
+        {
+            Worksheet ws = (ws_issuelist);
+            int col_end = Get_Range_ColumnNumber(GetWorksheetAllRange(ws));
+            return col_end;
+        }
+
         // Excel Open/Close/Save for Issue List Excel
 
         static public ExcelStatus OpenIssueListExcel(String buglist_filename)
@@ -1023,7 +1035,7 @@ namespace ExcelReportApplication
         // 2. don't copy column name --> keep them instead
         // 3. copy cell value (of each data row) into correpsonding column of tc_template.
         //     for example copy "Key" (assumed at column 1) to another "Key" (assumed not at column 1)
-        static public bool CopyTestCaseIntoTemplate_v2()
+        static public Boolean CopyTestCaseIntoTemplate_v2()
         {
             Worksheet tc_data = ws_testcase,
                       tc_template = ws_tc_template;
@@ -1080,9 +1092,9 @@ namespace ExcelReportApplication
 
             // reduce row_end by 1 when there isn't valid key value at last row.
             String check_key, check_summary;
-            check_key = GetCellTrimmedString(ws_Src,row_end,src_col_name_list[TestCase.col_Key]);
-            check_summary = GetCellTrimmedString(ws_Src,row_end,src_col_name_list[TestCase.col_Summary]);
-            if(TestCase.CheckValidTC_By_Key_Summary(check_key,check_summary)==false)
+            check_key = GetCellTrimmedString(ws_Src, row_end, src_col_name_list[TestCase.col_Key]);
+            check_summary = GetCellTrimmedString(ws_Src, row_end, src_col_name_list[TestCase.col_Summary]);
+            if (TestCase.CheckValidTC_By_Key_Summary(check_key, check_summary) == false)
             {
                 row_end--;
             }
@@ -1485,19 +1497,46 @@ namespace ExcelReportApplication
             return result;
         }
 
+        //
+        // Copy bug-list into TC template
+        // NOTE: bug-list sheetname has been renamed before entering this function call
+        //
         static public Boolean CopyBugListSheetIntoTestCaseTemplateWorkbook()
         {
             Boolean b_ret = false;
             Worksheet template_last_sheet = workbook_tc_template.Worksheets[workbook_tc_template.Worksheets.Count];
 
-            ////Add new worksheet to template workbook
-            //workbook_tc_template.Worksheets.Add(Type.Missing, template_last_sheet, Type.Missing, XlSheetType.xlWorksheet);
-            ////copy worksheet to the new added worksheets
-            //workbook_tc_template.Worksheets[workbook_tc_template.Worksheets.Count].CopyFrom(workbook_issuelist.Worksheets[1]);
+            Boolean copy_bug_list = true,
+                    copy_and_extend_bug_list = false;          
+            int index_copy_bug_list = 0, index_copy_and_extend_bug_list = 0;                        // 0 means not copied
+            Worksheet worksheet_copy_bug_list = null, worksheet_copy_and_extend_bug_list = null;
+            int index_added_after_worksheet = ws_tc_template.Index;
 
-            ws_issuelist.Copy(After: ws_tc_template);
-            b_ret = true;
+            try
+            {
+                if (copy_bug_list) // original bug-list are copied without modificaiton
+                {
+                    ws_issuelist.Copy(After: workbook_tc_template.Worksheets[index_added_after_worksheet]);
+                    index_copy_bug_list = ++index_added_after_worksheet;
+                    worksheet_copy_bug_list = workbook_tc_template.Worksheets[index_copy_bug_list];
+                }
 
+                if (copy_and_extend_bug_list)
+                {
+                    ws_issuelist.Copy(After: workbook_tc_template.Worksheets[index_added_after_worksheet]);
+                    index_copy_and_extend_bug_list = ++index_added_after_worksheet;
+                    worksheet_copy_and_extend_bug_list = workbook_tc_template.Worksheets[index_copy_and_extend_bug_list];
+                }
+                b_ret = true;
+            }
+            catch (Exception ex)
+            {
+            }
+
+            if (copy_and_extend_bug_list)
+            {
+                ReportGenerator.ProcessBugListToExtendTestCase(worksheet_copy_and_extend_bug_list);
+            }
             return b_ret;
         }
 
@@ -1509,11 +1548,11 @@ namespace ExcelReportApplication
             Boolean b_ret = false;
 
             int current_worksheet_count = workbook_report.Worksheets.Count;
-            DestinationIndex--;
-            if ( (ReportIndex > 0) && (ReportIndex <= current_worksheet_count) && (DestinationIndex >= 0) && (DestinationIndex <= (current_worksheet_count)) )
+            DestinationIndex--;   // decide inserting after which sheet. if minus-one ==0, it means inserting at the beginning
+            if ((ReportIndex > 0) && (ReportIndex <= current_worksheet_count) && (DestinationIndex >= 0) && (DestinationIndex <= (current_worksheet_count)))
             {
                 Worksheet source = workbook_report.Worksheets[ReportIndex];
-                if (DestinationIndex == 0)      // insert at 0 to become 1st worksheet
+                if (DestinationIndex == 0)      // insert at the beginning to become 1st worksheet
                 {
                     source.Copy(Before: workbook_report.Worksheets[1]);
                 }

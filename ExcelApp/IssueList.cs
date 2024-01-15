@@ -365,7 +365,7 @@ namespace ExcelReportApplication
             InitIssue();
             if (String.IsNullOrWhiteSpace(this.testcaseid) == false)
             {
-                this.testcaseid_list = Split_String_To_ListOfString(testcaseid);
+                this.testcaseid_list = ReportGenerator.Split_String_To_ListOfString(testcaseid);
             }
         }
 
@@ -629,7 +629,7 @@ namespace ExcelReportApplication
         static public List<Issue> KeyStringToListOfIssue(String issues_key_string, List<Issue> issue_list_source)
         {
             List<Issue> ret_list = new List<Issue>();
-            List<String> issue_id_list = Issue.Split_String_To_ListOfString(issues_key_string);
+            List<String> issue_id_list = ReportGenerator.Split_String_To_ListOfString(issues_key_string);
             foreach (Issue issue in issue_list_source)
             {
                 if (issue_id_list.IndexOf(issue.Key) >= 0)
@@ -690,40 +690,6 @@ namespace ExcelReportApplication
                 // Validation failed.
             }
             return b_ret;
-        }
-
-        static private String[] separators = { "," };
-
-        static public List<String> Split_String_To_ListOfString(String links)
-        {
-            List<String> ret_list = new List<String>();
-            // protection
-            //if ((links == null) || (links == "")) return ret_list;   // return empty new object
-            if (String.IsNullOrWhiteSpace(links)) return ret_list;   // return empty new object
-            // Separate keys into string[]
-            String[] issues = links.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-            if (issues == null) return ret_list;
-            // string[] to List<String> (trimmed) and return
-            foreach (String str in issues)
-            {
-                ret_list.Add(str.Trim());
-            }
-            return ret_list;
-        }
-
-        static public String Combine_ListOfString_to_String(List<String> list)
-        {
-            String ret = "";
-            // protection
-            if (list == null) return ret;
-            if (list.Count == 0) return ret;
-            foreach (String str in list)
-            {
-                ret += str + separators[0] + " ";
-            }
-            ret.Trim(); // remove " " at beginning & end
-            if (ret[ret.Length - 1] == ',') { ret.Remove(ret.Length - 1); }// remove last "," 
-            return ret;
         }
 
 

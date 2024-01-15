@@ -599,7 +599,6 @@ Returns or sets the type of underline applied to the font.
         {
             List<StyleString> ret_style_string = new List<StyleString>();
             int processed_count = 0;
-
             foreach (Issue issue in issuelist)
             {
                 String key = issue.Key;  // rd_comment_str = issue.comment;
@@ -673,6 +672,36 @@ Returns or sets the type of underline applied to the font.
             return value_style_str;
         }
 
-    }
+        static public List<StyleString> TestCase_To_TestCaseSummary(TestCase testcasae)
+        {
+            List<StyleString> value_style_str = new List<StyleString>();
+            String key = testcasae.Key;
+            String summary = testcasae.Summary;
 
+            if ((String.IsNullOrWhiteSpace(key) == false) || (String.IsNullOrWhiteSpace(summary) == false))
+            {
+                StyleString style_str = new StyleString(summary, default_color, default_font, default_size, default_fontstyle);
+                value_style_str.Add(style_str);
+            }
+
+            return value_style_str;
+        }
+
+        static public List<StyleString> TestCaseList_To_TestCaseSummary(List<TestCase> tc_list)
+        {
+            List<StyleString> ret_stylestring_list = new List<StyleString>();
+            int processed_count = 0;
+            foreach (TestCase tc in tc_list)
+            {
+                processed_count++;
+                List<StyleString> next_testcase_summary = TestCase_To_TestCaseSummary(tc);
+                ret_stylestring_list.AddRange(next_testcase_summary);
+                if (processed_count < tc_list.Count())
+                {
+                    ret_stylestring_list.Add(new StyleString("\n"));
+                }
+            }
+            return ret_stylestring_list;
+        }
+    }
 }
