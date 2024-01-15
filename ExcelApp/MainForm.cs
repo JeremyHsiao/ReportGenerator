@@ -1760,6 +1760,7 @@ namespace ExcelReportApplication
                         break;
 
                     case ReportType.Update_Repoart_A_then_Report_K:                                    //Report L = A + K
+/*
                         // copied from report A
                         // NOTE: Input Excel File is storted in txtReportFile for Report J
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;
@@ -1785,6 +1786,28 @@ namespace ExcelReportApplication
                             String report_L_processed_report_output_path;
                             bRet = Execute_KeywordIssueGenerationTask_returning_report_path_simplified(report_l_copied_report_root_path, true, out report_L_processed_report_output_path);
                             bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_dir: report_L_processed_report_output_path);
+                        }
+*/
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;
+                        if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
+                        {
+                            MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
+                            bRet = false;
+                        }
+                        else
+                        {
+                            String InputExcel = txtReportFile.Text;
+                            String ReturnDestinationPaht = "";
+                            List<String> DestinationReportList;
+                            Report_B_Push_Option();
+                            TestReport.Option.FunctionC.Copy_Worksheet_AtTheBeginning = false;          // Overridden 
+                            TestReport.Option.FunctionC.Copy_Worksheet_AtTheEnd = false;                // Overridden
+                            bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(InputExcel, out DestinationReportList, out ReturnDestinationPaht);
+                            Report_B_Pop_Option();
+                            bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_list: DestinationReportList);
                         }
 
                         break;
