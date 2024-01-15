@@ -937,8 +937,16 @@ namespace ExcelReportApplication
                 {
                     List<StyleString> str_list = StyleString.TestCaseList_To_TestCaseSummary(tc.ToList());
                     StyleString.WriteStyleString(worksheet_buglist, excel_row_index, links_col, str_list);
-                    ExcelAction.Insert_Row(worksheet_buglist, excel_row_index);
-                    // need to copy after insert
+
+                    // Emulate the action of copy a selected range of rows and insert/paste below the selected range 
+
+                    // Get the rows to copy 
+                    Range copyRange = worksheet_buglist.Rows[excel_row_index + ":" + excel_row_index];
+                    // Insert enough new rows to fit the rows we're copying.
+                    copyRange.Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+                    // The copied data will be put in the same place 
+                    Range dest = worksheet_buglist.Rows[excel_row_index + ":" + excel_row_index];
+                    copyRange.Copy(dest);
                 }
             }
 
@@ -1303,7 +1311,7 @@ namespace ExcelReportApplication
             return true;
         }
 
-        static public Boolean OpenTCTemplatePasteBug(String template_file)
+        static public Boolean OpenTCTemplateAndPasteBugList(String template_file)
         {
             String template_filename = Storage.GetFullPath(template_file);
             if (!Storage.FileExists(template_filename))
@@ -1348,7 +1356,7 @@ namespace ExcelReportApplication
             return true;
         }
 
-        static public Boolean OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(String tc_file, String template_file, String buglist_file)
+        static public Boolean Process_BugList_TeseCase_TCTemplate(String tc_file, String template_file, String buglist_file)
         {
             // open bug and process bug
             if (OpenProcessBugExcel(buglist_file) == false)
@@ -1363,7 +1371,7 @@ namespace ExcelReportApplication
             }
 
             // open template and copy bug into it
-            if (OpenTCTemplatePasteBug(template_file) == false)
+            if (OpenTCTemplateAndPasteBugList(template_file) == false)
             {
                 return false;
             }

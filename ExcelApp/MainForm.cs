@@ -1500,7 +1500,7 @@ namespace ExcelReportApplication
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
-                        if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
+                        if (ReportGenerator.Process_BugList_TeseCase_TCTemplate(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
                         {
                             MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
                             bRet = false;
@@ -1563,7 +1563,7 @@ namespace ExcelReportApplication
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
                         if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
-                        if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
+                        if (ReportGenerator.Process_BugList_TeseCase_TCTemplate(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
                         {
                             MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
                             bRet = false;
@@ -1585,7 +1585,7 @@ namespace ExcelReportApplication
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;
-                        if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
+                        if (ReportGenerator.Process_BugList_TeseCase_TCTemplate(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
                         {
                             MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
                             bRet = false;
@@ -1655,7 +1655,7 @@ namespace ExcelReportApplication
 
                         //bRet = Execute_KeywordIssueGenerationTask_returning_report_path(txtReportFile.Text, true, out report_output_path);
                         //bRet = Execute_WriteIssueDescriptionToTC(tc_file: txtTCFile.Text, judgement_report_dir: report_output_path, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text);
-                        if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
+                        if (ReportGenerator.Process_BugList_TeseCase_TCTemplate(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
                         {
                             MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
                             bRet = false;
@@ -1704,7 +1704,7 @@ namespace ExcelReportApplication
                         //if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
                         //if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
 
-                        if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
+                        if (ReportGenerator.Process_BugList_TeseCase_TCTemplate(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
                         {
                             MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
                             bRet = false;
@@ -1742,7 +1742,7 @@ namespace ExcelReportApplication
                         if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
 
-                        if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
+                        if (ReportGenerator.Process_BugList_TeseCase_TCTemplate(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
                         {
                             MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
                             bRet = false;
@@ -1792,7 +1792,7 @@ namespace ExcelReportApplication
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;
-                        if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
+                        if (ReportGenerator.Process_BugList_TeseCase_TCTemplate(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
                         {
                             MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
                             bRet = false;

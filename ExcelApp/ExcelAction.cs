@@ -1521,7 +1521,7 @@ namespace ExcelReportApplication
                     worksheet_copy_bug_list = workbook_tc_template.Worksheets[index_copy_bug_list];
                 }
 
-                if (copy_and_extend_bug_list)
+                if (copy_and_extend_bug_list)   // bug-list are copied and linked issue (Test-case here) are extended from "Key" into "Summary" of testcase
                 {
                     ws_issuelist.Copy(After: workbook_tc_template.Worksheets[index_added_after_worksheet]);
                     index_copy_and_extend_bug_list = ++index_added_after_worksheet;
