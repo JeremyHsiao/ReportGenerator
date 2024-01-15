@@ -1357,7 +1357,7 @@ namespace ExcelReportApplication
             TestReport.Option.FunctionC.Copy_Worksheet_AtTheBeginning = false;
             TestReport.Option.FunctionC.Copy_Worksheet_AtTheEnd = false;
             TestReport.Option.FunctionC.Remove_AUO_Internal = false;
-            TestReport.Option.FunctionC.Update_Report_Sheetname = false;
+            TestReport.Option.FunctionC.Update_Report_Sheetname = true;
             TestReport.Option.FunctionC.Clear_Keyword_Result = true;
             //TestReport.Option.FunctionC.Hide_Keyword_Result_Bug_Row = false;
             //TestReport.Option.FunctionC.Replace_Conclusion = false;
@@ -1379,7 +1379,7 @@ namespace ExcelReportApplication
             TestReport.Option.FunctionC.Copy_Worksheet_AtTheBeginning = true;       // copy report before any processing
             TestReport.Option.FunctionC.Copy_Worksheet_AtTheEnd = false;
             TestReport.Option.FunctionC.Remove_AUO_Internal = false;
-            TestReport.Option.FunctionC.Update_Report_Sheetname = false;
+            TestReport.Option.FunctionC.Update_Report_Sheetname = true;
             TestReport.Option.FunctionC.Clear_Keyword_Result = true;
             //TestReport.Option.FunctionC.Hide_Keyword_Result_Bug_Row = false;
             //TestReport.Option.FunctionC.Replace_Conclusion = false;
