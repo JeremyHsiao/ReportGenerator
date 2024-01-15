@@ -51,10 +51,10 @@ namespace ExcelReportApplication
             ReportType.FullIssueDescription_TC,                     // report 1
             //ReportType.FullIssueDescription_Summary,
             //ReportType.StandardTestReportCreation,
-            ReportType.KeywordIssue_Report_SingleFile,
+            //ReportType.KeywordIssue_Report_SingleFile,                            // Hide since v 1.3.21.0
             //ReportType.TC_Likely_Passed,
-            ReportType.FindAllKeywordInReport,
-            ReportType.KeywordIssue_Report_Directory,               // report 7
+            //ReportType.FindAllKeywordInReport,                                    // Hide since v 1.3.21.0
+            //ReportType.KeywordIssue_Report_Directory,               // report 7   // Hide since v 1.3.21.0
             //ReportType.Excel_Sheet_Name_Update_Tool,
             ReportType.FullIssueDescription_TC_report_judgement,    // report 9
             ReportType.CreateCSTReport,                             // report A
@@ -64,9 +64,9 @@ namespace ExcelReportApplication
             ReportType.RemoveInternalSheet, 
             //ReportType.TC_GroupSummaryReport,
             //ReportType.Update_Report_Linked_Issue,
-            ReportType.Update_Keyword_and_TC_Report,                // Report H
+            //ReportType.Update_Keyword_and_TC_Report,                // Report H   // Hide since v 1.3.21.0
             //ReportType.Man_Power_Processing,
-            ReportType.Update_Repoart_A_then_Report_H,              // Report J
+            //ReportType.Update_Repoart_A_then_Report_H,              // Report J   // Hide since v 1.3.21.0
             ReportType.Update_Report_Linked_Issue_and_TC_Report,    // Report K
             ReportType.Update_Repoart_A_then_Report_K,              // Report L
         };
@@ -1372,6 +1372,28 @@ namespace ExcelReportApplication
             Pop_Option_All();
         }
 
+        static private void Report_B_Push_Option()
+        {
+            Push_Option_All();
+            TestReport.Option.FunctionC.CopyFileOnly = false;
+            TestReport.Option.FunctionC.Copy_Worksheet_AtTheBeginning = true;       // copy report before any processing
+            TestReport.Option.FunctionC.Copy_Worksheet_AtTheEnd = false;
+            TestReport.Option.FunctionC.Remove_AUO_Internal = false;
+            TestReport.Option.FunctionC.Update_Report_Sheetname = false;
+            TestReport.Option.FunctionC.Clear_Keyword_Result = true;
+            //TestReport.Option.FunctionC.Hide_Keyword_Result_Bug_Row = false;
+            //TestReport.Option.FunctionC.Replace_Conclusion = false;
+            TestReport.Option.FunctionC.Update_Header_by_Template = true;
+            TestReport.Option.FunctionC.Update_Conclusion = true;  // override report A option for new version
+            TestReport.Option.FunctionC.Update_Judgement = true;  // override report A option for new version
+            //TestReport.Option.FunctionC.Update_Sample_SN = false;
+        }
+
+        static private void Report_B_Pop_Option()
+        {
+            Pop_Option_All();
+        }
+
         static private void Report_E_Push_Option()
         {
             Push_Option_All();
@@ -1409,6 +1431,7 @@ namespace ExcelReportApplication
 
         static private void Push_Option_All()
         {
+            // We use "TestReport.Option.FunctionC_DefaultByXML" to store options before changed by report functions.
             /*
             temp_option_stack.Push(TestReport.Option.FunctionC.CopyFileOnly);
             temp_option_stack.Push(TestReport.Option.FunctionC.Copy_Worksheet_AtTheBeginning);
@@ -1572,14 +1595,9 @@ namespace ExcelReportApplication
                             String InputExcel = txtReportFile.Text;
                             String ReturnDestinationPaht = "";
                             List<String> DestinationReportList;
-                            Report_A_Push_Option();
-                            // Currently "Copy_Worksheet_AtTheBeginning" & "Copy_Worksheet_AtTheBeginning" is N/C
-                            //TestReport.Option.FunctionC.Copy_Worksheet_AtTheBeginning = true;
-                            //TestReport.Option.FunctionC.Copy_Worksheet_AtTheEnd = true;
-                            TestReport.Option.FunctionC.Update_Conclusion = true;  // override report A option for new version
-                            TestReport.Option.FunctionC.Update_Judgement = true;  // override report A option for new version
+                            Report_B_Push_Option();
                             bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(InputExcel, out DestinationReportList, out ReturnDestinationPaht);
-                            Report_A_Pop_Option();
+                            Report_B_Pop_Option();
                             bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_list: DestinationReportList);
                         }
                         
