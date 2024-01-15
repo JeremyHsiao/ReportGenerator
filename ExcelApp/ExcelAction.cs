@@ -1526,6 +1526,7 @@ namespace ExcelReportApplication
                     ws_issuelist.Copy(After: workbook_tc_template.Worksheets[index_added_after_worksheet]);
                     index_copy_and_extend_bug_list = ++index_added_after_worksheet;
                     worksheet_copy_and_extend_bug_list = workbook_tc_template.Worksheets[index_copy_and_extend_bug_list];
+                    ReportGenerator.ProcessBugListToExtendTestCase(worksheet_copy_and_extend_bug_list);
                 }
                 b_ret = true;
             }
@@ -1533,10 +1534,6 @@ namespace ExcelReportApplication
             {
             }
 
-            if (copy_and_extend_bug_list)
-            {
-                ReportGenerator.ProcessBugListToExtendTestCase(worksheet_copy_and_extend_bug_list);
-            }
             return b_ret;
         }
 

@@ -931,22 +931,28 @@ namespace ExcelReportApplication
             for (int excel_row_index = last_row; excel_row_index >= TestCase.DataBeginRow; excel_row_index--)
             {
                 String links = ExcelAction.GetIssueListCellTrimmedString(excel_row_index, links_col);
-                List<TestCase> linked_tc_list = new List<TestCase>();
-                linked_tc_list = TestCase.KeyStringToListOfTestCase(links, ReportGenerator.ReadGlobalTestCaseList());
+                List<TestCase> linked_tc_list = TestCase.KeyStringToListOfTestCase(links, ReportGenerator.ReadGlobalTestCaseList());
+                linked_tc_list.Reverse();
+                int current_processing_index = linked_tc_list.Count;
                 foreach (TestCase tc in linked_tc_list)
                 {
+                    // update current row
                     List<StyleString> str_list = StyleString.TestCaseList_To_TestCaseSummary(tc.ToList());
                     StyleString.WriteStyleString(worksheet_buglist, excel_row_index, links_col, str_list);
 
-                    // Emulate the action of copy a selected range of rows and insert/paste below the selected range 
+                    // if still more rows to insert
+                    if (--current_processing_index > 0)
+                    {
+                        // Emulate the action of copy a selected range of rows and insert/paste below the selected range 
 
-                    // Get the rows to copy 
-                    Range copyRange = worksheet_buglist.Rows[excel_row_index + ":" + excel_row_index];
-                    // Insert enough new rows to fit the rows we're copying.
-                    copyRange.Insert(Excel.XlInsertShiftDirection.xlShiftDown);
-                    // The copied data will be put in the same place 
-                    Range dest = worksheet_buglist.Rows[excel_row_index + ":" + excel_row_index];
-                    copyRange.Copy(dest);
+                        // Get the rows to copy 
+                        Range copyRange = worksheet_buglist.Rows[excel_row_index + ":" + excel_row_index];
+                        // Insert enough new rows to fit the rows we're copying.
+                        copyRange.Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+                        // The copied data will be put in the same place 
+                        Range dest = worksheet_buglist.Rows[excel_row_index + ":" + excel_row_index];
+                        copyRange.Copy(dest);
+                    }
                 }
             }
 
