@@ -1506,22 +1506,20 @@ namespace ExcelReportApplication
             Boolean b_ret = false;
             Worksheet template_last_sheet = workbook_tc_template.Worksheets[workbook_tc_template.Worksheets.Count];
 
-            Boolean copy_bug_list = true,
-                    copy_and_extend_bug_list = false;          
             int index_copy_bug_list = 0, index_copy_and_extend_bug_list = 0;                        // 0 means not copied
             Worksheet worksheet_copy_bug_list = null, worksheet_copy_and_extend_bug_list = null;
             int index_added_after_worksheet = ws_tc_template.Index;
 
             try
             {
-                if (copy_bug_list) // original bug-list are copied without modificaiton
+                if (ReportGenerator.copy_bug_list) // original bug-list are copied without modificaiton
                 {
                     ws_issuelist.Copy(After: workbook_tc_template.Worksheets[index_added_after_worksheet]);
                     index_copy_bug_list = ++index_added_after_worksheet;
                     worksheet_copy_bug_list = workbook_tc_template.Worksheets[index_copy_bug_list];
                 }
 
-                if (copy_and_extend_bug_list)   // bug-list are copied and linked issue (Test-case here) are extended from "Key" into "Summary" of testcase
+                if (ReportGenerator.copy_and_extend_bug_list)   // bug-list are copied and linked issue (Test-case here) are extended from "Key" into "Summary" of testcase
                 {
                     ws_issuelist.Copy(After: workbook_tc_template.Worksheets[index_added_after_worksheet]);
                     index_copy_and_extend_bug_list = ++index_added_after_worksheet;

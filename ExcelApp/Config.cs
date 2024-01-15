@@ -146,6 +146,9 @@ namespace ExcelReportApplication
             @"KeywordIssue_report_Hide_Result_Bug",     @"false",  
             @"KeywordIssue_report_Correct_Worksheet",   @"false",
             //
+            @"TCSummary_copy_bug_list",                 @"true",  
+            @"TCSummary_copy_and_extend_bug_list",      @"false",
+            //
             // report 2
             @"workbook_Summary",                        @".\SampleData\Report_Template.xlsx",
             // report 3

@@ -37,6 +37,8 @@ namespace ExcelReportApplication
         static public Color LinkIssue_WAIVED_ISSUE_COLOR = Color.Black;
         static public Color LinkIssue_CLOSED_ISSUE_COLOR = Color.Black;
 
+        static public Boolean copy_bug_list = true;
+        static public Boolean copy_and_extend_bug_list = false;
 
         static public Dictionary<string, TestCase> GetTestcaseLUT_by_Sheetname()
         {

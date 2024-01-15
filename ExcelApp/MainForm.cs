@@ -606,6 +606,9 @@ namespace ExcelReportApplication
             ReportGenerator.LinkIssue_WAIVED_ISSUE_COLOR = ReportGenerator.LinkIssue_report_FontColor;
             ReportGenerator.LinkIssue_CLOSED_ISSUE_COLOR = ReportGenerator.LinkIssue_report_FontColor;
 
+            ReportGenerator.copy_bug_list = XMLConfig.ReadAppSetting_Boolean("TCSummary_copy_bug_list");
+            ReportGenerator.copy_and_extend_bug_list = XMLConfig.ReadAppSetting_Boolean("TCSummary_copy_and_extend_bug_list");
+
             // Input Excel
             HeaderTemplate.SheetName_HeaderTemplate = XMLConfig.ReadAppSetting_String("InputExcel_Sheetname_HeaderTemplate");
             HeaderTemplate.SheetName_ReportList = XMLConfig.ReadAppSetting_String("InputExcel_Sheetname_ReportList");
