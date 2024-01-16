@@ -276,16 +276,16 @@ namespace ExcelReportApplication
 
         static public int NameDefinitionRow = 4;
         static public int DataBeginRow = 5;
-        static public string SheetName = "general_report";
-        static public string TemplateSheetName = "TC_List";
+        static public string TestCaseSheetName = "general_report";
+        static public string TCTemplateSheetName = "TCResult";
         static public string KeyPrefix = "T";
 
         static public void LoadFromXML()
         {
             // config for test-case
             KeyPrefix = XMLConfig.ReadAppSetting_String("TC_Key_Prefix");
-            SheetName = XMLConfig.ReadAppSetting_String("TCList_ExportedSheetName");
-            TemplateSheetName = XMLConfig.ReadAppSetting_String("TC_SheetName");
+            TestCaseSheetName = XMLConfig.ReadAppSetting_String("TCList_ExportedSheetName");
+            TCTemplateSheetName = XMLConfig.ReadAppSetting_String("TC_Template_SheetName");
             NameDefinitionRow = XMLConfig.ReadAppSetting_int("TC_Row_NameDefine");
             DataBeginRow = XMLConfig.ReadAppSetting_int("TC_Row_DataBegin");
         }

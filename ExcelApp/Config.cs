@@ -96,7 +96,7 @@ namespace ExcelReportApplication
             @"BugList_Row_DataBegin",                     @"5",
             @"TC_Key_Prefix",                           @"TC",
             @"TCList_ExportedSheetName",                @"general_report",
-            @"TC_SheetName",                            @"general_report",
+            @"TC_Template_SheetName",                    @"TCResult",
             @"TC_Row_NameDefine",                           @"4",
             @"TC_Row_DataBegin",                            @"5",
             @"LinkIssueFilterStatusString",                 @"Close (0)",      // @"Close (0), Waive (0.1)",

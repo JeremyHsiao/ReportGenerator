@@ -788,11 +788,11 @@ namespace ExcelReportApplication
                 Worksheet ws_tclist;
                 if (IsTemplate == false)
                 {
-                    ws_tclist = ExcelAction.Find_Worksheet(wb_tc, TestCase.SheetName);
+                    ws_tclist = ExcelAction.Find_Worksheet(wb_tc, TestCase.TestCaseSheetName);
                 }
                 else
                 {
-                    ws_tclist = ExcelAction.Find_Worksheet(wb_tc, TestCase.TemplateSheetName);
+                    ws_tclist = ExcelAction.Find_Worksheet(wb_tc, TestCase.TCTemplateSheetName);
                 }
 
                 if (ws_tclist == null)
