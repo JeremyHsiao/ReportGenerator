@@ -443,10 +443,10 @@ namespace ExcelReportApplication
         static public void LoadFromXML()
         {
             // config for issue list
-            KeyPrefix = XMLConfig.ReadAppSetting_String("Issue_Key_Prefix");
+            KeyPrefix = XMLConfig.ReadAppSetting_String("BugList_Key_Prefix");
             SheetName = XMLConfig.ReadAppSetting_String("BugList_ExportedSheetName");
-            NameDefinitionRow = XMLConfig.ReadAppSetting_int("Issue_Row_NameDefine");
-            DataBeginRow = XMLConfig.ReadAppSetting_int("Issue_Row_DataBegin");
+            NameDefinitionRow = XMLConfig.ReadAppSetting_int("BugList_Row_NameDefine");
+            DataBeginRow = XMLConfig.ReadAppSetting_int("BugList_Row_DataBegin");
 
             // config for keyword report
             KeywordIssue_report_Font = XMLConfig.ReadAppSetting_String("KeywordIssue_report_Font");

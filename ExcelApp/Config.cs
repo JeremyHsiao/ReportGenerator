@@ -88,10 +88,10 @@ namespace ExcelReportApplication
             @"Report_C_ReadHeaderItem",                 @"false",
             // lagacy options - END
             @"Excel_Visible",                           @"true",
-            @"Issue_Key_Prefix",                        @"-",
             @"BugList_ExportedSheetName",               @"general_report",
-            @"Issue_Row_NameDefine",                    @"4",
-            @"Issue_Row_DataBegin",                     @"5",
+            @"BugList_Key_Prefix",                      @"-",
+            @"BugList_Row_NameDefine",                    @"4",
+            @"BugList_Row_DataBegin",                     @"5",
             @"TC_Key_Prefix",                           @"TC",
             @"TCList_ExportedSheetName",                @"general_report",
             @"TC_SheetName",                            @"general_report",
