@@ -153,7 +153,7 @@ namespace ExcelReportApplication
         static public List<String> ListSheetName(Excel.Application curExcel)
         {
             List<String> ret_sheetname = new List<String>();
-            foreach (Excel.Worksheet displayWorksheet in curExcel.Worksheets)
+            foreach (Worksheet displayWorksheet in curExcel.Worksheets)
             {
                 ret_sheetname.Add(displayWorksheet.Name);
             }
@@ -162,7 +162,7 @@ namespace ExcelReportApplication
 
         static public bool WorksheetExist(Excel.Application curExcel, string sheet_name)
         {
-            foreach (Excel.Worksheet displayWorksheet in curExcel.Worksheets)
+            foreach (Worksheet displayWorksheet in curExcel.Worksheets)
             {
                 if (displayWorksheet.Name.CompareTo(sheet_name) == 0)
                 {
@@ -174,7 +174,7 @@ namespace ExcelReportApplication
 
         static public bool WorksheetExist(Workbook wb, string sheet_name)
         {
-            foreach (Excel.Worksheet displayWorksheet in wb.Worksheets)
+            foreach (Worksheet displayWorksheet in wb.Worksheets)
             {
                 if (displayWorksheet.Name.CompareTo(sheet_name) == 0)
                 {
