@@ -39,6 +39,7 @@ namespace ExcelReportApplication
 
         static public Boolean copy_bug_list = true;
         static public Boolean copy_and_extend_bug_list = false;
+        static public Boolean update_status_even_no_report = false;
 
         static public Dictionary<string, TestCase> GetTestcaseLUT_by_Sheetname()
         {
@@ -144,57 +145,6 @@ namespace ExcelReportApplication
             return ret;
         }
 
-        //private static List<String> GetGlobalIssueKey(List<Issue> issue_list)
-        //{
-        //    List<String> key_list = new List<String>();
-        //    foreach (Issue issue in issue_list)
-        //    {
-        //        key_list.Add(issue.Key);
-        //    }
-        //    return key_list;
-        //}
-
-        // 
-        // This demo open Test Case Excel and replace Issue ID on Linked Issue column with ID+Summary+Severity+RD_Comment
-        //
-        //static public void WriteBacktoTCJiraExcel(String tclist_filename)
-        //{
-        //    // Open original excel (read-only & corrupt-load) and write to another filename when closed
-        //    ExcelAction.ExcelStatus status = ExcelAction.OpenTestCaseExcel(tclist_filename);
-
-        //    if (status == ExcelAction.ExcelStatus.OK)
-        //    {
-        //        Dictionary<string, int> col_name_list = ExcelAction.CreateTestCaseColumnIndex();
-
-        //        int key_col = col_name_list[TestCase.col_Key];
-        //        int links_col = col_name_list[TestCase.col_LinkedIssue];
-        //        // Visit all rows and replace Bug-ID at Linked Issue with long description of Bug.
-        //        for (int index = TestCase.DataBeginRow; index <= ExcelAction.GetTestCaseAllRange().Row; index++)
-        //        {
-        //            // Make sure Key of TC contains KeyPrefix
-        //            String key = ExcelAction.GetTestCaseCellTrimmedString(index, key_col);
-        //            if (key.Contains(TestCase.KeyPrefix) == false) { break; } // If not a TC key in this row, go to next row
-
-        //            // If Links is not empty, extend bug key into long string with font settings
-        //            String links = ExcelAction.GetTestCaseCellTrimmedString(index, links_col);
-        //            if (links != "")
-        //            {
-        //                List<StyleString> str_list = StyleString.ExtendIssueDescription(links, global_full_issue_description_list);
-        //                ExcelAction.TestCase_WriteStyleString(index, links_col, str_list);
-        //            }
-        //        }
-        //        // auto-fit-height of column links
-        //        ExcelAction.TestCase_AutoFit_Column(links_col);
-
-        //        // Write to another filename with datetime
-        //        string dest_filename = FileFunction.GenerateFilenameWithDateTime(tclist_filename);
-        //        ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename);
-        //    }
-        //    // Always try to close at the end even there may be some error during operation
-        //    ExcelAction.CloseTestCaseExcel();
-        //}
-
-        // This version open Test Case Excel and copy content into template file and replace Issue ID on Linked Issue column with ID+Summary+Severity+RD_Comment
         /*
         static public void WriteBacktoTCJiraExcelV2(String tclist_filename, String template_filename, String judgement_report_dir = "")
         {
@@ -352,130 +302,6 @@ namespace ExcelReportApplication
             return ret_string;
         }
 
-/*
-        static public ExcelAction.ExcelStatus WriteBacktoTCJiraExcel_OpenExcel(String tclist_filename, String template_filename, String buglist_file)
-        {
-            ExcelAction.ExcelStatus status;
-
-            // open original test-case excel
-            status = ExcelAction.OpenTestCaseExcel(tclist_filename);
-            if (status != ExcelAction.ExcelStatus.OK)
-            {
-                ExcelAction.CloseTestCaseExcel();
-                return status;
-            }
-
-            // open template excel (as template of final output_
-            status = ExcelAction.OpenTestCaseExcel(template_filename, IsTemplate: true);
-            if (status != ExcelAction.ExcelStatus.OK)
-            {
-                ExcelAction.CloseTestCaseExcel();
-                return status;
-            }
-
-            // open bug-list file so that it can be copied to template excel
-            status = ExcelAction.OpenIssueListExcel(buglist_file);
-            if (status != ExcelAction.ExcelStatus.OK)
-            {
-                ExcelAction.CloseIssueListExcel();
-                return status;
-            }
-
-            String new_Buglist_sheetname = "BugList";
-            String buglist_date_string = ExcelAction.GetIssueListCellTrimmedString(3, 1);
-            String extracted_buglist_date = ExtractDate(buglist_date_string);
-            if (String.IsNullOrWhiteSpace(extracted_buglist_date) == false)
-            {
-                new_Buglist_sheetname += "_" + extracted_buglist_date;
-            }
-
-            String newTClist_sheetname = "TCList";
-            String tcglist_date_string = ExcelAction.GetTestCaseCellTrimmedString(3, 1, IsTemplate: false); // Use input TC as DATE
-            String extracted_tclist_date = ExtractDate(tcglist_date_string);
-            if (String.IsNullOrWhiteSpace(extracted_tclist_date) == false)
-            {
-                newTClist_sheetname += "_" + extracted_tclist_date;
-            }
-
-            Worksheet bug_list_worksheet = ExcelAction.GetIssueListWorksheet();
-            bug_list_worksheet.Name = new_Buglist_sheetname;
-            // copy-and-paste into template files.
-            ExcelAction.CopyBugListSheetIntoTestCaseTemplateWorkbook();
-            ExcelAction.CloseIssueListExcel();
-
-            // set template worksheet as active worksheet.
-            Worksheet tc_list_worksheet = ExcelAction.GetTestCaseWorksheet(IsTemplate: true);
-            tc_list_worksheet.Select();
-            tc_list_worksheet.Name = newTClist_sheetname;
-
-            return status;
-        }
-*/
-
-        // to-be updated later
-        //
-        //static public ExcelAction.ExcelStatus WriteBacktoTCJiraExcel_OpenExcel_new(String tclist_filename, String template_filename, String buglist_file)
-        //{
-        //    ExcelAction.ExcelStatus status;
-
-        //    // open original test-case excel
-        //    status = ExcelAction.OpenTestCaseExcel(tclist_filename);
-        //    if (status != ExcelAction.ExcelStatus.OK)
-        //    {
-        //        ExcelAction.CloseTestCaseExcel();
-        //        return status;
-        //    }
-
-        //    // open template excel (as template of final output_
-        //    status = ExcelAction.OpenTestCaseExcel(template_filename, IsTemplate: true);
-        //    if (status != ExcelAction.ExcelStatus.OK)
-        //    {
-        //        ExcelAction.CloseTestCaseExcel();
-        //        return status;
-        //    }
-
-        //    // open bug-list file so that it can be copied to template excel
-        //    status = ExcelAction.OpenIssueListExcel(buglist_file);
-        //    if (status != ExcelAction.ExcelStatus.OK)
-        //    {
-        //        ExcelAction.CloseIssueListExcel();
-        //        return status;
-        //    }
-
-        //    String new_Buglist_sheetname = "BugList";
-        //    String buglist_date_string = ExcelAction.GetIssueListCellTrimmedString(3, 1);
-        //    String extracted_buglist_date = ExtractDate(buglist_date_string);
-        //    if (String.IsNullOrWhiteSpace(extracted_buglist_date) == false)
-        //    {
-        //        new_Buglist_sheetname += "_" + extracted_buglist_date;
-        //    }
-
-        //    String newTClist_sheetname = "TCList";
-        //    String tcglist_date_string = ExcelAction.GetTestCaseCellTrimmedString(3, 1, IsTemplate: false); // Use input TC as DATE
-        //    String extracted_tclist_date = ExtractDate(tcglist_date_string);
-        //    if (String.IsNullOrWhiteSpace(extracted_tclist_date) == false)
-        //    {
-        //        newTClist_sheetname += "_" + extracted_tclist_date;
-        //    }
-
-        //    Worksheet bug_list_worksheet = ExcelAction.GetIssueListWorksheet();
-        //    bug_list_worksheet.Name = new_Buglist_sheetname;
-        //    // copy-and-paste into template files.
-        //    ExcelAction.CopyBugListSheetIntoTestCaseTemplateWorkbook();
-        //    ExcelAction.CloseIssueListExcel();
-
-        //    // set template worksheet as active worksheet.
-        //    Worksheet tc_template_worksheet = ExcelAction.GetTestCaseWorksheet(IsTemplate: true);
-        //    tc_template_worksheet.Select();
-        //    tc_template_worksheet.Name = newTClist_sheetname;
-
-        //    return status;
-        //}
-
-        //
-        // Input: List of all reports
-        // Output: Dictionary of Sheetname to ReportFullFileName
-        //
         static public Dictionary<String, String> GenerateReportListFullnameLUTbySheetname(List<String> report_list)
         {
             Dictionary<String, String> report_list_lut = new Dictionary<String, String>();
@@ -502,79 +328,6 @@ namespace ExcelReportApplication
             return report_list_lut;
         }
 
-        //
-        // Input: Root-directory (all reports under this path are all used)
-        // Output: Dictionary of Sheetname to ReportFullFileName
-        //
-        //
-        /*
-        static public Dictionary<String, String> GenerateReportListFullnameLUTbySheetname(String report_dir)
-        {
-            Dictionary<String, String> report_list_lut = new Dictionary<String, String>();
-
-            if (report_dir != "")
-            {
-                List<String> all_file_list = Storage.ListFilesUnderDirectory(report_dir);
-                report_list_lut = GenerateReportListFullnameLUTbySheetname(all_file_list);
-            }
-            return report_list_lut;
-        }
-        */
-
-        //static public Boolean ConvertBugID_to_BugDescription(String links, out List<StyleString> Link_Issue_Detail)
-        //{
-        //    Boolean ret = false;
-        //    Link_Issue_Detail = new List<StyleString>();
-
-        //    //if (links != "")
-        //    if (String.IsNullOrWhiteSpace(links) == false)
-        //    {
-        //        List<String> linked_issue_key_list = TestCase.Convert_LinksString_To_ListOfString(links);
-        //        // To remove closed issue & not-in-Jira-exported-data issue
-        //        // 1. prepare an empty list
-        //        List<String> final_id_list = new List<String>();
-        //        //List<String> global_issue_key_list = GetGlobalIssueKey(global_issue_list);
-        //        List<String> global_issue_key_list = lookup_BugList.Keys.ToList<String>();
-        //        // 2. Loop throught all global issues, add key of this issue into final_id_list if:
-        //        //     (1) key of this issue exists on linked_issue_key_list
-        //        //     (2) status of this issue is NOT the same as defined in "filter-status"
-        //        foreach (Issue issue in global_issue_list)
-        //        {
-        //            // status the same as one of those defined in "filter-status" (mostly closed issue), go to next issue
-        //            if (fileter_status_list.IndexOf(issue.Status) >= 0)
-        //            {
-        //                continue;
-        //            }
-        //            // if bug id not on the list, go the next bug
-        //            if (linked_issue_key_list.IndexOf(issue.Key) < 0)
-        //            {
-        //                continue;
-        //            }
-        //            // 2 checks are passed, add into final_id_list.Add
-        //            final_id_list.Add(issue.Key);
-        //        }
-        //        // 
-        //        Link_Issue_Detail = StyleString.ExtendIssueDescription(final_id_list, global_issue_description_list);
-        //        ret = true;
-        //    }
-        //    return ret;
-        //}
-
-        //static public String WriteBacktoTCJiraExcel_GetJudgementString(String worksheet_name, String workbook_filename)
-        //{
-        //    String judgement_string = ""; // empty if cannot get judgement value
-        //    // If current_status is "Finished" in excel report, it will be updated according to judgement of corresponding test report.
-        //    String judgement_str;
-        //    // If judgement value is available, update it.
-        //    if (KeywordReport.GetJudgementValue(workbook_filename, worksheet_name, out judgement_str))
-        //    {
-        //        judgement_string = judgement_str;
-        //    }
-
-        //    return judgement_string;
-        //}
-
-        // Split some part of V2 into sub-functions 
         /*
         static public void WriteBacktoTCJiraExcelV3(String tclist_filename, String template_filename, String buglist_file, String judgement_report_dir = "")
         {
@@ -751,6 +504,50 @@ namespace ExcelReportApplication
         }
         */
 
+        private static Boolean UpdateStatusCellByJudgement_TCTemplate(int row, int col, String judgement)
+        {
+            Boolean b_Ret = false;
+
+            String current_status = ExcelAction.GetTestCaseCellTrimmedString(row, col, IsTemplate: true);
+
+            // Update focus to current status cell
+            ExcelAction.TestCase_CellActivate(row, col, IsTemplate: true);
+
+            if (current_status == TestCase.STR_FINISHED)
+            {
+                // update only of judgement_string is available.
+                //if (judgement_str != "")
+                if (String.IsNullOrWhiteSpace(judgement) == false)
+                {
+                    ExcelAction.SetTestCaseCell(row, col, judgement, IsTemplate: true);
+                }
+            }
+
+            b_Ret = true;
+            return b_Ret;
+        }
+
+        private static Boolean UpdateStatusCellByLinkedIssue_TCTemplate(int row, int col, List<Issue> linked_issue_list)
+        {
+            Boolean b_Ret = false;
+
+            String current_status = ExcelAction.GetTestCaseCellTrimmedString(row, col, IsTemplate: true);
+
+            // Update focus to current status cell
+            ExcelAction.TestCase_CellActivate(row, col, IsTemplate: true);
+
+            // Update Status to judgement result if Status is "Finished"
+            if (current_status == TestCase.STR_FINISHED)
+            {
+                String status_string;
+                status_string = TestReport.Judgement_Decision_by_Linked_Issue_List(linked_issue_list);
+                ExcelAction.SetTestCaseCell(row, col, status_string, IsTemplate: true);
+            }
+
+            b_Ret = true;
+            return b_Ret;
+        }
+
         //
         // Input: report list
         // Output: (1) if report_list is empty or report_list contains no report file --> all test-case are checked and updated
@@ -838,37 +635,15 @@ namespace ExcelReportApplication
                     ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
                 }
 
-                if (report_is_available == false)
+                if (report_is_available)
                 {
-                    // For no-report case
-
-                    // 4.2 update Status (if it is Finished) according to linked issue count
-
-                    String current_status = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, status_col, IsTemplate: true);
-
-                    // Update focus to current status cell
-                    ExcelAction.TestCase_CellActivate(excel_row_index, status_col, IsTemplate: true);
-
-                    // Update Status to judgement result if Status is "Finished"
-                    if (current_status == TestCase.STR_FINISHED)
-                    {
-                        String status_string;
-                        status_string = TestReport.Judgement_Decision_by_Linked_Issue_List(linked_issue_list);
-                        ExcelAction.SetTestCaseCell(excel_row_index, status_col, status_string, IsTemplate: true);
-                    }
-                }
-                else
-                {
-                    // check if report is availablea, if yes, use report to update judgement & list keyword issue of this report
+                    // check if report is availablea, if yes, use report to update criterial/purpose & status (if FINISHE, status= judgement)
                     if (report_filelist_by_sheetname.ContainsKey(worksheet_name) == true)
                     {
                         // 4.2 update Status (if it is Finished) according to judgement report (if report is available)
 
-                        String current_status = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, status_col, IsTemplate: true);
                         String judgement_str, purpose_str, criteria_str;
-                        //Boolean update_status = false;
                         String workbook_filename = report_filelist_by_sheetname[worksheet_name];
-                        //if (KeywordReport.CheckLookupReportJudgementResultExist()) 
                         if (TestReport.CheckLookupReportInformationExist()) //
                         {
                             //judgement_str = KeywordReport.LookupReportJudgementResult(workbook_filename);
@@ -880,21 +655,11 @@ namespace ExcelReportApplication
                         else
                         {
                             TestReport.GetJudgementPurposeCriteriaValue(workbook_filename, worksheet_name, out judgement_str, out purpose_str, out criteria_str);
-                            //judgement_str = WriteBacktoTCJiraExcel_GetJudgementString(worksheet_name, workbook_filename);
                         }
 
-                        // Update focus to current status cell
-                        ExcelAction.TestCase_CellActivate(excel_row_index, status_col, IsTemplate: true);
+                        // update status by judgement (if status==FINISHED)
+                        UpdateStatusCellByJudgement_TCTemplate(excel_row_index, status_col, judgement_str);
 
-                        if (current_status == TestCase.STR_FINISHED)
-                        {
-                            // update only of judgement_string is available.
-                            //if (judgement_str != "")
-                            if (String.IsNullOrWhiteSpace(judgement_str) == false)
-                            {
-                                ExcelAction.SetTestCaseCell(excel_row_index, status_col, judgement_str, IsTemplate: true);
-                            }
-                        }
                         // 4.2.1 -- update purpose and criteria
                         // check if purpose/criteria field exists and strings are not empty
                         if ((purpose_col > 0) && (String.IsNullOrWhiteSpace(purpose_str) == false))
@@ -905,10 +670,20 @@ namespace ExcelReportApplication
                         {
                             ExcelAction.SetTestCaseCell(excel_row_index, criteria_col, criteria_str, IsTemplate: true);
                         }
-
-                        // not use anymore, last available in ReportGenerator_V1.3.19.7(20231218)
-                        // get buglist from keyword report and show it.
                     }
+                    else if (update_status_even_no_report)
+                    {
+                        UpdateStatusCellByLinkedIssue_TCTemplate(excel_row_index, status_col, linked_issue_list);
+                    }
+                }
+                // For no-report case & update status even no report
+                else if (update_status_even_no_report)
+                {
+                    UpdateStatusCellByLinkedIssue_TCTemplate(excel_row_index, status_col, linked_issue_list);
+                }
+                else
+                {
+                    // Do nothing
                 }
             }
 
@@ -1401,7 +1176,7 @@ namespace ExcelReportApplication
 
         // Report 1 relocated to here
         static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount_v3(String tc_file)
-        {                                                                                                                                                                   
+        {
             List<String> empty_report_list = new List<String>();
             // no report has been referred at all in current report 1
             if (WriteBacktoTCJiraExcelV3_ProcessData(empty_report_list) == false)

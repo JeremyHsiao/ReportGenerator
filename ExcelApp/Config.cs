@@ -148,6 +148,7 @@ namespace ExcelReportApplication
             //
             @"TCSummary_copy_bug_list",                 @"true",  
             @"TCSummary_copy_and_extend_bug_list",      @"false",
+            @"TCSummary_update_status_even_no_report",  @"false",
             //
             // report 2
             @"workbook_Summary",                        @".\SampleData\Report_Template.xlsx",
