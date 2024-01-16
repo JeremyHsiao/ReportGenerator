@@ -17,11 +17,13 @@ namespace ExcelReportApplication
             @"CONFIG_DEFAULT_VALUE_VERSION",            @"000", // DO NOT CHANGE THIS DEFAULT "000" -- all previous default value are treated as 000
             @"workbook_BUG_Jira",                       @".\SampleData\Jira 2022-09-03T10_48.xls", 
             @"workbook_TC_Jira",                        @".\SampleData\TC_Jira 2022-09-03T11_07.xls",
-            @"Keyword_default_report_dir",              @".\SampleData\EVT_Winnie_Keyword2.5_keyword\All function",
+            @"TestReport_default_dir",                  @".\SampleData\EVT_Winnie_Keyword2.5_keyword\All function",
             @"workbook_TC_Template",                    @".\SampleData\TC_Jira_Template.xlsx",
+            @"Report_L_Default_Excel",                  @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Copy_Report_Excel_List.xlsx",
             @"Report_E_Remove_AUO_Sheet_Default_Excel", @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Copy_Report_Excel_List.xlsx",
             @"Report_D_Copy_Only_Default_Excel",        @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Copy_Report_Excel_List.xlsx",
             @"Report_C_Default_Excel",                  @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Copy_Report_Excel_List.xlsx",
+            @"Report_B_Default_Excel",                  @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Copy_Report_Excel_List.xlsx",
             @"Report_A_Default_Excel",                  @".\SampleData\EVT_Winnie_Keyword2.5_keyword\Copy_Report_Excel_List.xlsx",
             @"InputExcel_Sheetname_ReportList",         @"ReportList",
             @"InputExcel_Sheetname_HeaderTemplate",     @"BeforeLine21",
@@ -108,8 +110,8 @@ namespace ExcelReportApplication
             @"KeywordIssue_BugStatus_Title_Offset_Col",    @"3",
             @"KeywordIssue_BugList_Title_Offset_Row",      @"2",
             @"KeywordIssue_BugList_Title_Offset_Col",      @"1",
-            @"TestReport_Default_Output_Dir",               @"",
-            @"TestReport_Default_Source_Path",              @"",
+
+            
             @"KeywordIssueFilterStatusString",              @"Close (0)",
             @"TestReport_Default_Judgement",                @"N/A",
             @"TestReport_Default_Conclusion",               @" ",

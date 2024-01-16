@@ -420,8 +420,6 @@ namespace ExcelReportApplication
 
     public static class TestReport
     {
-        static public String TestReport_Default_Output_Dir = "";
-
         // From TestReportOption - BEGIN
         public static int Title_at_row = 1, Title_at_col = ExcelAction.ColumnNameToNumber('A');
 

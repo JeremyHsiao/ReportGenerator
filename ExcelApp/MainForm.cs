@@ -531,7 +531,7 @@ namespace ExcelReportApplication
             // config for default filename at MainForm
             this.txtBugFile.Text = XMLConfig.ReadAppSetting_String("workbook_BUG_Jira");
             this.txtTCFile.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Jira");
-            this.txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+            this.txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_default_dir");
             this.txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
 
             // config for default ExcelAction settings
@@ -583,9 +583,6 @@ namespace ExcelReportApplication
             TestReport.col_offset_buglist_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugList_Title_Offset_Col");
 
             // end of config
-
-            // config for default output directory of test report (keyword report)
-            TestReport.TestReport_Default_Output_Dir = XMLConfig.ReadAppSetting_String("TestReport_Default_Output_Dir");
 
             // config for excel report output (also linked issue)
             StyleString.default_font = XMLConfig.ReadAppSetting_String("default_report_Font");
@@ -930,6 +927,7 @@ namespace ExcelReportApplication
         //    return TestReport.CopyTestReportbyTestCase(report_src_dir, output_report_dir);
         //}
 
+
         private bool Execute_KeywordIssueGenerationTask(String FileOrDirectoryName, Boolean IsDirectory = false)
         {
             String output_report_path;  // not used for this task
@@ -959,37 +957,17 @@ namespace ExcelReportApplication
                     return false;
                 }
                 file_list = Storage.ListFilesUnderDirectory(FileOrDirectoryName);
-                //MsgWindow.AppendText("File found under directory " + FileOrDirectoryName + "\n");
-                //foreach (String filename in file_list)
-                //    MsgWindow.AppendText(filename + "\n");
                 source_dir = FileOrDirectoryName;
             }
-            // filename check to exclude non-report files.
-            //List<String> report_list = Storage.FilterFilename(file_list);
-            // NOTE: FilterFilename() execution is now relocated within KeywordIssueGenerationTaskV4()
-            List<String> report_list = file_list;
-
-            // This issue description is needed for report purpose
-            //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
-
-            //// this is for keyword report, how to input linked issue report list???
-            //Dictionary<string, List<StyleString>> global_issue_description_list_severity =
-            //                    StyleString.GenerateIssueDescription_Keyword_Issue(ReportGenerator.ReadGlobalIssueList());
-            String out_dir = TestReport.TestReport_Default_Output_Dir;
-            if ((out_dir != "") && Storage.DirectoryExists(out_dir))
-            {
-                output_report_path = TestReport.TestReport_Default_Output_Dir;
-            }
-            else
-            {
-                output_report_path = Storage.GenerateDirectoryNameWithDateTime(source_dir);
-            }
-            TestReport.KeywordIssueGenerationTaskV4(report_list, source_dir, output_report_path);
+            output_report_path = Storage.GenerateDirectoryNameWithDateTime(source_dir);
+            TestReport.KeywordIssueGenerationTaskV4(file_list, source_dir, output_report_path);
             return true;
         }
 
-        private bool Execute_KeywordIssueGenerationTask_returning_report_path_simplified(String FileOrDirectoryName, Boolean IsDirectory, out String output_report_path)
+        private Boolean Execute_KeywordIssueGenerationTask_returning_report_path_simplified(String FileOrDirectoryName, Boolean IsDirectory, out String output_report_path)
         {
+            List<String> file_list = new List<String>();
+            String source_dir;
             output_report_path = "";
 
             if (ReportGenerator.IsGlobalIssueListEmpty())
@@ -998,8 +976,6 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            List<String> file_list = new List<String>();
-            String source_dir;
             if (IsDirectory == false)
             {
                 if (!Storage.FileExists(FileOrDirectoryName))
@@ -1018,32 +994,10 @@ namespace ExcelReportApplication
                     return false;
                 }
                 file_list = Storage.ListFilesUnderDirectory(FileOrDirectoryName);
-                //MsgWindow.AppendText("File found under directory " + FileOrDirectoryName + "\n");
-                //foreach (String filename in file_list)
-                //    MsgWindow.AppendText(filename + "\n");
                 source_dir = FileOrDirectoryName;
             }
-            // filename check to exclude non-report files.
-            //List<String> report_list = Storage.FilterFilename(file_list);
-            // NOTE: FilterFilename() execution is now relocated within KeywordIssueGenerationTaskV4()
-            List<String> report_list = file_list;
-
-            // This issue description is needed for report purpose
-            //ReportGenerator.global_issue_description_list = Issue.GenerateIssueDescription(ReportGenerator.global_issue_list);
-
-            //// this is for keyword report, how to input linked issue report list???
-            //Dictionary<string, List<StyleString>> global_issue_description_list_severity =
-            //                    StyleString.GenerateIssueDescription_Keyword_Issue(ReportGenerator.ReadGlobalIssueList());
-            String out_dir = TestReport.TestReport_Default_Output_Dir;
-            if ((out_dir != "") && Storage.DirectoryExists(out_dir))
-            {
-                output_report_path = TestReport.TestReport_Default_Output_Dir;
-            }
-            else
-            {
-                output_report_path = Storage.GenerateDirectoryNameWithDateTime(source_dir);
-            }
-            TestReport.KeywordIssueGenerationTaskV4_simplified(report_list, source_dir, output_report_path);
+            output_report_path = Storage.GenerateDirectoryNameWithDateTime(source_dir);
+            TestReport.KeywordIssueGenerationTaskV4_simplified(file_list, source_dir, output_report_path);
             return true;
         }
 
@@ -1515,28 +1469,36 @@ namespace ExcelReportApplication
                         }
                         break;
                     case ReportType.FullIssueDescription_Summary: // report 2 not used now
+                        /*
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
                         bRet = Execute_WriteIssueDescriptionToSummary(template_file: txtOutputTemplate.Text);
+                        */
                         break;
                     case ReportType.CreateImportToJiraCSV:
+                        /*
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
                         //bRet = Execute_CreateStandardTestReportTask(main_file: txtOutputTemplate.Text);
+                        */
                         break;
                     case ReportType.KeywordIssue_Report_SingleFile:                 // Report 4
+                        /*
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;  // File path here
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         bRet = Execute_KeywordIssueGenerationTask(FileOrDirectoryName: txtReportFile.Text, IsDirectory: true);
+                        */
                         break;
                     case ReportType.KeywordIssue_Report_Directory:                  // Report 7
+                        /*
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
                         if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;  // Directory path here
                         if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
                         bRet = Execute_KeywordIssueGenerationTask(FileOrDirectoryName: txtReportFile.Text, IsDirectory: true);
+                        */
                         break;
                     case ReportType.TC_Likely_Passed:           /// report 5 not used now
                         UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
@@ -1549,6 +1511,7 @@ namespace ExcelReportApplication
                         */
                         break;
                     case ReportType.FindAllKeywordInReport:
+                        /*
                         if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;  // Directory path here
                         //UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
                         //String main_file = txtStandardTestReport.Text;
@@ -1556,11 +1519,14 @@ namespace ExcelReportApplication
                         String output_filename = "";//use default in config file
                         String report_root_dir = Storage.GetFullPath(txtReportFile.Text);
                         bRet = Execute_ListAllDetailedTestPlanKeywordTask(report_root: report_root_dir, output_file: output_filename);
+                        */
                         break;
                     case ReportType.Excel_Sheet_Name_Update_Tool:
+                        /*
                         if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;  // Directory path here
                         // bRet = Execute_KeywordIssueGenerationTask(txtReportFile.Text, IsDirectory: true);
                         bRet = true;
+                        */
                         break;
                     case ReportType.FullIssueDescription_TC_report_judgement:           // Report 9
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
@@ -2062,7 +2028,7 @@ namespace ExcelReportApplication
                     break;
                 case ReportType.KeywordIssue_Report_Directory:
                     if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_default_dir");
                     break;
                 case ReportType.TC_Likely_Passed:
                     if (!btnSelectOutputTemplate_Clicked)
@@ -2070,7 +2036,7 @@ namespace ExcelReportApplication
                     break;
                 case ReportType.FindAllKeywordInReport:
                     if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_default_dir");
                     break;
                 case ReportType.Excel_Sheet_Name_Update_Tool:
                     if (!btnSelectReportFile_Clicked)
@@ -2078,7 +2044,7 @@ namespace ExcelReportApplication
                     break;
                 case ReportType.FullIssueDescription_TC_report_judgement: // original adopted from "1.Issue Description for TC"
                     if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_default_dir");
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
@@ -2088,7 +2054,7 @@ namespace ExcelReportApplication
                     break;
                 case ReportType.FinalCSTReport:                 // Report B - refer to report J
                     if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Report_A_Default_Excel");
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Report_B_Default_Excel");
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
@@ -2106,17 +2072,17 @@ namespace ExcelReportApplication
                     break;
                 case ReportType.TC_GroupSummaryReport:
                     if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_default_dir");
                     break;
                 case ReportType.Update_Report_Linked_Issue:
                     if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_default_dir");
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
                 case ReportType.Update_Keyword_and_TC_Report: // original adopted from report 9     -- report H
                     if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_default_dir");
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
@@ -2137,7 +2103,7 @@ namespace ExcelReportApplication
                     break;
                 case ReportType.Update_Report_Linked_Issue_and_TC_Report: // Report K
                     if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Keyword_default_report_dir");
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_default_dir");
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
@@ -2145,7 +2111,7 @@ namespace ExcelReportApplication
                     // copied from report J
                     // NOTE: Input Excel File is storted in txtReportFile for Report L
                     if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Report_A_Default_Excel");
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Report_L_Default_Excel");
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
