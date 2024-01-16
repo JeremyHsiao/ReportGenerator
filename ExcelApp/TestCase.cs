@@ -660,7 +660,7 @@ namespace ExcelReportApplication
             Dictionary<string, TestCase> ret_lut = new Dictionary<string, TestCase>();
             foreach (TestCase tc in TC_list)
             {
-                String sheetname = TestPlan.GetSheetNameAccordingToSummary(tc.Summary);
+                String sheetname = ReportGenerator.GetSheetNameAccordingToSummary(tc.Summary);
                 if (ret_lut.ContainsKey(sheetname))
                 {
                     // shouldn't be here. Excel needs to be fixed

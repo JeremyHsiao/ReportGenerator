@@ -426,7 +426,7 @@ namespace ExcelReportApplication
                 return 0;       // cannot compare
 
             String x = line_x[Compare_index], y = line_y[Compare_index];
-            return TestPlan.Compare_Sheetname_Ascending(x, y);
+            return ReportGenerator.Compare_Sheetname_Ascending(x, y);
         }
         public Boolean Setup_Compare_Field_and_Function(String field, Boolean ascending = true)
         {

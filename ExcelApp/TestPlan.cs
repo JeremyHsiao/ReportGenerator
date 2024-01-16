@@ -320,39 +320,6 @@ namespace ExcelReportApplication
             }
         }
 
-        public static String GetSheetNameAccordingToFilename(String filename)
-        {
-            String full_filename = Storage.GetFullPath(filename);
-            String short_filename = Storage.GetFileName(full_filename);
-            String[] sp_str = short_filename.Split(new Char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
-            String sheet_name = sp_str[0];
-            return sheet_name;
-        }
-
-        public static String GetSheetNameAccordingToSummary(String summary)
-        {
-            String[] sp_str = summary.Split(new Char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
-            String sheet_name = sp_str[0];
-            return sheet_name;
-        }
-
-        public static String GetReportTitleAccordingToFilename(String filename)
-        {
-            String full_filename = Storage.GetFullPath(filename);
-            String short_filename_no_extension = Storage.GetFileNameWithoutExtension(full_filename);
-            return short_filename_no_extension;
-        }
-
-        public static String GetReportTitleWithoutNumberAccordingToFilename(String filename)
-        {
-            String full_filename = Storage.GetFullPath(filename);
-            String short_filename_no_extension = Storage.GetFileNameWithoutExtension(full_filename);
-            String[] sp_str = short_filename_no_extension.Split(new Char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
-            String ret_string = short_filename_no_extension.Substring(sp_str[0].Length + 1);
-
-            return ret_string;
-        }
-
         public static TestPlan CreateTempPlanFromFile(String filename)
         {
             TestPlan ret_plan = new TestPlan();
@@ -414,8 +381,8 @@ namespace ExcelReportApplication
         //{
         //    int final_compare = 0;
 
-        //    String sheetname_x = TestPlan.GetSheetNameAccordingToFilename(x);
-        //    String sheetname_y = TestPlan.GetSheetNameAccordingToFilename(y);
+        //    String sheetname_x = ReportGenerator.GetSheetNameAccordingToFilename(x);
+        //    String sheetname_y = ReportGenerator.GetSheetNameAccordingToFilename(y);
 
         //    int sheetname_x_len = sheetname_x.Length;
         //    int sheetname_x_value_pos = sheetname_x.IndexOf('.');
@@ -453,132 +420,5 @@ namespace ExcelReportApplication
         //    return final_compare;
         //}
 
-        static public int Compare_Sheetname_Ascending(String sheetname_x, String sheetname_y)
-        {
-            int final_compare = 0;
-
-            // process when one of sheetname is null
-            if (sheetname_x == null)
-            {
-                if (sheetname_y == null)
-                {
-                    final_compare = 0;
-                    return final_compare;
-                }
-                else
-                {
-                    final_compare = -1;
-                    return final_compare;
-                }
-            }
-            else if (sheetname_y == null)
-            {
-                final_compare = -1;
-                return final_compare;
-            }
-
-            String[] subs_x = sheetname_x.Split('.');
-            String[] subs_y = sheetname_y.Split('.');
-
-            int compare_index = 0;
-
-            while (true)
-            {
-                int x_value = 0, y_value = 0;
-
-                Boolean x_no_more_point = (compare_index < subs_x.Count()) ? false : true;
-                Boolean y_no_more_point = (compare_index < subs_y.Count()) ? false : true;
-
-                // Comparison 1: reaching end of sheetname?
-                if (x_no_more_point)
-                {
-                    if (y_no_more_point)
-                    {
-                        final_compare = 0;
-                        break;
-                    }
-                    else
-                    {
-                        final_compare = -1;
-                        break;
-                    }
-                }
-                else if (y_no_more_point)
-                {
-                    final_compare = 1;
-                    break;
-                }
-
-                String x_str = subs_x[compare_index];
-                String y_str = subs_y[compare_index];
-
-                Boolean x_is_value = Int32.TryParse(x_str, out x_value);
-                Boolean y_is_value = Int32.TryParse(y_str, out y_value);
-
-                // Comparison 2: comparing text vs value? default: value < text
-                if (x_is_value == false)
-                {
-                    if (y_is_value == false)
-                    {
-                        final_compare = String.Compare(x_str, y_str);
-                        if (final_compare != 0)
-                        {
-                            // break to return final_compare
-                            break;
-                        }
-                        else
-                        {
-                            // maybe there are more points to compare 
-                            compare_index++;
-                        }
-                    }
-                    else
-                    {
-                        final_compare = 1;
-                        break;
-                    }
-                }
-                else if (y_is_value == false)
-                {
-                    final_compare = -1;
-                    break;
-                }
-                else
-                {
-
-                    if (x_value < y_value)
-                    {
-                        final_compare = -1;
-                        break;
-                    }
-                    else if (x_value > y_value)
-                    {
-                        final_compare = 1;
-                        break;
-                    }
-                    else
-                    {
-                        // maybe there are more points to compare 
-                        compare_index++; // go to compare next level
-                    }
-                }
-            }
-            return final_compare;
-        }
-
-        static public int Compare_Sheetname_by_Filename_Ascending(String filename_x, String filename_y)
-        {
-
-            String sheetname_x = TestPlan.GetSheetNameAccordingToFilename(filename_x);
-            String sheetname_y = TestPlan.GetSheetNameAccordingToFilename(filename_y);
-
-            return Compare_Sheetname_Ascending(sheetname_x, sheetname_y);
-        }
-
-        static public int Compare_Sheetname_by_Filename_Descending(String filename_x, String filename_y)
-        {
-            int compare_result_asceding = Compare_Sheetname_by_Filename_Ascending(filename_x, filename_y);
-            return -compare_result_asceding;
-        }
     }
 }

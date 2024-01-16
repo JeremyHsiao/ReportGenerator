@@ -396,11 +396,11 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            String sheet_name = TestPlan.GetSheetNameAccordingToFilename(source_file);
+            String sheet_name = ReportGenerator.GetSheetNameAccordingToFilename(source_file);
             Worksheet ws = ExcelAction.Find_Worksheet(wb, sheet_name);
 
             //// If valid sheet_name does not exist, use first worksheet and rename it.
-            //String sheet_name = TestPlan.GetSheetNameAccordingToFilename(source_file);
+            //String sheet_name = ReportGenerator.GetSheetNameAccordingToFilename(source_file);
             //Worksheet ws;
             //if (ExcelAction.WorksheetExist(wb, sheet_name) == false)
             //{

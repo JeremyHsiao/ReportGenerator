@@ -1486,7 +1486,7 @@ namespace ExcelReportApplication
             foreach (String filename in available_report_filelist)
             {
                 String filename_no_extension = Storage.GetFileNameWithoutExtension(filename);
-                String report_sheetname = TestPlan.GetSheetNameAccordingToSummary(filename_no_extension);
+                String report_sheetname = ReportGenerator.GetSheetNameAccordingToSummary(filename_no_extension);
                 // same x.0, skip to next one
                 if (report_sheetname == summary_report_sheetname)
                 { continue; }
@@ -1499,7 +1499,7 @@ namespace ExcelReportApplication
                 sub_report_list.Add(filename);
             }
 
-            sub_report_list.Sort(TestPlan.Compare_Sheetname_by_Filename_Ascending);
+            sub_report_list.Sort(ReportGenerator.Compare_Sheetname_by_Filename_Ascending);
 
             // Adjust and check the last row of table
             int row_found = 1;
@@ -1556,8 +1556,8 @@ namespace ExcelReportApplication
             foreach (String filename in sub_report_list)
             {
                 int col_index = GroupSummary_Title_No_Col;
-                String str_no = TestPlan.GetSheetNameAccordingToFilename(filename);
-                String str_test_item = TestPlan.GetReportTitleWithoutNumberAccordingToFilename(filename);
+                String str_no = ReportGenerator.GetSheetNameAccordingToFilename(filename);
+                String str_test_item = ReportGenerator.GetReportTitleWithoutNumberAccordingToFilename(filename);
                 String str_judgement = TestReport.Judgement_Decision_by_TC_Linked_Issue(str_no);
                 List<StyleString> linked_issue_description = new List<StyleString>();
                 if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(str_no))
@@ -1615,7 +1615,7 @@ namespace ExcelReportApplication
                     continue;
                 }
 
-                String sheet_name = TestPlan.GetSheetNameAccordingToFilename(group_file);
+                String sheet_name = ReportGenerator.GetSheetNameAccordingToFilename(group_file);
                 // Select and read work-sheet
                 Worksheet ws_report = ExcelAction.Find_Worksheet(wb_report, sheet_name);
                 if (ws_report == null)
@@ -1820,7 +1820,7 @@ namespace ExcelReportApplication
             // 0.2 filename check to exclude non-report files.
             List<String> existing_report_filelist = Storage.FilterFilename(file_list);
             // Sorting report_file (file_list) in descending order so that x.0 report will be processed after all other x.n reprot
-            existing_report_filelist.Sort(TestPlan.Compare_Sheetname_by_Filename_Descending);
+            existing_report_filelist.Sort(ReportGenerator.Compare_Sheetname_by_Filename_Descending);
 
             //
             // 1. Create a temporary test plan (do_plan) to include all report files 
@@ -1877,7 +1877,7 @@ namespace ExcelReportApplication
             // 0.2 filename check to exclude non-report files.
             List<String> existing_report_filelist = Storage.FilterFilename(file_list);
             // Sorting report_file (file_list) in descending order so that x.0 report will be processed after all other x.n reprot
-            existing_report_filelist.Sort(TestPlan.Compare_Sheetname_by_Filename_Descending);
+            existing_report_filelist.Sort(ReportGenerator.Compare_Sheetname_by_Filename_Descending);
             // 0.3 output files in file_list but not in report_filename into Not_Keyword_File
             foreach (String report_file in existing_report_filelist)
             {
@@ -3176,7 +3176,7 @@ namespace ExcelReportApplication
 
             ReportWorkbook = wb;
             // If valid sheet_name does not exist, use first worksheet .
-            String current_sheet_name = TestPlan.GetSheetNameAccordingToFilename(source_file);
+            String current_sheet_name = ReportGenerator.GetSheetNameAccordingToFilename(source_file);
             TestReport.Option.Report_SheetName = current_sheet_name;
             Worksheet ws;
             if (ExcelAction.WorksheetExist(ReportWorkbook, current_sheet_name) == false)
@@ -3232,7 +3232,7 @@ namespace ExcelReportApplication
             // Update sheetname (when the option is true)
             if (TestReport.Option.FunctionC.Update_Report_Sheetname)
             {
-                String new_sheet_name = TestPlan.GetSheetNameAccordingToFilename(destination_file);
+                String new_sheet_name = ReportGenerator.GetSheetNameAccordingToFilename(destination_file);
                 ws.Name = new_sheet_name;
                 TestReport.Option.Report_SheetName = new_sheet_name;
                 file_has_been_updated = true;
@@ -3244,7 +3244,7 @@ namespace ExcelReportApplication
                 if (ExcelAction.WorksheetExist(wb_template, HeaderTemplate.SheetName_HeaderTemplate))
                 {
                     Worksheet ws_template = ExcelAction.Find_Worksheet(wb_template, HeaderTemplate.SheetName_HeaderTemplate);
-                    String filename = TestPlan.GetReportTitleAccordingToFilename(destination_file);
+                    String filename = ReportGenerator.GetReportTitleAccordingToFilename(destination_file);
                     String sheetname = ws.Name;
                     HeaderTemplate.UpdateVariables_FilenameSheetname(filename: filename, sheetname: sheetname);
                     //HeaderTemplate.CopyAndUpdateHeader(ws_template, ws);
@@ -3265,7 +3265,7 @@ namespace ExcelReportApplication
                 // Update header (when the option is true)
                 if (TestReport.Option.FunctionC.Update_Full_Header == true)
                 {
-                    String new_title = TestPlan.GetReportTitleAccordingToFilename(destination_file);
+                    String new_title = ReportGenerator.GetReportTitleAccordingToFilename(destination_file);
                     TestReport.Option.Report_Title = new_title;
                     // sheet-name is not defined as part of header --> it should be part of excel report (eg. filename, sheetname)
                     //KeywordReport.DefaultKeywordReportHeader.Report_SheetName = new_sheet_name;
@@ -3454,7 +3454,7 @@ namespace ExcelReportApplication
         //        }
 
         //        // Update header 
-        //        String new_title = TestPlan.GetReportTitleAccordingToFilename(filename);
+        //        String new_title = ReportGenerator.GetReportTitleAccordingToFilename(filename);
         //        String existing_title = ExcelAction.GetCellTrimmedString(ws, TestReport.Title_at_row, TestReport.Title_at_col);
         //        if (existing_title != new_title)
         //        {
