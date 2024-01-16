@@ -927,13 +927,15 @@ namespace ExcelReportApplication
         //    return TestReport.CopyTestReportbyTestCase(report_src_dir, output_report_dir);
         //}
 
-
+        /*
         private bool Execute_KeywordIssueGenerationTask(String FileOrDirectoryName, Boolean IsDirectory = false)
         {
             String output_report_path;  // not used for this task
             return Execute_KeywordIssueGenerationTask_returning_report_path(FileOrDirectoryName, IsDirectory, out output_report_path);
         }
+        */
 
+        /*
         private bool Execute_KeywordIssueGenerationTask_returning_report_path(String FileOrDirectoryName, Boolean IsDirectory, out String output_report_path)
         {
             List<String> file_list = new List<String>();
@@ -963,6 +965,7 @@ namespace ExcelReportApplication
             TestReport.KeywordIssueGenerationTaskV4(file_list, source_dir, output_report_path);
             return true;
         }
+        */
 
         private Boolean Execute_KeywordIssueGenerationTask_returning_report_path_simplified(String FileOrDirectoryName, Boolean IsDirectory, out String output_report_path)
         {
@@ -1069,6 +1072,7 @@ namespace ExcelReportApplication
         }
         */
 
+        /*
         private bool Execute_ListAllDetailedTestPlanKeywordTask(String report_root, String output_file = "")
         {
             if (!Storage.DirectoryExists(report_root))
@@ -1081,6 +1085,7 @@ namespace ExcelReportApplication
 
             return true;
         }
+        */
 
         /*
         private bool Execute_AutoCorrectTestReportByFilename_Task(String report_root)
@@ -1616,6 +1621,7 @@ namespace ExcelReportApplication
                         //bRet = Execute_CreateTestReportbyTestCaseTask(report_src_dir: src_dir, output_report_dir: dest_dir);
                         break;
                     case ReportType.Update_Keyword_and_TC_Report: // Report H
+                        /*
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
                         if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;
@@ -1636,7 +1642,7 @@ namespace ExcelReportApplication
                             bRet = Execute_KeywordIssueGenerationTask_returning_report_path(txtReportFile.Text, true, out report_H_output_path);
                             bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_dir: report_H_output_path);
                         }
-
+                        */
                         break;
                     case ReportType.Man_Power_Processing:
                         tabInfomation.SelectedTab = tabInfomation.TabPages[1];
@@ -1653,7 +1659,7 @@ namespace ExcelReportApplication
                         }
                         break;
                     case ReportType.Update_Repoart_A_then_Report_H:                                    //Report J = A + H
-
+                        /*
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
@@ -1685,7 +1691,7 @@ namespace ExcelReportApplication
                             bRet = Execute_KeywordIssueGenerationTask_returning_report_path(report_j_copied_report_root_path, true, out report_J_processed_report_output_path);
                             bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_dir: report_J_processed_report_output_path);
                         }
-
+                        */
                         // new version to be checked
                         //if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
                         //{
@@ -1726,7 +1732,6 @@ namespace ExcelReportApplication
                                 bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_dir: report_output_path_report_k);
                             }
                         }
-
                         break;
 
                     case ReportType.Update_Repoart_A_then_Report_K:                                    //Report L = A + K

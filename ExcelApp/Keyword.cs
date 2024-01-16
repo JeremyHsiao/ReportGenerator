@@ -707,6 +707,7 @@ namespace ExcelReportApplication
         }
 
         // Visit all reports and find out all keywords -- make use of ListKeyword_SingleReport()
+        /*
         static public List<TestReportKeyword> ListAllKeyword(List<TestPlan> DoPlan)
         {
             List<TestReportKeyword> ret = new List<TestReportKeyword>();
@@ -772,6 +773,7 @@ namespace ExcelReportApplication
             ReportGenerator.excel_not_report_log.AddRange(ret_not_report_log);
             return ret;
         }
+        */
 
         //static public List<TestPlanKeyword> FilterSingleReportKeyword(List<TestPlanKeyword> keyword_list, String workbook, String worksheet)
         //{
@@ -1865,6 +1867,7 @@ namespace ExcelReportApplication
             return true;
         }
 
+        /*
         static public bool KeywordIssueGenerationTaskV4(List<String> file_list, String src_dir, String dest_dir = "")
         {
             // Clear keyword log report data-table
@@ -2215,36 +2218,6 @@ namespace ExcelReportApplication
                 if (KeywordIssue_Replace_Conclusion)
                 {
                     Update_Conclusion_Judgement_by_linked_issue(result_worksheet);
-                    /*
-                    // Add: replace conclusion with Bug-list
-                    //ReplaceConclusionWithBugList(result_worksheet, keyword_issue_description_on_this_report); // should be linked issue in the future
-                    // Find the TC meets the sheet-name
-                    List<StyleString> linked_issue_description_on_this_report = new List<StyleString>();
-                    if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(sheet_name))
-                    {
-                        // key string of all linked issues
-                        String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].Links;
-                        // key string to List of Issue
-                        List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
-                        // List of Issue filtered by status
-                        List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.filter_status_list_linked_issue);
-                        // Sort issue by Severity and Key valie
-                        List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
-                        // Convert list of sorted linked issue to description list
-                        linked_issue_description_on_this_report = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
-
-                        judgement_str = Judgement_Decision_by_Linked_Issue(linked_issue_list);
-                    }
-                    else
-                    {
-                        linked_issue_description_on_this_report.Clear();
-                        linked_issue_description_on_this_report.Add(KeywordReportHeader.blank_space);
-                    }
-                    ReplaceConclusionWithBugList(result_worksheet, linked_issue_description_on_this_report);
-                    //
-                    ExcelAction.CellActivate(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col);
-                    ExcelAction.SetCellValue(result_worksheet, KeywordReportHeader.Judgement_at_row, KeywordReportHeader.Judgement_at_col, judgement_str);
-                    */
                 }
 
                 // always update Test End Period to today
@@ -2340,6 +2313,7 @@ namespace ExcelReportApplication
 
             return true;
         }
+        */
 
         // Please input linked issue
         static public String Judgement_Decision_by_Linked_Issue_List(List<Issue> linked_issue_list)
@@ -3080,6 +3054,7 @@ namespace ExcelReportApplication
         // Input: Standard Test Report main file
         // Output: keyword list of all "Do" test-plans
         //
+        /*
         static public List<TestReportKeyword> ListAllDetailedTestPlanKeywordTask(String report_root_dir, String output_filename)
         {
             // Clear keyword log report data-table
@@ -3165,6 +3140,7 @@ namespace ExcelReportApplication
 
             return keyword_list;
         }
+        */
 
         static public Dictionary<String, List<TestReportKeyword>> GenerateKeywordLUT_by_Sheetname(List<TestReportKeyword> keyword_list)
         {
