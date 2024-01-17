@@ -705,10 +705,17 @@ namespace ExcelReportApplication
 
         //
         // Input: report list
-        // Output: (1) if report_list is empty or report_list contains no report file --> all test-case are checked and updated
-        //         (2) if report_list contains at least one report file --> only test-cases with corresponding report are checked and updated
+        // Output: (1) if report_list is empty or report_list contains no report file --> 
+        //                                                                  (1) when update_status_without_report==true
+        //                                                                          all test-case status are checked and updated when update_status_without_report==true
+        //                                                                  (2) when update_status_without_report==false
+        //                                                                          status remains unchanged
+        //         (2) if report_list contains at least one report file --> (1) when update_status_without_report==true
+        //                                                                          with report updated by report, without report udpated by linked issue    
+        //                                                                  (2) when update_status_without_report==false
+        //                                                                          only test-cases with corresponding report are checked and updated
         // 
-        static public Boolean WriteBacktoTCJiraExcelV3_ProcessData(List<String> report_list)
+        static public Boolean WriteBacktoTCJiraExcelV3_ProcessData(List<String> report_list, Boolean update_status_without_report = false)
         {
             Boolean bRet = false;
 
@@ -826,13 +833,13 @@ namespace ExcelReportApplication
                             ExcelAction.SetTestCaseCell(excel_row_index, criteria_col, criteria_str, IsTemplate: true);
                         }
                     }
-                    else if (update_status_even_no_report)
+                    else if (update_status_without_report)
                     {
                         UpdateStatusCellByLinkedIssue_TCTemplate(excel_row_index, status_col, linked_issue_list);
                     }
                 }
                 // For no-report case & update status even no report
-                else if (update_status_even_no_report)
+                else if (update_status_without_report)
                 {
                     UpdateStatusCellByLinkedIssue_TCTemplate(excel_row_index, status_col, linked_issue_list);
                 }
@@ -1394,7 +1401,7 @@ namespace ExcelReportApplication
         {
             Boolean b_ret = false;
 
-            b_ret = ReportGenerator.WriteBacktoTCJiraExcelV3_ProcessData(report_list: report_list);
+            b_ret = ReportGenerator.WriteBacktoTCJiraExcelV3_ProcessData(report_list: report_list, update_status_without_report: update_status_even_no_report);
             if (b_ret == false)
             {
                 MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_ProcessData()");
