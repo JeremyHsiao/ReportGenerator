@@ -26,6 +26,11 @@ namespace ExcelReportApplication
         static private Dictionary<string, TestCase> lookup_TestCase_by_Key = new Dictionary<string, TestCase>();
         static private Dictionary<string, TestCase> lookup_TestCase_by_Summary = new Dictionary<string, TestCase>();
 
+        public static String PASS_str = "Pass";
+        public static String CONDITIONAL_PASS_str = "Conditional Pass";
+        public static String FAIL_str = "Fail";
+        public static String WAIVED_str = "Waived";
+
         static public string LinkIssue_report_Font = "Gill Sans MT";
         static public int LinkIssue_report_FontSize = 12;
         static public Color LinkIssue_report_FontColor = System.Drawing.Color.Black;
@@ -1179,11 +1184,11 @@ namespace ExcelReportApplication
                     String status_string;
                     if (filtered_linked_issue_list.Count == 0)
                     {
-                        status_string = KeywordReport.PASS_str;
+                        status_string = PASS_str;
                     }
                     else
                     {
-                        status_string = KeywordReport.FAIL_str;
+                        status_string = FAIL_str;
                     }
                     ExcelAction.SetTestCaseCell(excel_row_index, status_col, status_string, IsTemplate: true);
                 }

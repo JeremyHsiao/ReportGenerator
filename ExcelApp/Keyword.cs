@@ -486,11 +486,6 @@ namespace ExcelReportApplication
         public static String TestReport_Default_Judgement = "N/A";
         public static String TestReport_Default_Conclusion = " ";
 
-        public static String PASS_str = "Pass";
-        public static String CONDITIONAL_PASS_str = "Conditional Pass";
-        public static String FAIL_str = "Fail";
-        public static String WAIVED_str = "Waived";
-
         public static Boolean KeywordIssue_Replace_Conclusion = false;
         public static Boolean KeywordIssue_Hide_Result_Bug = false;
 
@@ -1311,15 +1306,15 @@ namespace ExcelReportApplication
 
             if (pass == true)
             {
-                pass_fail_str = PASS_str;
+                pass_fail_str = ReportGenerator.PASS_str;
             }
             else if (fail == true)
             {
-                pass_fail_str = FAIL_str;
+                pass_fail_str = ReportGenerator.FAIL_str;
             }
             else
             {
-                pass_fail_str = CONDITIONAL_PASS_str;
+                pass_fail_str = ReportGenerator.CONDITIONAL_PASS_str;
             }
             ExcelAction.SetCellValue(result_worksheet, keyword.ResultAtRow, keyword.ResultAtColumn, pass_fail_str);
         }
@@ -2328,15 +2323,15 @@ namespace ExcelReportApplication
             GetKeywordConclusionResult(severity_count, out pass, out fail, out conditional_pass);
             if (fail)
             {
-                judgement_str = FAIL_str;
+                judgement_str = ReportGenerator.FAIL_str;
             }
             else if (conditional_pass)
             {
-                judgement_str = CONDITIONAL_PASS_str;
+                judgement_str = ReportGenerator.CONDITIONAL_PASS_str;
             }
             else
             {
-                judgement_str = PASS_str;
+                judgement_str = ReportGenerator.PASS_str;
             }
             return judgement_str;
         }
@@ -2711,7 +2706,7 @@ namespace ExcelReportApplication
             {
                 ExcelAction.SetCellValue(ws, PassCnt_at_row, PassCnt_at_col, " ");
                 ExcelAction.SetCellValue(ws, FailCnt_at_row, FailCnt_at_col, " ");
-                ExcelAction.SetCellValue(ws, ConditionalPass_string_at_row, ConditionalPass_string_at_col, CONDITIONAL_PASS_str + ":");
+                ExcelAction.SetCellValue(ws, ConditionalPass_string_at_row, ConditionalPass_string_at_col, ReportGenerator.CONDITIONAL_PASS_str + ":");
                 ExcelAction.SetCellValue(ws, ConditionalPassCnt_at_row, ConditionalPassCnt_at_col, " ");
                 b_ret = true;
             }
