@@ -31,6 +31,11 @@ namespace ExcelReportApplication
         public static String FAIL_str = "Fail";
         public static String WAIVED_str = "Waived";
 
+        public static String TestReport_Default_Judgement = "N/A";
+        public static String TestReport_Default_Conclusion = " ";
+        public static String TestReport_SaveReportByStatus = "Pass, Conditional Pass, Fail";
+        public static Boolean TestReport_ExtraSavePassReport = false;
+
         static public string LinkIssue_report_Font = "Gill Sans MT";
         static public int LinkIssue_report_FontSize = 12;
         static public Color LinkIssue_report_FontColor = System.Drawing.Color.Black;

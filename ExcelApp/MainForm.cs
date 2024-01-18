@@ -562,10 +562,10 @@ namespace ExcelReportApplication
             links = XMLConfig.ReadAppSetting_String("KeywordIssueFilterStatusString");
             TestReport.KeywordIssue_filter_status_list = SplitCommaSeparatedStringIntoList(links);
 
-            links = XMLConfig.ReadAppSetting_String("TestReport_Default_Judgement");
-            TestReport.TestReport_Default_Judgement = links;
-            links = XMLConfig.ReadAppSetting_String("TestReport_Default_Conclusion");
-            TestReport.TestReport_Default_Conclusion = links;
+            ReportGenerator.TestReport_Default_Judgement = XMLConfig.ReadAppSetting_String("TestReport_Default_Judgement");
+            ReportGenerator.TestReport_Default_Conclusion = XMLConfig.ReadAppSetting_String("TestReport_Default_Conclusion");
+            ReportGenerator.TestReport_SaveReportByStatus = XMLConfig.ReadAppSetting_String("TestReport_SaveReportByStatus");
+            ReportGenerator.TestReport_ExtraSavePassReport = XMLConfig.ReadAppSetting_Boolean("TestReport_ExtraSavePassReport");
             // End
 
             // config for default parameters used in Test Plan / Test Report

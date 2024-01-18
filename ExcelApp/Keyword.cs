@@ -316,6 +316,7 @@ namespace ExcelReportApplication
         public TestReportBooleanOption FunctionC_DefaultByXML = new TestReportBooleanOption();
         public TestReportBooleanOption FunctionC_DefaultByCode = new TestReportBooleanOption();
 
+        public String PreFilterReportByTCSummaryStatus = "Pass, Conditional Pass, Fail";
         public String SampleSN_String = "Refer to DUT_Allocation_Matrix table";
         public String SN_Font = "Gill Sans MT";
         public int SN_FontSize = 12;
@@ -370,6 +371,7 @@ namespace ExcelReportApplication
             FunctionC.LoadFromConfig();
             FunctionC_DefaultByXML = TestReport.Option.FunctionC;
 
+            PreFilterReportByTCSummaryStatus = XMLConfig.ReadAppSetting_String("Report_C_PreFilterReportByTCSummaryStatus");
             SampleSN_String = XMLConfig.ReadAppSetting_String("SampleSN_String");
             SN_Font = XMLConfig.ReadAppSetting_String("SampleSN_String");
             SN_FontSize = XMLConfig.ReadAppSetting_int("SampleSN_String_FontSize");
@@ -483,8 +485,6 @@ namespace ExcelReportApplication
         public static String regexBugListString = @"^(?i)\s*Bug List\s*$";
 
         static public List<String> KeywordIssue_filter_status_list = new List<String>();
-        public static String TestReport_Default_Judgement = "N/A";
-        public static String TestReport_Default_Conclusion = " ";
 
         public static Boolean KeywordIssue_Replace_Conclusion = false;
         public static Boolean KeywordIssue_Hide_Result_Bug = false;
@@ -2313,7 +2313,7 @@ namespace ExcelReportApplication
         // Please input linked issue
         static public String Judgement_Decision_by_Linked_Issue_List(List<Issue> linked_issue_list)
         {
-            String judgement_str = TestReport.TestReport_Default_Judgement;
+            String judgement_str = ReportGenerator.TestReport_Default_Judgement;
 
             // List of Issue filtered by status
             List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.List_of_status_to_filter_for_tc_linked_issue);
@@ -2339,7 +2339,7 @@ namespace ExcelReportApplication
         static public String Judgement_Decision_by_TC_Linked_Issue(String sheet_name)
         {
             // return default if no corresponding TC
-            String judgement_str = TestReport.TestReport_Default_Judgement;
+            String judgement_str = ReportGenerator.TestReport_Default_Judgement;
             if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(sheet_name))
             {
                 // key string of all linked issue
@@ -2858,8 +2858,8 @@ namespace ExcelReportApplication
             Boolean b_ret = false;
 
             String sheet_name = worksheet.Name;
-            String judgement_str = TestReport.TestReport_Default_Judgement;
-            StyleString default_conclusion = new StyleString(TestReport.TestReport_Default_Conclusion, ReportGenerator.LinkIssue_report_FontColor,
+            String judgement_str = ReportGenerator.TestReport_Default_Judgement;
+            StyleString default_conclusion = new StyleString(ReportGenerator.TestReport_Default_Conclusion, ReportGenerator.LinkIssue_report_FontColor,
                             ReportGenerator.LinkIssue_report_Font, ReportGenerator.LinkIssue_report_FontSize);
             List<StyleString> linked_issue_description_on_this_report = default_conclusion.ConvertToList();
 
