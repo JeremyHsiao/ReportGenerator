@@ -219,12 +219,15 @@ namespace ExcelReportApplication
         private String bugtype;
         private String swversion;
         private String hwversion;
-        private String linkedissue;
+        private String linkedtestcase;
         private String additionalinfo;
 
         // out-of-band data
         private List<String> keyword_list;
         private List<String> testcaseid_list;
+
+        private List<StyleString> extended_linked_testcase;
+        private List<String> linked_testcase_list;
 
         public String Key   // property
         {
@@ -277,7 +280,18 @@ namespace ExcelReportApplication
         public String TestCaseID   // property
         {
             get { return testcaseid; }   // get method
-            set { testcaseid = value; }  // set method
+            set
+            {
+                testcaseid = value;
+                if (String.IsNullOrWhiteSpace(this.testcaseid) == false)
+                {
+                    this.testcaseid_list = ReportGenerator.Split_String_To_ListOfString(testcaseid);
+                }
+                else
+                {
+                    this.testcaseid_list.Clear();
+                }
+            }  // set method
         }
 
         public String BugType  // property
@@ -298,10 +312,21 @@ namespace ExcelReportApplication
             set { hwversion = value; }  // set method
         }
 
-        public String LinkedIssue   // property
+        public String LinkedTestCase   // property
         {
-            get { return linkedissue; }   // get method
-            set { linkedissue = value; }  // set method
+            get { return linkedtestcase; }   // get method
+            set 
+            {
+                linkedtestcase = value;
+                if (String.IsNullOrWhiteSpace(this.linkedtestcase) == false)
+                {
+                    this.linked_testcase_list = ReportGenerator.Split_String_To_ListOfString(linkedtestcase);
+                }
+                else
+                {
+                    this.linked_testcase_list.Clear();
+                }
+            }  // set method
         }
 
         public String AdditionalInfo   // property
@@ -314,6 +339,18 @@ namespace ExcelReportApplication
         {
             get { return keyword_list; }   // get method
             set { keyword_list = value; }  // set method
+        }
+
+        public List<String> LinkedTestCaseList   // property
+        {
+            get { return linked_testcase_list; }   // get method
+            // no set, get only
+        }
+
+        public List<StyleString> LinkedTestCaseDescription
+        {
+            get { return extended_linked_testcase; }   // get method
+            // no set, get only
         }
 
         public const string col_Key = "Key";
@@ -360,12 +397,24 @@ namespace ExcelReportApplication
             this.bugtype = members[(int)IssueListMemberIndex.BUGTYPE];
             this.swversion = members[(int)IssueListMemberIndex.SWVERSION];
             this.hwversion = members[(int)IssueListMemberIndex.HWVERSION];
-            this.linkedissue = members[(int)IssueListMemberIndex.LINKEDISSUE];
+            this.linkedtestcase = members[(int)IssueListMemberIndex.LINKEDISSUE];
             this.additionalinfo = members[(int)IssueListMemberIndex.ADDITIONALINFO];
             InitIssue();
             if (String.IsNullOrWhiteSpace(this.testcaseid) == false)
             {
                 this.testcaseid_list = ReportGenerator.Split_String_To_ListOfString(testcaseid);
+            }
+            else
+            {
+                this.testcaseid_list.Clear();
+            }
+            if (String.IsNullOrWhiteSpace(this.linkedtestcase) == false)
+            {
+                this.linked_testcase_list = ReportGenerator.Split_String_To_ListOfString(linkedtestcase);
+            }
+            else
+            {
+                this.linked_testcase_list.Clear();
             }
         }
 
