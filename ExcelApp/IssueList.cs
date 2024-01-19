@@ -283,7 +283,7 @@ namespace ExcelReportApplication
             set
             {
                 testcaseid = value;
-                if (String.IsNullOrWhiteSpace(this.testcaseid) == false)
+                if (String.IsNullOrWhiteSpace(testcaseid) == false)
                 {
                     this.testcaseid_list = ReportGenerator.Split_String_To_ListOfString(testcaseid);
                 }
@@ -318,7 +318,7 @@ namespace ExcelReportApplication
             set 
             {
                 linkedtestcase = value;
-                if (String.IsNullOrWhiteSpace(this.linkedtestcase) == false)
+                if (String.IsNullOrWhiteSpace(linkedtestcase) == false)
                 {
                     this.linked_testcase_list = ReportGenerator.Split_String_To_ListOfString(linkedtestcase);
                 }
