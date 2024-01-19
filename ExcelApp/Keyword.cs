@@ -1808,7 +1808,7 @@ namespace ExcelReportApplication
             return true;
         }
 
-        static public bool KeywordIssueGenerationTaskV4_simplified(List<String> file_list, String src_dir, String dest_dir = "")
+        static public bool UpdateReportOnlyByLinkedIssue(List<String> file_list, String src_dir, String dest_dir = "")
         {
             // 0.1 List all files under report_root_dir.
             // This is done outside and result is the input paramemter file_list

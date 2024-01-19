@@ -967,7 +967,7 @@ namespace ExcelReportApplication
         }
         */
 
-        private Boolean Execute_KeywordIssueGenerationTask_returning_report_path_simplified(String FileOrDirectoryName, Boolean IsDirectory, out String output_report_path)
+        private Boolean Execute_UpdateReportByLinkedIssue(String FileOrDirectoryName, Boolean IsDirectory, out String output_report_path)
         {
             List<String> file_list = new List<String>();
             String source_dir;
@@ -1000,7 +1000,7 @@ namespace ExcelReportApplication
                 source_dir = FileOrDirectoryName;
             }
             output_report_path = Storage.GenerateDirectoryNameWithDateTime(source_dir);
-            TestReport.KeywordIssueGenerationTaskV4_simplified(file_list, source_dir, output_report_path);
+            TestReport.UpdateReportOnlyByLinkedIssue(file_list, source_dir, output_report_path);
             return true;
         }
 
@@ -1465,7 +1465,7 @@ namespace ExcelReportApplication
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
                         if (ReportGenerator.Process_BugList_TeseCase_TCTemplate(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
                         {
-                            MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
+                            MainForm.SystemLogAddLine("Failed @ return of Process_BugList_TeseCase_TCTemplate()");
                             bRet = false;
                         }
                         else
@@ -1726,7 +1726,7 @@ namespace ExcelReportApplication
                         else
                         {
                             String report_output_path_report_k;
-                            bRet = Execute_KeywordIssueGenerationTask_returning_report_path_simplified(txtReportFile.Text, true, out report_output_path_report_k);
+                            bRet = Execute_UpdateReportByLinkedIssue(txtReportFile.Text, true, out report_output_path_report_k);
                             if (bRet == true)
                             {
                                 bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_dir: report_output_path_report_k);
