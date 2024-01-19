@@ -1000,6 +1000,7 @@ namespace ExcelReportApplication
                 source_dir = FileOrDirectoryName;
             }
             output_report_path = Storage.GenerateDirectoryNameWithDateTime(source_dir);
+
             TestReport.UpdateReportOnlyByLinkedIssue(file_list, source_dir, output_report_path);
             return true;
         }
@@ -1545,7 +1546,7 @@ namespace ExcelReportApplication
                         }
                         else
                         {
-                            bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_dir: txtReportFile.Text);
+                            bRet = ReportGenerator.Execute_UpdateLinkedIssueStatusOnTCTemplate(tc_file: txtTCFile.Text, report_dir: txtReportFile.Text);
                         }
                         break;
                     case ReportType.CreateCSTReport:                                    // Report A
@@ -1573,7 +1574,7 @@ namespace ExcelReportApplication
                             Report_B_Push_Option();
                             bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(InputExcel, out DestinationReportList, out ReturnDestinationPaht);
                             Report_B_Pop_Option();
-                            bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_list: DestinationReportList);
+                            bRet = ReportGenerator.Execute_UpdateLinkedIssueStatusOnTCTemplate(tc_file: txtTCFile.Text, report_list: DestinationReportList);
                         }
                         
                         break;
@@ -1729,7 +1730,7 @@ namespace ExcelReportApplication
                             bRet = Execute_UpdateReportByLinkedIssue(txtReportFile.Text, true, out report_output_path_report_k);
                             if (bRet == true)
                             {
-                                bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_dir: report_output_path_report_k);
+                                bRet = ReportGenerator.Execute_UpdateLinkedIssueStatusOnTCTemplate(tc_file: txtTCFile.Text, report_dir: report_output_path_report_k);
                             }
                         }
                         break;
@@ -1782,7 +1783,7 @@ namespace ExcelReportApplication
                             TestReport.Option.FunctionC.Copy_Worksheet_AtTheEnd = false;                // Overridden
                             bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(InputExcel, out DestinationReportList, out ReturnDestinationPaht);
                             Report_B_Pop_Option();
-                            bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_list: DestinationReportList);
+                            bRet = ReportGenerator.Execute_UpdateLinkedIssueStatusOnTCTemplate(tc_file: txtTCFile.Text, report_list: DestinationReportList);
                         }
 
                         break;

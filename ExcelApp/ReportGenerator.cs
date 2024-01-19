@@ -1370,7 +1370,7 @@ namespace ExcelReportApplication
         }
 
         // Report 9 & Report K
-        static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(String tc_file, String report_dir)
+        static public Boolean Execute_UpdateLinkedIssueStatusOnTCTemplate(String tc_file, String report_dir)
         {
             Boolean b_ret = false;
 
@@ -1380,20 +1380,20 @@ namespace ExcelReportApplication
                 all_file_list = Storage.ListFilesUnderDirectory(report_dir);
             }
 
-            b_ret = Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file, report_list: all_file_list);
+            b_ret = Execute_UpdateLinkedIssueStatusOnTCTemplate(tc_file, report_list: all_file_list);
             return b_ret;
         }
 
         // newly created version -- report_list instead of report_dir
         // Report B & Reporl L (indirectly used by report 9/K)
-        static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(String tc_file, List<String> report_list)
+        static public Boolean Execute_UpdateLinkedIssueStatusOnTCTemplate(String tc_file, List<String> report_list)
         {
             Boolean b_ret = false;
 
             b_ret = ReportGenerator.UpdateLinkedIssueStatusOnTCTemplate(report_list: report_list, update_status_without_report: update_status_even_no_report);
             if (b_ret == false)
             {
-                MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_ProcessData()");
+                MainForm.SystemLogAddLine("Failed @ return of UpdateLinkedIssueStatusOnTCTemplate()");
             }
 
             // close tc
