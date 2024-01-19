@@ -725,7 +725,7 @@ namespace ExcelReportApplication
         //                                                                  (2) when update_status_without_report==false
         //                                                                          only test-cases with corresponding report are checked and updated
         // 
-        static public Boolean WriteBacktoTCJiraExcelV3_ProcessData(List<String> report_list, Boolean update_status_without_report = false)
+        static public Boolean UpdateLinkedIssueStatusOnTCTemplate(List<String> report_list, Boolean update_status_without_report = false)
         {
             Boolean bRet = false;
 
@@ -1351,7 +1351,7 @@ namespace ExcelReportApplication
         {
             List<String> empty_report_list = new List<String>();
             // no report has been referred at all in current report 1
-            if (WriteBacktoTCJiraExcelV3_ProcessData(report_list: empty_report_list, update_status_without_report: true) == false)
+            if (UpdateLinkedIssueStatusOnTCTemplate(report_list: empty_report_list, update_status_without_report: true) == false)
             {
                 MainForm.SystemLogAddLine("Failed @ return of Execute_ExtendLinkIssueAndUpdateStatusWithoutReport()");
                 return false;
@@ -1368,30 +1368,7 @@ namespace ExcelReportApplication
             return true;
         }
 
-        //
-        //static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount_v2(String tc_file, String template_file, String buglist_file)
-        //{
-        //    OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: tc_file, template_file: template_file, buglist_file: buglist_file);
-
-        //    if (WriteBacktoTCJiraExcelV3_ProcessData() == false)
-        //    {
-        //        MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_ProcessData()");
-        //        return false;
-        //    }
-
-        //    // close tc
-        //    ExcelAction.CloseTestCaseExcel();
-
-        //    // save tempalte
-        //    // 6. Write to another filename with datetime (and close template file)
-        //    string dest_filename = Storage.GenerateFilenameWithDateTime(tc_file, FileExt: ".xlsx");
-        //    ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
-
-        //    return true;
-        //}
-
-
-        // Report 9 relocated to here
+        // Report 9 & Report K
         static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(String tc_file, String report_dir)
         {
             Boolean b_ret = false;
@@ -1407,11 +1384,12 @@ namespace ExcelReportApplication
         }
 
         // newly created version -- report_list instead of report_dir
+        // Report B & Reporl L (indirectly used by report 9/K)
         static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(String tc_file, List<String> report_list)
         {
             Boolean b_ret = false;
 
-            b_ret = ReportGenerator.WriteBacktoTCJiraExcelV3_ProcessData(report_list: report_list, update_status_without_report: update_status_even_no_report);
+            b_ret = ReportGenerator.UpdateLinkedIssueStatusOnTCTemplate(report_list: report_list, update_status_without_report: update_status_even_no_report);
             if (b_ret == false)
             {
                 MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_ProcessData()");
@@ -1427,27 +1405,6 @@ namespace ExcelReportApplication
 
             return b_ret;
         }
-
-        //static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByReport(String tc_file, String template_file, String buglist_file, String report_dir)
-        //{
-        //    OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: tc_file, template_file: template_file, buglist_file: buglist_file);
-
-        //    if (ReportGenerator.WriteBacktoTCJiraExcelV3_ProcessData(judgement_report_dir: report_dir) == false)
-        //    {
-        //        MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_simpliified_branch_writing_template_by_TC");
-        //        return false;
-        //    }
-
-        //    // close tc
-        //    ExcelAction.CloseTestCaseExcel();
-
-        //    // save tempalte
-        //    // 6. Write to another filename with datetime (and close template file)
-        //    string dest_filename = Storage.GenerateFilenameWithDateTime(tc_file, FileExt: ".xlsx");
-        //    ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
-
-        //    return true;
-        //}
 
         /*
         static public bool Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount(String tc_file, String template_file, String buglist_file)
