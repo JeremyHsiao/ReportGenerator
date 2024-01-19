@@ -1211,7 +1211,7 @@ namespace ExcelReportApplication
         }
         */
 
-        static public Boolean OpenProcessBugExcel(String buglist_file)
+        static public Boolean ProcessBugListExcel(String buglist_file)
         {
             String buglist_filename = Storage.GetFullPath(buglist_file);
             if (!Storage.FileExists(buglist_filename))
@@ -1238,7 +1238,7 @@ namespace ExcelReportApplication
             return true;
         }
 
-        static public Boolean OpenProcessTeseCaseExcel(String tc_file)
+        static public Boolean ProcessTeseCaseExcel(String tc_file)
         {
             String tc_filename = Storage.GetFullPath(tc_file);
             if (!Storage.FileExists(tc_filename))
@@ -1314,13 +1314,13 @@ namespace ExcelReportApplication
         static public Boolean Process_BugList_TeseCase_TCTemplate(String tc_file, String template_file, String buglist_file)
         {
             // open bug and process bug
-            if (OpenProcessBugExcel(buglist_file) == false)
+            if (ProcessBugListExcel(buglist_file) == false)
             {
                 return false;
             }
 
             // open tc and process tc
-            if (OpenProcessTeseCaseExcel(tc_file) == false)
+            if (ProcessTeseCaseExcel(tc_file) == false)
             {
                 return false;
             }
