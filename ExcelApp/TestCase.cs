@@ -738,5 +738,19 @@ namespace ExcelReportApplication
             ret_list.Add(this);
             return ret_list;
         }
+
+        public List<StyleString> ToTestCaseSummary()
+        {
+            List<StyleString> style_str_list = new List<StyleString>();
+
+            if ((String.IsNullOrWhiteSpace(key) == false) || (String.IsNullOrWhiteSpace(Summary) == false))
+            {
+                StyleString style_str = new StyleString(summary);
+                style_str_list.Add(style_str);
+            }
+
+            return style_str_list;
+        }
+    
     }
 }

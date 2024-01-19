@@ -886,7 +886,8 @@ namespace ExcelReportApplication
                 foreach (TestCase tc in linked_tc_list)
                 {
                     // update current row
-                    List<StyleString> str_list = StyleString.TestCaseList_To_TestCaseSummary(tc.ToList());
+                    //List<StyleString> str_list = StyleString.TestCaseList_To_TestCaseSummary(tc.ToList());
+                    List<StyleString> str_list = tc.ToTestCaseSummary();
                     StyleString.WriteStyleString(worksheet_buglist, excel_row_index, links_col, str_list);
 
                     // if still more rows to insert

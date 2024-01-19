@@ -674,7 +674,7 @@ Returns or sets the type of underline applied to the font.
             return value_style_str;
         }
         */
-         
+        /* 
         static public List<StyleString> TestCase_To_TestCaseSummary(TestCase testcasae)
         {
             List<StyleString> value_style_str = new List<StyleString>();
@@ -689,7 +689,8 @@ Returns or sets the type of underline applied to the font.
 
             return value_style_str;
         }
-
+        */
+        /*
         static public List<StyleString> TestCaseList_To_TestCaseSummary(List<TestCase> tc_list)
         {
             List<StyleString> ret_stylestring_list = new List<StyleString>();
@@ -706,5 +707,6 @@ Returns or sets the type of underline applied to the font.
             }
             return ret_stylestring_list;
         }
+        */
     }
 }
