@@ -1558,7 +1558,7 @@ namespace ExcelReportApplication
                 if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(str_no))
                 {
                     // key string of all linked issue
-                    String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[str_no].Links;
+                    String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[str_no].LinkedBug;
                     // key string to List of Issue
                     List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
                     // List of Issue filtered by status
@@ -2343,7 +2343,7 @@ namespace ExcelReportApplication
             if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(sheet_name))
             {
                 // key string of all linked issue
-                String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].Links;
+                String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].LinkedBug;
                 // key string to List of Issue
                 List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
                 judgement_str = Judgement_Decision_by_Linked_Issue_List(linked_issue_list);
@@ -2869,7 +2869,7 @@ namespace ExcelReportApplication
             if (ReportGenerator.GetTestcaseLUT_by_Sheetname().ContainsKey(sheet_name))          // if TC is available
             {
                 // key string of all linked issues
-                String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].Links;
+                String links = ReportGenerator.GetTestcaseLUT_by_Sheetname()[sheet_name].LinkedBug;
                 // key string to List of Issue
                 List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
                 // List of Issue filtered by status

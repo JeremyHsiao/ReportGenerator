@@ -23,7 +23,7 @@ namespace ExcelReportApplication
                 //if (key != "")
                 if (String.IsNullOrWhiteSpace(key) == false)
                 {
-                    group_note_issue.Add(key, tc.Links);
+                    group_note_issue.Add(key, tc.LinkedBug);
                 }
             }
 

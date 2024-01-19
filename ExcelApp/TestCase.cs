@@ -11,7 +11,7 @@ namespace ExcelReportApplication
         private String group;
         private String summary;
         private String status;
-        private String links;
+        private String linkbug;
         private String severity;
         private String bugtype;
         private String swversion;
@@ -29,7 +29,8 @@ namespace ExcelReportApplication
         private String planver;
 
         // generated-data
-        //private List<StyleString> linked_issue_list;
+        private List<String> linked_bug_list; 
+        private List<StyleString> linked_bug_description;
         private List<StyleString> keyword_issue_list;
 
         public String Key   // property
@@ -56,10 +57,21 @@ namespace ExcelReportApplication
             set { status = value; }  // set method
         }
 
-        public String Links   // property
+        public String LinkedBug   // property
         {
-            get { return links; }   // get method
-            set { links = value; }  // set method
+            get { return linkbug; }   // get method
+            set 
+            { 
+                linkbug = value;
+                if (String.IsNullOrWhiteSpace(linkbug) == false)
+                {
+                    this.linked_bug_list = ReportGenerator.Split_String_To_ListOfString(linkbug);
+                }
+                else
+                {
+                    this.linked_bug_list.Clear();
+                }
+            }  // set method
         }
 
         public String Severity   // property
@@ -152,16 +164,22 @@ namespace ExcelReportApplication
             set { planver = value; }  // set method
         }
 
-        //public List<StyleString> LinkedIssueDescription   // property
-        //{
-        //    get { return linked_issue_list; }   // get method
-        //    set { linked_issue_list = value; }  // set method
-        //}
+        public List<String> LinkedBugList   // property
+        {
+            get { return linked_bug_list; }   // get method
+            //set { linked_bug_list = value; }  // set method
+        }
+
+        public List<StyleString> LinkedIssueDescription   // property
+        {
+            get { return linked_bug_description; }   // get method
+            //set { linked_bug_description = value; }  // set method
+        }
 
         public List<StyleString> KeywordIssueList   // property
         {
             get { return keyword_issue_list; }   // get method
-            set { keyword_issue_list = value; }  // set method
+            //set { keyword_issue_list = value; }  // set method
         }
 
         public const string col_Key = "Key";
@@ -200,7 +218,7 @@ namespace ExcelReportApplication
             this.group = members[(int)TestCaseMemberIndex.GROUP];
             this.summary = members[(int)TestCaseMemberIndex.SUMMARY];
             this.status = members[(int)TestCaseMemberIndex.STATUS];
-            this.links = members[(int)TestCaseMemberIndex.LINKEDISSUE];
+            this.linkbug = members[(int)TestCaseMemberIndex.LINKEDISSUE];
             this.severity = members[(int)TestCaseMemberIndex.SEVERITY];
             this.bugtype = members[(int)TestCaseMemberIndex.BUGTYPE];
             this.swversion = members[(int)TestCaseMemberIndex.SWVERSION];
@@ -216,6 +234,14 @@ namespace ExcelReportApplication
             this.criteria = members[(int)TestCaseMemberIndex.CRITERIA];
             this.category = members[(int)TestCaseMemberIndex.CATEGORY];
             this.planver = members[(int)TestCaseMemberIndex.PLANVER];
+            if (String.IsNullOrWhiteSpace(this.linkbug) == false)
+            {
+                this.linked_bug_list = ReportGenerator.Split_String_To_ListOfString(linkbug);
+            }
+            else
+            {
+                this.linked_bug_list.Clear();
+            }
         }
 
         public enum TestCaseMemberIndex
