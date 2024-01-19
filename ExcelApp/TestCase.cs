@@ -751,6 +751,63 @@ namespace ExcelReportApplication
 
             return style_str_list;
         }
-    
+
+        public String ReturnStatusByLinkedIssue()
+        {
+            String final_status = Status;
+            if (Status == TestCase.STR_FINISHED)
+            {
+                List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(linkbug, ReportGenerator.ReadGlobalIssueList());
+                // List of Issue filtered by status
+                List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.List_of_status_to_filter_for_tc_linked_issue);
+                // count of filtered issue
+                IssueCount severity_count = IssueCount.IssueListStatistic(filtered_linked_issue_list);
+                Boolean pass, fail, conditional_pass;
+                TestReport.GetKeywordConclusionResult(severity_count, out pass, out fail, out conditional_pass);
+                if (fail)
+                {
+                    final_status = ReportGenerator.FAIL_str;
+                }
+                else if (conditional_pass)
+                {
+                    final_status = ReportGenerator.CONDITIONAL_PASS_str;
+                }
+                else
+                {
+                    final_status = ReportGenerator.PASS_str;
+                }
+            }
+
+            return final_status;
+        }
+
+        public Boolean StatusByLinkedIssue_IsPass(Boolean conditional_pass_also_pass = true)
+        {
+            Boolean IsPass = false;
+            if (Status == TestCase.STR_FINISHED)
+            {
+                List<Issue> linked_issue_list = Issue.KeyStringToListOfIssue(linkbug, ReportGenerator.ReadGlobalIssueList());
+                // List of Issue filtered by status
+                List<Issue> filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.List_of_status_to_filter_for_tc_linked_issue);
+                // count of filtered issue
+                IssueCount severity_count = IssueCount.IssueListStatistic(filtered_linked_issue_list);
+                Boolean pass, fail, conditional_pass;
+                TestReport.GetKeywordConclusionResult(severity_count, out pass, out fail, out conditional_pass);
+                if (fail)
+                {
+                    
+                }
+                else if (conditional_pass)
+                {
+                    IsPass = (conditional_pass_also_pass) ? true : false;
+                }
+                else
+                {
+                    IsPass = true;
+                }
+            }
+            return IsPass;
+        }
+
     }
 }
