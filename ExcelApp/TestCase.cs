@@ -29,10 +29,10 @@ namespace ExcelReportApplication
         private String planver;
 
         // generated-data
-        private List<String> linked_bug_list; 
-        private List<StyleString> linked_bug_description;
-        private List<StyleString> keyword_issue_list;
-
+        private List<String> linked_bug_list = new List<String> (); 
+        private List<StyleString> linked_bug_description = new List<StyleString>();
+        private List<StyleString> keyword_issue_list = new List<StyleString>();
+ 
         public String Key   // property
         {
             get { return key; }   // get method

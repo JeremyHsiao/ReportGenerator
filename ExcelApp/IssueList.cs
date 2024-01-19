@@ -223,11 +223,11 @@ namespace ExcelReportApplication
         private String additionalinfo;
 
         // out-of-band data
-        private List<String> keyword_list;
-        private List<String> testcaseid_list;
+        private List<String> keyword_list = new List<String>();
+        private List<String> testcaseid_list = new List<String>();
 
-        private List<StyleString> extended_linked_testcase;
-        private List<String> linked_testcase_list;
+        private List<StyleString> extended_linked_testcase = new List<StyleString>();
+        private List<String> linked_testcase_list = new List<String>();
 
         public String Key   // property
         {
