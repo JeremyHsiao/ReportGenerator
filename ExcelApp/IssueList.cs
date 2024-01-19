@@ -791,6 +791,79 @@ namespace ExcelReportApplication
             ret_list.Sort(Compare_Severity_then_Key);
             return ret_list;
         }
+
+        public List<StyleString> ToLinkedIssueDescription()
+        {
+            List<StyleString> style_str_list = new List<StyleString>();
+            Boolean is_waived = false;
+
+            if (String.IsNullOrWhiteSpace(Key) == false)
+            {
+                Color color_by_severity = ReportGenerator.LinkIssue_report_FontColor;
+                if (Status == Issue.STR_CLOSE)
+                {
+                    color_by_severity = ReportGenerator.LinkIssue_CLOSED_ISSUE_COLOR;
+                }
+                else if (Status == Issue.STR_WAIVE)
+                {
+                    color_by_severity = ReportGenerator.LinkIssue_WAIVED_ISSUE_COLOR;
+                    is_waived = true;
+                }
+                else // if ((issue.Status != Issue.STR_CLOSE) && (issue.Status != Issue.STR_WAIVE))
+                {
+                    switch (Severity[0])
+                    {
+                        case 'A':
+                            color_by_severity = ReportGenerator.LinkIssue_A_Issue_Color;
+                            break;
+                        case 'B':
+                            color_by_severity = ReportGenerator.LinkIssue_B_Issue_Color;
+                            break;
+                        case 'C':
+                            color_by_severity = ReportGenerator.LinkIssue_C_Issue_Color;
+                            break;
+                        case 'D':
+                            color_by_severity = ReportGenerator.LinkIssue_D_Issue_Color;
+                            break;
+                        default:
+                            // Use Default
+                            break;
+                    }
+
+                }
+
+                String plain_str;
+                plain_str = Key + Summary + "(" + Severity + ")";
+                if (is_waived)
+                {
+                    plain_str += "(" + ReportGenerator.WAIVED_str + ")";
+                }
+                StyleString style_str = new StyleString(plain_str, color_by_severity, ReportGenerator.LinkIssue_report_Font,
+                                            ReportGenerator.LinkIssue_report_FontSize, ReportGenerator.LinkIssue_report_FontStyle);
+                style_str_list.Add(style_str);
+            }
+            return style_str_list;
+        }
+
+        static public List<StyleString> BugList_ToLinkedIssueDescription(List<Issue> buglist)
+        {
+            List<StyleString> ret_style_string = new List<StyleString>();
+            Boolean add_a_newline = false;
+            foreach (Issue bug in buglist)
+            {
+                if (String.IsNullOrWhiteSpace(bug.Key) == false) // skip if empty key value
+                {
+                    if (add_a_newline) 
+                    { 
+                        ret_style_string.Add(new StyleString("\n")); 
+                    }
+                    List<StyleString> next_bug_description = bug.ToLinkedIssueDescription();
+                    ret_style_string.AddRange(next_bug_description);
+                    add_a_newline = true;   // need a new line if more bugs to show
+                }
+            }
+            return ret_style_string;
+        }
     }
 
     public class IssueList

@@ -1566,7 +1566,7 @@ namespace ExcelReportApplication
                     // Sort issue by Severity and Key valie
                     List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
                     // Convert list of sorted linked issue to description list
-                    linked_issue_description = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
+                    linked_issue_description = Issue.BugList_ToLinkedIssueDescription(sorted_filtered_linked_issue_list);
                 }
                 ExcelAction.SetCellValue(ws_report, row_index, GroupSummary_Title_No_Col, str_no);
                 ExcelAction.SetCellValue(ws_report, row_index, GroupSummary_Title_TestItem_Col, str_test_item);
@@ -2877,7 +2877,7 @@ namespace ExcelReportApplication
                 // Sort issue by Severity and Key valie
                 List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
                 // Convert list of sorted linked issue to description list
-                linked_issue_description_on_this_report = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
+                linked_issue_description_on_this_report = Issue.BugList_ToLinkedIssueDescription(sorted_filtered_linked_issue_list);
 
                 // decide judgement result based on linked issue severity and count
                 judgement_str = Judgement_Decision_by_Linked_Issue_List(linked_issue_list);

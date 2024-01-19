@@ -803,7 +803,7 @@ namespace ExcelReportApplication
                     // Sort issue by Severity and Key value (A first then larger key first if same severity)
                     List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
                     // Convert list of sorted linked issue to description list
-                    List<StyleString> str_list = StyleString.BugList_To_LinkedIssueDescription(sorted_filtered_linked_issue_list);
+                    List<StyleString> str_list = Issue.BugList_ToLinkedIssueDescription(sorted_filtered_linked_issue_list);
                     ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
                 }
 

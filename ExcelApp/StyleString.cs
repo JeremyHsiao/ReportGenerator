@@ -595,6 +595,7 @@ Returns or sets the type of underline applied to the font.
         //    return ret_list;
         //}
 
+        /*
         static public List<StyleString> BugList_To_LinkedIssueDescription(List<Issue> issuelist)
         {
             List<StyleString> ret_style_string = new List<StyleString>();
@@ -617,7 +618,8 @@ Returns or sets the type of underline applied to the font.
             }
             return ret_style_string;
         }
-
+        */
+        /*
         static public List<StyleString> Bug_To_LinkedIssueDescription(Issue issue)
         {
             List<StyleString> value_style_str = new List<StyleString>();
@@ -671,7 +673,8 @@ Returns or sets the type of underline applied to the font.
             }
             return value_style_str;
         }
-
+        */
+         
         static public List<StyleString> TestCase_To_TestCaseSummary(TestCase testcasae)
         {
             List<StyleString> value_style_str = new List<StyleString>();
