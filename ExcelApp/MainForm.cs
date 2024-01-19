@@ -41,7 +41,7 @@ namespace ExcelReportApplication
             Update_Report_Linked_Issue,
             Update_Keyword_and_TC_Report,                   // Report H -- it is report 7 + 9
             Man_Power_Processing,                           // Report I -- man-power
-            Update_Repoart_A_then_Report_H,                 // Report J -- it is report A + H
+            Update_PassReport_and_TC_Summary,               // Report J -- 
             Update_Report_Linked_Issue_and_TC_Report,       // Report K -- simplified version of report H - no keyword at all, less format update/correction on report 7 + Report 9
             Update_Repoart_A_then_Report_K,                 // Report L -- it is report A + K
         }
@@ -66,7 +66,7 @@ namespace ExcelReportApplication
             //ReportType.Update_Report_Linked_Issue,
             //ReportType.Update_Keyword_and_TC_Report,                // Report H   // Hide since v 1.3.21.0
             //ReportType.Man_Power_Processing,
-            //ReportType.Update_Repoart_A_then_Report_H,              // Report J   // Hide since v 1.3.21.0
+            ReportType.Update_PassReport_and_TC_Summary,              // Report J   // Hide since v 1.3.21.0
             ReportType.Update_Report_Linked_Issue_and_TC_Report,    // Report K
             ReportType.Update_Repoart_A_then_Report_K,              // Report L
         };
@@ -91,7 +91,7 @@ namespace ExcelReportApplication
         //    ReportType.Update_Report_Linked_Issue,
         //    ReportType.Update_Keyword_and_TC_Report,
         //    ReportType.Man_Power_Processing,
-        //    ReportType.Update_Repoart_A_then_Report_H,
+        //    ReportType.Update_PassReport_and_TC_Summary,
         //    ReportType.Update_Report_Linked_Issue_and_TC_Report,
         //    ReportType.Update_Repoart_A_then_Report_K,
         //};
@@ -138,8 +138,8 @@ namespace ExcelReportApplication
             "G.Update Report Linked Issue",
             "H.Update Keyword Report and TC summary (7+9)",
             "I.Man-Power Processing",
-            "J.Create Report, Update Report and TC Summary (A+H)",
-            "K.Update Report and TC summary (linked issue)",
+            "J.Update Passed Report and TC summary (linked issue)",
+            "K.Update All Report and TC summary (linked issue)",
             "L.Create Report, Update Report and TC Summary (A+K)",
             // out-of-boundary
             "Z.Final Report",
@@ -277,9 +277,9 @@ namespace ExcelReportApplication
             // "J.Create Report, Update Report and TC Summary (A+H)",
             new String[] 
             {
-                "Create Report and update them, also update TC Linked Issue ==> Report (A+H)", 
-                "Input:",  "  Jira Bug & TC file, Template (for Test case output), and Input Excel File",
-                "Output:", "  Updated reports specified within Input Excel File and TC summary with Linked issues",
+                "Update report and TC Linked Issue (linked issue only)", 
+                "Input:",  "  Jira Bug & TC file, Template (for Test case output), and root-directory of reports to be updated",
+                "Output:", "  Passed reports under directories (named by root-directory-plus-datetime) and TC summary with Linked issues",
             },
             //  "K.Update Report and TC summary (linked issue)",
             new String[] 
@@ -450,15 +450,15 @@ namespace ExcelReportApplication
                 "Test Report Path",
                 "Exported CSV File",
             },
-            // "J.Create Report, Update Report and TC Summary (A+H)",
+            // "J.Update Passed Report and TC summary (linked issue)",
             new String[] 
             {
                 "Jira Bug File", 
                 "Jira TC File",
-                "Input Excel File",         // this is file selection
+                "Test Report Path",
                 "TC Template File",
             },
-            // "K.Update Report and TC summary (linked issue)",
+            // "K.Update All Report and TC summary (linked issue)",
             new String[] 
             {
                 "Jira Bug File", 
@@ -1005,6 +1005,46 @@ namespace ExcelReportApplication
             return true;
         }
 
+        private Boolean Execute_UpdateReportByLinkedIssue_prefiltered_by_tc_status(String FileOrDirectoryName, Boolean IsDirectory, out String output_report_path)
+        {
+            List<String> file_list = new List<String>();
+            String source_dir;
+            output_report_path = "";
+
+            if (ReportGenerator.IsGlobalIssueListEmpty())
+            {
+                // protection check
+                return false;
+            }
+
+            if (IsDirectory == false)
+            {
+                if (!Storage.FileExists(FileOrDirectoryName))
+                {
+                    // protection check
+                    return false;
+                }
+                file_list.Add(FileOrDirectoryName);
+                source_dir = Storage.GetDirectoryName(FileOrDirectoryName);
+            }
+            else
+            {
+                if (!Storage.DirectoryExists(FileOrDirectoryName))
+                {
+                    // protection check
+                    return false;
+                }
+                file_list = Storage.ListFilesUnderDirectory(FileOrDirectoryName);
+                source_dir = FileOrDirectoryName;
+            }
+            output_report_path = Storage.GenerateDirectoryNameWithDateTime(source_dir);
+
+            List<String> filtered_filelist = ReportGenerator.FilterReportFileListByTCStatus(file_list);
+
+            TestReport.UpdateReportOnlyByLinkedIssue(filtered_filelist, source_dir, output_report_path);
+            return true;
+        }
+
         //private bool Execute_KeywordIssueGenerationTask_returning_report_path_update_bug_list(String FileOrDirectoryName, Boolean IsDirectory,  out String output_report_path)
         //{
         //    List<String> file_list = new List<String>();
@@ -1187,8 +1227,7 @@ namespace ExcelReportApplication
                 // In case this field is for selecting file path instaed of directory path
                 case ReportType.KeywordIssue_Report_SingleFile:
                 case ReportType.FinalCSTReport:                              //Report B   
-                case ReportType.Update_Repoart_A_then_Report_H:              //Report J = A + H
-                case ReportType.Update_Repoart_A_then_Report_K:              //Report K
+                case ReportType.Update_Repoart_A_then_Report_K:              //Report L
                     init_dir = Storage.GetFullPath(txtReportFile.Text);
                     sel_file = true;  // Here select file instead of directory
                     break;
@@ -1659,58 +1698,27 @@ namespace ExcelReportApplication
                             }
                         }
                         break;
-                    case ReportType.Update_Repoart_A_then_Report_H:                                    //Report J = A + H
-                        /*
+                    case ReportType.Update_PassReport_and_TC_Summary:                           //Report J = 1 + filtering out fail report + K (skip TC template update of K)
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
+                        if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
-                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;
-
-                        // copied from report A
-                        // NOTE: Input Excel File is storted in txtReportFile for Report J
-                        //if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;
-                        String report_j_input_excel_selected = txtReportFile.Text;
-                        String report_j_copied_report_root_path = "";
-                        List<String> report_list_report_j;
-                        Report_A_Push_Option();
-                        bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(report_j_input_excel_selected, out report_list_report_j, out report_j_copied_report_root_path);
-                        Report_A_Pop_Option();
-
-                        // copied from report H
-                        //if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
-                        //if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
-                        //if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
-
+                        // copied from Report 1
                         if (ReportGenerator.Process_BugList_TeseCase_TCTemplate(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
                         {
-                            MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
+                            MainForm.SystemLogAddLine("Failed @ return of Process_BugList_TeseCase_TCTemplate()");
                             bRet = false;
                         }
                         else
                         {
-                            String report_J_processed_report_output_path;
-                            bRet = Execute_KeywordIssueGenerationTask_returning_report_path(report_j_copied_report_root_path, true, out report_J_processed_report_output_path);
-                            bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_dir: report_J_processed_report_output_path);
+                            bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusWithoutReport(tc_file: txtTCFile.Text);
+                            if (bRet)
+                            {
+                                String Report_J_return_path;
+                                String report_J_input_path = txtReportFile.Text;
+                                bRet = Execute_UpdateReportByLinkedIssue_prefiltered_by_tc_status(report_J_input_path, true, out Report_J_return_path);
+                            }
                         }
-                        */
-                        // new version to be checked
-                        //if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
-                        //{
-                        //    MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
-                        //    bRet = false;
-                        //}
-                        //else
-                        //{
-                        //    String report_j_input_excel_selected = txtReportFile.Text;
-                        //    String report_j_copied_report_root_path = "";
-                        //    List<String> report_list_report_j;
-                        //    Report_A_Push_Option();
-                        //    KeywordReport.DefaultKeywordReportHeader.FunctionC.Update_Conclusion = false;  // override report A option for new version
-                        //    KeywordReport.DefaultKeywordReportHeader.FunctionC.Update_Judgement = false;  // override report A option for new version
-                        //    bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(report_j_input_excel_selected, out report_list_report_j, out report_j_copied_report_root_path);
-                        //    Report_A_Pop_Option();
-                        //    bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_list: report_list_report_j);
-                        //}
                         break;
 
                     case ReportType.Update_Report_Linked_Issue_and_TC_Report: // Report K -- report H without keyword function
@@ -1981,8 +1989,7 @@ namespace ExcelReportApplication
                     SetEnable_ReportFile(false);
                     SetEnable_OutputTemplate(true);
                     break;
-                case ReportType.Update_Repoart_A_then_Report_H:            // Report J = A + H
-                    // copied from report H -- all enabled
+                case ReportType.Update_PassReport_and_TC_Summary:           // Report J 
                     SetEnable_BugFile(true);
                     SetEnable_TCFile(true);
                     SetEnable_ReportFile(true);
@@ -2099,11 +2106,9 @@ namespace ExcelReportApplication
                         txtOutputTemplate.Text = @"C:\Users\" + short_userName + @"\Downloads\Advance Roadmaps.csv";
                     }
                     break;
-                case ReportType.Update_Repoart_A_then_Report_H:                  // Report J = A + H
-                    // copied from report H
-                    // NOTE: Input Excel File is storted in txtReportFile for Report J
+                case ReportType.Update_PassReport_and_TC_Summary:                  // Report J 
                     if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("Report_A_Default_Excel");
+                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_default_dir");
                     if (!btnSelectOutputTemplate_Clicked)
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;

@@ -1267,6 +1267,22 @@ namespace ExcelReportApplication
             return true;
         }
 
+        static public Boolean ProcessLinkedTestCaseOnBugListExcel()
+        {
+            Boolean b_ret = false;
+
+            b_ret = true;
+            return b_ret;
+        }
+
+        static public Boolean ProcessLinkedBugListOnTestCaseExcel()
+        {
+            Boolean b_ret = false;
+
+            b_ret = true;
+            return b_ret;
+        }
+        
         static public Boolean OpenTCTemplateAndPasteBugList(String template_file)
         {
             String template_filename = Storage.GetFullPath(template_file);
@@ -1405,6 +1421,26 @@ namespace ExcelReportApplication
             ExcelAction.SaveChangesAndCloseTestCaseExcel(dest_filename, IsTemplate: true);
 
             return b_ret;
+        }
+
+        static public List<String> FilterReportFileListByTCStatus(List<String> file_list)
+        {
+            List<String> ret_file_list = new List<String>();
+
+            foreach (String filename in file_list)
+            {
+                String sheetname = GetSheetNameAccordingToFilename(filename);
+                if (GetTestcaseLUT_by_Sheetname().ContainsKey(sheetname))
+                {
+                    TestCase tc = GetTestcaseLUT_by_Sheetname()[sheetname];
+                    String report_status = tc.ReturnStatusByLinkedIssue();
+                    if (TestReport_SaveReportByStatus.Contains(report_status))       // if status meets one of TestReport_SaveReportByStatus
+                    {
+                        ret_file_list.Add(filename);
+                    }
+                }
+            }
+            return ret_file_list;
         }
 
         /*
