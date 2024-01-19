@@ -1347,13 +1347,13 @@ namespace ExcelReportApplication
         }
 
         // Report 1 relocated to here
-        static public Boolean Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount_v3(String tc_file)
+        static public Boolean Execute_ExtendLinkIssueAndUpdateStatusWithoutReport(String tc_file)
         {
             List<String> empty_report_list = new List<String>();
             // no report has been referred at all in current report 1
-            if (WriteBacktoTCJiraExcelV3_ProcessData(empty_report_list) == false)
+            if (WriteBacktoTCJiraExcelV3_ProcessData(report_list: empty_report_list, update_status_without_report: true) == false)
             {
-                MainForm.SystemLogAddLine("Failed @ return of WriteBacktoTCJiraExcelV3_ProcessData()");
+                MainForm.SystemLogAddLine("Failed @ return of Execute_ExtendLinkIssueAndUpdateStatusWithoutReport()");
                 return false;
             }
 

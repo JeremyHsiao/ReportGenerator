@@ -1470,7 +1470,7 @@ namespace ExcelReportApplication
                         }
                         else
                         {
-                            bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByLinkIssueFilteredCount_v3(tc_file: txtTCFile.Text);
+                            bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusWithoutReport(tc_file: txtTCFile.Text);
                         }
                         break;
                     case ReportType.FullIssueDescription_Summary: // report 2 not used now
