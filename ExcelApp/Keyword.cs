@@ -286,6 +286,8 @@ namespace ExcelReportApplication
         public Boolean Update_Header_by_Template = false;
         public Boolean Update_Conclusion = false;
         public Boolean Update_Judgement = false;
+        public Boolean Update_Test_Info_by_Template = false;
+        public Boolean Save_ImportToJiraCSV = false;
         public Boolean Update_Sample_SN = false;
         // Lagacy options - BEGIN
         public Boolean Update_Full_Header = false;
@@ -305,6 +307,8 @@ namespace ExcelReportApplication
             Replace_Conclusion = XMLConfig.ReadAppSetting_Boolean("Report_C_Replace_Conclusion");
             Update_Conclusion = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Conclusion");
             Update_Judgement = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Judgement");
+            Update_Test_Info_by_Template = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Test_Info_by_Template");
+            Save_ImportToJiraCSV = XMLConfig.ReadAppSetting_Boolean("Report_C_Save_ImportToJira_CSV");
             Update_Sample_SN = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Sample_SN");
             Update_Full_Header = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Full_Header");  // options not used anymore
         }
