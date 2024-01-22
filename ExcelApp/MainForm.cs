@@ -606,7 +606,7 @@ namespace ExcelReportApplication
             ReportGenerator.copy_bug_list = XMLConfig.ReadAppSetting_Boolean("TCSummary_copy_bug_list");
             ReportGenerator.copy_and_extend_bug_list = XMLConfig.ReadAppSetting_Boolean("TCSummary_copy_and_extend_bug_list");
             ReportGenerator.update_status_even_no_report = XMLConfig.ReadAppSetting_Boolean("TCSummary_update_status_even_no_report");
-            
+
             // Input Excel
             HeaderTemplate.SheetName_HeaderTemplate = XMLConfig.ReadAppSetting_String("InputExcel_Sheetname_HeaderTemplate");
             HeaderTemplate.SheetName_ReportList = XMLConfig.ReadAppSetting_String("InputExcel_Sheetname_ReportList");
@@ -979,26 +979,7 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            if (IsDirectory == false)
-            {
-                if (!Storage.FileExists(FileOrDirectoryName))
-                {
-                    // protection check
-                    return false;
-                }
-                file_list.Add(FileOrDirectoryName);
-                source_dir = Storage.GetDirectoryName(FileOrDirectoryName);
-            }
-            else
-            {
-                if (!Storage.DirectoryExists(FileOrDirectoryName))
-                {
-                    // protection check
-                    return false;
-                }
-                file_list = Storage.ListFilesUnderDirectory(FileOrDirectoryName);
-                source_dir = FileOrDirectoryName;
-            }
+            GetReportFileListForUpdate(FileOrDirectoryName, IsDirectory, out source_dir, out file_list);
             output_report_path = Storage.GenerateDirectoryNameWithDateTime(source_dir);
 
             TestReport.UpdateReportOnlyByLinkedIssue(file_list, source_dir, output_report_path);
@@ -1017,32 +998,49 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            if (IsDirectory == false)
-            {
-                if (!Storage.FileExists(FileOrDirectoryName))
-                {
-                    // protection check
-                    return false;
-                }
-                file_list.Add(FileOrDirectoryName);
-                source_dir = Storage.GetDirectoryName(FileOrDirectoryName);
-            }
-            else
-            {
-                if (!Storage.DirectoryExists(FileOrDirectoryName))
-                {
-                    // protection check
-                    return false;
-                }
-                file_list = Storage.ListFilesUnderDirectory(FileOrDirectoryName);
-                source_dir = FileOrDirectoryName;
-            }
+            GetReportFileListForUpdate(FileOrDirectoryName, IsDirectory, out source_dir, out file_list);
             output_report_path = Storage.GenerateDirectoryNameWithDateTime(source_dir);
 
             List<String> filtered_filelist = ReportGenerator.FilterReportFileListByTCStatus(file_list);
 
             TestReport.UpdateReportOnlyByLinkedIssue(filtered_filelist, source_dir, output_report_path);
             return true;
+        }
+
+        private Boolean GetReportFileListForUpdate(String FileOrDirectory, Boolean IsDirectory, out String RootDir, out List<String> ReportFileList)
+        {
+            Boolean b_ret = false;
+
+            List<String> AllFileList = new List<String>();
+            ReportFileList = AllFileList;
+            RootDir = "";
+ 
+            if (IsDirectory == false)
+            {
+                // Is a File
+                if (Storage.FileExists(FileOrDirectory))
+                {
+                    String FileName = FileOrDirectory;
+                    AllFileList.Add(FileName);
+                    RootDir = Storage.GetDirectoryName(FileName);
+                    ReportFileList = Storage.FilterFilename(AllFileList);
+                    b_ret = true;
+                }
+            }
+            else
+            {
+                // Is a directory
+                if (Storage.DirectoryExists(FileOrDirectory))
+                {
+                     String DirectoryName = FileOrDirectory;
+                    AllFileList = Storage.ListFilesUnderDirectory(DirectoryName);
+                    RootDir = DirectoryName;
+                    ReportFileList = Storage.FilterFilename(AllFileList);
+                    b_ret = true;
+                }
+            }
+
+            return b_ret;
         }
 
         //private bool Execute_KeywordIssueGenerationTask_returning_report_path_update_bug_list(String FileOrDirectoryName, Boolean IsDirectory,  out String output_report_path)
@@ -1344,7 +1342,7 @@ namespace ExcelReportApplication
         static public Queue<String> SYSTEM_LOG = new Queue<String>();
         static public void SystemLogAdd(String log_string) { SYSTEM_LOG.Enqueue(log_string); }
         static public void SystemLogAddLine(String log_string) { SystemLogAdd(log_string + "\r\n"); }
-        static public List<String> SystemLogPopToListOfString() 
+        static public List<String> SystemLogPopToListOfString()
         {
             List<String> ret_list = SYSTEM_LOG.ToList();
             SYSTEM_LOG.Clear();
@@ -1615,7 +1613,7 @@ namespace ExcelReportApplication
                             Report_B_Pop_Option();
                             bRet = ReportGenerator.Execute_UpdateLinkedIssueStatusOnTCTemplate(tc_file: txtTCFile.Text, report_list: DestinationReportList);
                         }
-                        
+
                         break;
                     case ReportType.ConfigurableReportUpdate:                          // Report C
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
@@ -1744,34 +1742,34 @@ namespace ExcelReportApplication
                         break;
 
                     case ReportType.Update_Repoart_A_then_Report_K:                                    //Report L = A + K
-/*
-                        // copied from report A
-                        // NOTE: Input Excel File is storted in txtReportFile for Report J
-                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;
-                        String report_l_input_excel_selected = txtReportFile.Text;
-                        String report_l_copied_report_root_path = "";
-                        List<String> report_list_report_l;
-                        Report_A_Push_Option();
-                        bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(report_l_input_excel_selected, out report_list_report_l, out report_l_copied_report_root_path);
-                        Report_A_Pop_Option();
+                        /*
+                                                // copied from report A
+                                                // NOTE: Input Excel File is storted in txtReportFile for Report J
+                                                if (UpdateTextBoxPathToFullAndCheckExist(ref txtReportFile) == false) break;
+                                                String report_l_input_excel_selected = txtReportFile.Text;
+                                                String report_l_copied_report_root_path = "";
+                                                List<String> report_list_report_l;
+                                                Report_A_Push_Option();
+                                                bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(report_l_input_excel_selected, out report_list_report_l, out report_l_copied_report_root_path);
+                                                Report_A_Pop_Option();
 
-                        // copied from report K
-                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
-                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
-                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
+                                                // copied from report K
+                                                if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
+                                                if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
+                                                if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
 
-                        if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
-                        {
-                            MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
-                            bRet = false;
-                        }
-                        else
-                        {
-                            String report_L_processed_report_output_path;
-                            bRet = Execute_KeywordIssueGenerationTask_returning_report_path_simplified(report_l_copied_report_root_path, true, out report_L_processed_report_output_path);
-                            bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_dir: report_L_processed_report_output_path);
-                        }
-*/
+                                                if (ReportGenerator.OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text, buglist_file: txtBugFile.Text) == false)
+                                                {
+                                                    MainForm.SystemLogAddLine("Failed @ return of OpenProcessBugExcelTeseCaseExcelTCTemplatePasteBugCloseBugPasteTC()");
+                                                    bRet = false;
+                                                }
+                                                else
+                                                {
+                                                    String report_L_processed_report_output_path;
+                                                    bRet = Execute_KeywordIssueGenerationTask_returning_report_path_simplified(report_l_copied_report_root_path, true, out report_L_processed_report_output_path);
+                                                    bRet = ReportGenerator.Execute_ExtendLinkIssueAndUpdateStatusByReport_v2(tc_file: txtTCFile.Text, report_dir: report_L_processed_report_output_path);
+                                                }
+                        */
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile) == false) break;
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
