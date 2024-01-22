@@ -33,7 +33,7 @@ namespace ExcelReportApplication
 
         public static String TestReport_Default_Judgement = "N/A";
         public static String TestReport_Default_Conclusion = " ";
-        public static String TestReport_SaveReportByStatus = "Pass, Conditional Pass, Fail";
+        public static String TestReport_SaveReportByStatus = PASS_str + ", " + CONDITIONAL_PASS_str + ", " + FAIL_str; //"Pass, Conditional Pass, Fail";
         public static Boolean TestReport_ExtraSavePassReport = false;
 
         static public string LinkIssue_report_Font = "Gill Sans MT";

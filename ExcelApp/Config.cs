@@ -116,7 +116,7 @@ namespace ExcelReportApplication
             @"KeywordIssueFilterStatusString",              @"Close (0)",
             @"TestReport_Default_Judgement",                @"N/A",
             @"TestReport_Default_Conclusion",               @" ",
-            @"TestReport_SaveReportByStatus",               @"Pass, Conditional Pass, Fail",
+            @"TestReport_SaveReportByStatus",               @"Pass, Conditional Pass",
             @"TestReport_ExtraSavePassReport",              @"false ",
 
             @"default_report_Font",                         @"Calibri",
