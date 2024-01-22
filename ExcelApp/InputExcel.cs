@@ -211,7 +211,7 @@ namespace ExcelReportApplication
                 {
                     String today = DateTime.Now.ToString("yyyy/MM/dd");
                     HeaderTemplate.UpdateVariables_TodayAssigneeLinkedIssue(today: today, assignee: assignee, LinkedIssue: StyleString.WhiteSpaceList());
-                    success = TestReport.AutoCorrectReport_SingleFile(source_file: src, destination_file: dest, wb_template: wb, always_save: true);
+                    success = TestReport.FullyProcessReportSaveAsAnother(source_file: src, destination_file: dest, wb_template: wb, always_save: true);
                 }
 
                 if (success)

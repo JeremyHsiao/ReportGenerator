@@ -2506,19 +2506,11 @@ namespace ExcelReportApplication
             return true;
         }
 
-        static public Boolean AutoCorrectReport_SingleFile(String source_file, String destination_file, Workbook wb_template, Boolean always_save = false)
-        {
-            TestReportOption out_header; // not used for this version of API.
-            return AutoCorrectReport_SingleFile(source_file, destination_file, wb_template, out out_header, always_save);
-        }
-
-        // Copy and update worksheet name & header & bug-result (configurable) -- to be used for starting a new project based on reports from anywhere
-        static public Boolean AutoCorrectReport_SingleFile(String source_file, String destination_file, Workbook wb_template, out TestReportOption out_header, Boolean always_save = false)
+        static public Boolean FullyProcessReportSaveAsAnother(String source_file, String destination_file, Workbook wb_template, Boolean always_save = false)
         {
             Boolean file_has_been_updated = false;
             Workbook wb_source;
             Worksheet ws_source;
-            out_header = new TestReportOption();
 
             destination_file = Storage.GetFullPath(destination_file);
             if (Storage.IsReportFilename(destination_file) == false)
