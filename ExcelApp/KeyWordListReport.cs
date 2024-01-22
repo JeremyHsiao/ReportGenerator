@@ -176,7 +176,7 @@ namespace ExcelReportApplication
        };
 
         //static public 
-        static public void OutputKeywordLog(String out_path, List<TestReportKeyword> keyword_list, 
+        static public void OutputKeywordLog(String out_path, List<ReportKeyword> keyword_list, 
                                             List<ReportFileRecord> not_keyword_report_list, String keyword_output_filename ="", Boolean output_keyword_issue = false)
         {
             // Open template excel and write to another filename when closed
@@ -205,9 +205,9 @@ namespace ExcelReportApplication
             output_keyword_list_table.Add(row_list);
 
             // list keyword string of all duplicated keyword
-            List<String> duplicate_keyword_str_list = TestReport.ListDuplicatedKeywordString(keyword_list);
+            List<String> duplicate_keyword_str_list = ReportKeyword.ListDuplicatedKeywordString(keyword_list);
 
-            foreach (TestReportKeyword keyword_data in keyword_list)
+            foreach (ReportKeyword keyword_data in keyword_list)
             {
                 String keyword = keyword_data.Keyword;
                 String full_path = keyword_data.Workbook;

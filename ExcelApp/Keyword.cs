@@ -24,7 +24,7 @@ namespace ExcelReportApplication
     //    MAX_NO
     //};
 
-    public class TestReportKeyword
+    public class ReportKeyword
     {
         private String keyword;
         private String workbook;
@@ -52,8 +52,8 @@ namespace ExcelReportApplication
             issue_description_list = new List<StyleString>(); tc_description_list = new List<StyleString>();
         }
 
-        public TestReportKeyword() { TestPlanKeywordInit(); }
-        public TestReportKeyword(String Keyword, String Workbook = "", String Worksheet = "", int AtRow = 0, int AtColumn = 0,
+        public ReportKeyword() { TestPlanKeywordInit(); }
+        public ReportKeyword(String Keyword, String Workbook = "", String Worksheet = "", int AtRow = 0, int AtColumn = 0,
                                 int ResultListAtRow = 0, int ResultListAtColumn = 0, int BugStatusAtRow = 0, int BugStatusAtColumn = 0,
                                 int BugListAtRow = 0, int BugListAtColumn = 0)
         {
@@ -160,116 +160,249 @@ namespace ExcelReportApplication
             set { tc_description_list = value; }  // set method
         }
 
-        //d
-        //public void UpdateIssueDescriptionList(List<StyleString> description)
-        //{
-        //    List<StyleString> ret_str = new List<StyleString>();
+        public static String regexKeywordString = @"(?i)Item";
+        public static int col_keyword = TestReport.col_indentifier + 1;
+        public static int row_offset_result_title = 1;                                // offset from the row of identifier regex "Item"
+        public static int col_offset_result_title = 1;                                // offset from the column of identifier regex "Item"
+        public static int row_offset_bugstatus_title = row_offset_result_title;       // offset from the row of identifier regex "Item"
+        public static int col_offset_bugstatus_title = col_offset_result_title + 2;   // offset from the column of identifier regex "Item"
+        public static int row_offset_buglist_title = row_offset_result_title + 1;     // offset from the row of identifier regex "Item"
+        public static int col_offset_buglist_title = col_offset_result_title;         // offset from the column of identifier regex "Item"
+        public static String regexResultString = @"^(?i)\s*Result\s*$";
+        public static String regexBugStatusString = @"^(?i)\s*Bug Status\s*$";
+        public static String regexBugListString = @"^(?i)\s*Bug List\s*$";
 
-        //    if (IssueList == null)
-        //    {
-        //        UpdateIssueList();
-        //    }
+        static private Boolean CheckIfStringMeetsKeywordResultCondition(String text_to_check)
+        {
+            String regex = regexResultString;
+            return TestReport.CheckIfStringMeetsRegexString(text_to_check, regex);
+        }
 
-        //    if (IssueList != null)
-        //    {
+        static private Boolean CheckIfStringMeetsKeywordBugStatusCondition(String text_to_check)
+        {
+            String regex = regexBugStatusString;
+            return TestReport.CheckIfStringMeetsRegexString(text_to_check, regex);
+        }
 
-        //    }
+        static private Boolean CheckIfStringMeetsKeywordBugListCondition(String text_to_check)
+        {
+            String regex = regexBugListString;
+            return TestReport.CheckIfStringMeetsRegexString(text_to_check, regex);
+        }
 
-        //    IssueDescriptionList = ret_str;
-        //}
+        // Visit report content and find out all keywords
+        static public List<ReportKeyword> ListKeyword_SingleReport(TestPlan plan)
+        {
+            //
+            // 2. Find out Printable Area
+            //
+            // Assummed that Printable area always starting at $A$1 (also data processing area)
+            // So excel data processing area ends at Printable area (row_count,col_count)
+            Worksheet ws_testplan = plan.TestPlanWorksheet;
+            //Range rngProcessedRange = ExcelAction.GetWorksheetPrintableRange(ws_testplan);
+            Range rngProcessedRange = ExcelAction.GetWorksheetAllRange(ws_testplan);
+            int row_end = ExcelAction.Get_Range_RowNumber(rngProcessedRange);
+            int col_end = ExcelAction.Get_Range_ColumnNumber(rngProcessedRange);
 
-        //// Greater or Equal to 1.0 ==> not Closed(0) nor Waived(0.1)
-        //public IssueCount Calculate_Issue_GE_Stage_1_0()
-        //{
-        //    IssueCount ret_ic = new IssueCount();
-        //    foreach (Issue issue in this.KeywordIssues)
-        //    {
-        //        if ((issue.Status != Issue.STR_CLOSE) && (issue.Status != Issue.STR_WAIVE))
-        //        {
-        //            switch (issue.Severity[0])
-        //            {
-        //                case 'A':
-        //                    ret_ic.Severity_A++;
-        //                    break;
-        //                case 'B':
-        //                    ret_ic.Severity_B++;
-        //                    break;
-        //                case 'C':
-        //                    ret_ic.Severity_C++;
-        //                    break;
-        //                case 'D':
-        //                    ret_ic.Severity_D++;
-        //                    break;
-        //            }
+            //
+            // 3. Find out all keywords and create LUT (keyword,row_index)
+            //    output:  LUT (keyword,row_index)
+            //
+            // Read report file for keyword & its row and store into keyword/row dictionary
+            // Search keyword within printable area
+            Dictionary<String, int> KeywordAtRow = new Dictionary<String, int>();
+            RegexStringValidator identifier_keyword_Regex = new RegexStringValidator(regexKeywordString);
+            //RegexStringValidator result_keyword_Regex = new RegexStringValidator(regexResultString);
+            //RegexStringValidator bug_status_keyword_Regex = new RegexStringValidator(regexBugStatusString);
+            //RegexStringValidator bug_list_keyword_Regex = new RegexStringValidator(regexBugListString);
+            for (int row_index = TestReport.row_test_detail_start; row_index <= row_end; row_index++)
+            {
+                String identifier_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index, TestReport.col_indentifier),
+                    //result_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_result_title,
+                    //                                                    col_indentifier + col_offset_result_title),
+                    //bug_status_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_bugstatus_title,
+                    //                                                    col_indentifier + col_offset_bugstatus_title),
+                    //bug_list_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_buglist_title,
+                    //                                                    col_indentifier + col_offset_buglist_title),
+                        keyword_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index, col_keyword);
+                int regex_step = 0;
+                try
+                {
+                    // Attempt validation.
+                    // regex false (not a keyword row) then jumping to catch(); 
+                    // if special string found at (row_index, col_indentifier)
+                    identifier_keyword_Regex.Validate(identifier_text); regex_step++;
+                    // regex true, next step is to check the rest of field to validate
+                    // 1. Check "Result" title
+                    //result_keyword_Regex.Validate(result_text); regex_step++;
+                    //bug_status_keyword_Regex.Validate(bug_status_text); regex_step++;
+                    //bug_list_keyword_Regex.Validate(bug_list_text); regex_step++;
 
-        //        }
-        //    }
-        //    return ret_ic;
-        //}
+                    //if (keyword_text == "") { ConsoleWarning("Empty Keyword", row_index); continue; }
+                    if (String.IsNullOrWhiteSpace(keyword_text)) { LogMessage.WriteLine("Empty Keyword at row: " + row_index.ToString()); continue; }
+                    if (KeywordAtRow.ContainsKey(keyword_text)) { LogMessage.WriteLine("Duplicated Keyword:" + keyword_text + " at " + row_index.ToString()); continue; }
+                    KeywordAtRow.Add(keyword_text, row_index);
+                }
+                catch (ArgumentException ex)
+                {
+                    // Validation failed.
+                    // Not a key row
+                    switch (regex_step)
+                    {
+                        case 0:
+                            // Not a keyword identifier (string beginning with "item")
+                            break;
+                        case 1:
+                            // Not a "Result" 
+                            LogMessage.CheckFunctionAtRowColumn(regexBugStatusString, row_index + row_offset_result_title,
+                                                                 TestReport.col_indentifier + col_offset_result_title);
+                            break;
+                        case 2:
+                            // Not a "Bug Status" 
+                            LogMessage.CheckFunctionAtRowColumn(regexBugStatusString, row_index + row_index + row_offset_bugstatus_title,
+                                                                 TestReport.col_indentifier + col_offset_bugstatus_title);
+                            break;
+                        case 3:
+                            // Not a "Bug List" 
+                            LogMessage.CheckFunctionAtRowColumn(regexBugListString, row_index + row_offset_buglist_title,
+                                                                 TestReport.col_indentifier + col_offset_buglist_title);
+                            break;
+                        default:
+                            break;
+                    }
+                    continue;
+                }
+            }
 
-        //public IssueCount Calculate_Issue()
-        //{
-        //    IssueCount ret_ic = new IssueCount();
-        //    foreach (Issue issue in this.KeywordIssues)
-        //    {
-        //        if (issue.Status == Issue.STR_CLOSE)
-        //        {
-        //            switch (issue.Severity[0])
-        //            {
-        //                case 'A':
-        //                    ret_ic.Closed_A++;
-        //                    break;
-        //                case 'B':
-        //                    ret_ic.Closed_B++;
-        //                    break;
-        //                case 'C':
-        //                    ret_ic.Closed_C++;
-        //                    break;
-        //                case 'D':
-        //                    ret_ic.Closed_D++;
-        //                    break;
-        //            }
-        //        }
-        //        else if (issue.Status == Issue.STR_WAIVE)
-        //        {
-        //            switch (issue.Severity[0])
-        //            {
-        //                case 'A':
-        //                    ret_ic.Waived_A++;
-        //                    break;
-        //                case 'B':
-        //                    ret_ic.Waived_B++;
-        //                    break;
-        //                case 'C':
-        //                    ret_ic.Waived_C++;
-        //                    break;
-        //                case 'D':
-        //                    ret_ic.Waived_D++;
-        //                    break;
-        //            }
-        //        }
-        //        else // if ((issue.Status != Issue.STR_CLOSE) && (issue.Status != Issue.STR_WAIVE))
-        //        {
-        //            switch (issue.Severity[0])
-        //            {
-        //                case 'A':
-        //                    ret_ic.Severity_A++;
-        //                    break;
-        //                case 'B':
-        //                    ret_ic.Severity_B++;
-        //                    break;
-        //                case 'C':
-        //                    ret_ic.Severity_C++;
-        //                    break;
-        //                case 'D':
-        //                    ret_ic.Severity_D++;
-        //                    break;
-        //            }
+            List<ReportKeyword> ret = new List<ReportKeyword>();
+            foreach (String key in KeywordAtRow.Keys)
+            {
+                int row_keyword = KeywordAtRow[key];
+                // col_keyword is currently fixed value
+                int row_result, col_result, row_bug_status, col_bug_status, row_bug_list, col_bug_list;
 
-        //        }
-        //    }
-        //    return ret_ic;
-        //}
+                row_result = row_bug_status = row_keyword + 1;
+                row_bug_list = row_keyword + 2;
+                col_result = col_bug_list = col_keyword + 1;
+                col_bug_status = col_keyword + 3;
+                ret.Add(new ReportKeyword(key, plan.ExcelFile, plan.ExcelSheet, KeywordAtRow[key], col_keyword,
+                    row_result, col_result, row_bug_status, col_bug_status, row_bug_list, col_bug_list));
+            }
+            return ret;
+        }
+
+        static public List<ReportKeyword> ListAllDuplicatedKeyword(List<ReportKeyword> keyword_list)
+        {
+            Dictionary<String, ReportKeyword> for_checking_duplicated = new Dictionary<String, ReportKeyword>();
+            Dictionary<String, List<ReportKeyword>> dic_ret_kw_list = new Dictionary<String, List<ReportKeyword>>();
+
+            foreach (ReportKeyword keyword in keyword_list)
+            {
+                String kw = keyword.Keyword;
+                if (for_checking_duplicated.ContainsKey(kw))
+                {
+                    // found duplicated item ==> kw exists in for_checking_duplicated
+                    // first to check if already duplicated before
+                    if (dic_ret_kw_list.ContainsKey(kw) == false)
+                    {
+                        // 1st time duplicated so that not available in dic_ret_kw_list
+                        // then it is necessary to create a new item in dic_ret_kw_list
+                        List<ReportKeyword> new_duplicated_list = new List<ReportKeyword>();
+                        new_duplicated_list.Add(for_checking_duplicated[kw]);
+                        dic_ret_kw_list.Add(kw, new_duplicated_list);
+                    }
+                    // kw exists in dic_ret_kw_list
+                    //add duplicated item into dic_ret_kw_list[kw]
+                    dic_ret_kw_list[kw].Add(keyword);
+                }
+                else
+                {
+                    // not duplicated item
+                    // add this item into for_checking_duplicated[kw]
+                    for_checking_duplicated.Add(kw, keyword);
+                }
+            }
+
+            List<ReportKeyword> ret_dup_kw_list = new List<ReportKeyword>();
+            foreach (String kw in dic_ret_kw_list.Keys)
+            {
+                ret_dup_kw_list.AddRange(dic_ret_kw_list[kw]);
+            }
+            return ret_dup_kw_list;
+        }
+
+        // List all duplicated keywords based on complete keyword-list
+        static public List<String> ListDuplicatedKeywordString(List<ReportKeyword> keyword_list)
+        {
+            SortedSet<String> check_duplicated_keyword = new SortedSet<String>();
+            List<ReportKeyword> duplicate_keyword_list = ListAllDuplicatedKeyword(keyword_list);
+            foreach (ReportKeyword keyword in duplicate_keyword_list)
+            {
+                check_duplicated_keyword.Add(keyword.Keyword);
+            }
+            List<String> ret_str_list = new List<String>();
+            ret_str_list.AddRange(check_duplicated_keyword);
+            return ret_str_list;
+        }
+
+        static public Boolean HideKeywordResultBugRow(String excel_filename, Worksheet ws)
+        {
+            // Clear Keyword bug result and hide 2 rows (only Item row left)
+            Boolean b_ret = false;
+            try
+            {
+                TestPlan tp = TestPlan.CreateTempPlanFromFile(excel_filename);
+                tp.TestPlanWorksheet = ws;
+                tp.ExcelSheet = ws.Name;
+                List<ReportKeyword> keyword_list = ListKeyword_SingleReport(tp);
+                foreach (ReportKeyword keyword in keyword_list)
+                {
+                    double new_row_height = 0.2;
+                    ExcelAction.Set_Row_Height(ws, keyword.BugListAtRow, new_row_height);
+                    ExcelAction.Set_Row_Height(ws, keyword.BugStatusAtRow, new_row_height);
+                }
+
+                b_ret = true;
+            }
+            catch (Exception ex)
+            {
+            }
+            return b_ret;
+        }
+
+        static public Boolean ClearKeywordBugResult(String excel_filename, Worksheet ws)
+        {
+            Boolean b_ret = false;
+            try
+            {
+                TestPlan tp = TestPlan.CreateTempPlanFromFile(excel_filename);
+                tp.TestPlanWorksheet = ws;
+                tp.ExcelSheet = ws.Name;
+                List<ReportKeyword> keyword_list = ListKeyword_SingleReport(tp);
+                foreach (ReportKeyword keyword in keyword_list)
+                {
+                    ExcelAction.SetCellValue(ws, keyword.ResultAtRow, keyword.ResultAtColumn, " ");
+                    int temp_col = keyword.BugStatusAtColumn;
+                    ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
+                    ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
+                    ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
+                    ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
+                    ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
+                    ExcelAction.SetCellValue(ws, keyword.BugListAtRow, keyword.BugListAtColumn, " ");
+                    double new_row_height = (StyleString.default_size + 1) * 2 * 0.75;
+                    //ExcelAction.Unhide_Row(ws, keyword.BugListAtRow);
+                    ExcelAction.Set_Row_Height(ws, keyword.BugListAtRow, new_row_height);
+                    ExcelAction.Set_Row_Height(ws, keyword.BugStatusAtRow, new_row_height);
+                }
+
+                b_ret = true;
+            }
+            catch (Exception ex)
+            {
+            }
+            return b_ret;
+        }
+
     }
 
     public class TestReportBooleanOption
@@ -471,22 +604,11 @@ namespace ExcelReportApplication
         // From TestReportOption - END
 
         public static int col_indentifier = ExcelAction.ColumnNameToNumber('B');
-        public static int col_keyword = col_indentifier + 1;
         public static int row_test_brief_start = 10;
         public static int row_test_brief_end = 22;
         public static int row_default_conclusion_title = 21;
         public static int row_test_detail_start = 27;
         public static int col_default_report_right_border = ExcelAction.ColumnNameToNumber('N');
-        public static String regexKeywordString = @"(?i)Item";
-        public static int row_offset_result_title = 1;                                // offset from the row of identifier regex "Item"
-        public static int col_offset_result_title = 1;                                // offset from the column of identifier regex "Item"
-        public static int row_offset_bugstatus_title = row_offset_result_title;       // offset from the row of identifier regex "Item"
-        public static int col_offset_bugstatus_title = col_offset_result_title + 2;   // offset from the column of identifier regex "Item"
-        public static int row_offset_buglist_title = row_offset_result_title + 1;     // offset from the row of identifier regex "Item"
-        public static int col_offset_buglist_title = col_offset_result_title;         // offset from the column of identifier regex "Item"
-        public static String regexResultString = @"^(?i)\s*Result\s*$";
-        public static String regexBugStatusString = @"^(?i)\s*Bug Status\s*$";
-        public static String regexBugListString = @"^(?i)\s*Bug List\s*$";
 
         static public List<String> KeywordIssue_filter_status_list = new List<String>();
 
@@ -504,18 +626,18 @@ namespace ExcelReportApplication
         public static int ConditionalPassCnt_at_row = 21, ConditionalPassCnt_at_col = ExcelAction.ColumnNameToNumber('I');
 
 
-        private static List<TestReportKeyword> global_keyword_list = new List<TestReportKeyword>();
+        private static List<ReportKeyword> global_keyword_list = new List<ReportKeyword>();
         private static Boolean global_keyword_available;
         public static Boolean CheckGlobalKeywordListExist()
         {
             return global_keyword_available;
         }
-        public static void SetGlobalKeywordList(List<TestReportKeyword> keyword_list)
+        public static void SetGlobalKeywordList(List<ReportKeyword> keyword_list)
         {
             global_keyword_list = keyword_list;
             global_keyword_available = true;
         }
-        public static List<TestReportKeyword> GetGlobalKeywordList()
+        public static List<ReportKeyword> GetGlobalKeywordList()
         {
             if (global_keyword_available)
             {
@@ -523,7 +645,7 @@ namespace ExcelReportApplication
             }
             else
             {
-                return new List<TestReportKeyword>();
+                return new List<ReportKeyword>();
             }
         }
         public static void ClearGlobalKeywordList()
@@ -604,270 +726,6 @@ namespace ExcelReportApplication
             return info.ElementAt((int)REPORT_INFO.CRITERIA);
         }
 
-        // Visit report content and find out all keywords
-        static public List<TestReportKeyword> ListKeyword_SingleReport(TestPlan plan)
-        {
-            //
-            // 2. Find out Printable Area
-            //
-            // Assummed that Printable area always starting at $A$1 (also data processing area)
-            // So excel data processing area ends at Printable area (row_count,col_count)
-            Worksheet ws_testplan = plan.TestPlanWorksheet;
-            //Range rngProcessedRange = ExcelAction.GetWorksheetPrintableRange(ws_testplan);
-            Range rngProcessedRange = ExcelAction.GetWorksheetAllRange(ws_testplan);
-            int row_end = ExcelAction.Get_Range_RowNumber(rngProcessedRange);
-            int col_end = ExcelAction.Get_Range_ColumnNumber(rngProcessedRange);
-
-            //
-            // 3. Find out all keywords and create LUT (keyword,row_index)
-            //    output:  LUT (keyword,row_index)
-            //
-            // Read report file for keyword & its row and store into keyword/row dictionary
-            // Search keyword within printable area
-            Dictionary<String, int> KeywordAtRow = new Dictionary<String, int>();
-            RegexStringValidator identifier_keyword_Regex = new RegexStringValidator(regexKeywordString);
-            //RegexStringValidator result_keyword_Regex = new RegexStringValidator(regexResultString);
-            //RegexStringValidator bug_status_keyword_Regex = new RegexStringValidator(regexBugStatusString);
-            //RegexStringValidator bug_list_keyword_Regex = new RegexStringValidator(regexBugListString);
-            for (int row_index = row_test_detail_start; row_index <= row_end; row_index++)
-            {
-                String identifier_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index, col_indentifier),
-                    //result_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_result_title,
-                    //                                                    col_indentifier + col_offset_result_title),
-                    //bug_status_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_bugstatus_title,
-                    //                                                    col_indentifier + col_offset_bugstatus_title),
-                    //bug_list_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index + row_offset_buglist_title,
-                    //                                                    col_indentifier + col_offset_buglist_title),
-                        keyword_text = ExcelAction.GetCellTrimmedString(ws_testplan, row_index, col_keyword);
-                int regex_step = 0;
-                try
-                {
-                    // Attempt validation.
-                    // regex false (not a keyword row) then jumping to catch(); 
-                    // if special string found at (row_index, col_indentifier)
-                    identifier_keyword_Regex.Validate(identifier_text); regex_step++;
-                    // regex true, next step is to check the rest of field to validate
-                    // 1. Check "Result" title
-                    //result_keyword_Regex.Validate(result_text); regex_step++;
-                    //bug_status_keyword_Regex.Validate(bug_status_text); regex_step++;
-                    //bug_list_keyword_Regex.Validate(bug_list_text); regex_step++;
-
-                    //if (keyword_text == "") { ConsoleWarning("Empty Keyword", row_index); continue; }
-                    if (String.IsNullOrWhiteSpace(keyword_text)) { LogMessage.WriteLine("Empty Keyword at row: " + row_index.ToString()); continue; }
-                    if (KeywordAtRow.ContainsKey(keyword_text)) { LogMessage.WriteLine("Duplicated Keyword:" + keyword_text + " at " + row_index.ToString()); continue; }
-                    KeywordAtRow.Add(keyword_text, row_index);
-                }
-                catch (ArgumentException ex)
-                {
-                    // Validation failed.
-                    // Not a key row
-                    switch (regex_step)
-                    {
-                        case 0:
-                            // Not a keyword identifier (string beginning with "item")
-                            break;
-                        case 1:
-                            // Not a "Result" 
-                            LogMessage.CheckFunctionAtRowColumn(regexBugStatusString, row_index + row_offset_result_title,
-                                                                 col_indentifier + col_offset_result_title);
-                            break;
-                        case 2:
-                            // Not a "Bug Status" 
-                            LogMessage.CheckFunctionAtRowColumn(regexBugStatusString, row_index + row_index + row_offset_bugstatus_title,
-                                                                 col_indentifier + col_offset_bugstatus_title);
-                            break;
-                        case 3:
-                            // Not a "Bug List" 
-                            LogMessage.CheckFunctionAtRowColumn(regexBugListString, row_index + row_offset_buglist_title,
-                                                                 col_indentifier + col_offset_buglist_title);
-                            break;
-                        default:
-                            break;
-                    }
-                    continue;
-                }
-            }
-
-            List<TestReportKeyword> ret = new List<TestReportKeyword>();
-            foreach (String key in KeywordAtRow.Keys)
-            {
-                int row_keyword = KeywordAtRow[key];
-                // col_keyword is currently fixed value
-                int row_result, col_result, row_bug_status, col_bug_status, row_bug_list, col_bug_list;
-
-                row_result = row_bug_status = row_keyword + 1;
-                row_bug_list = row_keyword + 2;
-                col_result = col_bug_list = col_keyword + 1;
-                col_bug_status = col_keyword + 3;
-                ret.Add(new TestReportKeyword(key, plan.ExcelFile, plan.ExcelSheet, KeywordAtRow[key], col_keyword,
-                    row_result, col_result, row_bug_status, col_bug_status, row_bug_list, col_bug_list));
-            }
-            return ret;
-        }
-
-        // Visit all reports and find out all keywords -- make use of ListKeyword_SingleReport()
-        /*
-        static public List<TestReportKeyword> ListAllKeyword(List<TestPlan> DoPlan)
-        {
-            List<TestReportKeyword> ret = new List<TestReportKeyword>();
-            List<ReportFileRecord> ret_not_report_log = new List<ReportFileRecord>();
-
-            foreach (TestPlan plan in DoPlan)
-            {
-                String path = Storage.GetDirectoryName(plan.ExcelFile);
-                String filename = Storage.GetFileName(plan.ExcelFile);
-                String sheet_name = plan.ExcelSheet;
-                ReportFileRecord fail_log = new ReportFileRecord(path, filename, sheet_name);
-
-                TestPlan.ExcelStatus test_plan_status;
-                test_plan_status = plan.OpenDetailExcel();
-                if (test_plan_status == TestPlan.ExcelStatus.OK)
-                {
-                    List<TestReportKeyword> plan_keyword = ListKeyword_SingleReport(plan);
-                    plan.CloseDetailExcel();
-                    if (plan_keyword != null)
-                    {
-                        if (plan_keyword.Count() > 0)
-                        {
-                            ret.AddRange(plan_keyword);
-                            fail_log.SetFlagOK(excelfilenameOK: true, openfileOK: true, findWorksheetOK: true, findAnyKeyword: true);
-                            // not adding ok report log at the moment
-                            //ret_not_report_log.Add(fail_log);
-                        }
-                        else
-                        {
-                            fail_log.SetFlagOK(excelfilenameOK: true, openfileOK: true, findWorksheetOK: true);
-                            fail_log.SetFlagFail(findNoKeyword: true);
-                            ret_not_report_log.Add(fail_log);
-                        }
-                    }
-                    else // (null) 
-                    {
-                        fail_log.SetFlagOK(excelfilenameOK: true, openfileOK: true, findWorksheetOK: true);
-                        fail_log.SetFlagFail(findNoKeyword: true, otherFailure: true);
-                        ret_not_report_log.Add(fail_log);
-                        LogMessage.WriteLine("Test Plan null keyword list Error occurred:" + plan.ExcelSheet + "@" + plan.ExcelFile);
-                    }
-                }
-                else
-                {
-                    if (test_plan_status == TestPlan.ExcelStatus.ERR_OpenDetailExcel_OpenExcelWorkbook)
-                    {
-                        fail_log.SetFlagFail(openfileFail: true);
-                    }
-                    else if (test_plan_status == TestPlan.ExcelStatus.ERR_OpenDetailExcel_Find_Worksheet)
-                    {
-                        fail_log.SetFlagOK(excelfilenameOK: true, openfileOK: true);
-                        fail_log.SetFlagFail(findWorksheetFail: true);
-                    }
-                    else
-                    {
-                        fail_log.SetFlagFail(openfileFail: true, otherFailure: true);
-                        LogMessage.WriteLine("Test Plan Unknown Error occurred:" + plan.ExcelSheet + "@" + plan.ExcelFile);
-                    }
-                    ret_not_report_log.Add(fail_log);
-                    plan.CloseDetailExcel();
-                }
-            }
-            ReportGenerator.excel_not_report_log.AddRange(ret_not_report_log);
-            return ret;
-        }
-        */
-
-        //static public List<TestPlanKeyword> FilterSingleReportKeyword(List<TestPlanKeyword> keyword_list, String workbook, String worksheet)
-        //{
-        //    List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
-        //    foreach (TestPlanKeyword kw in keyword_list)
-        //    {
-        //        if (((kw.Workbook == workbook) || (workbook == "")) && (kw.Worksheet == worksheet))
-        //        {
-        //            ret.Add(kw);
-        //        }
-        //    }
-        //    return ret;
-        //}
-
-        //static public List<TestPlanKeyword> FilterSingleReportKeyword_check_only_worksheet(List<TestPlanKeyword> keyword_list, String worksheet)
-        //{
-        //    List<TestPlanKeyword> ret = new List<TestPlanKeyword>();
-        //    foreach (TestPlanKeyword kw in keyword_list)
-        //    {
-        //        if ((kw.Worksheet == worksheet))
-        //        {
-        //            ret.Add(kw);
-        //        }
-        //    }
-        //    return ret;
-        //}
-
-        //static public Boolean IsAnyKeywordInReport(List<TestPlanKeyword> keyword_list, String workbook, String worksheet)
-        //{
-        //    Boolean b_ret = false;
-        //    foreach (TestPlanKeyword kw in keyword_list)
-        //    {
-        //        if ((kw.Workbook == workbook) && (kw.Worksheet == worksheet))
-        //        {
-        //            b_ret = true;
-        //            break;
-        //        }
-        //    }
-        //    return b_ret;
-        //}
-
-        // List all duplicated keywords based on complete keyword-list
-        static public List<TestReportKeyword> ListAllDuplicatedKeyword(List<TestReportKeyword> keyword_list)
-        {
-            Dictionary<String, TestReportKeyword> for_checking_duplicated = new Dictionary<String, TestReportKeyword>();
-            Dictionary<String, List<TestReportKeyword>> dic_ret_kw_list = new Dictionary<String, List<TestReportKeyword>>();
-
-            foreach (TestReportKeyword keyword in keyword_list)
-            {
-                String kw = keyword.Keyword;
-                if (for_checking_duplicated.ContainsKey(kw))
-                {
-                    // found duplicated item ==> kw exists in for_checking_duplicated
-                    // first to check if already duplicated before
-                    if (dic_ret_kw_list.ContainsKey(kw) == false)
-                    {
-                        // 1st time duplicated so that not available in dic_ret_kw_list
-                        // then it is necessary to create a new item in dic_ret_kw_list
-                        List<TestReportKeyword> new_duplicated_list = new List<TestReportKeyword>();
-                        new_duplicated_list.Add(for_checking_duplicated[kw]);
-                        dic_ret_kw_list.Add(kw, new_duplicated_list);
-                    }
-                    // kw exists in dic_ret_kw_list
-                    //add duplicated item into dic_ret_kw_list[kw]
-                    dic_ret_kw_list[kw].Add(keyword);
-                }
-                else
-                {
-                    // not duplicated item
-                    // add this item into for_checking_duplicated[kw]
-                    for_checking_duplicated.Add(kw, keyword);
-                }
-            }
-
-            List<TestReportKeyword> ret_dup_kw_list = new List<TestReportKeyword>();
-            foreach (String kw in dic_ret_kw_list.Keys)
-            {
-                ret_dup_kw_list.AddRange(dic_ret_kw_list[kw]);
-            }
-            return ret_dup_kw_list;
-        }
-
-        // List all duplicated keywords based on complete keyword-list
-        static public List<String> ListDuplicatedKeywordString(List<TestReportKeyword> keyword_list)
-        {
-            SortedSet<String> check_duplicated_keyword = new SortedSet<String>();
-            List<TestReportKeyword> duplicate_keyword_list = ListAllDuplicatedKeyword(keyword_list);
-            foreach (TestReportKeyword keyword in duplicate_keyword_list)
-            {
-                check_duplicated_keyword.Add(keyword.Keyword);
-            }
-            List<String> ret_str_list = new List<String>();
-            ret_str_list.AddRange(check_duplicated_keyword);
-            return ret_str_list;
-        }
 
         //
         // This Demo is to identify Keyword on the excel and insert a column to list all issues containing that keyword
@@ -1211,7 +1069,7 @@ namespace ExcelReportApplication
         //    return bRet;
         //}
 
-        static public void WriteBugCountOnKeywordReport(TestReportKeyword keyword, Worksheet result_worksheet, IssueCount severity_count)
+        static public void WriteBugCountOnKeywordReport(ReportKeyword keyword, Worksheet result_worksheet, IssueCount severity_count)
         {
             // Write severity count of all keywrod isseus
             List<StyleString> bug_status_string = new List<StyleString>();
@@ -1302,7 +1160,7 @@ namespace ExcelReportApplication
             }
         }
 
-        static public void WriteKeywordConclusionOnKeywordReport(TestReportKeyword keyword, Worksheet result_worksheet, IssueCount severity_count)
+        static public void WriteKeywordConclusionOnKeywordReport(ReportKeyword keyword, Worksheet result_worksheet, IssueCount severity_count)
         {
             String pass_fail_str;
             Boolean pass, fail, conditional_pass;
@@ -1365,24 +1223,6 @@ namespace ExcelReportApplication
             return true;
         }
 
-        static private Boolean CheckIfStringMeetsKeywordResultCondition(String text_to_check)
-        {
-            String regex = regexResultString;
-            return CheckIfStringMeetsRegexString(text_to_check, regex);
-        }
-
-        static private Boolean CheckIfStringMeetsKeywordBugStatusCondition(String text_to_check)
-        {
-            String regex = regexBugStatusString;
-            return CheckIfStringMeetsRegexString(text_to_check, regex);
-        }
-
-        static private Boolean CheckIfStringMeetsKeywordBugListCondition(String text_to_check)
-        {
-            String regex = regexBugListString;
-            return CheckIfStringMeetsRegexString(text_to_check, regex);
-        }
-
         static private Boolean CheckIfStringMeetsTestPeriod(String text_to_check)
         {
             String regex = @"^(?i)\s*Test Period\s*$";
@@ -1413,7 +1253,7 @@ namespace ExcelReportApplication
             return CheckIfStringMeetsRegexString(text_to_check, regex);
         }
 
-        static private Boolean CheckIfStringMeetsRegexString(String text_to_check, String regex_to_check)
+        static public Boolean CheckIfStringMeetsRegexString(String text_to_check, String regex_to_check)
         {
             Boolean ret_bol;
             RegexStringValidator RegexString = new RegexStringValidator(regex_to_check);
@@ -1430,7 +1270,7 @@ namespace ExcelReportApplication
             return ret_bol;
         }
 
-        static private Boolean CheckIfStringMeetsSampleSN(String text_to_check)
+        static public Boolean CheckIfStringMeetsSampleSN(String text_to_check)
         {
             String regex = @"^(?i)\s*Sample S/N:\s*$";
             return CheckIfStringMeetsRegexString(text_to_check, regex);
@@ -2645,64 +2485,6 @@ namespace ExcelReportApplication
         //    return true;
         //}
 
-        static public Boolean HideKeywordResultBugRow(String excel_filename, Worksheet ws)
-        {
-            // Clear Keyword bug result and hide 2 rows (only Item row left)
-            Boolean b_ret = false;
-            try
-            {
-                TestPlan tp = TestPlan.CreateTempPlanFromFile(excel_filename);
-                tp.TestPlanWorksheet = ws;
-                tp.ExcelSheet = ws.Name;
-                List<TestReportKeyword> keyword_list = ListKeyword_SingleReport(tp);
-                foreach (TestReportKeyword keyword in keyword_list)
-                {
-                    double new_row_height = 0.2;
-                    ExcelAction.Set_Row_Height(ws, keyword.BugListAtRow, new_row_height);
-                    ExcelAction.Set_Row_Height(ws, keyword.BugStatusAtRow, new_row_height);
-                }
-
-                b_ret = true;
-            }
-            catch (Exception ex)
-            {
-            }
-            return b_ret;
-        }
-
-        static public Boolean ClearKeywordBugResult(String excel_filename, Worksheet ws)
-        {
-            Boolean b_ret = false;
-            try
-            {
-                TestPlan tp = TestPlan.CreateTempPlanFromFile(excel_filename);
-                tp.TestPlanWorksheet = ws;
-                tp.ExcelSheet = ws.Name;
-                List<TestReportKeyword> keyword_list = ListKeyword_SingleReport(tp);
-                foreach (TestReportKeyword keyword in keyword_list)
-                {
-                    ExcelAction.SetCellValue(ws, keyword.ResultAtRow, keyword.ResultAtColumn, " ");
-                    int temp_col = keyword.BugStatusAtColumn;
-                    ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
-                    ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
-                    ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
-                    ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
-                    ExcelAction.SetCellValue(ws, keyword.BugStatusAtRow, temp_col++, " ");
-                    ExcelAction.SetCellValue(ws, keyword.BugListAtRow, keyword.BugListAtColumn, " ");
-                    double new_row_height = (StyleString.default_size + 1) * 2 * 0.75;
-                    //ExcelAction.Unhide_Row(ws, keyword.BugListAtRow);
-                    ExcelAction.Set_Row_Height(ws, keyword.BugListAtRow, new_row_height);
-                    ExcelAction.Set_Row_Height(ws, keyword.BugStatusAtRow, new_row_height);
-                }
-
-                b_ret = true;
-            }
-            catch (Exception ex)
-            {
-            }
-            return b_ret;
-        }
-
         static public Boolean ClearReportBugCount(Worksheet ws)
         {
             Boolean b_ret = false;
@@ -3141,18 +2923,18 @@ namespace ExcelReportApplication
         }
         */
 
-        static public Dictionary<String, List<TestReportKeyword>> GenerateKeywordLUT_by_Sheetname(List<TestReportKeyword> keyword_list)
+        static public Dictionary<String, List<ReportKeyword>> GenerateKeywordLUT_by_Sheetname(List<ReportKeyword> keyword_list)
         {
-            Dictionary<String, List<TestReportKeyword>> ret_dic = new Dictionary<String, List<TestReportKeyword>>();
+            Dictionary<String, List<ReportKeyword>> ret_dic = new Dictionary<String, List<ReportKeyword>>();
 
-            foreach (TestReportKeyword tpk in keyword_list)
+            foreach (ReportKeyword tpk in keyword_list)
             {
                 String sheet = tpk.Worksheet;
 
                 // if key (current) exists in dictionary, add new dictionary pair (keyword, sheetname-list) with value is empty List.
                 if (ret_dic.ContainsKey(sheet) == false)
                 {
-                    ret_dic.Add(sheet, new List<TestReportKeyword>());
+                    ret_dic.Add(sheet, new List<ReportKeyword>());
                 }
                 // Add item (sheet) into the list of dictionary pair (keyword, sheetname-list)
                 ret_dic[sheet].Add(tpk);
@@ -3283,7 +3065,7 @@ namespace ExcelReportApplication
                 // Clear bug-list, bug-count, Pass/Fail/Conditional_Pass count, judgement
                 if (TestReport.Option.FunctionC.Clear_Keyword_Result)
                 {
-                    TestReport.ClearKeywordBugResult(source_file, ws);
+                    ReportKeyword.ClearKeywordBugResult(source_file, ws);
                     TestReport.ClearReportBugCount(ws);
                     TestReport.ClearJudgement(ws);
                     file_has_been_updated = true;
@@ -3293,7 +3075,7 @@ namespace ExcelReportApplication
             // Hide keyword result/bug-list row -- after clear because it is un-hide after clear
             if (TestReport.Option.FunctionC.Hide_Keyword_Result_Bug_Row)
             {
-                TestReport.HideKeywordResultBugRow(source_file, ws);
+                ReportKeyword.HideKeywordResultBugRow(source_file, ws);
                 file_has_been_updated = true;
             }
 

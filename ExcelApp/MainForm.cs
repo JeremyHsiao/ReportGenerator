@@ -573,14 +573,14 @@ namespace ExcelReportApplication
             TestPlan.DataBeginRow_TestPlan = XMLConfig.ReadAppSetting_int("TestPlan_Row_DataBegin");
             TestReport.row_test_detail_start = XMLConfig.ReadAppSetting_int("KeywordIssue_Row_UserStart");
             TestReport.col_indentifier = XMLConfig.ReadAppSetting_int("KeywordIssue_Column_Keyword_Indentifier");
-            TestReport.col_keyword = XMLConfig.ReadAppSetting_int("KeywordIssue_Column_Keyword_Location");
-            TestReport.regexKeywordString = XMLConfig.ReadAppSetting_String("KeywordIssue_Regex_Keyword_Indentifier");
-            TestReport.row_offset_result_title = XMLConfig.ReadAppSetting_int("KeywordIssue_Result_Title_Offset_Row");
-            TestReport.col_offset_result_title = XMLConfig.ReadAppSetting_int("KeywordIssue_Result_Title_Offset_Col");
-            TestReport.row_offset_bugstatus_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugStatus_Title_Offset_Row");
-            TestReport.col_offset_bugstatus_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugStatus_Title_Offset_Col");
-            TestReport.row_offset_buglist_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugList_Title_Offset_Row");
-            TestReport.col_offset_buglist_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugList_Title_Offset_Col");
+            ReportKeyword.col_keyword = XMLConfig.ReadAppSetting_int("KeywordIssue_Column_Keyword_Location");
+            ReportKeyword.regexKeywordString = XMLConfig.ReadAppSetting_String("KeywordIssue_Regex_Keyword_Indentifier");
+            ReportKeyword.row_offset_result_title = XMLConfig.ReadAppSetting_int("KeywordIssue_Result_Title_Offset_Row");
+            ReportKeyword.col_offset_result_title = XMLConfig.ReadAppSetting_int("KeywordIssue_Result_Title_Offset_Col");
+            ReportKeyword.row_offset_bugstatus_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugStatus_Title_Offset_Row");
+            ReportKeyword.col_offset_bugstatus_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugStatus_Title_Offset_Col");
+            ReportKeyword.row_offset_buglist_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugList_Title_Offset_Row");
+            ReportKeyword.col_offset_buglist_title = XMLConfig.ReadAppSetting_int("KeywordIssue_BugList_Title_Offset_Col");
 
             // end of config
 
