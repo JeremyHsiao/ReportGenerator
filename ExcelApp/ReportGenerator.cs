@@ -1599,5 +1599,25 @@ namespace ExcelReportApplication
         }
 
         */
+
+        public static List<String> SplitCommaSeparatedStringIntoList(String input_string)
+        {
+            List<String> ret_list = new List<String>();
+            String[] csv_separators = { "," };
+            if (String.IsNullOrWhiteSpace(input_string) == false)
+            {
+                // Separate keys into string[]
+                String[] issues = input_string.Split(csv_separators, StringSplitOptions.RemoveEmptyEntries);
+                if (issues != null)
+                {
+                    // string[] to List<String> (trimmed) and return
+                    foreach (String str in issues)
+                    {
+                        ret_list.Add(str.Trim());
+                    }
+                }
+            }
+            return ret_list;
+        }
     }
 }

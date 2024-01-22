@@ -9,7 +9,7 @@ using System.Configuration;
 
 namespace ExcelReportApplication
 {
-    public class TestReportBooleanOption
+    public class FunctionOption
     {
         public Boolean CopyFileOnly = false;
         public Boolean Copy_Worksheet_AtTheBeginning = false;
@@ -26,9 +26,6 @@ namespace ExcelReportApplication
         public Boolean Update_Test_Info_by_Template = false;
         public Boolean Save_ImportToJiraCSV = false;
         public Boolean Update_Sample_SN = false;
-        // Lagacy options - BEGIN
-        public Boolean Update_Full_Header = false;
-        // Lagacy options - END
 
         public void LoadFromConfig()
         {
@@ -47,15 +44,14 @@ namespace ExcelReportApplication
             Update_Test_Info_by_Template = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Test_Info_by_Template");
             Save_ImportToJiraCSV = XMLConfig.ReadAppSetting_Boolean("Report_C_Save_ImportToJira_CSV");
             Update_Sample_SN = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Sample_SN");
-            Update_Full_Header = XMLConfig.ReadAppSetting_Boolean("Report_C_Update_Full_Header");  // options not used anymore
         }
     }
 
     public class TestReportOption
     {
-        public TestReportBooleanOption FunctionC = new TestReportBooleanOption();
-        public TestReportBooleanOption FunctionC_DefaultByXML = new TestReportBooleanOption();
-        public TestReportBooleanOption FunctionC_DefaultByCode = new TestReportBooleanOption();
+        public FunctionOption FunctionC = new FunctionOption();
+        public FunctionOption FunctionC_DefaultByXML = new FunctionOption();
+        public FunctionOption FunctionC_DefaultByCode = new FunctionOption();
 
         public String PreFilterReportByTCSummaryStatus = "Pass, Conditional Pass, Fail";
         public String SampleSN_String = "Refer to DUT_Allocation_Matrix table";
@@ -65,47 +61,6 @@ namespace ExcelReportApplication
         public FontStyle SN_FontStyle = FontStyle.Regular;
         public String Copy_Report_DateTime_Format_AtTheBeginning = "_MMddHHmm_01";
         public String Copy_Report_DateTime_Format_AtTheEnd = "_MMddHHmm_02";
-
-        // Lagacy options - BEGIN
-        public Boolean Report_C_Update_Full_Header = false;
-        public String Report_Title = "Report_Name";
-        public String Report_SheetName = "Report_Sheet_Name";
-        public String Model_Name = "Model Name";
-        public String Part_No = "Part_No";
-        public String Panel_Module = "Panel_Module";
-        public String TCON_Board = "T-Con_Board";
-        public String AD_Board = "AD_Board";
-        public String Power_Board = "Power_Board";
-        public String Smart_BD_OS_Version = "Smart_BD_OS_Version";
-        public String Touch_Sensor = "Touch_Sensor";
-        public String Speaker_AQ_Version = "Speaker_AQ_Version";
-        public String SW_PQ_Version = "SW_PQ_Version";
-        public String Test_Stage = " ";
-        public String Test_QTY_SN = " ";
-        public String Test_Period_Begin = "2023/07/10";
-        public String Test_Period_End = "2023/07/10";
-        public String Judgement = " ";
-        public String Tested_by = " ";
-        public String Approved_by = "Jeremy Hsiao";
-        public Boolean Update_Report_Title_by_Sheetname = true;
-        public Boolean Update_Model_Name = true;
-        public Boolean Update_Part_No = true;
-        public Boolean Update_Panel_Module = true;
-        public Boolean Update_TCON_Board = true;
-        public Boolean Update_AD_Board = true;
-        public Boolean Update_Power_Board = true;
-        public Boolean Update_Smart_BD_OS_Version = true;
-        public Boolean Update_Touch_Sensor = true;
-        public Boolean Update_Speaker_AQ_Version = true;
-        public Boolean Update_SW_PQ_Version = true;
-        public Boolean Update_Test_Stage = true;
-        public Boolean Update_Test_QTY_SN = true;
-        public Boolean Update_Test_Period_Begin = true;
-        public Boolean Update_Test_Period_End = true;
-        public Boolean Update_Judgement = true;
-        public Boolean Update_Tested_by = true;
-        public Boolean Update_Approved_by = true;
-        // Lagacy options - END
 
         public void LoadFromConfig()
         {
@@ -120,44 +75,6 @@ namespace ExcelReportApplication
             SN_FontStyle = XMLConfig.ReadAppSetting_FontStyle("SampleSN_String_FontStyle");
             Copy_Report_DateTime_Format_AtTheBeginning = XMLConfig.ReadAppSetting_String("Copy_Report_DateTime_Format_AtTheBeginning");
             Copy_Report_DateTime_Format_AtTheEnd = XMLConfig.ReadAppSetting_String("Copy_Report_DateTime_Format_AtTheEnd");
-
-            // config for header above line 21
-            Model_Name = XMLConfig.ReadAppSetting_String("Default_Model_Name");
-            Part_No = XMLConfig.ReadAppSetting_String("Default_Part_No");
-            Panel_Module = XMLConfig.ReadAppSetting_String("Default_Panel_Module");
-            TCON_Board = XMLConfig.ReadAppSetting_String("Default_TCON_Board");
-            AD_Board = XMLConfig.ReadAppSetting_String("Default_AD_Board");
-            Power_Board = XMLConfig.ReadAppSetting_String("Default_Power_Board");
-            Smart_BD_OS_Version = XMLConfig.ReadAppSetting_String("Default_Smart_BD_OS_Version");
-            Touch_Sensor = XMLConfig.ReadAppSetting_String("Default_Touch_Sensor");
-            Speaker_AQ_Version = XMLConfig.ReadAppSetting_String("Default_Speaker_AQ_Version");
-            SW_PQ_Version = XMLConfig.ReadAppSetting_String("Default_SW_PQ_Version");
-            Test_Stage = XMLConfig.ReadAppSetting_String("Default_Test_Stage");
-            Test_QTY_SN = XMLConfig.ReadAppSetting_String("Default_Test_QTY_SN");
-            Test_Period_Begin = XMLConfig.ReadAppSetting_String("Default_Test_Period_Begin");
-            Test_Period_End = XMLConfig.ReadAppSetting_String("Default_Test_Period_End");
-            Judgement = XMLConfig.ReadAppSetting_String("Default_Judgement");
-            Tested_by = XMLConfig.ReadAppSetting_String("Default_Tested_by");
-            Approved_by = XMLConfig.ReadAppSetting_String("Default_Approved_by");
-
-            Update_Report_Title_by_Sheetname = XMLConfig.ReadAppSetting_Boolean("Update_Report_Title_by_Sheetname");
-            Update_Model_Name = XMLConfig.ReadAppSetting_Boolean("Update_Model_Name");
-            Update_Part_No = XMLConfig.ReadAppSetting_Boolean("Update_Part_No");
-            Update_Panel_Module = XMLConfig.ReadAppSetting_Boolean("Update_Panel_Module");
-            Update_TCON_Board = XMLConfig.ReadAppSetting_Boolean("Update_TCON_Board");
-            Update_AD_Board = XMLConfig.ReadAppSetting_Boolean("Update_AD_Board");
-            Update_Power_Board = XMLConfig.ReadAppSetting_Boolean("Update_Power_Board");
-            Update_Smart_BD_OS_Version = XMLConfig.ReadAppSetting_Boolean("Update_Smart_BD_OS_Version");
-            Update_Touch_Sensor = XMLConfig.ReadAppSetting_Boolean("Update_Touch_Sensor");
-            Update_Speaker_AQ_Version = XMLConfig.ReadAppSetting_Boolean("Update_Speaker_AQ_Version");
-            Update_SW_PQ_Version = XMLConfig.ReadAppSetting_Boolean("Update_SW_PQ_Version");
-            Update_Test_Stage = XMLConfig.ReadAppSetting_Boolean("Update_Test_Stage");
-            Update_Test_QTY_SN = XMLConfig.ReadAppSetting_Boolean("Update_Test_QTY_SN");
-            Update_Test_Period_Begin = XMLConfig.ReadAppSetting_Boolean("Update_Test_Period_Begin");
-            Update_Test_Period_End = XMLConfig.ReadAppSetting_Boolean("Update_Test_Period_End");
-            Update_Judgement = XMLConfig.ReadAppSetting_Boolean("Update_Judgement");
-            Update_Tested_by = XMLConfig.ReadAppSetting_Boolean("Update_Tested_by");
-            Update_Approved_by = XMLConfig.ReadAppSetting_Boolean("Update_Approved_by");
         }
     }
 
@@ -222,6 +139,21 @@ namespace ExcelReportApplication
         public static Boolean KeywordIssue_Auto_Correct_Sheetname = false;
 
         public static TestReportOption Option = new TestReportOption();
+        public static LagacyOption LagacyOption = new LagacyOption();
+
+        public static void LoadFromConfig()
+        {
+            String links = XMLConfig.ReadAppSetting_String("KeywordIssueFilterStatusString");
+            KeywordIssue_filter_status_list = ReportGenerator.SplitCommaSeparatedStringIntoList(links);
+            row_test_detail_start = XMLConfig.ReadAppSetting_int("KeywordIssue_Row_UserStart");
+            col_indentifier = XMLConfig.ReadAppSetting_int("KeywordIssue_Column_Keyword_Indentifier");
+            KeywordIssue_Replace_Conclusion = XMLConfig.ReadAppSetting_Boolean("KeywordIssue_report_replace_conclusion");
+            KeywordIssue_Hide_Result_Bug = XMLConfig.ReadAppSetting_Boolean("KeywordIssue_report_Hide_Result_Bug");
+            KeywordIssue_Auto_Correct_Sheetname = XMLConfig.ReadAppSetting_Boolean("KeywordIssue_report_Correct_Worksheet");
+
+            Option.LoadFromConfig();
+            LagacyOption.LoadFromConfig();
+        }
 
         public static int PassCnt_at_row = 21, PassCnt_at_col = ExcelAction.ColumnNameToNumber('E');
         public static int FailCnt_at_row = 21, FailCnt_at_col = ExcelAction.ColumnNameToNumber('G');
@@ -1800,6 +1732,7 @@ namespace ExcelReportApplication
         }
 
         // to be finished
+        /*
         static public Boolean ReadKeywordReportHeader_full(Worksheet report_worksheet, out TestReportOption out_header)
         {
             out_header = new TestReportOption();
@@ -1903,120 +1836,121 @@ namespace ExcelReportApplication
             //}
             return true;
         }
+        */
 
-        static public Boolean UpdateKeywordReportHeader_full(Worksheet report_worksheet, TestReportOption header)
+        static public Boolean UpdateReportHeader_Lagacy(Worksheet report_worksheet)
         {
             Boolean b_ret = false;
             try
             {
                 //@"Update_Report_Title_by_Sheetname",        @"true",
-                if (TestReport.Option.Update_Report_Title_by_Sheetname)
+                if (LagacyOption.Update_Report_Title_by_Sheetname)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReport.Title_at_row, TestReport.Title_at_col, header.Report_Title);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Title_at_row, TestReport.Title_at_col, LagacyOption.Report_Title);
                     ExcelAction.SetFontColorToWhite(report_worksheet, 1, 1, 1, 1);  // A1 only
                 }
 
                 //@"Update_Model_Name",                       @"true",
-                if (TestReport.Option.Update_Model_Name)
+                if (LagacyOption.Update_Model_Name)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReport.Model_Name_at_row, TestReport.Model_Name_at_col, header.Model_Name);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Model_Name_at_row, TestReport.Model_Name_at_col, LagacyOption.Model_Name);
                 }
 
                 //@"Update_Part_No",                          @"true",
-                if (TestReport.Option.Update_Part_No)
+                if (LagacyOption.Update_Part_No)
                 {
-                    String output_part_no = header.Part_No + "-" + header.Report_SheetName;
+                    String output_part_no = LagacyOption.Part_No + "-" + LagacyOption.Report_SheetName;
                     ExcelAction.SetCellValue(report_worksheet, TestReport.Part_No_at_row, TestReport.Part_No_at_col, output_part_no);
                 }
 
                 //@"Update_Panel_Module",                     @"true",
-                if (TestReport.Option.Update_Panel_Module)
+                if (LagacyOption.Update_Panel_Module)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReport.Panel_Module_at_row, TestReport.Panel_Module_at_col, header.Panel_Module);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Panel_Module_at_row, TestReport.Panel_Module_at_col, LagacyOption.Panel_Module);
                 }
 
                 //@"Update_TCON_Board",                       @"true",
-                if (TestReport.Option.Update_TCON_Board)
+                if (LagacyOption.Update_TCON_Board)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReport.TCON_Board_at_row, TestReport.TCON_Board_at_col, header.TCON_Board);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.TCON_Board_at_row, TestReport.TCON_Board_at_col, LagacyOption.TCON_Board);
                 }
 
                 //@"Update_AD_Board",                         @"true",
-                if (TestReport.Option.Update_AD_Board)
+                if (LagacyOption.Update_AD_Board)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReport.AD_Board_at_row, TestReport.AD_Board_at_col, header.AD_Board);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.AD_Board_at_row, TestReport.AD_Board_at_col, LagacyOption.AD_Board);
                 }
 
                 //@"Update_Power_Board",                      @"true",
-                if (TestReport.Option.Update_Power_Board)
+                if (LagacyOption.Update_Power_Board)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReport.Power_Board_at_row, TestReport.Power_Board_at_col, header.Power_Board);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Power_Board_at_row, TestReport.Power_Board_at_col, LagacyOption.Power_Board);
                 }
 
                 //@"Update_Smart_BD_OS_Version",              @"true",
-                if (TestReport.Option.Update_Smart_BD_OS_Version)
+                if (LagacyOption.Update_Smart_BD_OS_Version)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReport.Smart_BD_OS_Version_at_row, TestReport.Smart_BD_OS_Version_at_col, header.Smart_BD_OS_Version);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Smart_BD_OS_Version_at_row, TestReport.Smart_BD_OS_Version_at_col, LagacyOption.Smart_BD_OS_Version);
                 }
 
                 //@"Update_Touch_Sensor",                     @"true",
-                if (TestReport.Option.Update_Touch_Sensor)
+                if (LagacyOption.Update_Touch_Sensor)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReport.Touch_Sensor_at_row, TestReport.Touch_Sensor_at_col, header.Touch_Sensor);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Touch_Sensor_at_row, TestReport.Touch_Sensor_at_col, LagacyOption.Touch_Sensor);
                 }
 
                 //@"Update_Speaker_AQ_Version",               @"true",
-                if (TestReport.Option.Update_Speaker_AQ_Version)
+                if (LagacyOption.Update_Speaker_AQ_Version)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReport.Speaker_AQ_Version_at_row, TestReport.Speaker_AQ_Version_at_col, header.Speaker_AQ_Version);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Speaker_AQ_Version_at_row, TestReport.Speaker_AQ_Version_at_col, LagacyOption.Speaker_AQ_Version);
                 }
 
                 //@"Update_SW_PQ_Version",                    @"true",
-                if (TestReport.Option.Update_SW_PQ_Version)
+                if (LagacyOption.Update_SW_PQ_Version)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReport.SW_PQ_Version_at_row, TestReport.SW_PQ_Version_at_col, header.SW_PQ_Version);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.SW_PQ_Version_at_row, TestReport.SW_PQ_Version_at_col, LagacyOption.SW_PQ_Version);
                 }
 
                 //@"Update_Test_Stage",                       @"true",
-                if (TestReport.Option.Update_Test_Stage)
+                if (LagacyOption.Update_Test_Stage)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReport.Test_Stage_at_row, TestReport.Test_Stage_at_col, header.Test_Stage);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Test_Stage_at_row, TestReport.Test_Stage_at_col, LagacyOption.Test_Stage);
                 }
 
                 //@"Update_Test_QTY_SN",                      @"true",
-                if (TestReport.Option.Update_Test_QTY_SN)
+                if (LagacyOption.Update_Test_QTY_SN)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReport.Test_QTY_SN_at_row, TestReport.Test_QTY_SN_at_col, header.Test_QTY_SN);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Test_QTY_SN_at_row, TestReport.Test_QTY_SN_at_col, LagacyOption.Test_QTY_SN);
                 }
 
                 //@"Update_Test_Period_Begin",                @"true",
-                if (TestReport.Option.Update_Test_Period_Begin)
+                if (LagacyOption.Update_Test_Period_Begin)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReport.Test_Period_Begin_at_row, TestReport.Test_Period_Begin_at_col, header.Test_Period_Begin);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Test_Period_Begin_at_row, TestReport.Test_Period_Begin_at_col, LagacyOption.Test_Period_Begin);
                 }
 
                 //@"Update_Test_Period_End",                  @"true",
-                if (TestReport.Option.Update_Test_Period_End)
+                if (LagacyOption.Update_Test_Period_End)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReport.Test_Period_End_at_row, TestReport.Test_Period_End_at_col, header.Test_Period_End);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Test_Period_End_at_row, TestReport.Test_Period_End_at_col, LagacyOption.Test_Period_End);
                 }
 
                 //@"Update_Judgement",                        @"true",
-                if (TestReport.Option.Update_Judgement)
+                if (LagacyOption.Update_Judgement)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReport.Judgement_at_row, TestReport.Judgement_at_col, header.Judgement);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Judgement_at_row, TestReport.Judgement_at_col, LagacyOption.Judgement);
                 }
 
                 //@"Update_Tested_by",                        @"true",
-                if (TestReport.Option.Update_Tested_by)
+                if (LagacyOption.Update_Tested_by)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReport.Tested_by_at_row, TestReport.Tested_by_at_col, header.Tested_by);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Tested_by_at_row, TestReport.Tested_by_at_col, LagacyOption.Tested_by);
                 }
 
                 //@"Update_Approved_by",                      @"true",
-                if (TestReport.Option.Update_Approved_by)
+                if (LagacyOption.Update_Approved_by)
                 {
-                    ExcelAction.SetCellValue(report_worksheet, TestReport.Approved_by_at_row, TestReport.Approved_by_at_col, header.Approved_by);
+                    ExcelAction.SetCellValue(report_worksheet, TestReport.Approved_by_at_row, TestReport.Approved_by_at_col, LagacyOption.Approved_by);
                 }
 
                 b_ret = true;
@@ -2550,29 +2484,25 @@ namespace ExcelReportApplication
         {
             // Open Excel workbook
             source_file = Storage.GetFullPath(source_file);
-            Workbook wb = ExcelAction.OpenExcelWorkbook(filename: source_file, ReadOnly: false);
-            if (wb == null)
+            ReportWorkbook = ExcelAction.OpenExcelWorkbook(filename: source_file, ReadOnly: false);
+            if (ReportWorkbook == null)
             {
                 LogMessage.WriteLine("ERR: Open workbook in OpenReportWorksheet(): " + source_file);
-                ReportWorkbook = null;
                 ReportWorksheet = null;
                 return false;
             }
 
-            ReportWorkbook = wb;
             // If valid sheet_name does not exist, use first worksheet .
-            String current_sheet_name = ReportGenerator.GetSheetNameAccordingToFilename(source_file);
-            TestReport.Option.Report_SheetName = current_sheet_name;
-            Worksheet ws;
-            if (ExcelAction.WorksheetExist(ReportWorkbook, current_sheet_name) == false)
+            String try_sheetname = ReportGenerator.GetSheetNameAccordingToFilename(source_file);
+
+            if (ExcelAction.WorksheetExist(ReportWorkbook, try_sheetname))
             {
-                ws = ReportWorkbook.Sheets[1];
+                ReportWorksheet = ExcelAction.Find_Worksheet(ReportWorkbook, try_sheetname);
             }
             else
             {
-                ws = ExcelAction.Find_Worksheet(ReportWorkbook, current_sheet_name);
+                ReportWorksheet = ReportWorkbook.Sheets[1];
             }
-            ReportWorksheet = ws;
             return true;
         }
 
@@ -2586,6 +2516,8 @@ namespace ExcelReportApplication
         static public Boolean AutoCorrectReport_SingleFile(String source_file, String destination_file, Workbook wb_template, out TestReportOption out_header, Boolean always_save = false)
         {
             Boolean file_has_been_updated = false;
+            Workbook wb_source;
+            Worksheet ws_source;
             out_header = new TestReportOption();
 
             destination_file = Storage.GetFullPath(destination_file);
@@ -2595,52 +2527,50 @@ namespace ExcelReportApplication
                 return file_has_been_updated;
             }
 
-            Workbook wb;
-            Worksheet ws;
-            if (OpenReportWorksheet(source_file, out wb, out ws) == false)
+            if (OpenReportWorksheet(source_file, out wb_source, out ws_source) == false)
             {
                 // Do nothing if opening excel & finding worksheett failed
                 return file_has_been_updated;
             }
 
             DateTime dt = DateTime.Now;
-            String worksheet_append_string_pre = dt.ToString(TestReport.Option.Copy_Report_DateTime_Format_AtTheBeginning);
-            String worksheet_append_string_post = dt.ToString(TestReport.Option.Copy_Report_DateTime_Format_AtTheEnd);
+            String worksheet_append_string_pre = dt.ToString(Option.Copy_Report_DateTime_Format_AtTheBeginning);
+            String worksheet_append_string_post = dt.ToString(Option.Copy_Report_DateTime_Format_AtTheEnd);
 
             // copy existing report before processing
-            if (TestReport.Option.FunctionC.Copy_Worksheet_AtTheBeginning)
+            if (Option.FunctionC.Copy_Worksheet_AtTheBeginning)
             {
-                ExcelAction.CopyReportSheetAsHistory(wb, worksheet_append_string_pre);
+                ExcelAction.CopyReportSheetAsHistory(wb_source, worksheet_append_string_pre);
                 file_has_been_updated = true;
             }
 
-            // Update sheetname (when the option is true)
-            if (TestReport.Option.FunctionC.Update_Report_Sheetname)
+            // Always update sheetname (when the option is true) according to destination report name
+            if (Option.FunctionC.Update_Report_Sheetname)
             {
                 String new_sheet_name = ReportGenerator.GetSheetNameAccordingToFilename(destination_file);
-                ws.Name = new_sheet_name;
-                TestReport.Option.Report_SheetName = new_sheet_name;
+                ws_source.Name = new_sheet_name;
                 file_has_been_updated = true;
             }
 
             //Report_C_Update_Header_by_Template
-            if (TestReport.Option.FunctionC.Update_Header_by_Template == true)
+            if (Option.FunctionC.Update_Header_by_Template == true)
             {
                 if (ExcelAction.WorksheetExist(wb_template, HeaderTemplate.SheetName_HeaderTemplate))
                 {
                     Worksheet ws_template = ExcelAction.Find_Worksheet(wb_template, HeaderTemplate.SheetName_HeaderTemplate);
                     String filename = ReportGenerator.GetReportTitleAccordingToFilename(destination_file);
-                    String sheetname = ws.Name;
+                    String sheetname = ws_source.Name;
                     HeaderTemplate.UpdateVariables_FilenameSheetname(filename: filename, sheetname: sheetname);
                     //HeaderTemplate.CopyAndUpdateHeader(ws_template, ws);
-                    HeaderTemplate.CopyAndUpdateHeader_with_KEEP(ws_template, ws);
+                    HeaderTemplate.CopyAndUpdateHeader_with_KEEP(ws_template, ws_source);
+                    file_has_been_updated = true;
                 }
 
                 //Report_C_Replace_Conclusion
-                if (TestReport.Option.FunctionC.Replace_Conclusion == true)
+                if (Option.FunctionC.Replace_Conclusion == true)
                 {
                     //StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
-                    TestReport.ReplaceConclusionWithBugList(ws, TestReport.blank_space_list);
+                    ReplaceConclusionWithBugList(ws_source, blank_space_list);
                     file_has_been_updated = true;
                 }
 
@@ -2648,69 +2578,70 @@ namespace ExcelReportApplication
             else
             {
                 // Update header (when the option is true)
-                if (TestReport.Option.FunctionC.Update_Full_Header == true)
+                if (LagacyOption.Update_Full_Header == true)
                 {
                     String new_title = ReportGenerator.GetReportTitleAccordingToFilename(destination_file);
-                    TestReport.Option.Report_Title = new_title;
+                    LagacyOption.Report_Title = new_title;
                     // sheet-name is not defined as part of header --> it should be part of excel report (eg. filename, sheetname)
                     //KeywordReport.DefaultKeywordReportHeader.Report_SheetName = new_sheet_name;
-                    TestReport.UpdateKeywordReportHeader_full(ws, TestReport.Option);
+                    UpdateReportHeader_Lagacy(ws_source);
                     file_has_been_updated = true;
                 }
 
+
                 //Report_C_Replace_Conclusion
-                if (TestReport.Option.FunctionC.Replace_Conclusion == true)
+                if (Option.FunctionC.Replace_Conclusion == true)
                 {
                     //StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
-                    TestReport.ReplaceConclusionWithBugList(ws, TestReport.blank_space_list);
+                    ReplaceConclusionWithBugList(ws_source, blank_space_list);
                     file_has_been_updated = true;
                 }
 
                 // Clear bug-list, bug-count, Pass/Fail/Conditional_Pass count, judgement
-                if (TestReport.Option.FunctionC.Clear_Keyword_Result)
+                if (Option.FunctionC.Clear_Keyword_Result)
                 {
-                    ReportKeyword.ClearKeywordBugResult(source_file, ws);
-                    TestReport.ClearReportBugCount(ws);
-                    TestReport.ClearJudgement(ws);
+                    ReportKeyword.ClearKeywordBugResult(source_file, ws_source);
+                    ClearReportBugCount(ws_source);
+                    ClearJudgement(ws_source);
                     file_has_been_updated = true;
                 }
             }
 
             // Hide keyword result/bug-list row -- after clear because it is un-hide after clear
-            if (TestReport.Option.FunctionC.Hide_Keyword_Result_Bug_Row)
+            if (Option.FunctionC.Hide_Keyword_Result_Bug_Row)
             {
-                ReportKeyword.HideKeywordResultBugRow(source_file, ws);
+                ReportKeyword.HideKeywordResultBugRow(source_file, ws_source);
                 file_has_been_updated = true;
             }
 
-            if (TestReport.Option.FunctionC.Update_Conclusion)
+            if (Option.FunctionC.Update_Conclusion)
             {
-                TestReport.Update_Conclusion_only_by_linked_issue(ws);
+                Update_Conclusion_only_by_linked_issue(ws_source);
                 file_has_been_updated = true;
             }
 
-            if (TestReport.Option.FunctionC.Update_Judgement)
+            if (Option.FunctionC.Update_Judgement)
             {
-                TestReport.Update_Judgement_only_by_linked_issue(ws);
+                Update_Judgement_only_by_linked_issue(ws_source);
                 file_has_been_updated = true;
             }
 
-            if (TestReport.Option.FunctionC.Update_Sample_SN)
+            if (Option.FunctionC.Update_Sample_SN)
             {
-                TestReport.UpdateSampleSN_to_common_string(ws);
+                UpdateSampleSN_to_common_string(ws_source);
                 file_has_been_updated = true;
             }
 
-            if (TestReport.Option.FunctionC.Remove_AUO_Internal)
+            if (Option.FunctionC.Remove_AUO_Internal)
             {
                 // step 1: remove sheets which are not to be released
-                String sheet_name_to_keep = ws.Name;
-                if (wb.Sheets.Count > 1)
+                String sheet_name_to_keep = ws_source.Name;
+                if (wb_source.Sheets.Count > 1)
                 {
                     // work-sheet can be deleted only when there are two or more sheets
-                    for (int sheet_index = wb.Sheets.Count; sheet_index > 0; sheet_index--)
+                    for (int sheet_index = wb_source.Sheets.Count; sheet_index > 0; sheet_index--)
                     {
-                        String temp_sheet_name = wb.Sheets[sheet_index].Name;
+                        String temp_sheet_name = wb_source.Sheets[sheet_index].Name;
                         if (temp_sheet_name.Length >= sheet_name_to_keep.Length)
                         {
                             if (temp_sheet_name.Substring(0, sheet_name_to_keep.Length) == sheet_name_to_keep)
@@ -2718,24 +2649,24 @@ namespace ExcelReportApplication
                                 continue;
                             }
                         }
-                        wb.Sheets[sheet_index].Delete();
+                        wb_source.Sheets[sheet_index].Delete();
                         file_has_been_updated = true;
                     }
                 }
                 // step 2: remove contents on the sheet which are not to be released
-                if (TestReport.Option.FunctionC.Remove_AUO_Internal_remove_Method)
+                if (Option.FunctionC.Remove_AUO_Internal_remove_Method)
                 {
                     //CheckIfStringMeetsMethod
-                    int search_start_row = TestReport.row_test_brief_start, search_end_row = TestReport.row_test_brief_end;
+                    int search_start_row = row_test_brief_start, search_end_row = row_test_brief_end;
                     for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
                     {
-                        String text = ExcelAction.GetCellTrimmedString(wb.Sheets[1], row_index, TestReport.col_indentifier);
-                        if (TestReport.CheckIfStringMeetsMethod(text))
+                        String text = ExcelAction.GetCellTrimmedString(wb_source.Sheets[1], row_index, col_indentifier);
+                        if (CheckIfStringMeetsMethod(text))
                         {
-                            ExcelAction.ClearContent(wb.Sheets[1], row_index, 1, row_index + 1, TestReport.col_default_report_right_border);
+                            ExcelAction.ClearContent(wb_source.Sheets[1], row_index, 1, row_index + 1, col_default_report_right_border);
                             double new_row_height = 0.2;
-                            ExcelAction.Set_Row_Height(wb.Sheets[1], row_index, new_row_height);
-                            ExcelAction.Set_Row_Height(wb.Sheets[1], row_index + 1, new_row_height);
+                            ExcelAction.Set_Row_Height(wb_source.Sheets[1], row_index, new_row_height);
+                            ExcelAction.Set_Row_Height(wb_source.Sheets[1], row_index + 1, new_row_height);
                             file_has_been_updated = true;
                             break;
                         }
@@ -2744,9 +2675,9 @@ namespace ExcelReportApplication
             }
 
             // copy existing report before processing
-            if (TestReport.Option.FunctionC.Copy_Worksheet_AtTheEnd)
+            if (Option.FunctionC.Copy_Worksheet_AtTheEnd)
             {
-                ExcelAction.CopyReportSheetAsHistory(wb, worksheet_append_string_post);
+                ExcelAction.CopyReportSheetAsHistory(wb_source, worksheet_append_string_post);
                 file_has_been_updated = true;
             }
 
@@ -2759,16 +2690,137 @@ namespace ExcelReportApplication
                 {
                     Storage.CreateDirectory(destination_dir, auto_parent_dir: true);
                 }
-                ExcelAction.SaveExcelWorkbook(wb, filename: destination_file);
+                ExcelAction.SaveExcelWorkbook(wb_source, filename: destination_file);
             }
             else
             {
                 // Doing nothing here.
             }
             // Close Excel workbook
-            ExcelAction.CloseExcelWorkbook(wb);
+            ExcelAction.CloseExcelWorkbook(wb_source);
 
             return file_has_been_updated;
+        }
+
+        static public void Report_A_Push_Option()
+        {
+            Push_Option_All();
+            Option.FunctionC.CopyFileOnly = false;
+            Option.FunctionC.Copy_Worksheet_AtTheBeginning = false;
+            Option.FunctionC.Copy_Worksheet_AtTheEnd = false;
+            Option.FunctionC.Remove_AUO_Internal = false;
+            Option.FunctionC.Update_Report_Sheetname = true;
+            Option.FunctionC.Clear_Keyword_Result = true;
+            //TestReport.Option.FunctionC.Hide_Keyword_Result_Bug_Row = false;
+            //TestReport.Option.FunctionC.Replace_Conclusion = false;
+            Option.FunctionC.Update_Header_by_Template = true;
+            Option.FunctionC.Update_Conclusion = false;
+            Option.FunctionC.Update_Judgement = false;
+            //TestReport.Option.FunctionC.Update_Sample_SN = false;
+        }
+
+        static public void Report_A_Pop_Option()
+        {
+            Pop_Option_All();
+        }
+
+        static public void Report_B_Push_Option()
+        {
+            Push_Option_All();
+            Option.FunctionC.CopyFileOnly = false;
+            Option.FunctionC.Copy_Worksheet_AtTheBeginning = true;       // copy report before any processing
+            Option.FunctionC.Copy_Worksheet_AtTheEnd = false;
+            Option.FunctionC.Remove_AUO_Internal = false;
+            Option.FunctionC.Update_Report_Sheetname = true;
+            Option.FunctionC.Clear_Keyword_Result = true;
+            //.Option.FunctionC.Hide_Keyword_Result_Bug_Row = false;
+            //.Option.FunctionC.Replace_Conclusion = false;
+            Option.FunctionC.Update_Header_by_Template = true;
+            Option.FunctionC.Update_Conclusion = true;  // override report A option for new version
+            Option.FunctionC.Update_Judgement = true;  // override report A option for new version
+            //.Option.FunctionC.Update_Sample_SN = false;
+        }
+
+        static public void Report_B_Pop_Option()
+        {
+            Pop_Option_All();
+        }
+
+        static public void Report_E_Push_Option()
+        {
+            Push_Option_All();
+            Option.FunctionC.CopyFileOnly = false;
+            Option.FunctionC.Copy_Worksheet_AtTheBeginning = false;
+            Option.FunctionC.Copy_Worksheet_AtTheEnd = false;
+            Option.FunctionC.Remove_AUO_Internal = true;
+            Option.FunctionC.Remove_AUO_Internal_remove_Method = false;  // For TP
+            Option.FunctionC.Update_Report_Sheetname = false;
+            Option.FunctionC.Clear_Keyword_Result = false;
+            Option.FunctionC.Hide_Keyword_Result_Bug_Row = false;
+            Option.FunctionC.Replace_Conclusion = false;
+            Option.FunctionC.Update_Header_by_Template = false;
+            Option.FunctionC.Update_Conclusion = false;
+            Option.FunctionC.Update_Judgement = false;
+            Option.FunctionC.Update_Sample_SN = false;
+        }
+
+        static public void Report_E_Pop_Option()
+        {
+            Pop_Option_All();
+        }
+
+        static public void Report_D_Push_Option()
+        {
+            Push_Option_All();
+            Option.FunctionC.CopyFileOnly = true;
+        }
+
+        static public void Report_D_Pop_Option()
+        {
+            Pop_Option_All();
+        }
+
+        static public void Push_Option_All()
+        {
+            // We use "TestReport.Option.FunctionC_DefaultByXML" to store options before changed by report functions.
+            /*
+            temp_option_stack.Push(TestReport.Option.FunctionC.CopyFileOnly);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Copy_Worksheet_AtTheBeginning);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Copy_Worksheet_AtTheEnd);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Remove_AUO_Internal);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Remove_AUO_Internal_remove_Method);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Update_Report_Sheetname);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Clear_Keyword_Result);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Hide_Keyword_Result_Bug_Row);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Replace_Conclusion);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Update_Header_by_Template);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Update_Conclusion);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Update_Judgement);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Update_Sample_SN);
+            temp_option_stack.Push(TestReport.Option.FunctionC.Update_Full_Header);// Lagacy option
+            */
+        }
+
+        static public void Pop_Option_All()
+        {
+            TestReport.Option.FunctionC = TestReport.Option.FunctionC_DefaultByXML;
+            /*
+            TestReport.Option.FunctionC.Update_Full_Header = temp_option_stack.Pop();// Lagacy option
+            TestReport.Option.FunctionC.Update_Sample_SN = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Update_Judgement = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Update_Conclusion = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Update_Header_by_Template = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Update_Full_Header = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Replace_Conclusion = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Hide_Keyword_Result_Bug_Row = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Clear_Keyword_Result = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Update_Report_Sheetname = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Remove_AUO_Internal_remove_Method = temp_option_stack.Pop(); // 
+            TestReport.Option.FunctionC.Remove_AUO_Internal = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Copy_Worksheet_AtTheEnd = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.Copy_Worksheet_AtTheBeginning = temp_option_stack.Pop();
+            TestReport.Option.FunctionC.CopyFileOnly = temp_option_stack.Pop();
+            */
         }
 
         /*
@@ -2867,6 +2919,76 @@ namespace ExcelReportApplication
         //static public ReadReport(String root_dir)
         //{
         //}
+
+    }
+
+    public class LagacyOption
+    {
+        // Lagacy options - BEGIN
+        public Boolean Update_Full_Header = false;
+        public String Report_Title = "Report_Name";
+        public String Report_SheetName = "Report_Sheet_Name";
+        public String Model_Name = "Model Name";
+        public String Part_No = "Part_No";
+        public String Panel_Module = "Panel_Module";
+        public String TCON_Board = "T-Con_Board";
+        public String AD_Board = "AD_Board";
+        public String Power_Board = "Power_Board";
+        public String Smart_BD_OS_Version = "Smart_BD_OS_Version";
+        public String Touch_Sensor = "Touch_Sensor";
+        public String Speaker_AQ_Version = "Speaker_AQ_Version";
+        public String SW_PQ_Version = "SW_PQ_Version";
+        public String Test_Stage = " ";
+        public String Test_QTY_SN = " ";
+        public String Test_Period_Begin = "2023/07/10";
+        public String Test_Period_End = "2023/07/10";
+        public String Judgement = " ";
+        public String Tested_by = " ";
+        public String Approved_by = "Jeremy Hsiao";
+        public Boolean Update_Report_Title_by_Sheetname = true;
+        public Boolean Update_Model_Name = true;
+        public Boolean Update_Part_No = true;
+        public Boolean Update_Panel_Module = true;
+        public Boolean Update_TCON_Board = true;
+        public Boolean Update_AD_Board = true;
+        public Boolean Update_Power_Board = true;
+        public Boolean Update_Smart_BD_OS_Version = true;
+        public Boolean Update_Touch_Sensor = true;
+        public Boolean Update_Speaker_AQ_Version = true;
+        public Boolean Update_SW_PQ_Version = true;
+        public Boolean Update_Test_Stage = true;
+        public Boolean Update_Test_QTY_SN = true;
+        public Boolean Update_Test_Period_Begin = true;
+        public Boolean Update_Test_Period_End = true;
+        public Boolean Update_Judgement = true;
+        public Boolean Update_Tested_by = true;
+        public Boolean Update_Approved_by = true;
+        // Lagacy options - END
+
+        public void LoadFromConfig()
+        {
+            /*
+            Update_Full_Header = XMLConfig.ReadAppSetting_Boolean("Update_Full_Header");  // options not used anymore
+            Update_Report_Title_by_Sheetname = XMLConfig.ReadAppSetting_Boolean("Update_Report_Title_by_Sheetname");
+            Update_Model_Name = XMLConfig.ReadAppSetting_Boolean("Update_Model_Name");
+            Update_Part_No = XMLConfig.ReadAppSetting_Boolean("Update_Part_No");
+            Update_Panel_Module = XMLConfig.ReadAppSetting_Boolean("Update_Panel_Module");
+            Update_TCON_Board = XMLConfig.ReadAppSetting_Boolean("Update_TCON_Board");
+            Update_AD_Board = XMLConfig.ReadAppSetting_Boolean("Update_AD_Board");
+            Update_Power_Board = XMLConfig.ReadAppSetting_Boolean("Update_Power_Board");
+            Update_Smart_BD_OS_Version = XMLConfig.ReadAppSetting_Boolean("Update_Smart_BD_OS_Version");
+            Update_Touch_Sensor = XMLConfig.ReadAppSetting_Boolean("Update_Touch_Sensor");
+            Update_Speaker_AQ_Version = XMLConfig.ReadAppSetting_Boolean("Update_Speaker_AQ_Version");
+            Update_SW_PQ_Version = XMLConfig.ReadAppSetting_Boolean("Update_SW_PQ_Version");
+            Update_Test_Stage = XMLConfig.ReadAppSetting_Boolean("Update_Test_Stage");
+            Update_Test_QTY_SN = XMLConfig.ReadAppSetting_Boolean("Update_Test_QTY_SN");
+            Update_Test_Period_Begin = XMLConfig.ReadAppSetting_Boolean("Update_Test_Period_Begin");
+            Update_Test_Period_End = XMLConfig.ReadAppSetting_Boolean("Update_Test_Period_End");
+            Update_Judgement = XMLConfig.ReadAppSetting_Boolean("Update_Judgement");
+            Update_Tested_by = XMLConfig.ReadAppSetting_Boolean("Update_Tested_by");
+            Update_Approved_by = XMLConfig.ReadAppSetting_Boolean("Update_Approved_by");
+            */
+        }
     }
 
 }

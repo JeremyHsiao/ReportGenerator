@@ -58,7 +58,7 @@ namespace ExcelReportApplication
             @"Copy_Report_DateTime_Format_AtTheEnd",            @"_MMdd_post",
 
             // lagacy options - BEGIN
-            @"Report_C_Update_Full_Header",             @"false",
+            @"Update_Full_Header",                              @"false",
             @"Update_Report_Title_by_Sheetname",        @"false",
             @"Update_Model_Name",                       @"false",
             @"Update_Part_No",                          @"false",
