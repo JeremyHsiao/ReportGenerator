@@ -20,36 +20,6 @@ namespace ExcelReportApplication
         public String destination_report;
         public String destination_assignee;
 
-        /*
-        public String Get_SRC_Directory()
-        {
-            String path = this.source_path;
-            if (this.source_folder != "")
-            {
-                path = Storage.CominePath(path, this.source_folder);
-            }
-            if (this.source_group != "")
-            {
-                path = Storage.CominePath(path, this.source_group);
-            }
-            return path;
-        }
-
-        public String Get_DEST_Directory()
-        {
-            String path = this.destination_path;
-            if (this.destination_folder != "")
-            {
-                path = Storage.CominePath(path, this.destination_folder);
-            }
-            if (this.destination_group != "")
-            {
-                path = Storage.CominePath(path, this.destination_group);
-            }
-            return path;
-        }
-        */
-
         public String Get_SRC_FullFilePath()
         {
             String path = source_path;
@@ -57,13 +27,12 @@ namespace ExcelReportApplication
             String group = source_group;
             String report = source_report;
 
-            String filename = report + ".xlsx"; 
+            String filename = report + ".xlsx";
             String filedir;
             Storage.CominePath(path, folder, group, out filedir);
             String fullfilepath = Storage.GetValidFullFilename(filedir, filename);
             return fullfilepath;
         }
-
         public String Get_DEST_FullFilePath()
         {
             String path = destination_path;
@@ -78,8 +47,6 @@ namespace ExcelReportApplication
             return fullfilepath;
         }
 
-        static public String ExcelSheetName = "";
-
         // Code for Report C
         static public bool UpdateTestReportByOptionAndSaveAsAnother(String input_excel_file)
         {
@@ -87,7 +54,6 @@ namespace ExcelReportApplication
             String destination_path_1st_row;
             return UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(input_excel_file, out report_list, out destination_path_1st_row);
         }
-        
         static public bool UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(String input_excel_file, out List<String> output_report_list, out String return_destination_path)
         {
             output_report_list = new List<String>();
@@ -95,21 +61,21 @@ namespace ExcelReportApplication
 
             // open excel and read and close excel
             // Open Excel workbook
-            Workbook wb = ExcelAction.OpenExcelWorkbook(filename: input_excel_file, ReadOnly: true);
-            if (wb == null)
+            Workbook wb_input_excel = ExcelAction.OpenExcelWorkbook(filename: input_excel_file, ReadOnly: true);
+            if (wb_input_excel == null)
             {
                 LogMessage.WriteLine("ERR: Open workbook in AutoCorrectReport_by_Excel(): " + input_excel_file);
                 return false;
             }
 
-            Worksheet ws;
-            if (ExcelAction.WorksheetExist(wb, HeaderTemplate.SheetName_ReportList))
+            Worksheet ws_input_excel;
+            if (ExcelAction.WorksheetExist(wb_input_excel, HeaderTemplate.SheetName_ReportList))
             {
-                ws = ExcelAction.Find_Worksheet(wb, HeaderTemplate.SheetName_ReportList);
+                ws_input_excel = ExcelAction.Find_Worksheet(wb_input_excel, HeaderTemplate.SheetName_ReportList);
             }
             else
             {
-                ws = wb.ActiveSheet;
+                ws_input_excel = wb_input_excel.ActiveSheet;
             }
 
             //public String source_path;
@@ -122,39 +88,53 @@ namespace ExcelReportApplication
             //public String destination_filename;
             Boolean bStillReadingExcel = true;
             // check title row
-            const int row_start_index  = 1;
+            const int row_start_index = 1;
             int row_index = row_start_index, col_index = 1;
             // start data processing since 2nd row
             row_index++;
             col_index = 1;
-            List<CopyReport> report_list = new List<CopyReport>();
+            List<CopyReport> report_list_to_be_processed = new List<CopyReport>();
+            List<CopyReport> content_error_list = new List<CopyReport>();
             do
             {
                 CopyReport ctp = new CopyReport();
-                ctp.source_path = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
+                ctp.source_path = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index++);
                 //if (ctp.source_path != "")
                 if (String.IsNullOrWhiteSpace(ctp.source_path) == false)
                 {
-                    ctp.source_folder = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
-                    ctp.source_group = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
-                    ctp.source_report = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
-                    ctp.destination_path = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
-                    ctp.destination_folder = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
-                    ctp.destination_group = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
-                    ctp.destination_report = ExcelAction.GetCellTrimmedString(ws, row_index, col_index++);
-                    ctp.destination_assignee = ExcelAction.GetCellTrimmedString(ws, row_index, col_index);
-                    report_list.Add(ctp);
+                    ctp.source_folder = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index++);
+                    ctp.source_group = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index++);
+                    ctp.source_report = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index++);
+                    ctp.destination_path = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index++);
+                    ctp.destination_folder = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index++);
+                    ctp.destination_group = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index++);
+                    ctp.destination_report = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index++);
+                    ctp.destination_assignee = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index);
+
+                    // Because copy-only doesn't need to check report filename condition, such check is done later not here
+                    String source_filename = ctp.Get_SRC_FullFilePath();
+                    if (Storage.FileExists(source_filename))
+                    {
+                        report_list_to_be_processed.Add(ctp);
+                    }
+                    else
+                    {
+                        content_error_list.Add(ctp);
+                    }
+
                     row_index++;
                     col_index = 1;
                 }
                 else
                 {
                     bStillReadingExcel = false;
+                    /*
                     // If more than 1 row have data ==> get destination of 1st data row for return
-                    if (row_index >= (row_start_index + 1))
+                    if (report_list_to_be_processed.Count > 0)
                     {
-                        return_destination_path = report_list[0].destination_path;
+                        return_destination_path = report_list_to_be_processed[0].destination_path;
                     }
+                    */
                 }
             }
             while (bStillReadingExcel);
@@ -162,17 +142,26 @@ namespace ExcelReportApplication
             //// Close Excel
             //ExcelAction.CloseExcelWorkbook(wb);
 
+            // if no valid file-list, exit without further processing
+            if (report_list_to_be_processed.Count == 0)
+            {
+                ExcelAction.CloseExcelWorkbook(wb_input_excel);
+                return false;
+            }
+
+            /*
+             
             // create list of source and destination
-            Dictionary<String, String> copy_list = new Dictionary<String, String>();
+            //Dictionary<String, String> copy_list = new Dictionary<String, String>();
             List<String> report_to_be_copied_list_src = new List<String>();
             List<String> report_to_be_copied_list_dest = new List<String>();
             List<String> report_to_be_copied_list_assignee = new List<String>();
-            foreach (CopyReport copy_report in report_list)
+            foreach (CopyReport copy_report in report_list_to_be_processed)
             {
-                //String src_path = copy_report.Get_SRC_Directory();
+                ////String src_path = copy_report.Get_SRC_Directory();
                 String src_fullfilename = copy_report.Get_SRC_FullFilePath();
-                if (!Storage.FileExists(src_fullfilename))
-                    continue;
+                //if (!Storage.FileExists(src_fullfilename))
+                //    continue;
 
                 //String dest_path = copy_report.Get_DEST_Directory();
                 String dest_fullfilename = copy_report.Get_DEST_FullFilePath();
@@ -211,7 +200,7 @@ namespace ExcelReportApplication
                 {
                     String today = DateTime.Now.ToString("yyyy/MM/dd");
                     HeaderTemplate.UpdateVariables_TodayAssigneeLinkedIssue(today: today, assignee: assignee, LinkedIssue: StyleString.WhiteSpaceList());
-                    success = TestReport.FullyProcessReportSaveAsAnother(source_file: src, destination_file: dest, wb_template: wb, always_save: true);
+                    success = TestReport.FullyProcessReportSaveAsAnother(source_file: src, destination_file: dest, wb_template: wb_input_excel, always_save: true);
                 }
 
                 if (success)
@@ -225,17 +214,90 @@ namespace ExcelReportApplication
                     report_cannot_be_copied_list_dest.Add(dest);
                 }
             }
+*/
+
+            // Sort in descending order of destination report sheetname (required for report processing with group summary report)
+            if (TestReport.Option.FunctionC.CopyFileOnly == false)
+            {
+                report_list_to_be_processed.Sort(CopyReport.Compare_by_Destination_Sheetname_Descending);
+            }
+
+            List<CopyReport> copy_success_list = new List<CopyReport>();
+            List<CopyReport> copy_fail_list = new List<CopyReport>();
+            foreach (CopyReport cr in report_list_to_be_processed)
+            {
+                String src = cr.Get_SRC_FullFilePath(),
+                       dest = cr.Get_DEST_FullFilePath(),
+                       assignee = cr.destination_assignee;
+                Boolean success = false;
+
+                // if only copying files, no need to open excel
+                if (TestReport.Option.FunctionC.CopyFileOnly)
+                {
+                    String source_file = src, destination_file = dest;
+                    String destination_dir = Storage.GetDirectoryName(destination_file);
+                    // if parent directory does not exist, create recursively all parents
+                    if (Storage.DirectoryExists(destination_dir) == false)
+                    {
+                        Storage.CreateDirectory(destination_dir, auto_parent_dir: true);
+                    }
+                    success = Storage.Copy(source_file, destination_file, overwrite: true);
+                }
+                else // modifying contents so need to open excel
+                {
+                    String destination_filename = dest;
+                    // only process when destination filename pass report/filename condition
+                    if (Storage.IsReportFilename(destination_filename))
+                    {
+                        String today = DateTime.Now.ToString("yyyy/MM/dd");
+                        HeaderTemplate.UpdateVariables_TodayAssigneeLinkedIssue(today: today, assignee: assignee, LinkedIssue: StyleString.WhiteSpaceList());
+                        // // if parent directory does not exist, FullyProcessReportSaveAsAnother() will create recursively all parents
+                        success = TestReport.FullyProcessReportSaveAsAnother(source_file: src, destination_file: dest, wb_header_template: wb_input_excel, always_save: true);
+                    }
+                }
+
+                if (success)
+                {
+                    copy_success_list.Add(cr);
+                }
+                else
+                {
+                    copy_fail_list.Add(cr);
+                }
+            }
 
             // Close Excel
-            ExcelAction.CloseExcelWorkbook(wb);
+            ExcelAction.CloseExcelWorkbook(wb_input_excel);
 
-            output_report_list = report_actually_copied_list_dest;
+            // If more than 1 row is ok to copy ==> get destination of 1st data row for out return
+            if (copy_success_list.Count > 0)
+            {
+                return_destination_path = copy_success_list[0].destination_path;
+                foreach (CopyReport cr in copy_success_list)
+                {
+                    output_report_list.Add(cr.Get_DEST_FullFilePath());
+                }
+            }
 
-            if (report_cannot_be_copied_list_src.Count > 0)
+            if ((copy_fail_list.Count > 0) || (content_error_list.Count > 0) || (copy_success_list.Count == 0))
                 return false;   // some can't be copied
             else
                 return true;
 
+        }
+
+        static public int Compare_by_Destination_Sheetname_Ascending(CopyReport report_x, CopyReport report_y)
+        {
+
+            String sheetname_x = ReportGenerator.GetSheetNameAccordingToFilename(report_x.Get_DEST_FullFilePath());
+            String sheetname_y = ReportGenerator.GetSheetNameAccordingToFilename(report_y.Get_DEST_FullFilePath());
+
+            return ReportGenerator.Compare_Sheetname_Ascending(sheetname_x, sheetname_y);
+        }
+        static public int Compare_by_Destination_Sheetname_Descending(CopyReport report_x, CopyReport report_y)
+        {
+            int compare_result_asceding = Compare_by_Destination_Sheetname_Ascending(report_x, report_y);
+            return -compare_result_asceding;
         }
 
     }

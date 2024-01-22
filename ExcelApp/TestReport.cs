@@ -2506,7 +2506,7 @@ namespace ExcelReportApplication
             return true;
         }
 
-        static public Boolean FullyProcessReportSaveAsAnother(String source_file, String destination_file, Workbook wb_template, Boolean always_save = false)
+        static public Boolean FullyProcessReportSaveAsAnother(String source_file, String destination_file, Workbook wb_header_template, Boolean always_save = false)
         {
             Boolean file_has_been_updated = false;
             Workbook wb_source;
@@ -2547,9 +2547,9 @@ namespace ExcelReportApplication
             //Report_C_Update_Header_by_Template
             if (Option.FunctionC.Update_Header_by_Template == true)
             {
-                if (ExcelAction.WorksheetExist(wb_template, HeaderTemplate.SheetName_HeaderTemplate))
+                if (ExcelAction.WorksheetExist(wb_header_template, HeaderTemplate.SheetName_HeaderTemplate))
                 {
-                    Worksheet ws_template = ExcelAction.Find_Worksheet(wb_template, HeaderTemplate.SheetName_HeaderTemplate);
+                    Worksheet ws_template = ExcelAction.Find_Worksheet(wb_header_template, HeaderTemplate.SheetName_HeaderTemplate);
                     String filename = ReportGenerator.GetReportTitleAccordingToFilename(destination_file);
                     String sheetname = ws_source.Name;
                     HeaderTemplate.UpdateVariables_FilenameSheetname(filename: filename, sheetname: sheetname);
