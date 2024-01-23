@@ -99,16 +99,16 @@ namespace ExcelReportApplication
             Worksheet log_worksheet = source_worksheet;       // temporarily assignemtn
             String source_inexist_list_message = "Source Report Info contains some errors to be checked";
             String process_fail_list_message = "Some Report failed during processing -- to be checked";
-            Boolean IsLogSheetCreated = false;
+            Boolean LogSheetNotYetCreated = true;
 
             if (source_inexist_list.Count > 0)
             {
-                if (IsLogSheetCreated)      // not-yet failed --> need to copy a sheet for error log
+                if (LogSheetNotYetCreated)      // not-yet failed --> need to copy a sheet for error log
                 {
                     CreateEmptyErrorLogSheet(workbook, source_worksheet, out log_worksheet);
                     err_log_row = 2;
                     err_log_col = 1;
-                    IsLogSheetCreated = false;
+                    LogSheetNotYetCreated = false;
                 }
                 // write copy_fail_list
                 ExcelAction.SetCellValue(log_worksheet, err_log_row, err_log_col, source_inexist_list_message);
@@ -124,12 +124,12 @@ namespace ExcelReportApplication
 
             if (process_fail_list.Count > 0)
             {
-                if (IsLogSheetCreated)      // not-yet failed --> need to copy a sheet for error log
+                if (LogSheetNotYetCreated)      // not-yet failed --> need to copy a sheet for error log
                 {
                     CreateEmptyErrorLogSheet(workbook, source_worksheet, out log_worksheet);
                     err_log_row = 2;
                     err_log_col = 1;
-                    IsLogSheetCreated = false;
+                    LogSheetNotYetCreated = false;
                 }
                 // write copy_fail_list
                 ExcelAction.SetCellValue(log_worksheet, err_log_row, err_log_col, process_fail_list_message);
@@ -142,6 +142,8 @@ namespace ExcelReportApplication
                     err_log_col = 1;
                 }
             }
+
+            ExcelAction.CellActivate(log_worksheet, err_log_row, err_log_col);
 
             b_ret = true;
             return b_ret;
