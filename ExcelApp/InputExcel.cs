@@ -10,15 +10,15 @@ namespace ExcelReportApplication
 {
     public class CopyReport
     {
-        public String source_path;
-        public String source_folder;
-        public String source_group;
-        public String source_report;
-        public String destination_path;
-        public String destination_folder;
-        public String destination_group;
-        public String destination_report;
-        public String destination_assignee;
+        private String source_path;
+        private String source_folder;
+        private String source_group;
+        private String source_report;
+        private String destination_path;
+        private String destination_folder;
+        private String destination_group;
+        private String destination_report;
+        private String destination_assignee;
 
         public String Get_SRC_FullFilePath()
         {
@@ -65,7 +65,6 @@ namespace ExcelReportApplication
             }
             return b_ret;
         }
-
         public Boolean WriteToExcelRow(Worksheet worksheet, int row, int column)
         {
             Boolean b_ret = false;
@@ -82,14 +81,25 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
+        static private Boolean CreateEmptyErrorLogSheet(Workbook workbook, Worksheet source_worksheet, out Worksheet destination_worksheet)
+        {
+            Boolean b_ret = false;
+            ExcelAction.DuplicateReportListSheet(source_worksheet);
+            destination_worksheet = workbook.Sheets[source_worksheet.Index + 1];
+            destination_worksheet.Rows["2:" + destination_worksheet.Rows.Count.ToString()].ClearContents();
+            destination_worksheet.Name = source_worksheet.Name + "_ErrorLog";
+            b_ret = true;
+            return b_ret;
+        }
+
         // Code for Report C
-        static public bool UpdateTestReportByOptionAndSaveAsAnother(String input_excel_file)
+        static public Boolean UpdateTestReportByOptionAndSaveAsAnother(String input_excel_file)
         {
             List<String> report_list;
             String destination_path_1st_row;
             return UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(input_excel_file, out report_list, out destination_path_1st_row);
         }
-        static public bool UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(String input_excel_file, out List<String> output_report_list, out String return_destination_path)
+        static public Boolean UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(String input_excel_file, out List<String> output_report_list, out String return_destination_path)
         {
             output_report_list = new List<String>();
             return_destination_path = "";
@@ -256,9 +266,14 @@ namespace ExcelReportApplication
                 if (b_ret)      // not-yet failed --> need to copy a sheet for error log
                 {
                     // copy excel and go to next one (just copied)
+                    /*
                     ExcelAction.DuplicateReportListSheet(ws_input_excel);
                     log_sheet = wb_input_excel.Sheets[ws_input_excel.Index + 1];
                     log_sheet.Rows["2:" + log_sheet.Rows.Count.ToString()].ClearContents();
+                    */
+                    CreateEmptyErrorLogSheet(wb_input_excel, ws_input_excel, out log_sheet);
+                    err_log_row = 2;
+                    err_log_col = 1;
                     b_ret = false;
                 }
                 // write copy_fail_list
@@ -289,9 +304,14 @@ namespace ExcelReportApplication
                 if (b_ret)      // not-yet failed --> need to copy a sheet for error log
                 {
                     // copy excel and go to next one (just copied)
+                    /*
                     ExcelAction.DuplicateReportListSheet(ws_input_excel);
                     log_sheet = wb_input_excel.Sheets[ws_input_excel.Index + 1];
                     log_sheet.Rows["2:" + log_sheet.Rows.Count.ToString()].ClearContents();
+                    */
+                    CreateEmptyErrorLogSheet(wb_input_excel, ws_input_excel, out log_sheet);
+                    err_log_row = 2;
+                    err_log_col = 1;
                     b_ret = false;
                 }
                 // write copy_fail_list
