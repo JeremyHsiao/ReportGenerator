@@ -99,6 +99,8 @@ namespace ExcelReportApplication
             Worksheet log_worksheet = source_worksheet;       // temporarily assignemtn
             String source_inexist_list_message = "Source Report Info contains some errors to be checked";
             String process_fail_list_message = "Some Report failed during processing -- to be checked";
+            String end_of_log_message = "End of Log";
+
             Boolean LogSheetNotYetCreated = true;
 
             if (source_inexist_list.Count > 0)
@@ -144,6 +146,7 @@ namespace ExcelReportApplication
             }
 
             ExcelAction.CellActivate(log_worksheet, err_log_row, err_log_col);
+            ExcelAction.SetCellValue(log_worksheet, err_log_row, err_log_col++, end_of_log_message);
 
             b_ret = true;
             return b_ret;
