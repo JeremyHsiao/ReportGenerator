@@ -91,6 +91,61 @@ namespace ExcelReportApplication
             b_ret = true;
             return b_ret;
         }
+        static private Boolean WriteErrorLog(Workbook workbook, Worksheet source_worksheet, List<CopyReport> source_inexist_list, List<CopyReport> process_fail_list)
+        {
+            Boolean b_ret = false;
+
+            int err_log_row = 2, err_log_col = 1;
+            Worksheet log_worksheet = source_worksheet;       // temporarily assignemtn
+            String source_inexist_list_message = "Source Report Info contains some errors to be checked";
+            String process_fail_list_message = "Some Report failed during processing -- to be checked";
+            Boolean IsLogSheetCreated = false;
+
+            if (source_inexist_list.Count > 0)
+            {
+                if (IsLogSheetCreated)      // not-yet failed --> need to copy a sheet for error log
+                {
+                    CreateEmptyErrorLogSheet(workbook, source_worksheet, out log_worksheet);
+                    err_log_row = 2;
+                    err_log_col = 1;
+                    IsLogSheetCreated = false;
+                }
+                // write copy_fail_list
+                ExcelAction.SetCellValue(log_worksheet, err_log_row, err_log_col, source_inexist_list_message);
+                err_log_row++;
+                err_log_col = 1;
+                foreach (CopyReport cr in source_inexist_list)
+                {
+                    cr.WriteToExcelRow(log_worksheet, err_log_row, err_log_col);
+                    err_log_row++;
+                    err_log_col = 1;
+                }
+            }
+
+            if (process_fail_list.Count > 0)
+            {
+                if (IsLogSheetCreated)      // not-yet failed --> need to copy a sheet for error log
+                {
+                    CreateEmptyErrorLogSheet(workbook, source_worksheet, out log_worksheet);
+                    err_log_row = 2;
+                    err_log_col = 1;
+                    IsLogSheetCreated = false;
+                }
+                // write copy_fail_list
+                ExcelAction.SetCellValue(log_worksheet, err_log_row, err_log_col, process_fail_list_message);
+                err_log_row++;
+                err_log_col = 1;
+                foreach (CopyReport cr in process_fail_list)
+                {
+                    cr.WriteToExcelRow(log_worksheet, err_log_row, err_log_col);
+                    err_log_row++;
+                    err_log_col = 1;
+                }
+            }
+
+            b_ret = true;
+            return b_ret;
+        }
 
         // Code for Report C
         static public Boolean UpdateTestReportByOptionAndSaveAsAnother(String input_excel_file)
@@ -134,41 +189,6 @@ namespace ExcelReportApplication
             List<CopyReport> source_inexist_list = new List<CopyReport>();
             do
             {
-                /*
-                CopyReport ctp = new CopyReport();
-
-                ctp.source_path = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index++);
-                //if (ctp.source_path != "")
-                if (String.IsNullOrWhiteSpace(ctp.source_path) == false)
-                {
-                    ctp.source_folder = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index++);
-                    ctp.source_group = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index++);
-                    ctp.source_report = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index++);
-                    ctp.destination_path = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index++);
-                    ctp.destination_folder = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index++);
-                    ctp.destination_group = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index++);
-                    ctp.destination_report = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index++);
-                    ctp.destination_assignee = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index);
-
-                    // Because copy-only doesn't need to check report filename condition, such check is done later not here
-                    String source_filename = ctp.Get_SRC_FullFilePath();
-                    if (Storage.FileExists(source_filename))
-                    {
-                        report_list_to_be_processed.Add(ctp);
-                    }
-                    else
-                    {
-                        source_inexist_list.Add(ctp);
-                    }
-
-                    row_index++;
-                    col_index = 1;
-                }
-                else
-                {
-                    bStillReadingExcel = false;
-                }
-                */
                 CopyReport ctp = new CopyReport();
 
                 bStillReadingExcel = ctp.ReadFromExcelRow(ws_input_excel, row_index, col_index);
@@ -189,12 +209,9 @@ namespace ExcelReportApplication
                 }
             }
             while (bStillReadingExcel);
-            // Close later because excel is now also template for updating header so it will be used later
-            //// Close Excel
-            //ExcelAction.CloseExcelWorkbook(wb);
 
-            List<CopyReport> copy_success_list = new List<CopyReport>();
-            List<CopyReport> copy_fail_list = new List<CopyReport>();
+            List<CopyReport> process_success_list = new List<CopyReport>();
+            List<CopyReport> process_fail_list = new List<CopyReport>();
 
             // if valid file-list, sort it (when required) before further processing
             if (report_list_to_be_processed.Count > 0)
@@ -239,113 +256,29 @@ namespace ExcelReportApplication
 
                     if (success)
                     {
-                        copy_success_list.Add(cr);
+                        process_success_list.Add(cr);
                     }
                     else
                     {
-                        copy_fail_list.Add(cr);
+                        process_fail_list.Add(cr);
                     }
                 }
             }
 
             Boolean b_ret = true;
-            int err_log_row = 2, err_log_col = 1;
-            Worksheet log_sheet = ws_input_excel;
-            // If more than 1 row is ok to copy ==> get destination of 1st data row for out return
-            if (copy_success_list.Count > 0)
+            if ((process_fail_list.Count > 0) || (source_inexist_list.Count > 0))
             {
-                return_destination_path = copy_success_list[0].destination_path;
-                foreach (CopyReport cr in copy_success_list)
-                {
-                    output_report_list.Add(cr.Get_DEST_FullFilePath());
-                }
-            }
-
-            if (source_inexist_list.Count > 0)
-            {
-                if (b_ret)      // not-yet failed --> need to copy a sheet for error log
-                {
-                    // copy excel and go to next one (just copied)
-                    /*
-                    ExcelAction.DuplicateReportListSheet(ws_input_excel);
-                    log_sheet = wb_input_excel.Sheets[ws_input_excel.Index + 1];
-                    log_sheet.Rows["2:" + log_sheet.Rows.Count.ToString()].ClearContents();
-                    */
-                    CreateEmptyErrorLogSheet(wb_input_excel, ws_input_excel, out log_sheet);
-                    err_log_row = 2;
-                    err_log_col = 1;
-                    b_ret = false;
-                }
-                // write copy_fail_list
-                ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col, "Source Info to be checked");
-                err_log_row++;
-                err_log_col = 1;
-                foreach (CopyReport cr in source_inexist_list)
-                {
-                    /*
-                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_path);
-                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_folder);
-                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_group);
-                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_report);
-                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_path);
-                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_folder);
-                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_group);
-                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_report);
-                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_assignee);
-                    */
-                    cr.WriteToExcelRow(log_sheet, err_log_row, err_log_col);
-                    err_log_row++;
-                    err_log_col = 1;
-                }
-            }
-
-            if (copy_fail_list.Count > 0)
-            {
-                if (b_ret)      // not-yet failed --> need to copy a sheet for error log
-                {
-                    // copy excel and go to next one (just copied)
-                    /*
-                    ExcelAction.DuplicateReportListSheet(ws_input_excel);
-                    log_sheet = wb_input_excel.Sheets[ws_input_excel.Index + 1];
-                    log_sheet.Rows["2:" + log_sheet.Rows.Count.ToString()].ClearContents();
-                    */
-                    CreateEmptyErrorLogSheet(wb_input_excel, ws_input_excel, out log_sheet);
-                    err_log_row = 2;
-                    err_log_col = 1;
-                    b_ret = false;
-                }
-                // write copy_fail_list
-                ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col, "Items to be checked -- some error during processing");
-                err_log_row++;
-                err_log_col = 1;
-                foreach (CopyReport cr in copy_fail_list)
-                {
-                    /*
-                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_path);
-                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_folder);
-                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_group);
-                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_report);
-                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_path);
-                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_folder);
-                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_group);
-                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_report);
-                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_assignee);
-                    */
-                    cr.WriteToExcelRow(log_sheet, err_log_row, err_log_col);
-                    err_log_row++;
-                    err_log_col = 1;
-                }
-            }
-            // Close Excel -- save if with error log
-            if (b_ret)
-            {
-                ExcelAction.CloseExcelWorkbook(wb_input_excel);
-            }
-            else
-            {
+                WriteErrorLog(wb_input_excel, ws_input_excel, source_inexist_list, process_fail_list);
+                b_ret = false;
                 string new_filename = Storage.GenerateFilenameWithDateTime(input_excel_file);
                 ExcelAction.CloseExcelWorkbook(workbook: wb_input_excel, SaveChanges: true, AsFilename: new_filename);
             }
+            else
+            {
+                ExcelAction.CloseExcelWorkbook(wb_input_excel);
+                b_ret = true;
+            }
+
             return b_ret;
         }
 
