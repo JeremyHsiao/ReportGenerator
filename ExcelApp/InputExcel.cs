@@ -47,6 +47,41 @@ namespace ExcelReportApplication
             return fullfilepath;
         }
 
+        public Boolean ReadFromExcelRow(Worksheet worksheet, int row, int column)
+        {
+            Boolean b_ret = false;
+            source_path = ExcelAction.GetCellTrimmedString(worksheet, row, column++);
+            if (String.IsNullOrWhiteSpace(source_path) == false)
+            {
+                source_folder = ExcelAction.GetCellTrimmedString(worksheet, row, column++);
+                source_group = ExcelAction.GetCellTrimmedString(worksheet, row, column++);
+                source_report = ExcelAction.GetCellTrimmedString(worksheet, row, column++);
+                destination_path = ExcelAction.GetCellTrimmedString(worksheet, row, column++);
+                destination_folder = ExcelAction.GetCellTrimmedString(worksheet, row, column++);
+                destination_group = ExcelAction.GetCellTrimmedString(worksheet, row, column++);
+                destination_report = ExcelAction.GetCellTrimmedString(worksheet, row, column++);
+                destination_assignee = ExcelAction.GetCellTrimmedString(worksheet, row, column);
+                b_ret = true;
+            }
+            return b_ret;
+        }
+
+        public Boolean WriteToExcelRow(Worksheet worksheet, int row, int column)
+        {
+            Boolean b_ret = false;
+            ExcelAction.SetCellValue(worksheet, row, column++, source_path);
+            ExcelAction.SetCellValue(worksheet, row, column++, source_folder);
+            ExcelAction.SetCellValue(worksheet, row, column++, source_group);
+            ExcelAction.SetCellValue(worksheet, row, column++, source_report);
+            ExcelAction.SetCellValue(worksheet, row, column++, destination_path);
+            ExcelAction.SetCellValue(worksheet, row, column++, destination_folder);
+            ExcelAction.SetCellValue(worksheet, row, column++, destination_group);
+            ExcelAction.SetCellValue(worksheet, row, column++, destination_report);
+            ExcelAction.SetCellValue(worksheet, row, column++, destination_assignee);
+            b_ret = true;
+            return b_ret;
+        }
+
         // Code for Report C
         static public bool UpdateTestReportByOptionAndSaveAsAnother(String input_excel_file)
         {
@@ -78,14 +113,6 @@ namespace ExcelReportApplication
                 ws_input_excel = wb_input_excel.ActiveSheet;
             }
 
-            //public String source_path;
-            //public String source_folder;
-            //public String source_group;
-            //public String source_filename;
-            //public String destination_path;
-            //public String destination_folder;
-            //public String destination_group;
-            //public String destination_filename;
             Boolean bStillReadingExcel = true;
             // check title row
             const int row_start_index = 1;
@@ -97,7 +124,9 @@ namespace ExcelReportApplication
             List<CopyReport> source_inexist_list = new List<CopyReport>();
             do
             {
+                /*
                 CopyReport ctp = new CopyReport();
+
                 ctp.source_path = ExcelAction.GetCellTrimmedString(ws_input_excel, row_index, col_index++);
                 //if (ctp.source_path != "")
                 if (String.IsNullOrWhiteSpace(ctp.source_path) == false)
@@ -128,6 +157,25 @@ namespace ExcelReportApplication
                 else
                 {
                     bStillReadingExcel = false;
+                }
+                */
+                CopyReport ctp = new CopyReport();
+
+                bStillReadingExcel = ctp.ReadFromExcelRow(ws_input_excel, row_index, col_index);
+                if (bStillReadingExcel)
+                {
+                    // Because copy-only doesn't need to check report filename condition, such check is done later not here
+                    String source_filename = ctp.Get_SRC_FullFilePath();
+                    if (Storage.FileExists(source_filename))
+                    {
+                        report_list_to_be_processed.Add(ctp);
+                    }
+                    else
+                    {
+                        source_inexist_list.Add(ctp);
+                    }
+                    row_index++;
+                    col_index = 1;
                 }
             }
             while (bStillReadingExcel);
@@ -219,6 +267,7 @@ namespace ExcelReportApplication
                 err_log_col = 1;
                 foreach (CopyReport cr in source_inexist_list)
                 {
+                    /*
                     ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_path);
                     ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_folder);
                     ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_group);
@@ -228,6 +277,8 @@ namespace ExcelReportApplication
                     ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_group);
                     ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_report);
                     ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_assignee);
+                    */
+                    cr.WriteToExcelRow(log_sheet, err_log_row, err_log_col);
                     err_log_row++;
                     err_log_col = 1;
                 }
@@ -249,6 +300,7 @@ namespace ExcelReportApplication
                 err_log_col = 1;
                 foreach (CopyReport cr in copy_fail_list)
                 {
+                    /*
                     ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_path);
                     ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_folder);
                     ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_group);
@@ -258,6 +310,8 @@ namespace ExcelReportApplication
                     ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_group);
                     ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_report);
                     ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_assignee);
+                    */
+                    cr.WriteToExcelRow(log_sheet, err_log_row, err_log_col);
                     err_log_row++;
                     err_log_col = 1;
                 }
