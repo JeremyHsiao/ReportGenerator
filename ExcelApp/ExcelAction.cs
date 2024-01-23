@@ -1535,6 +1535,20 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
+        static public Boolean DuplicateReportListSheet(Worksheet ws_reportlist)
+        {
+            Boolean b_ret = false;
+            try
+            {
+                ws_reportlist.Copy(After: ws_reportlist);
+                b_ret = true;
+            }
+            catch (Exception ex)
+            {
+            }
+            return b_ret;
+        }
+
         // Assumption: (as default value)
         //  1. Report to be copied is sheet 1
         //  2. copied to sheet 2, sheetname is month/date/hour/minute

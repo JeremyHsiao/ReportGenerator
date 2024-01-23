@@ -64,7 +64,7 @@ namespace ExcelReportApplication
             Workbook wb_input_excel = ExcelAction.OpenExcelWorkbook(filename: input_excel_file, ReadOnly: true);
             if (wb_input_excel == null)
             {
-                LogMessage.WriteLine("ERR: Open workbook in AutoCorrectReport_by_Excel(): " + input_excel_file);
+                LogMessage.WriteLine("ERR: Open workbook failed in UpdateTestReportByOptionAndSaveAsAnother(): " + input_excel_file);
                 return false;
             }
 
@@ -94,7 +94,7 @@ namespace ExcelReportApplication
             row_index++;
             col_index = 1;
             List<CopyReport> report_list_to_be_processed = new List<CopyReport>();
-            List<CopyReport> content_error_list = new List<CopyReport>();
+            List<CopyReport> source_inexist_list = new List<CopyReport>();
             do
             {
                 CopyReport ctp = new CopyReport();
@@ -119,7 +119,7 @@ namespace ExcelReportApplication
                     }
                     else
                     {
-                        content_error_list.Add(ctp);
+                        source_inexist_list.Add(ctp);
                     }
 
                     row_index++;
@@ -128,13 +128,6 @@ namespace ExcelReportApplication
                 else
                 {
                     bStillReadingExcel = false;
-                    /*
-                    // If more than 1 row have data ==> get destination of 1st data row for return
-                    if (report_list_to_be_processed.Count > 0)
-                    {
-                        return_destination_path = report_list_to_be_processed[0].destination_path;
-                    }
-                    */
                 }
             }
             while (bStillReadingExcel);
@@ -142,133 +135,64 @@ namespace ExcelReportApplication
             //// Close Excel
             //ExcelAction.CloseExcelWorkbook(wb);
 
-            // if no valid file-list, exit without further processing
-            if (report_list_to_be_processed.Count == 0)
-            {
-                ExcelAction.CloseExcelWorkbook(wb_input_excel);
-                return false;
-            }
-
-            /*
-             
-            // create list of source and destination
-            //Dictionary<String, String> copy_list = new Dictionary<String, String>();
-            List<String> report_to_be_copied_list_src = new List<String>();
-            List<String> report_to_be_copied_list_dest = new List<String>();
-            List<String> report_to_be_copied_list_assignee = new List<String>();
-            foreach (CopyReport copy_report in report_list_to_be_processed)
-            {
-                ////String src_path = copy_report.Get_SRC_Directory();
-                String src_fullfilename = copy_report.Get_SRC_FullFilePath();
-                //if (!Storage.FileExists(src_fullfilename))
-                //    continue;
-
-                //String dest_path = copy_report.Get_DEST_Directory();
-                String dest_fullfilename = copy_report.Get_DEST_FullFilePath();
-                report_to_be_copied_list_src.Add(src_fullfilename);
-                report_to_be_copied_list_dest.Add(dest_fullfilename);
-                report_to_be_copied_list_assignee.Add(copy_report.destination_assignee);
-            }
-
-            // auto-correct report files.
-            List<String> report_actually_copied_list_src = new List<String>();
-            List<String> report_actually_copied_list_dest = new List<String>();
-            List<String> report_cannot_be_copied_list_src = new List<String>();
-            List<String> report_cannot_be_copied_list_dest = new List<String>();
-            // use Auto Correct Function to copy and auto-correct.
-
-            for (int index = 0; index < report_to_be_copied_list_src.Count; index++)
-            {
-                String src = report_to_be_copied_list_src[index],
-                       dest = report_to_be_copied_list_dest[index],
-                       assignee = report_to_be_copied_list_assignee[index];
-                Boolean success = false;
-
-                // if only copying files, no need to open excel
-                if (TestReport.Option.FunctionC.CopyFileOnly)
-                {
-                    String source_file = src, destination_file = dest;
-                    String destination_dir = Storage.GetDirectoryName(destination_file);
-                    // if parent directory does not exist, create recursively all parents
-                    if (Storage.DirectoryExists(destination_dir) == false)
-                    {
-                        Storage.CreateDirectory(destination_dir, auto_parent_dir: true);
-                    }
-                    success = Storage.Copy(source_file, destination_file, overwrite: true);
-                }
-                else // modifying contents so need to open excel
-                {
-                    String today = DateTime.Now.ToString("yyyy/MM/dd");
-                    HeaderTemplate.UpdateVariables_TodayAssigneeLinkedIssue(today: today, assignee: assignee, LinkedIssue: StyleString.WhiteSpaceList());
-                    success = TestReport.FullyProcessReportSaveAsAnother(source_file: src, destination_file: dest, wb_template: wb_input_excel, always_save: true);
-                }
-
-                if (success)
-                {
-                    report_actually_copied_list_src.Add(src);
-                    report_actually_copied_list_dest.Add(dest);
-                }
-                else
-                {
-                    report_cannot_be_copied_list_src.Add(src);
-                    report_cannot_be_copied_list_dest.Add(dest);
-                }
-            }
-*/
-
-            // Sort in descending order of destination report sheetname (required for report processing with group summary report)
-            if (TestReport.Option.FunctionC.CopyFileOnly == false)
-            {
-                report_list_to_be_processed.Sort(CopyReport.Compare_by_Destination_Sheetname_Descending);
-            }
-
             List<CopyReport> copy_success_list = new List<CopyReport>();
             List<CopyReport> copy_fail_list = new List<CopyReport>();
-            foreach (CopyReport cr in report_list_to_be_processed)
+
+            // if valid file-list, sort it (when required) before further processing
+            if (report_list_to_be_processed.Count > 0)
             {
-                String src = cr.Get_SRC_FullFilePath(),
-                       dest = cr.Get_DEST_FullFilePath(),
-                       assignee = cr.destination_assignee;
-                Boolean success = false;
-
-                // if only copying files, no need to open excel
-                if (TestReport.Option.FunctionC.CopyFileOnly)
+                // Sort in descending order of destination report sheetname (required for report processing with group summary report)
+                if (TestReport.Option.FunctionC.CopyFileOnly == false)
                 {
-                    String source_file = src, destination_file = dest;
-                    String destination_dir = Storage.GetDirectoryName(destination_file);
-                    // if parent directory does not exist, create recursively all parents
-                    if (Storage.DirectoryExists(destination_dir) == false)
-                    {
-                        Storage.CreateDirectory(destination_dir, auto_parent_dir: true);
-                    }
-                    success = Storage.Copy(source_file, destination_file, overwrite: true);
-                }
-                else // modifying contents so need to open excel
-                {
-                    String destination_filename = dest;
-                    // only process when destination filename pass report/filename condition
-                    if (Storage.IsReportFilename(destination_filename))
-                    {
-                        String today = DateTime.Now.ToString("yyyy/MM/dd");
-                        HeaderTemplate.UpdateVariables_TodayAssigneeLinkedIssue(today: today, assignee: assignee, LinkedIssue: StyleString.WhiteSpaceList());
-                        // // if parent directory does not exist, FullyProcessReportSaveAsAnother() will create recursively all parents
-                        success = TestReport.FullyProcessReportSaveAsAnother(source_file: src, destination_file: dest, wb_header_template: wb_input_excel, always_save: true);
-                    }
+                    report_list_to_be_processed.Sort(CopyReport.Compare_by_Destination_Sheetname_Descending);
                 }
 
-                if (success)
+                foreach (CopyReport cr in report_list_to_be_processed)
                 {
-                    copy_success_list.Add(cr);
-                }
-                else
-                {
-                    copy_fail_list.Add(cr);
+                    String src = cr.Get_SRC_FullFilePath(),
+                           dest = cr.Get_DEST_FullFilePath(),
+                           assignee = cr.destination_assignee;
+                    Boolean success = false;
+
+                    // if only copying files, no need to open excel
+                    if (TestReport.Option.FunctionC.CopyFileOnly)
+                    {
+                        String source_file = src, destination_file = dest;
+                        String destination_dir = Storage.GetDirectoryName(destination_file);
+                        // if parent directory does not exist, create recursively all parents
+                        if (Storage.DirectoryExists(destination_dir) == false)
+                        {
+                            Storage.CreateDirectory(destination_dir, auto_parent_dir: true);
+                        }
+                        success = Storage.Copy(source_file, destination_file, overwrite: true);
+                    }
+                    else // modifying contents so need to open excel
+                    {
+                        String destination_filename = dest;
+                        // only process when destination filename pass report/filename condition
+                        if (Storage.IsReportFilename(destination_filename))
+                        {
+                            String today = DateTime.Now.ToString("yyyy/MM/dd");
+                            HeaderTemplate.UpdateVariables_TodayAssigneeLinkedIssue(today: today, assignee: assignee, LinkedIssue: StyleString.WhiteSpaceList());
+                            // // if parent directory does not exist, FullyProcessReportSaveAsAnother() will create recursively all parents
+                            success = TestReport.FullyProcessReportSaveAsAnother(source_file: src, destination_file: dest, wb_header_template: wb_input_excel, always_save: true);
+                        }
+                    }
+
+                    if (success)
+                    {
+                        copy_success_list.Add(cr);
+                    }
+                    else
+                    {
+                        copy_fail_list.Add(cr);
+                    }
                 }
             }
 
-            // Close Excel
-            ExcelAction.CloseExcelWorkbook(wb_input_excel);
-
+            Boolean b_ret = true;
+            int err_log_row = 2, err_log_col = 1;
+            Worksheet log_sheet = ws_input_excel;
             // If more than 1 row is ok to copy ==> get destination of 1st data row for out return
             if (copy_success_list.Count > 0)
             {
@@ -279,11 +203,76 @@ namespace ExcelReportApplication
                 }
             }
 
-            if ((copy_fail_list.Count > 0) || (content_error_list.Count > 0) || (copy_success_list.Count == 0))
-                return false;   // some can't be copied
-            else
-                return true;
+            if (source_inexist_list.Count > 0)
+            {
+                if (b_ret)      // not-yet failed --> need to copy a sheet for error log
+                {
+                    // copy excel and go to next one (just copied)
+                    ExcelAction.DuplicateReportListSheet(ws_input_excel);
+                    log_sheet = wb_input_excel.Sheets[ws_input_excel.Index + 1];
+                    log_sheet.Rows["2:" + log_sheet.Rows.Count.ToString()].ClearContents();
+                    b_ret = false;
+                }
+                // write copy_fail_list
+                ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col, "Source Info to be checked");
+                err_log_row++;
+                err_log_col = 1;
+                foreach (CopyReport cr in source_inexist_list)
+                {
+                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_path);
+                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_folder);
+                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_group);
+                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_report);
+                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_path);
+                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_folder);
+                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_group);
+                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_report);
+                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_assignee);
+                    err_log_row++;
+                    err_log_col = 1;
+                }
+            }
 
+            if (copy_fail_list.Count > 0)
+            {
+                if (b_ret)      // not-yet failed --> need to copy a sheet for error log
+                {
+                    // copy excel and go to next one (just copied)
+                    ExcelAction.DuplicateReportListSheet(ws_input_excel);
+                    log_sheet = wb_input_excel.Sheets[ws_input_excel.Index + 1];
+                    log_sheet.Rows["2:" + log_sheet.Rows.Count.ToString()].ClearContents();
+                    b_ret = false;
+                }
+                // write copy_fail_list
+                ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col, "Items to be checked -- some error during processing");
+                err_log_row++;
+                err_log_col = 1;
+                foreach (CopyReport cr in copy_fail_list)
+                {
+                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_path);
+                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_folder);
+                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_group);
+                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.source_report);
+                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_path);
+                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_folder);
+                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_group);
+                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_report);
+                    ExcelAction.SetCellValue(log_sheet, err_log_row, err_log_col++, cr.destination_assignee);
+                    err_log_row++;
+                    err_log_col = 1;
+                }
+            }
+            // Close Excel -- save if with error log
+            if (b_ret)
+            {
+                ExcelAction.CloseExcelWorkbook(wb_input_excel);
+            }
+            else
+            {
+                string new_filename = Storage.GenerateFilenameWithDateTime(input_excel_file);
+                ExcelAction.CloseExcelWorkbook(workbook: wb_input_excel, SaveChanges: true, AsFilename: new_filename);
+            }
+            return b_ret;
         }
 
         static public int Compare_by_Destination_Sheetname_Ascending(CopyReport report_x, CopyReport report_y)
