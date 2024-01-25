@@ -286,7 +286,7 @@ namespace ExcelReportApplication
             {
                 Man_hour = members[index++];
             }
-            
+
             // Post-processing
             if (Check_If_Hierarchy_Project())
             {
@@ -1081,6 +1081,73 @@ namespace ExcelReportApplication
             File.WriteAllText(Storage.GenerateFilenameWithDateTime(manpower_csv, ".csv"), csv.ToString(), Encoding.UTF8);
         }
 
+        static public List<ManPowerHolidayList> SetupHolidayListFromCSV(String csv_file)
+        {
+            // Create a list of site-based empty ManPowerHolidayList (holiday to be added later) 
+            List<ManPowerHolidayList> ret_list_of_site_holidays = new List<ManPowerHolidayList>();
+            List<Site> holiday_site_list = new List<Site>();
+
+            foreach (String site_str in Site.SiteList)
+            {
+                // setup site info
+                Site this_site = new Site();
+                this_site.Name = site_str;
+                holiday_site_list.Add(this_site);
+
+                // Add holiday-list & associate site info
+                ManPowerHolidayList holidays = new ManPowerHolidayList();
+                holidays.Site = this_site;                                  // Associate site to this holiday list
+                ret_list_of_site_holidays.Add(holidays);                    // Add empty site holiday
+            }
+
+            // parsing title to decide which site is for
+            using (TextFieldParser csvParser = new TextFieldParser(csv_file))
+            {
+                csvParser.CommentTokens = new string[] { "#" };
+                csvParser.SetDelimiters(new string[] { "," });
+                csvParser.HasFieldsEnclosedInQuotes = false;        // no quotation in current csv
+
+                List<String> title = new List<String>();
+                List<Site> title_site = new List<Site>();
+
+                // Read Title row
+                if (!csvParser.EndOfData)
+                {
+                    title.AddRange(csvParser.ReadFields());
+                    foreach (String item in title)
+                    {
+                        Site this_site = new Site();
+                        this_site.Name = item;
+                        title_site.Add(this_site);
+                    }
+                }
+
+                // Fill Holiday List according to title_site
+                List<String> elements = new List<String>();
+                while (!csvParser.EndOfData)
+                {
+                    // Read current line fields, pointer moves to the next line.
+                    elements.AddRange(csvParser.ReadFields());
+                    int col_index = -1;
+                    foreach (String item in elements)
+                    {
+                        col_index++;
+                        if (String.IsNullOrWhiteSpace(item))
+                            continue;
+
+                        // get ManPowerDate
+                        ManPowerDate mp_date = new ManPowerDate();
+                        mp_date.FromString(item);
+                        Site which_site = title_site[col_index];
+                        ManPowerHolidayList site_holiday = ret_list_of_site_holidays[which_site.Index];
+                        site_holiday.Add(mp_date);
+                    }
+                }
+            }
+
+            return ret_list_of_site_holidays;
+        }
+
     }
 
     static public class YearWeek
@@ -1346,11 +1413,11 @@ namespace ExcelReportApplication
             // In this case, yearno is last year but weekno  is 1
             // if before December 25(inclusive), skip the rest of special-check
             // 1, 31, 30, 29, 28, 27, 26 of December
-            if(((int)datetime.Month==12)&&((int)datetime.Day>26))
+            if (((int)datetime.Month == 12) && ((int)datetime.Day > 26))
             {
                 int day = datetime.Day;
-                int dow = (int) datetime.DayOfWeek;
-                int Saturday_of_this_week = day + ( 6-dow );
+                int dow = (int)datetime.DayOfWeek;
+                int Saturday_of_this_week = day + (6 - dow);
                 if (Saturday_of_this_week >= 32) // already January on Saturday of this week
                 {
                     weekno = 1;
@@ -1659,4 +1726,167 @@ namespace ExcelReportApplication
         }
     }
 
+    public class Site
+    {
+        // static for class Site
+        static private int init_value = -1;
+        static private String[] SiteListString = { "Undefined", "HQ", "XM" };
+        static private List<String> InternalSiteList = SiteListString.ToList();
+        static public List<String> SiteList = InternalSiteList.GetRange(1, 2);
+        static public int Count = SiteList.Count;
+
+        // internal variable
+        private int site = init_value;
+
+        // member function
+        public int Index   // property
+        {
+            get { return site; }    // get method
+            set                     // set method
+            {
+                if ((value >= 0) && (value < Count))
+                {
+                    site = value;
+                }
+                else
+                {
+                    site = init_value;
+                }
+            }
+        }
+
+        public String Name   // property
+        {
+            get
+            {
+                if ((site >= 0) && (site < Count))
+                {
+                    return SiteListString[site + 1];
+                }
+                else
+                {
+                    return SiteListString[0];
+                }
+            }   // get method
+            set { site = SiteList.IndexOf(value.Substring(0, 2)); }  // set method
+        }
+    }
+
+    public class ManPowerDate
+    {
+        static public DateTime Earliest = new DateTime(1900, 1, 1);
+        static public DateTime Latest = new DateTime(9999, 12, 31);
+        static private String CultureName = "en-US";// { "en-US", "ru-RU", "ja-JP" };
+        static public CultureInfo CultureInfo = new CultureInfo(CultureName);
+
+        private DateTime date;
+        public DateTime Date                        // property
+        {
+            get { return date.Date; }               // get method
+            set { date = value.Date; }            // set method
+        }
+
+        public ManPowerDate() { this.date = Earliest; }
+        public ManPowerDate(DateTime date) { this.date = date; }
+
+        public Boolean IsHoliday(ManPowerHolidayList holidays)
+        {
+            int index = holidays.IndexOf(this);
+            return (index >= 0);
+        }
+        public Boolean IsBetween(ManPowerDate from, ManPowerDate to)
+        {
+            if ((Compare(from, this) >= 0) && (Compare(this, to) <= 0))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public ManPowerDate ReturnEarlier(ManPowerDate date)
+        {
+            ManPowerDate ret_date = (Compare(this, date) > 0)? date: this;
+            return ret_date;
+        }
+        public ManPowerDate ReturnLater(ManPowerDate date)
+        {
+            ManPowerDate ret_date = (Compare(this, date) < 0) ? date : this;
+            return ret_date;
+        }
+        public void FromString(String date_string)
+        {
+            date = DateTime.Parse(date_string);
+        }
+        public List<ManPowerDate> ToList()
+        {
+            List<ManPowerDate> ret_list = new List<ManPowerDate>();
+            ret_list.Add(this);
+            return ret_list;
+        }
+
+        static public int Compare(ManPowerDate first_date, ManPowerDate second_date)
+        {
+            DateTime d1 = first_date.Date, d2 = second_date.Date;
+            int compare_result = DateTime.Compare(d1, d2);
+            return compare_result;
+        }
+
+    }
+
+    public class ManPowerDateComparer : IComparer<ManPowerDate>
+    {
+        public int Compare(ManPowerDate x, ManPowerDate y)
+        {
+            return ManPowerDate.Compare(x, y);
+        }
+    }
+
+    public class ManPowerHolidayList
+    {
+        public List<ManPowerDate> Holidays = new List<ManPowerDate>();
+        public Site Site;
+        public void Add(ManPowerDate date)
+        {
+            Holidays.Add(date);
+            Holidays.Sort(ManPowerDate.Compare);
+        }
+        public void AddRange(List<ManPowerDate> date_list)
+        {
+            Holidays.AddRange(date_list);
+            Holidays.Sort(ManPowerDate.Compare);
+        }
+        public int IndexOf(ManPowerDate date)
+        {
+            return Holidays.IndexOf(date);
+        }
+        // list holidays between
+        public int OffDayBetween(ManPowerDate firstDay, ManPowerDate lastDay)
+        {
+            ManPowerDateComparer date_compare = new ManPowerDateComparer();
+            int index_from = Holidays.BinarySearch(firstDay, date_compare);
+            int index_to = Holidays.BinarySearch(lastDay, date_compare);
+
+            // update index result
+            index_from = (index_from >= 0) ? index_from : ~index_from;
+            index_to = (index_to >= 0) ? index_to : (~index_to) - 1;
+
+            int day_count = (index_to - index_from + 1);
+            return day_count;
+        }
+        public int BussinessDayBetween(ManPowerDate firstDay, ManPowerDate lastDay)
+        {
+            TimeSpan span = lastDay.Date - firstDay.Date;
+            int day_count = (span.Days + 1) - OffDayBetween(firstDay,lastDay);
+
+            return day_count;
+            //firstHoliday = (index_from >= 0) ? Holidays[index_from] : Holidays[~index_from];
+            //lastHoliday = (index_to >= 0) ? Holidays[index_to] : Holidays[(~index_to) - 1];
+        }
+        // The zero-based index of item in the sorted List<T>, if item is found; 
+        // otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than item or, 
+        // if there is no larger element, the bitwise complement of Count.
+        // Bitwise complement operator ~
+    }
 }
