@@ -864,7 +864,12 @@ namespace ExcelReportApplication
 
         static public void ProcessManPowerPlan_V2(String manpower_csv)
         {
-            ManPower.hierarchy_auto_detected_finished = false;
+            String holidayCSV = "CompanyOffDayList.csv";
+            Site current_default_site = new Site("HQ");
+            List<ManPowerHolidayList> all_holiday_list = ManPowerHolidayList.SetupHolidayListFromCSV(holidayCSV);
+            foreach (ManPowerHolidayList list in all_holiday_list)
+
+                ManPower.hierarchy_auto_detected_finished = false;
             List<ManPower> manpower_list_before = ReadManPowerTaskCSV(manpower_csv);
             List<ManPower> manpower_list = Processing_DateWeekHoliday(manpower_list_before);
             //DateTime manpower_due_date = FindLatestDueDate(manpower_list);
@@ -1079,73 +1084,6 @@ namespace ExcelReportApplication
 
             //after your loop
             File.WriteAllText(Storage.GenerateFilenameWithDateTime(manpower_csv, ".csv"), csv.ToString(), Encoding.UTF8);
-        }
-
-        static public List<ManPowerHolidayList> SetupHolidayListFromCSV(String csv_file)
-        {
-            // Create a list of site-based empty ManPowerHolidayList (holiday to be added later) 
-            List<ManPowerHolidayList> ret_list_of_site_holidays = new List<ManPowerHolidayList>();
-            List<Site> holiday_site_list = new List<Site>();
-
-            foreach (String site_str in Site.SiteList)
-            {
-                // setup site info
-                Site this_site = new Site();
-                this_site.Name = site_str;
-                holiday_site_list.Add(this_site);
-
-                // Add holiday-list & associate site info
-                ManPowerHolidayList holidays = new ManPowerHolidayList();
-                holidays.Site = this_site;                                  // Associate site to this holiday list
-                ret_list_of_site_holidays.Add(holidays);                    // Add empty site holiday
-            }
-
-            // parsing title to decide which site is for
-            using (TextFieldParser csvParser = new TextFieldParser(csv_file))
-            {
-                csvParser.CommentTokens = new string[] { "#" };
-                csvParser.SetDelimiters(new string[] { "," });
-                csvParser.HasFieldsEnclosedInQuotes = false;        // no quotation in current csv
-
-                List<String> title = new List<String>();
-                List<Site> title_site = new List<Site>();
-
-                // Read Title row
-                if (!csvParser.EndOfData)
-                {
-                    title.AddRange(csvParser.ReadFields());
-                    foreach (String item in title)
-                    {
-                        Site this_site = new Site();
-                        this_site.Name = item;
-                        title_site.Add(this_site);
-                    }
-                }
-
-                // Fill Holiday List according to title_site
-                List<String> elements = new List<String>();
-                while (!csvParser.EndOfData)
-                {
-                    // Read current line fields, pointer moves to the next line.
-                    elements.AddRange(csvParser.ReadFields());
-                    int col_index = -1;
-                    foreach (String item in elements)
-                    {
-                        col_index++;
-                        if (String.IsNullOrWhiteSpace(item))
-                            continue;
-
-                        // get ManPowerDate
-                        ManPowerDate mp_date = new ManPowerDate();
-                        mp_date.FromString(item);
-                        Site which_site = title_site[col_index];
-                        ManPowerHolidayList site_holiday = ret_list_of_site_holidays[which_site.Index];
-                        site_holiday.Add(mp_date);
-                    }
-                }
-            }
-
-            return ret_list_of_site_holidays;
         }
 
     }
@@ -1729,16 +1667,22 @@ namespace ExcelReportApplication
     public class Site
     {
         // static for class Site
-        static private int init_value = -1;
-        static private String[] SiteListString = { "Undefined", "HQ", "XM" };
-        static private List<String> InternalSiteList = SiteListString.ToList();
-        static public List<String> SiteList = InternalSiteList.GetRange(1, 2);
+        static public int undefined_value = -1;
+        static public String UndefinedSite = "UndefinedSite";
+        static private String[] SiteListString = { "HQ", "XM" };
+        static public List<String> SiteList = SiteListString.ToList();
         static public int Count = SiteList.Count;
 
         // internal variable
+        static private int init_value = undefined_value;
         private int site = init_value;
 
         // member function
+        public Site() { }
+        public Site(int site_index) { Index = site_index; }
+        public Site(String site_name) { Name = site_name; }
+        public List<Site> ToList() { List<Site> site_list = new List<Site>(); site_list.Add(this); return site_list; }
+
         public int Index   // property
         {
             get { return site; }    // get method
@@ -1750,25 +1694,35 @@ namespace ExcelReportApplication
                 }
                 else
                 {
-                    site = init_value;
+                    site = undefined_value;
                 }
             }
         }
-
         public String Name   // property
         {
             get
             {
                 if ((site >= 0) && (site < Count))
                 {
-                    return SiteListString[site + 1];
+                    return SiteListString[site];
                 }
                 else
                 {
-                    return SiteListString[0];
+                    return UndefinedSite;
                 }
             }   // get method
-            set { site = SiteList.IndexOf(value.Substring(0, 2)); }  // set method
+            set
+            {
+                // string length is < 2
+                if ((String.IsNullOrWhiteSpace(value)) || (value.Length < 2))
+                {
+                    site = undefined_value;
+                }
+                else
+                {
+                    site = SiteList.IndexOf(value.Substring(0, 2));
+                }
+            }  // set method
         }
     }
 
@@ -1791,8 +1745,8 @@ namespace ExcelReportApplication
 
         public Boolean IsHoliday(ManPowerHolidayList holidays)
         {
-            int index = holidays.IndexOf(this);
-            return (index >= 0);
+            Boolean is_holiday = holidays.IsHoliday(this);
+            return is_holiday;
         }
         public Boolean IsBetween(ManPowerDate from, ManPowerDate to)
         {
@@ -1807,7 +1761,7 @@ namespace ExcelReportApplication
         }
         public ManPowerDate ReturnEarlier(ManPowerDate date)
         {
-            ManPowerDate ret_date = (Compare(this, date) > 0)? date: this;
+            ManPowerDate ret_date = (Compare(this, date) > 0) ? date : this;
             return ret_date;
         }
         public ManPowerDate ReturnLater(ManPowerDate date)
@@ -1845,21 +1799,57 @@ namespace ExcelReportApplication
 
     public class ManPowerHolidayList
     {
-        public List<ManPowerDate> Holidays = new List<ManPowerDate>();
+        private List<ManPowerDate> Holidays = new List<ManPowerDate>();
+        public ManPowerHolidayList() { }
+        public ManPowerHolidayList(Site site) { Site = site; }
         public Site Site;
+        public Boolean IsSite(Site site)
+        {
+            if (this.Site == site)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         public void Add(ManPowerDate date)
         {
+            // skip if already exists
+            if (IndexOf(date) >= 0)
+                return;
             Holidays.Add(date);
             Holidays.Sort(ManPowerDate.Compare);
         }
         public void AddRange(List<ManPowerDate> date_list)
         {
-            Holidays.AddRange(date_list);
+            // skip if already exists
+            foreach (ManPowerDate mp_date in date_list)
+            {
+                if (IndexOf(mp_date) >= 0)
+                    continue;
+                Holidays.Add(mp_date);
+            }
             Holidays.Sort(ManPowerDate.Compare);
         }
         public int IndexOf(ManPowerDate date)
         {
-            return Holidays.IndexOf(date);
+            ManPowerDateComparer date_compare = new ManPowerDateComparer();
+            int index = Holidays.BinarySearch(date, date_compare);
+            index = (index >= 0) ? index : -1; //
+            return index;
+        }
+        public Boolean IsHoliday(ManPowerDate date)
+        {
+            if (IndexOf(date) >= 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         // list holidays between
         public int OffDayBetween(ManPowerDate firstDay, ManPowerDate lastDay)
@@ -1878,7 +1868,7 @@ namespace ExcelReportApplication
         public int BussinessDayBetween(ManPowerDate firstDay, ManPowerDate lastDay)
         {
             TimeSpan span = lastDay.Date - firstDay.Date;
-            int day_count = (span.Days + 1) - OffDayBetween(firstDay,lastDay);
+            int day_count = (span.Days + 1) - OffDayBetween(firstDay, lastDay);
 
             return day_count;
             //firstHoliday = (index_from >= 0) ? Holidays[index_from] : Holidays[~index_from];
@@ -1888,5 +1878,75 @@ namespace ExcelReportApplication
         // otherwise, a negative number that is the bitwise complement of the index of the next element that is larger than item or, 
         // if there is no larger element, the bitwise complement of Count.
         // Bitwise complement operator ~
+
+        static public List<ManPowerHolidayList> SetupHolidayListFromCSV(String csv_file)
+        {
+            List<ManPowerHolidayList> ret_list_of_site_holidays = new List<ManPowerHolidayList>();
+            List<Site> holiday_site_list = new List<Site>();
+
+            // Create a list of site-based empty ManPowerHolidayList (holiday to be added later according to CSV) 
+            foreach (String site_str in Site.SiteList)
+            {
+                // setup site info
+                Site this_site = new Site(site_str);
+                holiday_site_list.Add(this_site);
+
+                // Add holiday-list & associate site info
+                ManPowerHolidayList holidays = new ManPowerHolidayList(this_site);
+                ret_list_of_site_holidays.Add(holidays);                    // Add empty site holiday
+            }
+
+            // parsing title to decide which site is for
+            using (TextFieldParser csvParser = new TextFieldParser(csv_file))
+            {
+                csvParser.CommentTokens = new string[] { "#" };
+                csvParser.SetDelimiters(new string[] { "," });
+                csvParser.HasFieldsEnclosedInQuotes = false;        // no quotation in current csv
+
+                List<String> title = new List<String>();
+                List<Site> title_site = new List<Site>();
+
+                // Read Title row
+                if (!csvParser.EndOfData)
+                {
+                    title.AddRange(csvParser.ReadFields());
+                    foreach (String item in title)
+                    {
+                        Site this_site = new Site(item);
+                        title_site.Add(this_site);
+                    }
+                }
+
+                // Fill Holiday List according to title_site
+               
+                while (!csvParser.EndOfData)
+                {
+                    List<String> elements = new List<String>();
+                    // Read current line fields, pointer moves to the next line.
+                    elements.AddRange(csvParser.ReadFields());
+                    int col_index = -1;
+                    foreach (String item in elements)
+                    {
+                        col_index++;
+                        if (String.IsNullOrWhiteSpace(item))
+                            continue;
+
+                        // item count more than title count
+                        if (col_index >= title_site.Count)
+                            break;
+
+                        // get ManPowerDate
+                        ManPowerDate mp_date = new ManPowerDate();
+                        mp_date.FromString(item);
+                        Site which_site = title_site[col_index];
+                        ManPowerHolidayList site_holiday = ret_list_of_site_holidays[which_site.Index];
+                        site_holiday.Add(mp_date);
+                    }
+                }
+            }
+
+            return ret_list_of_site_holidays;
+        }
+
     }
 }
