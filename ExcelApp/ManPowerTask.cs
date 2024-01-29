@@ -823,18 +823,18 @@ namespace ExcelReportApplication
                     if (current_wk_index == begin_wk_index)
                     {
                         ManPowerDate first_date = mp.Task_Start_Date;
-                        int remaining_workday = YearWeek.WeekWorkdayToLastDateFrom(first_date);
+                        int remaining_workday = YearWeek.WorkdayToSaturdayFrom(first_date);
                         //special case: 1st week is also last week
                         if (current_wk_index == end_wk_index)
                         {
                             ManPowerDate last_date = mp.Task_End_Date;
                             if (last_date.IsHoliday(ManPowerTask.holidayListInUse))
                             {
-                                remaining_workday -= YearWeek.WeekWorkdayToLastDateFrom(last_date);
+                                remaining_workday -= YearWeek.WorkdayToSaturdayFrom(last_date);
                             }
                             else
                             {
-                                remaining_workday -= YearWeek.WeekWorkdayToLastDateFrom(last_date);
+                                remaining_workday -= YearWeek.WorkdayToSaturdayFrom(last_date);
                                 remaining_workday++;
                             }
                         }
@@ -865,7 +865,7 @@ namespace ExcelReportApplication
                     if (current_wk_index == end_wk_index)
                     {
                         ManPowerDate last_date = mp.Task_End_Date;
-                        int remaining_workday = YearWeek.WeekWorkdayFromFirstDateTo(last_date);
+                        int remaining_workday = YearWeek.WorkdayFromSundayTo(last_date);
                         Double weekly_manhour = remaining_workday * daily_average_manhour_value;
                         int current_yearweek = YearWeek.ElementAt(current_wk_index);
                         // append year-week
@@ -942,18 +942,18 @@ namespace ExcelReportApplication
                     if (current_wk_index == begin_wk_index)
                     {
                         ManPowerDate first_date = mp.Task_Start_Date;
-                        int remaining_workday = YearWeek.WeekWorkdayToLastDateFrom(first_date);
+                        int remaining_workday = YearWeek.WorkdayToSaturdayFrom(first_date);
                         //special case: 1st week is also last week
                         if (current_wk_index == end_wk_index)
                         {
                             ManPowerDate last_date = mp.Task_End_Date;
                             if (last_date.IsHoliday(ManPowerTask.holidayListInUse))
                             {
-                                remaining_workday -= YearWeek.WeekWorkdayToLastDateFrom(last_date);
+                                remaining_workday -= YearWeek.WorkdayToSaturdayFrom(last_date);
                             }
                             else
                             {
-                                remaining_workday -= YearWeek.WeekWorkdayToLastDateFrom(last_date);
+                                remaining_workday -= YearWeek.WorkdayToSaturdayFrom(last_date);
                                 remaining_workday++;
                             }
                         }
@@ -984,7 +984,7 @@ namespace ExcelReportApplication
                     if (current_wk_index == end_wk_index)
                     {
                         ManPowerDate last_date = mp.Task_End_Date;
-                        int remaining_workday = YearWeek.WeekWorkdayFromFirstDateTo(last_date);
+                        int remaining_workday = YearWeek.WorkdayFromSundayTo(last_date);
                         Double weekly_manhour = remaining_workday * daily_average_manhour_value;
                         int current_yearweek = YearWeek.ElementAt(current_wk_index);
                         // append year-week
@@ -1039,11 +1039,11 @@ namespace ExcelReportApplication
 
         //static public List<int> WeeklyWorkdayList() { return WeeklyWorkingDay_List; }
 
-        static public int WeekWorkdayToLastDateFrom(ManPowerDate datetime)
+        static public int WorkdayToSaturdayFrom(ManPowerDate datetime)
         {
             if (datetime.IsBetween(StartDate, EndDate))
             {
-                return remaining_workday_till_Saturday_from[(int)(datetime - StartDate)];
+                return remaining_workday_till_Saturday_from[IndexOf(datetime)];
             }
             else
             {
@@ -1051,11 +1051,11 @@ namespace ExcelReportApplication
             }
         }
 
-        static public int WeekWorkdayFromFirstDateTo(ManPowerDate datetime)
+        static public int WorkdayFromSundayTo(ManPowerDate datetime)
         {
             if (datetime.IsBetween(StartDate, EndDate))
             {
-                return remaining_workday_from_Sunday_to[(int)(datetime - StartDate)];
+                return remaining_workday_from_Sunday_to[IndexOf(datetime)];
             }
             else
             {
@@ -1135,7 +1135,7 @@ namespace ExcelReportApplication
             int ret_index = invalid_index;
             if ((datetime >= StartDate) && (datetime <= EndDate))
             {
-                ret_index = IndexOf(datetime.YearWeekNo());
+                ret_index = YearWeekNumber_List.IndexOf(datetime.YearWeekNo());
             }
             return ret_index;
         }
@@ -1143,7 +1143,7 @@ namespace ExcelReportApplication
         static public int IndexOf(int year_and_week)
         {
             int ret_index = invalid_index;
-            if (YearWeekNumber_List.Contains(year_and_week))
+            if ((year_and_week >= GetStartWeek()) && (year_and_week <= GetEndWeek()))
             {
                 ret_index = YearWeekNumber_List.IndexOf(year_and_week);
             }
@@ -1271,13 +1271,13 @@ namespace ExcelReportApplication
 
         public static Boolean operator ==(Site a, Site b)
         {
-            return (a.site == b.site)?true:false;
+            return (a.site == b.site) ? true : false;
         }
         public static Boolean operator !=(Site a, Site b)
         {
             return !(a == b);
         }
- 
+
     }
 
     public class ManPowerDate
@@ -1287,7 +1287,7 @@ namespace ExcelReportApplication
         static public ManPowerDate InvalidDate = new ManPowerDate(earliest);
         static public ManPowerDate Earliest = InvalidDate + 1;
         static public ManPowerDate Latest = new ManPowerDate(latest);
-        static private String CultureName = "en-GB";// { "en-US", "ru-RU", "ja-JP" };
+        static private String CultureName = "en-US";// { "en-US", "ru-RU", "ja-JP" };
         static public CultureInfo CultureInfo = new CultureInfo(CultureName);
         static public Calendar Calendar = CultureInfo.Calendar;
         static public DateTimeFormatInfo DateTimeFormatInfo = CultureInfo.DateTimeFormat;
@@ -1321,7 +1321,7 @@ namespace ExcelReportApplication
         }
         public Boolean IsBetween(ManPowerDate from, ManPowerDate to)
         {
-            if ((Compare(from, this) >= 0) && (Compare(this, to) <= 0))
+            if ((this >= from) && (from <= to))
             {
                 return true;
             }
@@ -1335,7 +1335,7 @@ namespace ExcelReportApplication
             if (date == InvalidDate)
                 return this;
 
-            ManPowerDate ret_date = (Compare(this, date) < 0) ? this : date;
+            ManPowerDate ret_date = (this < date) ? this : date;
             return ret_date;
         }
         public ManPowerDate ReturnLater(ManPowerDate date)
@@ -1343,14 +1343,15 @@ namespace ExcelReportApplication
             if (date == InvalidDate)
                 return this;
 
-            ManPowerDate ret_date = (Compare(this, date) > 0) ? this : date;
+            ManPowerDate ret_date = (this > date)? this : date;
             return ret_date;
         }
         public void FromString(String date_string)
         {
+            CultureInfo cultureInfo = new CultureInfo("en-GB");
             try
             {
-                date = Convert.ToDateTime(date_string, CultureInfo);
+                date = Convert.ToDateTime(date_string, cultureInfo);
             }
             catch (Exception ex)
             {
