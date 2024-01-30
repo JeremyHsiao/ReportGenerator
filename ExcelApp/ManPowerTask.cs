@@ -825,7 +825,7 @@ namespace ExcelReportApplication
 
                     while (current_date <= last_date)
                     {
-                        int workingday_this_week = YearWeek.WorkdayToSaturdayFrom(current_date);
+                        int workingday_this_week = YearWeek.WorkdayToSaturdayFrom(current_date);            // calculation always from current_date
 
                         // adjust week_end_date to last_date if last_date is on/before this Friday. (i.e/ this week is not complete)
                         ManPowerDate week_end_date = current_date.ThisSaturday();
@@ -843,7 +843,7 @@ namespace ExcelReportApplication
                         Project_Action_Owner_WeekOfYear_ManHour += ManPower.AddQuoteWithComma(weekly_manhour.ToString(ManPower.pSpecifier));
                         csv.AppendLine(Project_Action_Owner_WeekOfYear_ManHour + mp.ToString());
                         current_wk_index++;
-                        current_date += 7;
+                        current_date = week_end_date + 1;   // Go to next week
                     }
                 }
             }
