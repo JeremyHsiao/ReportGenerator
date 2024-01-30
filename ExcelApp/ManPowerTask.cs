@@ -815,43 +815,27 @@ namespace ExcelReportApplication
                     String Item_Field_String = ManPower.AddQuoteWithComma(mp.Task_Project_Name);
                     Item_Field_String += ManPower.AddQuoteWithComma(mp.Task_Action_Name);
                     Item_Field_String += ManPower.AddQuoteWithComma(mp.Task_Owner_Name);
-                    int begin_wk_index = YearWeek.IndexOf(mp.Task_Start_Week);
-                    int end_wk_index = YearWeek.IndexOf(mp.Task_End_Week);
-                    int current_wk_index = begin_wk_index;
+
+                    ManPowerDate first_date = mp.Task_Start_Date;
+                    ManPowerDate last_date = mp.Task_End_Date;
                     Double daily_average_manhour_value = mp.Daily_Average_Manhour_value;
-                    // for 1st week
-                    if (current_wk_index == begin_wk_index)
+
+                    int current_wk_index = YearWeek.IndexOf(mp.Task_Start_Week);
+                    ManPowerDate current_date = first_date;
+
+                    while (current_date <= last_date)
                     {
-                        ManPowerDate first_date = mp.Task_Start_Date;
-                        int remaining_workday = YearWeek.WorkdayToSaturdayFrom(first_date);
-                        //special case: 1st week is also last week
-                        if (current_wk_index == end_wk_index)
+                        int workingday_this_week = YearWeek.WorkdayToSaturdayFrom(current_date);
+
+                        // adjust week_end_date to last_date if last_date is on/before this Friday. (i.e/ this week is not complete)
+                        ManPowerDate week_end_date = current_date.ThisSaturday();
+                        if (week_end_date > last_date)
                         {
-                            ManPowerDate last_date = mp.Task_End_Date;
-                            if (last_date.IsHoliday(ManPowerTask.holidayListInUse))
-                            {
-                                remaining_workday -= YearWeek.WorkdayToSaturdayFrom(last_date);
-                            }
-                            else
-                            {
-                                remaining_workday -= YearWeek.WorkdayToSaturdayFrom(last_date);
-                                remaining_workday++;
-                            }
+                            week_end_date = last_date;
+                            workingday_this_week -= YearWeek.WorkdayToSaturdayFrom(last_date + 1);
                         }
-                        Double weekly_manhour = remaining_workday * daily_average_manhour_value;
-                        int current_yearweek = YearWeek.ElementAt(current_wk_index);
-                        // append year-week
-                        String Project_Action_Owner_WeekOfYear_ManHour = Item_Field_String + ManPower.AddQuoteWithComma(current_yearweek.ToString());
-                        // append man-hour in this week
-                        Project_Action_Owner_WeekOfYear_ManHour += ManPower.AddQuoteWithComma(weekly_manhour.ToString(ManPower.pSpecifier));
-                        csv.AppendLine(Project_Action_Owner_WeekOfYear_ManHour + mp.ToString());
-                        current_wk_index++;
-                    }
 
-                    // for 2nd until one-week before last week
-                    while (current_wk_index <= end_wk_index - 1)
-                    {
-                        Double weekly_manhour = YearWeek.GetWorkingDayOfWeekByIndex(current_wk_index) * daily_average_manhour_value;
+                        Double weekly_manhour = workingday_this_week * daily_average_manhour_value;
                         int current_yearweek = YearWeek.ElementAt(current_wk_index);
                         // append year-week
                         String Project_Action_Owner_WeekOfYear_ManHour = Item_Field_String + ManPower.AddQuoteWithComma(current_yearweek.ToString());
@@ -859,24 +843,9 @@ namespace ExcelReportApplication
                         Project_Action_Owner_WeekOfYear_ManHour += ManPower.AddQuoteWithComma(weekly_manhour.ToString(ManPower.pSpecifier));
                         csv.AppendLine(Project_Action_Owner_WeekOfYear_ManHour + mp.ToString());
                         current_wk_index++;
-                    }
-                    // for last week
-
-                    if (current_wk_index == end_wk_index)
-                    {
-                        ManPowerDate last_date = mp.Task_End_Date;
-                        int remaining_workday = YearWeek.WorkdayFromSundayTo(last_date);
-                        Double weekly_manhour = remaining_workday * daily_average_manhour_value;
-                        int current_yearweek = YearWeek.ElementAt(current_wk_index);
-                        // append year-week
-                        String Project_Action_Owner_WeekOfYear_ManHour = Item_Field_String + ManPower.AddQuoteWithComma(current_yearweek.ToString());
-                        // append man-hour in this week
-                        Project_Action_Owner_WeekOfYear_ManHour += ManPower.AddQuoteWithComma(weekly_manhour.ToString(ManPower.pSpecifier));
-                        csv.AppendLine(Project_Action_Owner_WeekOfYear_ManHour + mp.ToString());
-                        current_wk_index++;
+                        current_date += 7;
                     }
                 }
-
             }
 
             //after your loop
@@ -1043,7 +1012,8 @@ namespace ExcelReportApplication
         {
             if (datetime.IsBetween(StartDate, EndDate))
             {
-                return remaining_workday_till_Saturday_from[IndexOf(datetime)];
+                int diff_day = datetime - StartDate;
+                return remaining_workday_till_Saturday_from[diff_day];
             }
             else
             {
@@ -1055,7 +1025,7 @@ namespace ExcelReportApplication
         {
             if (datetime.IsBetween(StartDate, EndDate))
             {
-                return remaining_workday_from_Sunday_to[IndexOf(datetime)];
+                return remaining_workday_from_Sunday_to[datetime - StartDate];
             }
             else
             {
@@ -1376,23 +1346,28 @@ namespace ExcelReportApplication
             DateTime datetime = this.date;
             int weekno = Calendar.GetWeekOfYear(datetime, CalendarWeekRule.FirstDay, DateTimeFormatInfo.FirstDayOfWeek);
             int yearno = datetime.Year % 10;
-            // Special case
-            // Detect if 1/1 is the same week as datetime(12/xx)
-            // In this case, yearno is last year but weekno  is 1
-            // if before December 25(inclusive), skip the rest of special-check
-            // 1, 31, 30, 29, 28, 27, 26 of December
-            if (((int)datetime.Month == 12) && ((int)datetime.Day > 26))
+
+            // if last week of year, need to check if 1/1 is the same week.
+            // if yes, yearno++ weekno=1
+            if (weekno == 53)
             {
-                int day = datetime.Day;
-                int dow = (int)datetime.DayOfWeek;
-                int Saturday_of_this_week = day + (6 - dow);
-                if (Saturday_of_this_week >= 32) // already January on Saturday of this week
+                if (this.ThisSaturday().date.Month == 1)
                 {
-                    weekno = 1;
                     yearno++;
+                    weekno = 1;
                 }
             }
             return (yearno * 100 + weekno);
+        }
+        public ManPowerDate ThisSaturday()
+        {
+            int days = 6 - (int)date.DayOfWeek;
+            return (this + days);
+        }
+        public ManPowerDate ThisSunday()
+        {
+            int days = (int)date.DayOfWeek;
+            return (this - days);
         }
 
         static public int Compare(ManPowerDate first_date, ManPowerDate second_date)
@@ -1457,8 +1432,8 @@ namespace ExcelReportApplication
         }
         public static int operator -(ManPowerDate a, ManPowerDate b)
         {
-            TimeSpan span = b.Date - a.Date;
-            int day_count = (span.Days + 1);
+            TimeSpan span = a.Date - b.Date;
+            int day_count = (span.Days);
             return day_count;
         }
         public static ManPowerDate operator ++(ManPowerDate a)
@@ -1537,20 +1512,44 @@ namespace ExcelReportApplication
         public int OffDayBetween(ManPowerDate firstDay, ManPowerDate lastDay)
         {
             ManPowerDateComparer date_compare = new ManPowerDateComparer();
+            int day_count = 0;
+
+            // calculation is assumed that (firstDay <= lastDay)
+            if (firstDay > lastDay)
+            {
+                return OffDayBetween(lastDay, firstDay);
+            }
+
             int index_from = Holidays.BinarySearch(firstDay, date_compare);
+            if (index_from >= 0)
+            {
+                // if firstDay is also an holiday
+                day_count++;
+                index_from++;
+            }
+            else
+            {
+                index_from = ~index_from;   // go to next holiday (after firstDay)
+            }
+
             int index_to = Holidays.BinarySearch(lastDay, date_compare);
+            if (index_to >= 0)
+            {
+                // if lastDay is also an holiday
+                day_count++;
+                index_to--;
+            }
+            else
+            {
+                index_to = (~index_to) - 1;   // go to previous holiday (before lastDay)
+            }
 
-            // update index result
-            index_from = (index_from >= 0) ? index_from : ~index_from;
-            index_to = (index_to >= 0) ? index_to : (~index_to) - 1;
-
-            int day_count = (index_to - index_from + 1);
+            day_count += index_to - index_from + 1; // adjusted by holidays between firstDay & lastDay (excluding firstDay/lastDay)
             return day_count;
         }
         public int BussinessDayBetween(ManPowerDate firstDay, ManPowerDate lastDay)
         {
-            TimeSpan span = lastDay.Date - firstDay.Date;
-            int day_count = (span.Days + 1) - OffDayBetween(firstDay, lastDay);
+            int day_count = (Math.Abs(lastDay - firstDay) + 1) - OffDayBetween(firstDay, lastDay);
 
             return day_count;
             //firstHoliday = (index_from >= 0) ? Holidays[index_from] : Holidays[~index_from];
