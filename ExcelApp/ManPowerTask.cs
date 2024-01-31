@@ -621,16 +621,14 @@ namespace ExcelReportApplication
         static public ManPowerDate FindEearliestTargetStartDate(List<ManPower> manpower)
         {
             //Target_start_date
-            ManPowerDate earliest_dt = ManPowerDate.Latest;  // default for no earliest date
+            ManPowerDate earliest_dt = ManPowerDate.InvalidDate;        // default for no latest date
             foreach (ManPower mp in manpower)
             {
-                ManPowerDate checkdate = new ManPowerDate(mp.Target_start_date);
-                if (checkdate != ManPowerDate.InvalidDate)
+                String date_string = mp.Target_start_date;
+                if (String.IsNullOrWhiteSpace(date_string) == false)
                 {
-                    if (checkdate < earliest_dt)
-                    {
-                        earliest_dt = checkdate;
-                    }
+                    ManPowerDate checkdate = new ManPowerDate(date_string);
+                    earliest_dt = earliest_dt.ReturnEarlier(checkdate);
                 }
             }
             return earliest_dt;
@@ -639,12 +637,13 @@ namespace ExcelReportApplication
         static public ManPowerDate FindLatestTargetEndDate(List<ManPower> manpower)
         {
             //Target_end_date
-            ManPowerDate latest_dt = ManPowerDate.Earliest;  // default for no latest date
+            ManPowerDate latest_dt = ManPowerDate.InvalidDate;          // default for no latest date        
             foreach (ManPower mp in manpower)
             {
-                ManPowerDate checkdate = new ManPowerDate(mp.Target_end_date);
-                if (checkdate != ManPowerDate.InvalidDate)
+                String date_string = mp.Target_end_date;
+                if (String.IsNullOrWhiteSpace(date_string) == false)
                 {
+                    ManPowerDate checkdate = new ManPowerDate(date_string);
                     latest_dt = latest_dt.ReturnLater(checkdate);
                 }
             }
@@ -656,6 +655,10 @@ namespace ExcelReportApplication
             // Generated data for ManPower
             ManPower.Start_Date = FindEearliestTargetStartDate(list_before_post_processing);
             ManPower.End_Date = FindLatestTargetEndDate(list_before_post_processing);
+            if (ManPower.Start_Date > ManPower.End_Date)
+            {
+                LogMessage.CheckFunction("Processing_DateWeekHoliday start/end exception");
+            }
             //DateOnly.Update_Holiday_Range(ManPower.Start_Date, ManPower.End_Date);
             ManPower.IsWorkingDay.Clear();
             for (ManPowerDate dt = ManPower.Start_Date; dt <= ManPower.End_Date; dt++)
@@ -1255,12 +1258,13 @@ namespace ExcelReportApplication
         static private DateTime earliest = new DateTime(1900, 1, 1);
         static private DateTime latest = new DateTime(9999, 12, 31);
         static public ManPowerDate InvalidDate = new ManPowerDate(earliest);
-        static public ManPowerDate Earliest = InvalidDate + 1;
+        static public ManPowerDate Earliest = new ManPowerDate(earliest.AddDays(1.0));
         static public ManPowerDate Latest = new ManPowerDate(latest);
         static private String CultureName = "en-US";// { "en-US", "ru-RU", "ja-JP" };
         static public CultureInfo CultureInfo = new CultureInfo(CultureName);
         static public Calendar Calendar = CultureInfo.Calendar;
         static public DateTimeFormatInfo DateTimeFormatInfo = CultureInfo.DateTimeFormat;
+        static private ManPowerDateComparer date_compare = new ManPowerDateComparer();
 
         private DateTime date;
         public DateTime Date                        // property
@@ -1291,6 +1295,15 @@ namespace ExcelReportApplication
         }
         public Boolean IsBetween(ManPowerDate from, ManPowerDate to)
         {
+            if (from == InvalidDate)
+            {
+                return false;
+            }
+            if (to == InvalidDate)
+            {
+                return false;
+            }
+
             if ((this >= from) && (from <= to))
             {
                 return true;
@@ -1305,6 +1318,9 @@ namespace ExcelReportApplication
             if (date == InvalidDate)
                 return this;
 
+            if (this == InvalidDate)
+                return date;
+
             ManPowerDate ret_date = (this < date) ? this : date;
             return ret_date;
         }
@@ -1313,11 +1329,17 @@ namespace ExcelReportApplication
             if (date == InvalidDate)
                 return this;
 
-            ManPowerDate ret_date = (this > date)? this : date;
+            if (this == InvalidDate)
+                return date;
+
+            ManPowerDate ret_date = (this > date) ? this : date;
             return ret_date;
         }
-        public void FromString(String date_string)
+        private void FromString(String date_string)
         {
+            if (String.IsNullOrWhiteSpace(date_string))
+                date = InvalidDate.date;
+
             CultureInfo cultureInfo = new CultureInfo("en-GB");
             try
             {
@@ -1325,7 +1347,7 @@ namespace ExcelReportApplication
             }
             catch (Exception ex)
             {
-                date = InvalidDate.date; ;
+                date = InvalidDate.date;
             }
         }
         public String ToString(String str) { return date.ToString(str); }
@@ -1361,25 +1383,32 @@ namespace ExcelReportApplication
         }
         public ManPowerDate ThisSaturday()
         {
-            int days = 6 - (int)date.DayOfWeek;
-            return (this + days);
+            if (this != InvalidDate)
+            {
+                int days = 6 - (int)date.DayOfWeek;
+                return (this + days);
+            }
+            else
+            {
+                return this;
+            }
         }
         public ManPowerDate ThisSunday()
         {
-            int days = (int)date.DayOfWeek;
-            return (this - days);
-        }
-
-        static public int Compare(ManPowerDate first_date, ManPowerDate second_date)
-        {
-            DateTime d1 = first_date.Date, d2 = second_date.Date;
-            int compare_result = DateTime.Compare(d1, d2);
-            return compare_result;
+            if (this != InvalidDate)
+            {
+                int days = (int)date.DayOfWeek;
+                return (this - days);
+            }
+            else
+            {
+                return this;
+            }
         }
 
         public static Boolean operator <(ManPowerDate a, ManPowerDate b)
         {
-            if (Compare(a, b) < 0)
+            if (date_compare.Compare(a, b) < 0)
             {
                 return true;
             }
@@ -1390,7 +1419,7 @@ namespace ExcelReportApplication
         }
         public static Boolean operator ==(ManPowerDate a, ManPowerDate b)
         {
-            if (Compare(a, b) == 0)
+            if (date_compare.Compare(a, b) == 0)
             {
                 return true;
             }
@@ -1401,7 +1430,7 @@ namespace ExcelReportApplication
         }
         public static Boolean operator <=(ManPowerDate a, ManPowerDate b)
         {
-            if (Compare(a, b) <= 0)
+            if (date_compare.Compare(a, b) <= 0)
             {
                 return true;
             }
@@ -1422,16 +1451,40 @@ namespace ExcelReportApplication
         {
             return !(a == b);
         }
+        public static ManPowerDate operator +(ManPowerDate a, Double b)
+        {
+            if (a != InvalidDate)
+            {
+                return new ManPowerDate(a.date.AddDays(b));
+            }
+            else
+            {
+                return a;
+            }
+        }
         public static ManPowerDate operator +(ManPowerDate a, int b)
         {
-            return new ManPowerDate(a.date.AddDays((double)b));
+            return (a + (Double)b);
         }
         public static ManPowerDate operator -(ManPowerDate a, int b)
         {
-            return a + (-1);
+            return (a + (-b));
+        }
+        public static ManPowerDate operator -(ManPowerDate a, Double b)
+        {
+            return (a + (-b));
         }
         public static int operator -(ManPowerDate a, ManPowerDate b)
         {
+            if (a == InvalidDate)
+            {
+                return 0;
+            }
+            if (b == InvalidDate)
+            {
+                return 0;
+            }
+
             TimeSpan span = a.Date - b.Date;
             int day_count = (span.Days);
             return day_count;
@@ -1450,13 +1503,16 @@ namespace ExcelReportApplication
     {
         public int Compare(ManPowerDate x, ManPowerDate y)
         {
-            return ManPowerDate.Compare(x, y);
+            DateTime d1 = x.Date, d2 = y.Date;
+            int compare_result = DateTime.Compare(d1, d2);
+            return compare_result;
         }
     }
 
     public class ManPowerHolidayList
     {
         private List<ManPowerDate> Holidays = new List<ManPowerDate>();
+        private ManPowerDateComparer date_compare = new ManPowerDateComparer();
         public ManPowerHolidayList() { }
         public ManPowerHolidayList(Site site) { Site = site; }
         public Site Site;
@@ -1477,7 +1533,7 @@ namespace ExcelReportApplication
             if (IndexOf(date) >= 0)
                 return;
             Holidays.Add(date);
-            Holidays.Sort(ManPowerDate.Compare);
+            Holidays.Sort(date_compare);
         }
         public void AddRange(List<ManPowerDate> date_list)
         {
@@ -1488,11 +1544,10 @@ namespace ExcelReportApplication
                     continue;
                 Holidays.Add(mp_date);
             }
-            Holidays.Sort(ManPowerDate.Compare);
+            Holidays.Sort(date_compare);
         }
         public int IndexOf(ManPowerDate date)
         {
-            ManPowerDateComparer date_compare = new ManPowerDateComparer();
             int index = Holidays.BinarySearch(date, date_compare);
             index = (index >= 0) ? index : -1; //
             return index;
@@ -1511,7 +1566,6 @@ namespace ExcelReportApplication
         // list holidays between
         public int OffDayBetween(ManPowerDate firstDay, ManPowerDate lastDay)
         {
-            ManPowerDateComparer date_compare = new ManPowerDateComparer();
             int day_count = 0;
 
             // calculation is assumed that (firstDay <= lastDay)
@@ -1617,8 +1671,7 @@ namespace ExcelReportApplication
                             break;
 
                         // get ManPowerDate
-                        ManPowerDate mp_date = new ManPowerDate();
-                        mp_date.FromString(item);
+                        ManPowerDate mp_date = new ManPowerDate(item);
                         Site which_site = title_site[col_index];
                         ManPowerHolidayList site_holiday = ret_list_of_site_holidays[which_site.Index];
                         site_holiday.Add(mp_date);
