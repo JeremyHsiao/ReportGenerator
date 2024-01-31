@@ -350,76 +350,53 @@ namespace ExcelReportApplication
         //public String Task_Item_Name;
         //public String Task_Assignee_Name;
 
-        public void Process_ManPower_Data()
+        private void Process_ManPower_Data()
         {
-            Boolean average_can_be_calculated = true;
-
             Task_Project_Name = ManPower.Recent_Task_Project_Name;
             Task_Action_Name = Title;
             Task_Owner_Name = Assignee;
+            Task_Start_Date = new ManPowerDate(DateTime.Now);
+            Task_End_Date = Task_Start_Date;
+            Task_Start_Week = Task_Start_Date.YearWeekNo();
+            Task_End_Week = Task_Start_Week;
+
+            // man-power plan needs to be checked and updated later in this function
+            Daily_Average_ManHour_string = empty_average_manhour;
+            Daily_Average_Manhour_value = empty_average_manhour_value;
+            ManHour = -1;
 
             if (String.IsNullOrWhiteSpace(Target_start_date))
-            {
-                average_can_be_calculated = false;
-            }
-            else
-            {
-                Task_Start_Date = new ManPowerDate(Target_start_date);
-                Task_Start_Week = Task_Start_Date.YearWeekNo();
-            }
+                return;
+
+            Task_Start_Date = new ManPowerDate(Target_start_date);
+            Task_Start_Week = Task_Start_Date.YearWeekNo();
 
             if (String.IsNullOrWhiteSpace(Target_end_date))
-            {
-                average_can_be_calculated = false;
-            }
-            else
-            {
-                Task_End_Date = new ManPowerDate(Target_end_date);
-                Task_End_Week = Task_End_Date.YearWeekNo();
-            }
+                return;
+
+            Task_End_Date = new ManPowerDate(Target_end_date);
+            Task_End_Week = Task_End_Date.YearWeekNo();
+
+            if (Task_End_Date < Task_Start_Date)
+                return;
 
             if (Double.TryParse(Man_hour, out ManHour) == false)
+                return;
+
+            ManPowerDate start = Task_Start_Date;
+            ManPowerDate end = Task_End_Date;
+            int workday_count = ManPowerTask.holidayListInUse.BussinessDayBetween(start, end);
+
+            // workday must be > 0 (ie, from start to end date shouldn't be all in the middle of holidays)
+            // if ==0 set it to 1 (assuemd she/he works 1-day on holiday
+            if (workday_count == 0)
             {
-                average_can_be_calculated = false;
-                ManHour = 0;
-            }
-            else
-            {
-                // ManHour is valid.
+                workday_count = 1;
             }
 
-            // Start date shouldn't be later than End date
-            if (Task_End_Date < Task_Start_Date)
-            {
-                average_can_be_calculated = false;
-            }
-
-            if (average_can_be_calculated)
-            {
-                ManPowerDate start = Task_Start_Date;
-                ManPowerDate end = Task_End_Date;
-                //int workday_count = DateOnly.BusinessDaysUntil(start.Date, end.Date);
-                int workday_count = ManPowerTask.holidayListInUse.BussinessDayBetween(start, end);
-                // workday must be > 0 (ie, from start to end date shouldn't be all in the middle of holidays)
-                if (workday_count > 0)
-                {
-                    Double average_man_hour = Math.Round(ManHour / workday_count, ManPower.average_rounding_digit);
-                    Daily_Average_ManHour_string = average_man_hour.ToString(ManPower.pSpecifier);
-                    Daily_Average_Manhour_value = average_man_hour;
-                }
-                else
-                {
-                    // man-power plan needs to be checked and updated.
-                    Daily_Average_ManHour_string = empty_average_manhour;
-                    Daily_Average_Manhour_value = empty_average_manhour_value;
-                }
-            }
-            else
-            {
-                // man-power plan needs to be checked and updated.
-                Daily_Average_ManHour_string = empty_average_manhour;
-                Daily_Average_Manhour_value = empty_average_manhour_value;
-            }
+            Double average_man_hour = Math.Round(ManHour / workday_count, ManPower.average_rounding_digit);
+            Daily_Average_ManHour_string = average_man_hour.ToString(ManPower.pSpecifier);
+            Daily_Average_Manhour_value = average_man_hour;
         }
 
         static public String AddComma(String item)
@@ -1055,7 +1032,7 @@ namespace ExcelReportApplication
 
             ManPowerDate week_start = start;
             int day_of_week = (int)week_start.DayOfWeek;
-            ManPowerDate week_end = week_start + (6 - day_of_week);
+            ManPowerDate week_end = week_start.ThisSaturday();
             week_end = (week_end > end) ? end : week_end;               // Should be Saturday or "end"
 
             while (week_start <= end)
