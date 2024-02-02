@@ -161,7 +161,7 @@ namespace ExcelReportApplication
             @"TCSummary_copy_and_extend_bug_list",      @"false",
             @"TCSummary_update_status_even_no_report",  @"false",
             //
-            @"ManPower_last_selected_file",             @".\manpower.csv",
+            @"ManPower_last_selected_file",             @"..\manpower.csv",
             //
             // report 2
             @"workbook_Summary",                        @".\SampleData\Report_Template.xlsx",
