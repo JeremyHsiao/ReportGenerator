@@ -48,6 +48,7 @@ namespace ExcelReportApplication
 
         public static ReportType[] ReportSelectableTable =
         {
+            /*
             ReportType.FullIssueDescription_TC,                     // report 1
             //ReportType.FullIssueDescription_Summary,
             //ReportType.StandardTestReportCreation,
@@ -65,10 +66,13 @@ namespace ExcelReportApplication
             //ReportType.TC_GroupSummaryReport,
             //ReportType.Update_Report_Linked_Issue,
             //ReportType.Update_Keyword_and_TC_Report,                // Report H   // Hide since v 1.3.21.0
+            */
             ReportType.Man_Power_Processing,
+            /*
             ReportType.Update_PassReport_and_TC_Summary,              // Report J   // Hide since v 1.3.21.0
             ReportType.Update_Report_Linked_Issue_and_TC_Report,    // Report K
             ReportType.Update_Repoart_A_then_Report_K,              // Report L
+            */
         };
 
         //public static ReportType[] ReportSelectableTable =
