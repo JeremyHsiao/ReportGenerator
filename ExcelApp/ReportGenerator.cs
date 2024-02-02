@@ -728,6 +728,10 @@ namespace ExcelReportApplication
         static public Boolean UpdateLinkedIssueStatusOnTCTemplate(List<String> report_list, Boolean update_status_without_report = false)
         {
             Boolean bRet = false;
+            int key_col = 0;
+            int links_col = 0;
+            int summary_col = 0;
+            int status_col = 0;
 
             // 2. Get report_list under judgement_report_dir -- (sheetname, fullname)
             Boolean report_is_available = false;
@@ -744,10 +748,11 @@ namespace ExcelReportApplication
 
             // 4. Prepare data on test case excel and write into test-case (template)
             Dictionary<string, int> template_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate: true);
-            int key_col = template_col_name_list[TestCase.col_Key];
-            int links_col = template_col_name_list[TestCase.col_LinkedIssue];
-            int summary_col = template_col_name_list[TestCase.col_Summary];
-            int status_col = template_col_name_list[TestCase.col_Status];
+            key_col = (template_col_name_list.ContainsKey(TestCase.col_Key)) ? template_col_name_list[TestCase.col_Key] : 0;
+            links_col = (template_col_name_list.ContainsKey(TestCase.col_LinkedIssue)) ? template_col_name_list[TestCase.col_LinkedIssue] : 0;
+            summary_col = (template_col_name_list.ContainsKey(TestCase.col_Summary)) ? template_col_name_list[TestCase.col_Summary] : 0;
+            status_col = (template_col_name_list.ContainsKey(TestCase.col_Status)) ? template_col_name_list[TestCase.col_Status] : 0;
+
             int last_row = ExcelAction.Get_Range_RowNumber(ExcelAction.GetTestCaseAllRange(IsTemplate: true));
             // for 4.3 & 4.4
             int col_end = ExcelAction.GetTestCaseExcelRange_Col(IsTemplate: true);
@@ -776,38 +781,54 @@ namespace ExcelReportApplication
             // Visit all rows and replace Bug-ID at Linked Issue with long description of Bug.
             for (int excel_row_index = TestCase.DataBeginRow; excel_row_index <= last_row; excel_row_index++)
             {
-                // Make sure Key of TC contains KeyPrefix
-                String tc_key = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, key_col, IsTemplate: true);
-                if (TestCase.CheckValidTC_By_KeyPrefix(tc_key) == false) { continue; }
-                if (ReportGenerator.GetTestcaseLUT_by_Key().ContainsKey(tc_key) == false) { continue; }
+                // Make sure Key of TC contains KeyPrefix (if key column is available)
+                String tc_key = "";
+                if (key_col > 0)
+                {
+                    tc_key = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, key_col, IsTemplate: true);
+                    if (TestCase.CheckValidTC_By_KeyPrefix(tc_key) == false) { continue; }
+                    if (ReportGenerator.GetTestcaseLUT_by_Key().ContainsKey(tc_key) == false) { continue; }
+                }
 
                 String report_name = "";
                 String worksheet_name = "";
-                if (report_is_available)
+                if ((report_is_available) && (summary_col > 0))
                 {
                     report_name = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, summary_col, IsTemplate: true);
-                    //if (String.IsNullOrWhiteSpace(report_name) == true) { continue; } // 2nd protection to prevent not a TC row
-                    if (TestCase.CheckValidTC_By_Key_Summary(tc_key, report_name) == false) { continue; }
-                    worksheet_name = GetSheetNameAccordingToSummary(report_name);
+                    if (String.IsNullOrWhiteSpace(report_name) == false)
+                    {
+                        worksheet_name = GetSheetNameAccordingToSummary(report_name);
+                        if (String.IsNullOrWhiteSpace(tc_key) == false)
+                        {
+                            // when key value is available, check key value
+                            if (TestCase.CheckValidTC_By_Key_Summary(tc_key, report_name) == false)
+                            {
+                                worksheet_name = "";            // clear if it doesn't pass key check, clear worksheet_name
+                            }
+                        }
+                    }
                 }
 
-                // 4.1 Extend bug key string (if not empty) into long string with font settings
-                String links = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, links_col, IsTemplate: true);
                 List<Issue> linked_issue_list = new List<Issue>();
                 List<Issue> filtered_linked_issue_list = new List<Issue>();
-                if (String.IsNullOrWhiteSpace(links) == false)
+                if (links_col > 0)
                 {
-                    linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
-                    // List of Issue filtered by status
-                    filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.List_of_status_to_filter_for_tc_linked_issue);
-                    // Sort issue by Severity and Key value (A first then larger key first if same severity)
-                    List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
-                    // Convert list of sorted linked issue to description list
-                    List<StyleString> str_list = Issue.BugList_ToLinkedIssueDescription(sorted_filtered_linked_issue_list);
-                    ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
+                    // 4.1 Extend bug key string (if not empty) into long string with font settings
+                    String links = ExcelAction.GetTestCaseCellTrimmedString(excel_row_index, links_col, IsTemplate: true);
+                    if (String.IsNullOrWhiteSpace(links) == false)
+                    {
+                        linked_issue_list = Issue.KeyStringToListOfIssue(links, ReportGenerator.ReadGlobalIssueList());
+                        // List of Issue filtered by status
+                        filtered_linked_issue_list = Issue.FilterIssueByStatus(linked_issue_list, ReportGenerator.List_of_status_to_filter_for_tc_linked_issue);
+                        // Sort issue by Severity and Key value (A first then larger key first if same severity)
+                        List<Issue> sorted_filtered_linked_issue_list = Issue.SortingBySeverityAndKey(filtered_linked_issue_list);
+                        // Convert list of sorted linked issue to description list
+                        List<StyleString> str_list = Issue.BugList_ToLinkedIssueDescription(sorted_filtered_linked_issue_list);
+                        ExcelAction.TestCase_WriteStyleString(excel_row_index, links_col, str_list, IsTemplate: true);
+                    }
                 }
 
-                if (report_is_available)
+                if ((report_is_available) && (String.IsNullOrWhiteSpace(worksheet_name) == false))
                 {
                     // check if report is availablea, if yes, use report to update criterial/purpose & status (if FINISHE, status= judgement)
                     if (report_filelist_by_sheetname.ContainsKey(worksheet_name) == true)
@@ -830,7 +851,10 @@ namespace ExcelReportApplication
                         }
 
                         // update status by judgement (if status==FINISHED)
-                        UpdateStatusCellByJudgement_TCTemplate(excel_row_index, status_col, judgement_str);
+                        if (status_col > 0)
+                        {
+                            UpdateStatusCellByJudgement_TCTemplate(excel_row_index, status_col, judgement_str);
+                        }
 
                         // 4.2.1 -- update purpose and criteria
                         // check if purpose/criteria field exists and strings are not empty
@@ -843,13 +867,13 @@ namespace ExcelReportApplication
                             ExcelAction.SetTestCaseCell(excel_row_index, criteria_col, criteria_str, IsTemplate: true);
                         }
                     }
-                    else if (update_status_without_report)
+                    else if ((update_status_without_report) && (status_col > 0) && (links_col > 0))
                     {
                         UpdateStatusCellByLinkedIssue_TCTemplate(excel_row_index, status_col, linked_issue_list);
                     }
                 }
                 // For no-report case & update status even no report
-                else if (update_status_without_report)
+                else if ((update_status_without_report) && (status_col > 0) && (links_col > 0))
                 {
                     UpdateStatusCellByLinkedIssue_TCTemplate(excel_row_index, status_col, linked_issue_list);
                 }
@@ -860,7 +884,10 @@ namespace ExcelReportApplication
             }
 
             // 5. auto-fit-height of column links
-            ExcelAction.TestCase_AutoFit_Column(links_col, IsTemplate: true);
+            if (links_col > 0)
+            {
+                ExcelAction.TestCase_AutoFit_Column(links_col, IsTemplate: true);
+            }
 
             bRet = true;
             return bRet;
@@ -1282,7 +1309,7 @@ namespace ExcelReportApplication
             b_ret = true;
             return b_ret;
         }
-        
+
         static public Boolean OpenTCTemplateAndPasteBugList(String template_file)
         {
             String template_filename = Storage.GetFullPath(template_file);
