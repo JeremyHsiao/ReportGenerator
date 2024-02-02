@@ -104,15 +104,13 @@ namespace ExcelReportApplication
         }
 
         // global data
-        static public String Caption_Line;              // reading from CSV
-        static public ManPowerDate Start_Date, End_Date;    // search all CSV
-        static public int Start_Week, End_Week;         // search all CSV
-        static public List<Boolean> IsWorkingDay = new List<Boolean>();
+        static public String CSVCaptionLine;              // reading from CSV
+        static public ManPowerDate ManPowerStartDate, ManPowerEndDate;    // search all CSV
+        static public int ManPowerStartWeek, ManPowerEndWeek;         // search all CSV
+        //static public Boolean IsWorkingDay(String assignee) { }
         //static public String Title_StartDate_to_EndDate;  // Generated according to Start_Date, End_Date
         static public String Title_StartWeek_to_EndWeek;  // Generated according to Start_Date, End_Date
         static public String Title_Project_Action_Owner_WeekOfYear_ManHour;
-        static public Dictionary<int, int> WorkingDayInWeek = new Dictionary<int, int>();
-        static public List<int> WeekOfYearList = new List<int>();
 
         static public String hierarchy_string_for_project_v1 = "Task";
         static public String hierarchy_string_for_action_v1 = "Manpower";
@@ -380,12 +378,17 @@ namespace ExcelReportApplication
             if (Task_End_Date < Task_Start_Date)
                 return;
 
+            Site assignee_site = Site.OfAssignee(Assignee);
+            int siteIndex = assignee_site.Index;
+            ManPowerHolidayList holidayInUse = ManPowerTask.AllHolidayList[siteIndex];
+
             if (Double.TryParse(Man_hour, out ManHour) == false)
                 return;
 
             ManPowerDate start = Task_Start_Date;
             ManPowerDate end = Task_End_Date;
-            int workday_count = ManPowerTask.holidayListInUse.BussinessDayBetween(start, end);
+
+            int workday_count = holidayInUse.BussinessDayBetween(start, end);
 
             // workday must be > 0 (ie, from start to end date shouldn't be all in the middle of holidays)
             // if ==0 set it to 1 (assuemd she/he works 1-day on holiday
@@ -526,7 +529,8 @@ namespace ExcelReportApplication
         //    ExcelAction.CloseCSV_SaveAsExcel(workbook: wb, SaveChanges: true, AsFilename: new_filename);
         //}
 
-        static public ManPowerHolidayList holidayListInUse = new ManPowerHolidayList();
+        static public List<ManPowerHolidayList> AllHolidayList = new List<ManPowerHolidayList>();
+        static public List<YearWeek> AllWeekDateList = new List<YearWeek>();
 
         static public List<ManPower> ReadManPowerTaskCSV(String csv_filename)
         {
@@ -538,7 +542,7 @@ namespace ExcelReportApplication
                 csvParser.HasFieldsEnclosedInQuotes = true;
 
                 // Skip the row with the column names
-                ManPower.Caption_Line = csvParser.ReadLine();
+                ManPower.CSVCaptionLine = csvParser.ReadLine();
 
                 while (!csvParser.EndOfData)
                 {
@@ -630,32 +634,24 @@ namespace ExcelReportApplication
         static public List<ManPower> Processing_DateWeekHoliday(List<ManPower> list_before_post_processing)
         {
             // Generated data for ManPower
-            ManPower.Start_Date = FindEearliestTargetStartDate(list_before_post_processing);
-            ManPower.End_Date = FindLatestTargetEndDate(list_before_post_processing);
-            if (ManPower.Start_Date > ManPower.End_Date)
+            ManPower.ManPowerStartDate = FindEearliestTargetStartDate(list_before_post_processing);
+            ManPower.ManPowerEndDate = FindLatestTargetEndDate(list_before_post_processing);
+            if (ManPower.ManPowerStartDate > ManPower.ManPowerEndDate)
             {
                 LogMessage.CheckFunction("Processing_DateWeekHoliday start/end exception");
             }
-            //DateOnly.Update_Holiday_Range(ManPower.Start_Date, ManPower.End_Date);
-            ManPower.IsWorkingDay.Clear();
-            for (ManPowerDate dt = ManPower.Start_Date; dt <= ManPower.End_Date; dt++)
-            {
-                if (dt.IsHoliday(holidayListInUse))
-                {
-                    ManPower.IsWorkingDay.Add(false);       // a holiday --> not a working day
-                }
-                else
-                {
-                    ManPower.IsWorkingDay.Add(true);
-                }
-            }
-            //ManPower.Title_StartDate_to_EndDate = ManPower.GenerateDateTitle(ManPower.Start_Date, ManPower.End_Date);
-            ManPower.Title_StartWeek_to_EndWeek = ManPower.GenerateWeekOfYearTitle(ManPower.Start_Date, ManPower.End_Date);
+            ManPower.Title_StartWeek_to_EndWeek = ManPower.GenerateWeekOfYearTitle(ManPower.ManPowerStartDate, ManPower.ManPowerEndDate);
 
-            // Setup static class YearWeek variables
-            YearWeek.SetupByStartDateEndDate(ManPower.Start_Date, ManPower.End_Date);
-            ManPower.Start_Week = YearWeek.GetStartWeek();
-            ManPower.End_Week = YearWeek.GetEndWeek();
+            // Setup YearWeek variables
+            for (int site_index = 0; site_index <= Site.MaxIndex; site_index++)
+            {
+                YearWeek yearweek = new YearWeek();
+                yearweek.SetupByStartDateEndDate(site_index, ManPower.ManPowerStartDate, ManPower.ManPowerEndDate);
+                AllWeekDateList.Add(yearweek);
+            }
+
+            ManPower.ManPowerStartWeek = ManPower.ManPowerStartDate.YearWeekNo();
+            ManPower.ManPowerEndWeek = ManPower.ManPowerEndDate.YearWeekNo(); 
 
             return list_before_post_processing;
         }
@@ -776,7 +772,7 @@ namespace ExcelReportApplication
             // Setup Title line
             ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour = "ProjectStage,TestAction,Owner,Week,ManHourThisWeek,";
             //csv.AppendLine(ManPower.Caption_Line);
-            csv.AppendLine(ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour + ManPower.Caption_Line);
+            csv.AppendLine(ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour + ManPower.CSVCaptionLine);
 
             // Setup & repeat for weekly man-hour
             String Empty_Field_String = ",,,,,";
@@ -800,23 +796,27 @@ namespace ExcelReportApplication
                     ManPowerDate last_date = mp.Task_End_Date;
                     Double daily_average_manhour_value = mp.Daily_Average_Manhour_value;
 
-                    int current_wk_index = YearWeek.IndexOf(mp.Task_Start_Week);
+                    Site assignee_site = Site.OfAssignee(mp.Assignee);
+                    int siteIndex = assignee_site.Index;
+                    YearWeek yearWeekInUse = AllWeekDateList[siteIndex];
+
+                    int current_wk_index = yearWeekInUse.IndexOf(mp.Task_Start_Week);
                     ManPowerDate current_date = first_date;
                     ManPowerDate week_end_date = current_date.ThisSaturday();
 
                     while (current_date <= last_date)
                     {
-                        int workingday_this_week = YearWeek.WorkdayToSaturdayFrom(current_date);            // calculation always from current_date
+                        int workingday_this_week = yearWeekInUse.WorkdayToSaturdayFrom(current_date);            // calculation always from current_date
 
                         // adjust week_end_date to last_date if last_date is on/before this Friday. (i.e/ this week is not complete)
                         if (week_end_date > last_date)
                         {
                             week_end_date = last_date;
-                            workingday_this_week -= YearWeek.WorkdayToSaturdayFrom(last_date + 1);
+                            workingday_this_week -= yearWeekInUse.WorkdayToSaturdayFrom(last_date + 1);
                         }
 
                         Double weekly_manhour = workingday_this_week * daily_average_manhour_value;
-                        int current_yearweek = YearWeek.ElementAt(current_wk_index);
+                        int current_yearweek = yearWeekInUse.GetElementAtIndex(current_wk_index);
                         // append year-week
                         String Project_Action_Owner_WeekOfYear_ManHour = Item_Field_String + ManPower.AddQuoteWithComma(current_yearweek.ToString());
                         // append man-hour in this week
@@ -857,7 +857,7 @@ namespace ExcelReportApplication
                 ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour += ManPower.AddComma("Category" + index.ToString());
             }
             //csv.AppendLine(ManPower.Caption_Line);
-            csv.AppendLine(ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour + ManPower.Caption_Line);
+            csv.AppendLine(ManPower.Title_Project_Action_Owner_WeekOfYear_ManHour + ManPower.CSVCaptionLine);
 
             // add items in week of year
             foreach (ManPower mp in manpower_list)
@@ -884,7 +884,11 @@ namespace ExcelReportApplication
                     Item_Field_String += ManPower.AddQuoteWithComma(mp.Task_Action_Name);
                     Item_Field_String += ManPower.AddQuoteWithComma(mp.Task_Owner_Name);
 
-                    int current_wk_index = YearWeek.IndexOf(mp.Task_Start_Week);
+                    Site assignee_site = Site.OfAssignee(mp.Assignee);
+                    int siteIndex = assignee_site.Index;
+                    YearWeek yearWeekInUse = AllWeekDateList[siteIndex];
+
+                    int current_wk_index = yearWeekInUse.IndexOf(mp.Task_Start_Week);
                     Double daily_average_manhour_value = mp.Daily_Average_Manhour_value;
                     ManPowerDate week_start = mp.Task_Start_Date;
                     ManPowerDate week_end = week_start.ThisSaturday();
@@ -892,16 +896,15 @@ namespace ExcelReportApplication
 
                     while (week_start <= end)
                     {
-                        int workday = YearWeek.WorkdayToSaturdayFrom(week_start);
-                        // adjustment if end is before this week-ending day (Saturday)
-                        if (week_end > end)
+                        int workday = yearWeekInUse.WorkdayToSaturdayFrom(week_start);      // workday is at the moment (week_start to Saturday)
+                        if (end < week_end)                                                 // adjustment workday if end is before this week-ending day (Saturday)
                         {
-                            workday -= YearWeek.WorkdayToSaturdayFrom(end + 1);
+                            workday -= yearWeekInUse.WorkdayToSaturdayFrom(end + 1);        // workday is at the moment (week_start to end)
                             week_end = end;
                         }
 
                         Double weekly_manhour = workday * daily_average_manhour_value;
-                        int current_yearweek = YearWeek.ElementAt(current_wk_index);
+                        int current_yearweek = yearWeekInUse.GetElementAtIndex(current_wk_index);
                         // append year-week
                         String Project_Action_Owner_WeekOfYear_ManHour = Item_Field_String + ManPower.AddQuoteWithComma(current_yearweek.ToString());
                         // append man-hour in this week
@@ -919,49 +922,106 @@ namespace ExcelReportApplication
             File.WriteAllText(Storage.GenerateFilenameWithDateTime(manpower_csv, ".csv"), csv.ToString(), Encoding.UTF8);
         }
 
-        static public ManPowerHolidayList LoadSiteHolidayList()
+        static public List<ManPowerHolidayList> LoadSiteHolidayList()
         {
             String holidayCSV = "CompanyOffDayList.csv";
-            Site current_default_site = new Site("HQ");
             List<ManPowerHolidayList> all_holiday_list = ManPowerHolidayList.SetupHolidayListFromCSV(holidayCSV);
-            ManPowerHolidayList holiday_list = new ManPowerHolidayList();
-            foreach (ManPowerHolidayList list in all_holiday_list)
-            {
-                if (list.IsSite(current_default_site))
-                {
-                    holiday_list = list;
-                    break;
-                }
-            }
-
-            return holiday_list;
+            return all_holiday_list;
         }
-
     }
 
-    static public class YearWeek
+    public class YearWeek
     {
-        static private ManPowerDate StartDate;
-        static private ManPowerDate EndDate;
-        static private List<int> YearWeekNumber_List = new List<int>();         // list all YearWeek withing start/end range
-        static private List<int> WeeklyWorkingDay_List = new List<int>();     // list how many workingday in this week.
-        //static private Dictionary<ManPowerDate, int> remaining_workday_to_Saturday_from = new Dictionary<ManPowerDate, int>();
-        //static private Dictionary<ManPowerDate, int> remaining_workday_from_Sunday_to = new Dictionary<ManPowerDate, int>();
-        static private List<int> remaining_workday_till_Saturday_from = new List<int>();
-        static private List<int> remaining_workday_from_Sunday_to = new List<int>();
         static public int invalid_index = -1;
         static public int invalid_yearweek = -1;
+        private ManPowerDate startDate = new ManPowerDate();
+        private ManPowerDate endDate = new ManPowerDate();
+        private List<int> yearWeekNoList = new List<int>();         // list all YearWeek withing start/end range
+        private List<int> working_day_list = new List<int>();    // list how many workingday in this week.
+        private List<int> workingDay = new List<int>();     // list how many workingday in this week.
+        private List<int> workingDayToSaturday = new List<int>();
+        private List<int> workingDatFromSunday = new List<int>();
+        private Site site;
 
-        static public List<int> YearWeekList() { return YearWeekNumber_List; }
-
-        //static public List<int> WeeklyWorkdayList() { return WeeklyWorkingDay_List; }
-
-        static public int WorkdayToSaturdayFrom(ManPowerDate datetime)
+        public List<int> YearWeekList   // property
         {
-            if (datetime.IsBetween(StartDate, EndDate))
+            get { return yearWeekNoList; }   // get method
+        }
+        public ManPowerDate StartDate   // property
+        {
+            get { return startDate; }   // get method
+        }
+        public ManPowerDate EndDate   // property
+        {
+            get { return endDate; }   // get method
+        }
+        public int StartWeek   // property
+        {
+            get { return startDate.YearWeekNo(); }   // get method
+        }
+        public int GetEndWeek   // property
+        {
+            get { return endDate.YearWeekNo(); }   // get method
+        }
+        public int StartWeekIndex   // property
+        {
+            get { return IndexOf(startDate); }   // get method
+        }
+        public int EndWeekIndex     // property
+        {
+            get { return IndexOf(endDate); }   // get method
+        }
+        public int this[int index]
+        {
+            get { return GetElementAtIndex(index); }          // get method
+        }
+        public Site Site   // property
+        {
+            get { return site; }   // get method
+        }
+
+        private int IndexOf(ManPowerDate datetime)
+        {
+            int ret_index = invalid_index;
+            if ((datetime >= startDate) && (datetime <= endDate))
             {
-                int diff_day = datetime - StartDate;
-                return remaining_workday_till_Saturday_from[diff_day];
+                ret_index = yearWeekNoList.IndexOf(datetime.YearWeekNo());
+            }
+            return ret_index;
+        }
+        public int IndexOf(int year_and_week)
+        {
+            int ret_index = yearWeekNoList.IndexOf(year_and_week);
+            return ret_index;
+        }
+        public int GetElementAtIndex(int index)
+        {
+            int ret_yearweek = invalid_yearweek;
+            if ((index >= 0) && (index < yearWeekNoList.Count))
+            {
+                ret_yearweek = yearWeekNoList[index];
+            }
+            return ret_yearweek;
+        }
+
+        public int WorkdayToSaturdayFrom(ManPowerDate datetime)
+        {
+            if (datetime.IsBetween(startDate, endDate))
+            {
+                int diff_day = datetime - startDate;
+                return workingDayToSaturday[diff_day];
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        public int WorkdayFromSundayTo(ManPowerDate datetime)
+        {
+            if (datetime.IsBetween(startDate, endDate))
+            {
+                int diff_day = datetime - startDate;
+                return workingDatFromSunday[diff_day];
             }
             else
             {
@@ -969,28 +1029,21 @@ namespace ExcelReportApplication
             }
         }
 
-        static public int WorkdayFromSundayTo(ManPowerDate datetime)
+        // to update -- become site-dependent
+        public void SetupByStartDateEndDate(int siteindex, ManPowerDate start, ManPowerDate end)
         {
-            if (datetime.IsBetween(StartDate, EndDate))
-            {
-                return remaining_workday_from_Sunday_to[datetime - StartDate];
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        static public void SetupByStartDateEndDate(ManPowerDate start, ManPowerDate end)
-        {
-            YearWeek.StartDate = start;
-            YearWeek.EndDate = end;
+            startDate = start;
+            endDate = end;
             // List to be created
-            YearWeekNumber_List.Clear();
-            WeeklyWorkingDay_List.Clear();
-            remaining_workday_till_Saturday_from.Clear();
-            remaining_workday_from_Sunday_to.Clear();
+            yearWeekNoList.Clear();
+            working_day_list.Clear();
+            workingDay.Clear();
+            workingDayToSaturday.Clear();
+            workingDatFromSunday.Clear();
             // END
+
+            site = new Site(siteindex);
+            ManPowerHolidayList holiday_in_use = ManPowerTask.AllHolidayList[siteindex];
 
             if (end < start)
             {
@@ -1004,23 +1057,24 @@ namespace ExcelReportApplication
             while (current_date <= end)
             {
                 int yearweekno = current_date.YearWeekNo();
-                YearWeekNumber_List.Add(yearweekno);
+                yearWeekNoList.Add(yearweekno);
 
                 week_end = (week_end > end) ? end : week_end;               // Should be Saturday or "end"
-                int workingday = ManPowerTask.holidayListInUse.BussinessDayBetween(current_date, week_end);
-                WeeklyWorkingDay_List.Add(workingday);
+                int workingdayThisWeek;
+                workingdayThisWeek = holiday_in_use.BussinessDayBetween(current_date, week_end);
+                workingDay.Add(workingdayThisWeek);
 
                 int acc_workingday = 0;
                 // iterate for this week (or until "end" date)
                 while (current_date <= week_end)
                 {
-                    remaining_workday_till_Saturday_from.Add(workingday);
-                    if (current_date.IsWorkingday(ManPowerTask.holidayListInUse))
+                    workingDayToSaturday.Add(workingdayThisWeek);
+                    if (current_date.IsWorkingday(holiday_in_use))
                     {
                         acc_workingday++;
-                        workingday--;
+                        workingdayThisWeek--;
                     }
-                    remaining_workday_from_Sunday_to.Add(acc_workingday);
+                    workingDatFromSunday.Add(acc_workingday);
                     current_date++;
                 }
                 // week_start should be Sunday(week_end + 1) or "end" now
@@ -1028,89 +1082,39 @@ namespace ExcelReportApplication
             }
         }
 
-        static public int GetStartWeek()
+        public Boolean IsYearWeekValueInRange(int yearweek_to_check)
         {
-            return YearWeek.StartDate.YearWeekNo();
-        }
-
-        static public int GetEndWeek()
-        {
-            return YearWeek.EndDate.YearWeekNo();
-        }
-
-        static public int GetStartWeekIndex()
-        {
-            return IndexOf(StartDate);
-        }
-
-        static public int GetEndWeekIndex()
-        {
-            return IndexOf(EndDate);
-        }
-
-        static public int IndexOf(ManPowerDate datetime)
-        {
-            int ret_index = invalid_index;
-            if ((datetime >= StartDate) && (datetime <= EndDate))
-            {
-                ret_index = YearWeekNumber_List.IndexOf(datetime.YearWeekNo());
-            }
-            return ret_index;
-        }
-
-        static public int IndexOf(int year_and_week)
-        {
-            int ret_index = invalid_index;
-            if ((year_and_week >= GetStartWeek()) && (year_and_week <= GetEndWeek()))
-            {
-                ret_index = YearWeekNumber_List.IndexOf(year_and_week);
-            }
-            return ret_index;
-        }
-
-        static public int ElementAt(int index)
-        {
-            int ret_yearweek = invalid_yearweek;
-            if ((index >= 0) && (index < YearWeekNumber_List.Count))
-            {
-                ret_yearweek = YearWeekNumber_List[index];
-            }
-            return ret_yearweek;
-        }
-
-        static public Boolean IsYearWeekValueInRange(int yearweek_to_check)
-        {
-            return YearWeekNumber_List.Contains(yearweek_to_check);
+            return yearWeekNoList.Contains(yearweek_to_check);
         }
 
         // to be implemented -- need to remove working days outside start/end date
         // or need special check for 1st / last week
-        static public int GetWorkingDayOfWeekWithinTaskDurationByIndex(int index)
+        public int GetWorkingDayOfWeekWithinTaskDurationByIndex(int index)
         {
             int ret_weekly_working_day = 0;
-            if ((index >= 0) && (index <= (WeeklyWorkingDay_List.Count - 1)))
+            if ((index >= 0) && (index <= (workingDay.Count - 1)))
             {
-                ret_weekly_working_day = WeeklyWorkingDay_List[index];
+                ret_weekly_working_day = workingDay[index];
             }
             return ret_weekly_working_day;
         }
 
-        static public int GetWorkingDayOfWeekByIndex(int index)
+        public int GetWorkingDayOfWeekByIndex(int index)
         {
             int ret_weekly_working_day = 0;
-            if ((index >= 0) && (index <= (WeeklyWorkingDay_List.Count - 1)))
+            if ((index >= 0) && (index <= (workingDay.Count - 1)))
             {
-                ret_weekly_working_day = WeeklyWorkingDay_List[index];
+                ret_weekly_working_day = workingDay[index];
             }
             return ret_weekly_working_day;
         }
 
-        static public int GetWorkingDayOfWeekByYearWeek(int year_week)
+        public int GetWorkingDayOfWeekByYearWeek(int year_week)
         {
             int ret_weekly_working_day = 0;
             if (IsYearWeekValueInRange(year_week))
             {
-                ret_weekly_working_day = WeeklyWorkingDay_List[IndexOf(year_week)];
+                ret_weekly_working_day = workingDay[IndexOf(year_week)];
             }
             return ret_weekly_working_day;
         }
@@ -1129,62 +1133,70 @@ namespace ExcelReportApplication
     public class Site
     {
         // static for class Site
-        static public int undefined_value = -1;
+        static public int UndefinedSiteIndex = -1;
         static public String UndefinedSite = "UndefinedSite";
-        static private String[] SiteListString = { "HQ", "XM" };
-        static public List<String> SiteList = SiteListString.ToList();
-        static public int Count = SiteList.Count;
+        static private String[] siteNameList = { "HQ", "XM" };
+        static public List<String> SiteList = siteNameList.ToList();
+        static private int defaultSiteIndex = 0;        // "HQ" as default
 
         // internal variable
-        static private int init_value = undefined_value;
+        static private int init_value = UndefinedSiteIndex;
         private int site = init_value;
+
+        static private String[] site_assignee_pair = 
+        { 
+            "Kiara Zou 鄒寶鳳", "XM",
+            "Xiaohong Chen 陈晓红", "XM",
+            "Harry HH Lin 林鸿晖", "XM",
+            "Linjue Lu 盧林覺", "XM",
+            "WanqiaoXie 谢万桥", "XM",
+            "QiuPing Deng 鄧秋萍", "XM",
+            "Jianhang Chen 陈建行", "XM",
+            "Sally Huang 黄思婷", "XM" 
+        };
 
         // member function
         public Site() { }
         public Site(int site_index) { Index = site_index; }
         public Site(String site_name) { Name = site_name; }
         public List<Site> ToList() { List<Site> site_list = new List<Site>(); site_list.Add(this); return site_list; }
-
+        private Boolean SiteIndexInRange(int index)
+        {
+            return ((index >= 0) && (index < SiteList.Count)) ? true : false;
+        }
+        static public int MaxIndex   // property
+        {
+            get { return SiteList.Count - 1; }    // get method
+        }
         public int Index   // property
         {
             get { return site; }    // get method
-            set                     // set method
-            {
-                if ((value >= 0) && (value < Count))
-                {
-                    site = value;
-                }
-                else
-                {
-                    site = undefined_value;
-                }
-            }
+            set { site = SiteIndexInRange(value) ? value : UndefinedSiteIndex; }   // set method
         }
         public String Name   // property
         {
-            get
+            get { return SiteIndexInRange(site) ? siteNameList[site] : UndefinedSite; }    // get method
+            set { site = ((String.IsNullOrWhiteSpace(value)) || (value.Length < 2)) ? UndefinedSiteIndex : SiteList.IndexOf(value.Substring(0, 2)); }   // set method
+        }
+        static public Site OfAssignee(String assignee)
+        {
+            List<String> site_assignee_list = site_assignee_pair.ToList<String>();
+            int index = site_assignee_list.IndexOf(assignee);
+            if (index >= 0)
             {
-                if ((site >= 0) && (site < Count))
-                {
-                    return SiteListString[site];
-                }
-                else
-                {
-                    return UndefinedSite;
-                }
-            }   // get method
-            set
+                String sitename = site_assignee_list[index + 1];
+                return new Site(sitename);
+            }
+            else
             {
-                // string length is < 2
-                if ((String.IsNullOrWhiteSpace(value)) || (value.Length < 2))
-                {
-                    site = undefined_value;
-                }
-                else
-                {
-                    site = SiteList.IndexOf(value.Substring(0, 2));
-                }
-            }  // set method
+                // if assignee is not on the list, use default Site
+                return new Site(defaultSiteIndex);
+            }
+        }
+        private int SiteIndexByName(String siteName)
+        {
+            int index = SiteList.IndexOf(siteName);
+            return (index >= 0) ? index : UndefinedSiteIndex;
         }
 
         public static Boolean operator ==(Site a, Site b)
@@ -1562,15 +1574,12 @@ namespace ExcelReportApplication
         static public List<ManPowerHolidayList> SetupHolidayListFromCSV(String csv_file)
         {
             List<ManPowerHolidayList> ret_list_of_site_holidays = new List<ManPowerHolidayList>();
-            List<Site> holiday_site_list = new List<Site>();
 
             // Create a list of site-based empty ManPowerHolidayList (holiday to be added later according to CSV) 
-            foreach (String site_str in Site.SiteList)
+            for (int site_index = 0; site_index < Site.SiteList.Count; site_index++)
             {
                 // setup site info
-                Site this_site = new Site(site_str);
-                holiday_site_list.Add(this_site);
-
+                Site this_site = new Site(site_index);
                 // Add holiday-list & associate site info
                 ManPowerHolidayList holidays = new ManPowerHolidayList(this_site);
                 ret_list_of_site_holidays.Add(holidays);                    // Add empty site holiday
@@ -1592,7 +1601,8 @@ namespace ExcelReportApplication
                     title.AddRange(csvParser.ReadFields());
                     foreach (String item in title)
                     {
-                        Site this_site = new Site(item);
+                        String site_string = (item.Length >= 2)? item.Substring(0, 2) : item;
+                        Site this_site = new Site(site_string);
                         title_site.Add(this_site);
                     }
                 }
@@ -1627,5 +1637,15 @@ namespace ExcelReportApplication
             return ret_list_of_site_holidays;
         }
 
+        static public ManPowerHolidayList SelectHolidayListBySite(List<ManPowerHolidayList> holidays_lst, Site site)
+        {
+            foreach (ManPowerHolidayList mpl in holidays_lst)
+            {
+                if (mpl.Site == site)
+                    return mpl;
+            }
+            return holidays_lst[0];
+
+        }
     }
 }
