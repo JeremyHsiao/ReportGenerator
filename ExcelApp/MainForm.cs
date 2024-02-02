@@ -1135,6 +1135,7 @@ namespace ExcelReportApplication
                 return false;
             }
 
+            ManPowerTask.AllHolidayList = ManPowerTask.LoadSiteHolidayList();
             ManPowerTask.ProcessManPowerPlan_V2(excel_input_file);
 
             return true;
