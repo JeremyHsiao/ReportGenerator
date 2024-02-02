@@ -65,7 +65,7 @@ namespace ExcelReportApplication
             //ReportType.TC_GroupSummaryReport,
             //ReportType.Update_Report_Linked_Issue,
             //ReportType.Update_Keyword_and_TC_Report,                // Report H   // Hide since v 1.3.21.0
-            //ReportType.Man_Power_Processing,
+            ReportType.Man_Power_Processing,
             ReportType.Update_PassReport_and_TC_Summary,              // Report J   // Hide since v 1.3.21.0
             ReportType.Update_Report_Linked_Issue_and_TC_Report,    // Report K
             ReportType.Update_Repoart_A_then_Report_K,              // Report L
@@ -519,24 +519,6 @@ namespace ExcelReportApplication
 
             TestCase.LoadFromXML();
 
-            // Status string to decompose into list of string
-            // Begin
-            //List<String> ret_list = new List<String>();
-            //String links = XMLConfig.ReadAppSetting_String("LinkIssueFilterStatusString");
-            //if ((links != null) && (links != ""))
-            //{
-            //    // Separate keys into string[]
-            //    String[] issues = links.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-            //    if (issues != null)
-            //    {
-            //        // string[] to List<String> (trimmed) and return
-            //        foreach (String str in issues)
-            //        {
-            //            ret_list.Add(str.Trim());
-            //        }
-            //    }
-            //}
-            //ReportGenerator.fileter_status_list = ret_list;
             String links = XMLConfig.ReadAppSetting_String("LinkIssueFilterStatusString");
             ReportGenerator.List_of_status_to_filter_for_tc_linked_issue = ReportGenerator.SplitCommaSeparatedStringIntoList(links);
 
@@ -610,31 +592,6 @@ namespace ExcelReportApplication
             UpdateUIAfterReportTypeChanged(default_selected_report_type);
         }
 
-        //private Boolean Set_comboBoxReportSelect_IndexValue(int index_value)
-        //{
-        //    Boolean b_ret = false;
-        //    if ((index_value >= 0) && (index_value < ReportTypeCount))
-        //    {
-        //        comboBoxReportSelect.SelectedIndex = index_value;
-        //        b_ret = true;
-        //    }
-        //    return b_ret;
-        //}
-
-        //private int Get_comboBoxReportSelect_IndexValue()
-        //{
-        //    int selected_index = comboBoxReportSelect.SelectedIndex;
-        //    if ((selected_index < 0) || (selected_index >= ReportTypeCount))
-        //    {
-        //        // shouldn't be out of range.
-        //        return 0;
-        //    }
-        //    else
-        //    {
-        //        return comboBoxReportSelect.SelectedIndex;
-        //    }
-        //}
-
         private void Set_comboBoxReportSelect_ByReportType(ReportType report_type)
         {
             for (int index = 0; index < ReportTypeCount; index++)
@@ -674,8 +631,6 @@ namespace ExcelReportApplication
             System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
             System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
             string version = fvi.FileVersion;
-            //this.Text = "Report Generator " + version + "   build:" + DateTime.Now.ToString("yyMMddHHmm"); ;
-            //ReportGeneratorVersionString = "ReportGenerator_V" + version + DateTime.Now.ToString("(yyyyMMdd)");
             string strCompTime = Properties.Resources.BuildDate, strBuildDate = "";
             if (!string.IsNullOrEmpty(strCompTime))
             {
@@ -710,7 +665,6 @@ namespace ExcelReportApplication
             {
                 MsgWindow.AppendText("Processing bug_list:" + buglist_filename + ".\n");
                 ReportGenerator.UpdateGlobalIssueList(Issue.GenerateIssueList(buglist_filename));
-                //ReportGenerator.lookup_BugList = Issue.UpdateIssueListLUT(ReportGenerator.global_issue_list);
                 // update LUT
                 MsgWindow.AppendText("bug_list finished!\n");
                 return true;
@@ -750,7 +704,6 @@ namespace ExcelReportApplication
         private void ClearIssueList()
         {
             ReportGenerator.ClearGlobalIssueList();
-            //ReportGenerator.lookup_BugList.Clear();
             TestReport.ClearGlobalKeywordList();
         }
 
@@ -867,11 +820,6 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            // This full issue description is needed for report purpose
-            //Dictionary<string, List<StyleString>> global_full_issue_description_list =
-            //                            StyleString.GenerateFullIssueDescription(ReportGenerator.ReadGlobalIssueList());
-
-            //SummaryReport.SaveIssueToSummaryReport(template_file, global_full_issue_description_list);
             SummaryReport.SaveIssueToSummaryReport(template_file);
 
             return true;
@@ -987,7 +935,7 @@ namespace ExcelReportApplication
             List<String> AllFileList = new List<String>();
             ReportFileList = AllFileList;
             RootDir = "";
- 
+
             if (IsDirectory == false)
             {
                 // Is a File
@@ -1005,7 +953,7 @@ namespace ExcelReportApplication
                 // Is a directory
                 if (Storage.DirectoryExists(FileOrDirectory))
                 {
-                     String DirectoryName = FileOrDirectory;
+                    String DirectoryName = FileOrDirectory;
                     AllFileList = Storage.ListFilesUnderDirectory(DirectoryName);
                     RootDir = DirectoryName;
                     ReportFileList = Storage.FilterFilename(AllFileList);
@@ -1219,20 +1167,7 @@ namespace ExcelReportApplication
         {
             ReportType report_type = Get_comboBoxReportSelect_ReturnReportType();
             bool sel_file = true;
-            String init_dir;
-            //switch (report_type)
-            //{
-            //    case ReportType.CreateCSTReport:
-            //        //case ReportType.FindAllKeywordInReport:
-            //        sel_file = false;  // Here select directory instead of file
-            //        init_dir = txtOutputTemplate.Text;
-            //        break;
-            //    default:
-            //        // default is file selection here.
-            //        init_dir = Storage.GetFullPath(txtOutputTemplate.Text);
-            //        break;
-            //}
-            init_dir = Storage.GetFullPath(txtOutputTemplate.Text);
+            String init_dir = Storage.GetFullPath(txtOutputTemplate.Text);
 
             if (report_type == ReportType.Man_Power_Processing)
             {
@@ -1240,7 +1175,9 @@ namespace ExcelReportApplication
                 if (ret_str != "")
                 {
                     txtOutputTemplate.Text = ret_str;
-                    btnSelectOutputTemplate_Clicked = true;
+                    XMLConfig.AddUpdateAppSettings("ManPower_last_selected_file", ret_str); 
+                    //btnSelectOutputTemplate_Clicked = true;
+                    btnSelectOutputTemplate_Clicked = false;        // force to always reload after report selection changed.
                 }
             }
             else
@@ -1269,24 +1206,6 @@ namespace ExcelReportApplication
             return ret_str;
         }
 
-        /*
-                private void btnGetBugList_Click(object sender, EventArgs e)
-                {
-                    bool bRet;
-                    bRet = ReadGlobalIssueListTask(txtBugFile.Text);
-                    if (bRet)
-                    {
-                        // This full issue description is for demo purpose
-                        ReportGenerator.global_issue_description_list = IssueList.GenerateFullIssueDescription(ReportGenerator.global_issue_list);
-                    }
-                }
-
-                private void btnGetTCList_Click(object sender, EventArgs e)
-                {
-                    bool bRet;
-                    bRet = ReadGlobalTCListTask(txtTCFile.Text);
-                }
-        */
         // Update file path to full path (for excel operation)
         // Only enabled textbox will be updated.
         private Boolean UpdateTextBoxPathToFullAndCheckExist(ref TextBox box)
@@ -1343,7 +1262,15 @@ namespace ExcelReportApplication
             MsgWindow.AppendText(msg);
             SystemLogAddLine(msg);
 
-            Boolean open_excel_ok = ExcelAction.OpenExcelApp();
+            Boolean open_excel_ok = false;
+            if (report_type != ReportType.Man_Power_Processing)
+            {
+                open_excel_ok = ExcelAction.OpenExcelApp();
+            }
+            else
+            {
+                open_excel_ok = true;
+            }
             if (open_excel_ok)
             {
                 // Must be updated if new report type added #NewReportType
@@ -1656,7 +1583,8 @@ namespace ExcelReportApplication
                 // Open Excel application failed...
                 MsgWindow.AppendText("Failed at starting Excel application.\n");
             }
-            ExcelAction.CloseExcelApp();
+            if (report_type != ReportType.Man_Power_Processing)
+                ExcelAction.CloseExcelApp();
 
             MsgWindow.AppendText("Finished.\n");
 
@@ -1950,10 +1878,12 @@ namespace ExcelReportApplication
                         txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
                     break;
                 case ReportType.Man_Power_Processing:
-                    if (!btnSelectOutputTemplate_Clicked)
+                    //if (!btnSelectOutputTemplate_Clicked)
                     {
-                        String short_userName = Storage.GetWindowsLoginUserName();
-                        txtOutputTemplate.Text = @"C:\Users\" + short_userName + @"\Downloads\Advance Roadmaps.csv";
+                        //String short_userName = Storage.GetWindowsLoginUserName();
+                        //txtOutputTemplate.Text = @"C:\Users\" + short_userName + @"\Downloads\Advance Roadmaps.csv";
+                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("ManPower_last_selected_file");
+                        btnSelectOutputTemplate_Clicked = false;
                     }
                     break;
                 case ReportType.Update_PassReport_and_TC_Summary:                  // Report J 
