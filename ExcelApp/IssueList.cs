@@ -541,6 +541,18 @@ namespace ExcelReportApplication
             }
         }
 
+        static private Dictionary<string, int> excel_Title_RowIndex_LUT = new Dictionary<string, int>();
+
+        static private Boolean setupTitleRowIndexLUT()
+        {
+            excel_Title_RowIndex_LUT = ExcelAction.CreateIssueListColumnIndex(Issue.NameDefinitionRow);
+            if (excel_Title_RowIndex_LUT.Count > 0)
+                return true;
+            else
+                return false;
+        }
+
+        /*
         static public List<Issue> GenerateIssueList_v2(string buglist_filename)
         {
             List<Issue> ret_issue_list = new List<Issue>();
@@ -561,12 +573,18 @@ namespace ExcelReportApplication
             }
             return ret_issue_list;
         }
+        */
 
         static public List<Issue> GenerateIssueList_processing_data()
         {
             List<Issue> ret_issue_list = new List<Issue>();
 
-            Dictionary<string, int> col_name_list = ExcelAction.CreateIssueListColumnIndex();
+            if (setupTitleRowIndexLUT() == false)
+            {
+                LogMessage.WriteLine("Cannot create title row index @ GenerateIssueList_processing_data()");
+                return ret_issue_list;
+            }
+
             List<String> for_checking_repeated_key = new List<String>();
 
             // Visit all rows and add content of IssueList
@@ -578,9 +596,9 @@ namespace ExcelReportApplication
                 {
                     String str;
                     // If data of xxx column exists in Excel, store it.
-                    if (col_name_list.ContainsKey(IssueListMemberColumnName[member_index]))
+                    if (excel_Title_RowIndex_LUT.ContainsKey(IssueListMemberColumnName[member_index]))
                     {
-                        str = ExcelAction.GetIssueListCellTrimmedString(excel_row_index, col_name_list[IssueListMemberColumnName[member_index]]);
+                        str = ExcelAction.GetIssueListCellTrimmedString(excel_row_index, excel_Title_RowIndex_LUT[IssueListMemberColumnName[member_index]]);
                     }
                     // If not exist, fill an empty string to xxx
                     else
@@ -602,6 +620,7 @@ namespace ExcelReportApplication
             return ret_issue_list;
         }
 
+        /*
         // This is the version to be revised -- separate excel open/close away from data processing
         static public List<Issue> GenerateIssueList(string buglist_filename)
         {
@@ -611,7 +630,7 @@ namespace ExcelReportApplication
 
             if (status == ExcelAction.ExcelStatus.OK)
             {
-                Dictionary<string, int> col_name_list = ExcelAction.CreateIssueListColumnIndex();
+                Dictionary<string, int> col_name_list = ExcelAction.CreateIssueListColumnIndex(Issue.NameDefinitionRow);
                 List<String> for_checking_repeated_key = new List<String>();
 
                 // Visit all rows and add content of IssueList
@@ -660,6 +679,7 @@ namespace ExcelReportApplication
 
             return ret_issue_list;
         }
+        */
 
         static public Dictionary<string, Issue> UpdateIssueListLUT(List<Issue> issue_list)
         {

@@ -653,6 +653,7 @@ namespace ExcelReportApplication
             }
         }
 
+        /*
         private bool ReadGlobalIssueListTask(String filename)
         {
             String buglist_filename = Storage.GetFullPath(filename);
@@ -670,6 +671,7 @@ namespace ExcelReportApplication
                 return true;
             }
         }
+        */
 
         private Boolean ReadGlobalTCListTask(String filename)
         {
@@ -693,7 +695,9 @@ namespace ExcelReportApplication
         {
             if (ReportGenerator.IsGlobalIssueListEmpty())
             {
-                return ReadGlobalIssueListTask(filename);
+                //return ReadGlobalIssueListTask(filename);
+                Boolean bRet = ReportGenerator.ProcessBugListExcel(filename);
+                return bRet;
             }
             else
             {
