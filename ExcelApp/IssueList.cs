@@ -541,16 +541,18 @@ namespace ExcelReportApplication
             }
         }
 
-        static private Dictionary<string, int> excel_Title_RowIndex_LUT = new Dictionary<string, int>();
+        static private Dictionary<String, int> excel_Title_RowIndex_LUT = new Dictionary<String, int>();
 
         static private Boolean setupTitleRowIndexLUT()
         {
             excel_Title_RowIndex_LUT = ExcelAction.CreateIssueListColumnIndex(Issue.NameDefinitionRow);
-            if (excel_Title_RowIndex_LUT.Count > 0)
+            if ((excel_Title_RowIndex_LUT.Count > 0) &&
+                (excel_Title_RowIndex_LUT.ContainsKey(col_Key)) && (excel_Title_RowIndex_LUT.ContainsKey(col_Summary)))
                 return true;
             else
                 return false;
         }
+        static public Dictionary<String, int> IssueColumnIndexLUT() { return excel_Title_RowIndex_LUT; }
 
         /*
         static public List<Issue> GenerateIssueList_v2(string buglist_filename)

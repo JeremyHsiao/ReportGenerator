@@ -177,7 +177,7 @@ namespace ExcelReportApplication
             }
             return do_plan;
         }
-
+/*
         public static List<TestPlan> LoadTestPlanSheet(Worksheet testplan_ws)
         {
             List<TestPlan> ret_testplan = new List<TestPlan>();
@@ -210,7 +210,7 @@ namespace ExcelReportApplication
             }
             return ret_testplan;
         }
-
+*/
         public enum ExcelStatus
         {
             OK = 0,

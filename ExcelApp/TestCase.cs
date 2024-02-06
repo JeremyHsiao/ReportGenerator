@@ -300,8 +300,10 @@ namespace ExcelReportApplication
         static public String STR_TESTING = @"Testing";
         static public String STR_NONE = @"None";
 
-        static public int NameDefinitionRow = 4;
-        static public int DataBeginRow = 5;
+        static public int TC_NameDefinitionRow = 4;
+        static public int TC_DataBeginRow = 5;
+        static public int Template_NameDefinitionRow = 4;
+        static public int Template_DataBeginRow = 5;
         static public string TestCaseSheetName = "general_report";
         static public string TCTemplateSheetName = "TCResult";
         static public string KeyPrefix = "T";
@@ -312,8 +314,10 @@ namespace ExcelReportApplication
             KeyPrefix = XMLConfig.ReadAppSetting_String("TC_Key_Prefix");
             TestCaseSheetName = XMLConfig.ReadAppSetting_String("TCList_ExportedSheetName");
             TCTemplateSheetName = XMLConfig.ReadAppSetting_String("TC_Template_SheetName");
-            NameDefinitionRow = XMLConfig.ReadAppSetting_int("TC_Row_NameDefine");
-            DataBeginRow = XMLConfig.ReadAppSetting_int("TC_Row_DataBegin");
+            TC_NameDefinitionRow = XMLConfig.ReadAppSetting_int("TC_Row_NameDefine");
+            TC_DataBeginRow = XMLConfig.ReadAppSetting_int("TC_Row_DataBegin");
+            Template_NameDefinitionRow = XMLConfig.ReadAppSetting_int("TC_Template_Row_NameDefine");
+            Template_DataBeginRow = XMLConfig.ReadAppSetting_int("TC_Template_Row_DataBegin");
         }
 
         static public Boolean CheckValidTC_By_KeyPrefix(String tc_key)
@@ -341,6 +345,7 @@ namespace ExcelReportApplication
             return ret;
         }
 
+        /*
         static public List<TestCase> GenerateTestCaseList_data_processing()
         {
             List<TestCase> ret_tc_list = new List<TestCase>();
@@ -349,7 +354,7 @@ namespace ExcelReportApplication
 
             // Visit all rows and add content of TestCase
             int ExcelLastRow = ExcelAction.Get_Range_RowNumber(ExcelAction.GetTestCaseAllRange());
-            for (int excel_row_index = DataBeginRow; excel_row_index <= ExcelLastRow; excel_row_index++)
+            for (int excel_row_index = TC_DataBeginRow; excel_row_index <= ExcelLastRow; excel_row_index++)
             {
                 List<String> members = new List<String>();
                 for (int member_index = 0; member_index < TestCaseMemberCount; member_index++)
@@ -383,9 +388,33 @@ namespace ExcelReportApplication
 
             return ret_tc_list;
         }
+        */
+
+        static private Dictionary<String, int> TestCase_Title_RowIndex_LUT = new Dictionary<String, int>();
+        static private Dictionary<String, int> TCTemplate_Title_RowIndex_LUT = new Dictionary<String, int>();
+
+        static private Boolean setupTestCaseTitleRowIndexLUT()
+        {
+            TestCase_Title_RowIndex_LUT = ExcelAction.CreateTestCaseColumnIndex(title_row_no: TC_NameDefinitionRow, IsTemplate: false);
+            if ((TestCase_Title_RowIndex_LUT.Count > 0) && 
+                (TestCase_Title_RowIndex_LUT.ContainsKey(col_Key)) && (TestCase_Title_RowIndex_LUT.ContainsKey(col_Summary)))
+                return true;
+            else
+                return false;
+        }
+        static private Boolean setupTCTemplateTitleRowIndexLUT()
+        {
+            TCTemplate_Title_RowIndex_LUT = ExcelAction.CreateTestCaseColumnIndex(title_row_no: Template_NameDefinitionRow, IsTemplate: true);
+            if (TCTemplate_Title_RowIndex_LUT.Count > 0)
+                return true;
+            else
+                return false;
+        }
+        static public Dictionary<String, int> TestCaseColumnIndexLUT() { return TestCase_Title_RowIndex_LUT; }
+        static public Dictionary<String, int> TCTemplateColumnIndexLUT() { return TCTemplate_Title_RowIndex_LUT; }
 
 
-
+        /*
         // This is the version to be revised -- separate excel open/close away from data processing
         static public List<TestCase> GenerateTestCaseList_v2(string tclist_filename)
         {
@@ -408,6 +437,7 @@ namespace ExcelReportApplication
 
             return ret_tc_list;
         }
+        */
 
         /*
         static public List<TestCase> GenerateTestCaseList(string tclist_filename)
@@ -478,25 +508,36 @@ namespace ExcelReportApplication
 
         static public Boolean OpenTestCaseExcel(String tclist_filename)
         {
+            Boolean b_Ret = false;
+
             ExcelAction.ExcelStatus status = ExcelAction.OpenTestCaseExcel(tclist_filename);
             if (status == ExcelAction.ExcelStatus.OK)
             {
-                return true;
+                if (setupTestCaseTitleRowIndexLUT())
+                {
+                    b_Ret = true;
+                }
+                else
+                {
+                    status = ExcelAction.CloseTestCaseExcel();
+                    if (status != ExcelAction.ExcelStatus.OK)
+                    {
+                        // To be debugged
+                    }
+                }
             }
             else if (status == ExcelAction.ExcelStatus.ERR_OpenTestCaseExcel_Find_Worksheet)
             {
-                // Worksheet not found -- data corruption -- need to check excel
                 status = ExcelAction.CloseTestCaseExcel();
                 if (status != ExcelAction.ExcelStatus.OK)
                 {
                     // To be debugged
                 }
-                return false;
             }
             else
             {
-                return false;
             }
+            return b_Ret;
         }
 
         static public Boolean OpenTCTemplateExcel(String tclist_filename)
@@ -504,6 +545,7 @@ namespace ExcelReportApplication
             ExcelAction.ExcelStatus status = ExcelAction.OpenTestCaseExcel(tclist_filename, IsTemplate: true);
             if (status == ExcelAction.ExcelStatus.OK)
             {
+                setupTCTemplateTitleRowIndexLUT();
                 return true;
             }
             else if (status == ExcelAction.ExcelStatus.ERR_OpenTestCaseExcel_Find_Worksheet)

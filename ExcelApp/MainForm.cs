@@ -563,7 +563,7 @@ namespace ExcelReportApplication
 
             ReportGenerator.copy_bug_list = XMLConfig.ReadAppSetting_Boolean("TCSummary_copy_bug_list");
             ReportGenerator.copy_and_extend_bug_list = XMLConfig.ReadAppSetting_Boolean("TCSummary_copy_and_extend_bug_list");
-            ReportGenerator.update_status_even_no_report = XMLConfig.ReadAppSetting_Boolean("TCSummary_update_status_even_no_report");
+            ReportGenerator.Option_update_status_even_no_report = XMLConfig.ReadAppSetting_Boolean("TCSummary_update_status_even_no_report");
 
             // Input Excel
             HeaderTemplate.SheetName_HeaderTemplate = XMLConfig.ReadAppSetting_String("InputExcel_Sheetname_HeaderTemplate");

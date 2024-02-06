@@ -35,7 +35,7 @@ namespace ExcelReportApplication
     {
         static List<TestPlan> global_tp = new List<TestPlan>();
         static public string SheetName_TestPlan = "Test Plan";
-
+/*
         public static List<TestPlan> ReadTestPlanFromStandardTestReport(String report_filename)
         {
             List<TestPlan> ret_testplan = new List<TestPlan>();
@@ -73,7 +73,7 @@ namespace ExcelReportApplication
 
             return ret_testplan;
         }
-
+*/
         public static void GenerateTestReportStructure(List<TestPlan> do_plan, String in_root, String out_root)
         {
             // if testplan is not read yet, return

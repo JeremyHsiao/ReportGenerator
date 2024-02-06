@@ -49,7 +49,7 @@ namespace ExcelReportApplication
 
         static public Boolean copy_bug_list = true;
         static public Boolean copy_and_extend_bug_list = false;
-        static public Boolean update_status_even_no_report = false;
+        static public Boolean Option_update_status_even_no_report = false;
 
         public static String GetSheetNameAccordingToFilename(String filename)
         {
@@ -747,7 +747,8 @@ namespace ExcelReportApplication
             // if no report, criteria/purpose won't affected AND all status updated according to linked issue condition
 
             // 4. Prepare data on test case excel and write into test-case (template)
-            Dictionary<string, int> template_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate: true);
+            //Dictionary<string, int> template_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate: true);
+            Dictionary<string, int> template_col_name_list = TestCase.TCTemplateColumnIndexLUT();
             key_col = (template_col_name_list.ContainsKey(TestCase.col_Key)) ? template_col_name_list[TestCase.col_Key] : 0;
             links_col = (template_col_name_list.ContainsKey(TestCase.col_LinkedIssue)) ? template_col_name_list[TestCase.col_LinkedIssue] : 0;
             summary_col = (template_col_name_list.ContainsKey(TestCase.col_Summary)) ? template_col_name_list[TestCase.col_Summary] : 0;
@@ -778,8 +779,8 @@ namespace ExcelReportApplication
                 keyword_lut_by_Sheetname = TestReport.GenerateKeywordLUT_by_Sheetname(keyword_list);
             }
 
-            // Visit all rows and replace Bug-ID at Linked Issue with long description of Bug.
-            for (int excel_row_index = TestCase.DataBeginRow; excel_row_index <= last_row; excel_row_index++)
+            // Visit copied TC Template over all rows and replace Bug-ID at Linked Issue with long description of Bug.
+            for (int excel_row_index = TestCase.Template_DataBeginRow; excel_row_index <= last_row; excel_row_index++)
             {
                 // Make sure Key of TC contains KeyPrefix (if key column is available)
                 String tc_key = "";
@@ -897,14 +898,15 @@ namespace ExcelReportApplication
         {
             Boolean bRet = false;
 
-            Dictionary<string, int> buglist_col_name_list = ExcelAction.CreateBugListColumnIndex();
+            //Dictionary<string, int> buglist_col_name_list = ExcelAction.CreateBugListColumnIndex();
+            Dictionary<string, int> buglist_col_name_list = Issue.IssueColumnIndexLUT();
             int key_col = buglist_col_name_list[Issue.col_Key];
             int links_col = buglist_col_name_list[Issue.col_LinkedIssue];
             int last_row = ExcelAction.Get_Range_RowNumber(ExcelAction.GetIssueListAllRange());
             int col_end = ExcelAction.GetBugListExcelRange_Col();
 
             // Visit all rows and replace Testcase Key at Linked Issue with Testcase Summary - in reverse order
-            for (int excel_row_index = last_row; excel_row_index >= TestCase.DataBeginRow; excel_row_index--)
+            for (int excel_row_index = last_row; excel_row_index >= TestCase.TC_DataBeginRow; excel_row_index--)
             {
                 String links = ExcelAction.GetIssueListCellTrimmedString(excel_row_index, links_col);
                 List<TestCase> linked_tc_list = TestCase.KeyStringToListOfTestCase(links, ReportGenerator.ReadGlobalTestCaseList());
@@ -1335,8 +1337,8 @@ namespace ExcelReportApplication
             }
 
             String newTClist_sheetname = "TCList";
-            String tcglist_date_string = ExcelAction.GetTestCaseCellTrimmedString(3, 1, IsTemplate: false); // Use input TC as DATE
-            String extracted_tclist_date = ExtractDate(tcglist_date_string);
+            String tclist_date_string = ExcelAction.GetTestCaseCellTrimmedString(3, 1, IsTemplate: false); // Use input TC as DATE
+            String extracted_tclist_date = ExtractDate(tclist_date_string);
             if (String.IsNullOrWhiteSpace(extracted_tclist_date) == false)
             {
                 newTClist_sheetname += "_" + extracted_tclist_date;
@@ -1351,6 +1353,8 @@ namespace ExcelReportApplication
             Worksheet tc_list_worksheet = ExcelAction.GetTestCaseWorksheet(IsTemplate: true);
             tc_list_worksheet.Select();
             tc_list_worksheet.Name = newTClist_sheetname;
+
+            // read column title and create LUT for title to column_index
 
             return true;
         }
@@ -1395,6 +1399,9 @@ namespace ExcelReportApplication
         {
             List<String> empty_report_list = new List<String>();
             // no report has been referred at all in current report 1
+
+            // TO DO: need to save template title field before it is overwritten before/during CopyTestCaseIntoTemplate_v2();
+
             if (UpdateLinkedIssueStatusOnTCTemplate(report_list: empty_report_list, update_status_without_report: true) == false)
             {
                 MainForm.SystemLogAddLine("Failed @ return of Execute_ExtendLinkIssueAndUpdateStatusWithoutReport()");
@@ -1433,7 +1440,7 @@ namespace ExcelReportApplication
         {
             Boolean b_ret = false;
 
-            b_ret = ReportGenerator.UpdateLinkedIssueStatusOnTCTemplate(report_list: report_list, update_status_without_report: update_status_even_no_report);
+            b_ret = ReportGenerator.UpdateLinkedIssueStatusOnTCTemplate(report_list: report_list, update_status_without_report: Option_update_status_even_no_report);
             if (b_ret == false)
             {
                 MainForm.SystemLogAddLine("Failed @ return of UpdateLinkedIssueStatusOnTCTemplate()");

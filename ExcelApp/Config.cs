@@ -106,6 +106,8 @@ namespace ExcelReportApplication
             @"TC_Template_SheetName",                    @"TCResult",
             @"TC_Row_NameDefine",                           @"4",
             @"TC_Row_DataBegin",                            @"5",
+            @"TC_Template_Row_NameDefine",                           @"4",
+            @"TC_Template_Row_DataBegin",                            @"5",
             @"LinkIssueFilterStatusString",                 @"Close (0)",      // @"Close (0), Waive (0.1)",
             @"KeywordIssue_Row_UserStart",                  @"27",
             @"KeywordIssue_Column_Keyword_Indentifier",     @"2",

@@ -375,22 +375,24 @@ namespace ExcelReportApplication
             //ws.Cells[at_row, at_col].Select();
         }
 
-        static public Dictionary<string, int> CreateTableColumnIndex(Worksheet ws, int naming_row)
+        static public Dictionary<string, int> CreateTableColumnIndex(Worksheet ws, int title_row)
         {
             Dictionary<string, int> col_name_list = new Dictionary<string, int>();
 
             int col_end = Get_Range_ColumnNumber(GetWorksheetAllRange(ws));
             for (int col_index = 1; col_index <= col_end; col_index++)
             {
-                String cell_value2 = GetCellTrimmedString(ws, naming_row, col_index);
+                String cell_value2 = GetCellTrimmedString(ws, title_row, col_index);
                 //if (cell_value2 == "") { continue; }
                 if (String.IsNullOrWhiteSpace(cell_value2))
                 {
+                    LogMessage.WriteLine("TC/Template title is empty at column: " + col_index);
                     continue;               // column header is empty. shouldn't be here
                 }
 
                 if (col_name_list.ContainsKey(cell_value2))
                 {
+                    LogMessage.WriteLine("TC/Template title is duplicated at column: " + col_index);
                     continue;               // column header is repeated. shouldn't be here
                 }
                 col_name_list.Add(cell_value2.ToString(), col_index);
@@ -471,9 +473,9 @@ namespace ExcelReportApplication
             StyleString.WriteStyleString(ws_issuelist, row, col, style_string_list);
         }
 
-        static public Dictionary<string, int> CreateIssueListColumnIndex()
+        static public Dictionary<string, int> CreateIssueListColumnIndex(int title_row_no)
         {
-            return CreateTableColumnIndex(ws_issuelist, Issue.NameDefinitionRow);
+            return CreateTableColumnIndex(ws_issuelist, title_row_no);
         }
 
         // Excel accessing function for Test Case Excel
@@ -637,9 +639,16 @@ namespace ExcelReportApplication
                 }
         */
 
-        static public Dictionary<string, int> CreateTestCaseColumnIndex(bool IsTemplate = false)
+        static public Dictionary<string, int> CreateTestCaseColumnIndex(int title_row_no, Boolean IsTemplate)
         {
-            return CreateTableColumnIndex(((IsTemplate) ? ws_tc_template : ws_testcase), TestCase.NameDefinitionRow);
+            if (IsTemplate)
+            {
+                return CreateTableColumnIndex(ws_tc_template, title_row_no);
+            }
+            else
+            {
+                return CreateTableColumnIndex(ws_testcase, title_row_no);
+            }
         }
 
         static public int GetTestCaseExcelRange_Col(bool IsTemplate = false)
@@ -649,10 +658,12 @@ namespace ExcelReportApplication
             return col_end;
         }
 
+/*
         static public Dictionary<string, int> CreateBugListColumnIndex()
         {
             return CreateTableColumnIndex(ws_issuelist, Issue.NameDefinitionRow);
         }
+*/
 
         static public int GetBugListExcelRange_Col()
         {
@@ -1086,17 +1097,19 @@ namespace ExcelReportApplication
             //CopyValue2(ws_Src, ws_Dst, TestCase.DataBeginRow, 1, Src_last_row - 1, Src_last_col);
 
             // use LUT of column index for mapping the same column_name of SRC/DST
-            Dictionary<string, int> src_col_name_list = ExcelAction.CreateTestCaseColumnIndex();
-            Dictionary<string, int> dst_col_name_list = ExcelAction.CreateTestCaseColumnIndex(IsTemplate: true);
-            int row_begin = TestCase.DataBeginRow, row_end = Src_last_row;
+            Dictionary<string, int> src_col_name_list = TestCase.TestCaseColumnIndexLUT();
+            Dictionary<string, int> dst_col_name_list = TestCase.TCTemplateColumnIndexLUT();
+            int source_row_begin = TestCase.TC_DataBeginRow, 
+                destination_row_begin = TestCase.Template_DataBeginRow, 
+                source_row_end = Src_last_row;
 
             // reduce row_end by 1 when there isn't valid key value at last row.
             String check_key, check_summary;
-            check_key = GetCellTrimmedString(ws_Src, row_end, src_col_name_list[TestCase.col_Key]);
-            check_summary = GetCellTrimmedString(ws_Src, row_end, src_col_name_list[TestCase.col_Summary]);
+            check_key = GetCellTrimmedString(ws_Src, source_row_end, src_col_name_list[TestCase.col_Key]);
+            check_summary = GetCellTrimmedString(ws_Src, source_row_end, src_col_name_list[TestCase.col_Summary]);
             if (TestCase.CheckValidTC_By_Key_Summary(check_key, check_summary) == false)
             {
-                row_end--;
+                source_row_end--;
             }
 
             foreach (string col_name in dst_col_name_list.Keys)
@@ -1105,7 +1118,7 @@ namespace ExcelReportApplication
                 if (src_col_name_list.ContainsKey(col_name))
                 {
                     int dst_col = dst_col_name_list[col_name], src_col = src_col_name_list[col_name];
-                    CopyValue2_different_range_location(ws_Src, row_begin, src_col, row_end, src_col, ws_Dst, row_begin, dst_col);
+                    CopyValue2_different_range_location(ws_Src, source_row_begin, src_col, source_row_end, src_col, ws_Dst, destination_row_begin, dst_col);
                 }
             }
 
@@ -1580,8 +1593,21 @@ namespace ExcelReportApplication
         static public ExcelData InitTCExcelData(bool IsTemplate = false)
         {
             ExcelData excel_data = new ExcelData();
-            Worksheet ws_tclist = (IsTemplate) ? ws_tc_template : ws_testcase;
-            excel_data.InitFromExcel(ws_tclist, TestCase.NameDefinitionRow, TestCase.DataBeginRow);
+            Worksheet ws_tclist;
+            int nameDefinitionRow, dataBeginRow;
+            if (IsTemplate)
+            {
+                ws_tclist = ws_tc_template;
+                nameDefinitionRow = TestCase.Template_NameDefinitionRow;
+                dataBeginRow = TestCase.Template_DataBeginRow;
+            }
+            else
+            {
+                ws_tclist = ws_testcase;
+                nameDefinitionRow = TestCase.TC_NameDefinitionRow;
+                dataBeginRow = TestCase.TC_DataBeginRow;
+            }
+            excel_data.InitFromExcel(ws_tclist, nameDefinitionRow, dataBeginRow);
             return excel_data;
         }
 
