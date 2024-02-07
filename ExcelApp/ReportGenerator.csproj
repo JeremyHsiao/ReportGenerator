@@ -82,6 +82,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ReportTemplate.cs" />
     <Compile Include="TestReport.cs" />
     <Compile Include="ExcelData.cs" />
     <Compile Include="LogMessage.cs" />
