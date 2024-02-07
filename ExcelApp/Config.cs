@@ -303,6 +303,10 @@ namespace ExcelReportApplication
             {
                 LogMessage.WriteLine("Error writing app settings");
             }
+            catch (Exception ex)
+            {
+                LogMessage.WriteLine("Exception in AddUpdateAppSettings(): " + ex.ToString());
+            }
         }
 
     }
