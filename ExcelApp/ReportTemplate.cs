@@ -11,9 +11,6 @@ namespace ExcelReportApplication
 {
     static public class HeaderTemplate
     {
-        static public String SheetName_HeaderTemplate = "BeforeLine21";
-        static public String SheetName_ReportList = "ReportList";
-
         static public int StartRow = 1;
         static public int EndRow = 9;
         static public int StartCol = 1;
@@ -344,7 +341,7 @@ namespace ExcelReportApplication
             }
 
             Worksheet ws_input_excel;
-            String sheet_to_select = HeaderTemplate.SheetName_HeaderTemplate;
+            String sheet_to_select = InputExcel.SheetName_HeaderTemplate_Source;
             if (ExcelAction.WorksheetExist(wb_input_excel, sheet_to_select) == false)
             {
                 LogMessage.WriteLine("ERR: template worksheet doesn't exist on excel: " + input_excel_file);

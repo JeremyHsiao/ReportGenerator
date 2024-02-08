@@ -8,6 +8,34 @@ using System.Text.RegularExpressions;
 
 namespace ExcelReportApplication
 {
+    public class InputExcel
+    {
+        static public String SheetName_ReportList = "ReportList";
+        static public String SheetName_HeaderTemplate_Source = "BeforeLine21";
+        static public String SheetName_HeaderTemplate_Destination = "BeforeLine21";
+        static public String SheetName_BugList = "Bug";
+        static public String SheetName_TestCaseList = "TestCase";
+        static public String SheetName_ReleaseNote = "ReleaseNote";
+        static public String SheetName_ImportToJira = "ReportList";
+        static public String SheetName_TestPlan = "TestPlan";
+        static public String SheetName_AssigneeList = "AssigneeList";
+        static public String SheetName_TCTemplate = "TCResult";
+
+        static public void LoadFromXML()
+        {
+            SheetName_ReportList = XMLConfig.ReadAppSetting_String("Sheetname_ReportList");
+            SheetName_HeaderTemplate_Source = XMLConfig.ReadAppSetting_String("Sheetname_HeaderTemplate_Source");
+            SheetName_HeaderTemplate_Destination = XMLConfig.ReadAppSetting_String("Sheetname_HeaderTemplate_Destination");
+            SheetName_BugList = XMLConfig.ReadAppSetting_String("Sheetname_BugList");
+            SheetName_TestCaseList = XMLConfig.ReadAppSetting_String("Sheetname_TestCaseList");
+            SheetName_ReleaseNote = XMLConfig.ReadAppSetting_String("Sheetname_ReleaseNote");
+            SheetName_ImportToJira = XMLConfig.ReadAppSetting_String("Sheetname_ImportToJira");
+            SheetName_TestPlan = XMLConfig.ReadAppSetting_String("Sheetname_TestPlan");
+            SheetName_AssigneeList = XMLConfig.ReadAppSetting_String("Sheetname_AssigneeList");
+            SheetName_TCTemplate = XMLConfig.ReadAppSetting_String("Sheetname_TCTemplate");
+        }
+    }
+
     public class CopyReport
     {
         private String source_path;
@@ -197,9 +225,9 @@ namespace ExcelReportApplication
             }
 
             Worksheet ws_input_excel;
-            if (ExcelAction.WorksheetExist(wb_input_excel, HeaderTemplate.SheetName_ReportList))
+            if (ExcelAction.WorksheetExist(wb_input_excel, InputExcel.SheetName_ReportList))
             {
-                ws_input_excel = ExcelAction.Find_Worksheet(wb_input_excel, HeaderTemplate.SheetName_ReportList);
+                ws_input_excel = ExcelAction.Find_Worksheet(wb_input_excel, InputExcel.SheetName_ReportList);
             }
             else
             {

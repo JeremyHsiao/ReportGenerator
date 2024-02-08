@@ -566,8 +566,7 @@ namespace ExcelReportApplication
             ReportGenerator.Option_update_status_even_no_report = XMLConfig.ReadAppSetting_Boolean("TCSummary_update_status_even_no_report");
 
             // Input Excel
-            HeaderTemplate.SheetName_HeaderTemplate = XMLConfig.ReadAppSetting_String("InputExcel_Sheetname_HeaderTemplate");
-            HeaderTemplate.SheetName_ReportList = XMLConfig.ReadAppSetting_String("InputExcel_Sheetname_ReportList");
+            InputExcel.LoadFromXML();
 
             Issue.LoadFromXML();
 

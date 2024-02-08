@@ -2545,16 +2545,17 @@ namespace ExcelReportApplication
             }
 
             //Report_C_Update_Header_by_Template
+            // With $KEEP$, we use only HeaderTemplate_Source
             if (Option.FunctionC.Update_Header_by_Template == true)
             {
-                if (ExcelAction.WorksheetExist(wb_header_template, HeaderTemplate.SheetName_HeaderTemplate))
+                if (ExcelAction.WorksheetExist(wb_header_template, InputExcel.SheetName_HeaderTemplate_Source))
                 {
-                    Worksheet ws_template = ExcelAction.Find_Worksheet(wb_header_template, HeaderTemplate.SheetName_HeaderTemplate);
+                    Worksheet ws_header_template_src = ExcelAction.Find_Worksheet(wb_header_template, InputExcel.SheetName_HeaderTemplate_Source);
                     String filename = ReportGenerator.GetReportTitleAccordingToFilename(destination_file);
                     String sheetname = ws_source.Name;
                     HeaderTemplate.UpdateVariables_FilenameSheetname(filename: filename, sheetname: sheetname);
                     //HeaderTemplate.CopyAndUpdateHeader(ws_template, ws);
-                    HeaderTemplate.CopyAndUpdateHeader_with_KEEP(ws_template, ws_source);
+                    HeaderTemplate.CopyAndUpdateHeader_with_KEEP(ws_header_template_src, ws_source);
                     file_has_been_updated = true;
                 }
 
