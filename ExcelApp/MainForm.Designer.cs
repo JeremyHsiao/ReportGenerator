@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.btnSelectBugFile = new System.Windows.Forms.Button();
             this.txtBugFile = new System.Windows.Forms.TextBox();
             this.label_issue = new System.Windows.Forms.Label();
@@ -289,6 +290,7 @@
             this.Controls.Add(this.label_issue);
             this.Controls.Add(this.txtBugFile);
             this.Controls.Add(this.btnSelectBugFile);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "ReportGenerator";
             this.Load += new System.EventHandler(this.MainForm_Load);
