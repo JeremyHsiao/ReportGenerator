@@ -389,7 +389,7 @@ Returns or sets the type of underline applied to the font.
                     {
                         short_comment = rd_comment_str;
                     }
-                    if (short_comment != "")
+                    if (String.IsNullOrWhiteSpace(short_comment) == false)
                     {
                         str = " --> " + short_comment;
                         style_str = new StyleString(str, descrption_color_comment);
