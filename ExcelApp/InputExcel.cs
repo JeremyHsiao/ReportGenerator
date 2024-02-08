@@ -223,6 +223,7 @@ namespace ExcelReportApplication
                 if (bStillReadingExcel)
                 {
                     // Because copy-only doesn't need to check report filename condition, such check is done later not here
+                    // Here only checking whether source_file is available.
                     String source_filename = ctp.Get_SRC_FullFilePath();
                     if (Storage.FileExists(source_filename))
                     {

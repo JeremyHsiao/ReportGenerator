@@ -1120,7 +1120,7 @@ namespace ExcelReportApplication
         {
             String init_dir = Storage.GetFullPath(txtBugFile.Text);
             String ret_str = Storage.UsesrSelectFilename(init_dir: init_dir);
-            if (ret_str != "")
+            if (String.IsNullOrWhiteSpace(ret_str) == false)
             {
                 txtBugFile.Text = ret_str;
                 btnSelectBugFile_Clicked = true;
@@ -1132,7 +1132,7 @@ namespace ExcelReportApplication
         {
             String init_dir = Storage.GetFullPath(txtTCFile.Text);
             String ret_str = Storage.UsesrSelectFilename(init_dir);
-            if (ret_str != "")
+            if (String.IsNullOrWhiteSpace(ret_str) == false)
             {
                 txtTCFile.Text = ret_str;
                 btnSelectTCFile_Clicked = true;
@@ -1160,7 +1160,7 @@ namespace ExcelReportApplication
                     break;
             }
             String ret_str = SelectDirectoryOrFile(init_dir, sel_file);
-            if (ret_str != "")
+            if (String.IsNullOrWhiteSpace(ret_str) == false)
             {
                 txtReportFile.Text = ret_str;
                 btnSelectReportFile_Clicked = true;
@@ -1176,10 +1176,10 @@ namespace ExcelReportApplication
             if (report_type == ReportType.Man_Power_Processing)
             {
                 String ret_str = Storage.UsesrSelectCSVFilename(init_dir);
-                if (ret_str != "")
+                if (String.IsNullOrWhiteSpace(ret_str) == false)
                 {
                     txtOutputTemplate.Text = ret_str;
-                    XMLConfig.AddUpdateAppSettings("ManPower_last_selected_file", ret_str); 
+                    XMLConfig.AddUpdateAppSettings("ManPower_last_selected_file", ret_str);
                     //btnSelectOutputTemplate_Clicked = true;
                     btnSelectOutputTemplate_Clicked = false;        // force to always reload after report selection changed.
                 }
@@ -1187,7 +1187,7 @@ namespace ExcelReportApplication
             else
             {
                 String ret_str = SelectDirectoryOrFile(init_dir, sel_file);
-                if (ret_str != "")
+                if (String.IsNullOrWhiteSpace(ret_str) == false)
                 {
                     txtOutputTemplate.Text = ret_str;
                     btnSelectOutputTemplate_Clicked = true;

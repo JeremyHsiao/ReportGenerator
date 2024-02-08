@@ -317,7 +317,7 @@ namespace ExcelReportApplication
             }
             ExcelAction.WriteTableToNotKeywordFile(output_not_report_file_table);
 
-            if (keyword_output_filename != "")
+            if (String.IsNullOrWhiteSpace(keyword_output_filename) == false)
             {
                 Output_Excel = keyword_output_filename;
             }
