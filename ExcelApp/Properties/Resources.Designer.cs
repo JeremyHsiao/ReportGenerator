@@ -61,12 +61,22 @@ namespace ExcelReportApplication.Properties {
         }
         
         /// <summary>
-        ///   查詢類似 2023/07/17 週一 10:12:38.77 
+        ///   查詢類似 2024/02/08 週四  8:50:02.62 
         /// 的當地語系化字串。
         /// </summary>
         internal static string BuildDate {
             get {
                 return ResourceManager.GetString("BuildDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查詢類似 (圖示) 的類型 System.Drawing.Icon 當地語系化資源。
+        /// </summary>
+        internal static System.Drawing.Icon report {
+            get {
+                object obj = ResourceManager.GetObject("report", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
     }
