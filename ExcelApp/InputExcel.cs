@@ -48,6 +48,12 @@ namespace ExcelReportApplication
         private String destination_report;
         private String destination_assignee;
 
+        public String DestinationAssignee   // property
+        {
+            get { return destination_assignee; }   // get method
+            set { destination_assignee = value; }  // set method
+        }
+
         public String Get_SRC_FullFilePath()
         {
             String path = source_path;
@@ -119,7 +125,7 @@ namespace ExcelReportApplication
             b_ret = true;
             return b_ret;
         }
-        static private Boolean WriteErrorLog(Workbook workbook, Worksheet source_worksheet, List<CopyReport> source_inexist_list,
+        static public Boolean WriteErrorLog(Workbook workbook, Worksheet source_worksheet, List<CopyReport> source_inexist_list,
                                                         List<CopyReport> filename_not_report_list, List<CopyReport> process_fail_list)
         {
             Boolean b_ret = false;

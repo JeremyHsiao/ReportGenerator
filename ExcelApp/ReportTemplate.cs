@@ -294,7 +294,13 @@ namespace ExcelReportApplication
             // Some variable are label-less
             "Filename" };
 
-        static public List<ReportContentPair> SetupHeaderTemplateContentPair(Worksheet worksheet, List<String> labelList, List<String> variableList)
+        static private Workbook wb_input_excel;
+        static private Worksheet ws_input_excel;
+        static private Worksheet ws_source_template;
+        static private Worksheet ws_destination_template;
+        static private String input_excel_filename;
+
+        static public List<ReportContentPair> SetupHeaderTemplateContentPair(Worksheet worksheet, List<String> labelList, List<String> variableList, Boolean AllowRepeatedVariable = false)
         {
             List<String> variable_to_search = new List<String>();
             List<String> label_list_to_search = new List<String>(); 
@@ -318,9 +324,12 @@ namespace ExcelReportApplication
                     if (index < 0)
                         continue;
 
-                    variable_to_search.RemoveAt(index);
                     String label = label_list_to_search[index];
-                    label_list_to_search.RemoveAt(index);
+                    if (AllowRepeatedVariable == false)
+                    {
+                        variable_to_search.RemoveAt(index);
+                        label_list_to_search.RemoveAt(index);
+                    }
 
                     ReportContentPair cp = new ReportContentPair(label, variableName);
                     contentPairList.Add(cp);
@@ -329,35 +338,166 @@ namespace ExcelReportApplication
             // search through excel until end of header section
             return contentPairList;
         }
-
-        static public Boolean ReadHeaderVariablesAccordingToTemplate(String input_excel_file)
+        static public Boolean ProcessInputExcelAndTemplate(String input_excel_file)
         {
-            // Open Header Template Excel workbook
-            Workbook wb_input_excel = ExcelAction.OpenExcelWorkbook(filename: input_excel_file, ReadOnly: true);
+            // Open Source Header Template Excel workbook
+            wb_input_excel = ExcelAction.OpenExcelWorkbook(filename: input_excel_file, ReadOnly: true);
             if (wb_input_excel == null)
             {
                 LogMessage.WriteLine("ERR: Open workbook failed in ReadHeaderVariablesAccordingToTemplate(): " + input_excel_file);
                 return false;
             }
 
-            Worksheet ws_input_excel;
-            String sheet_to_select = InputExcel.SheetName_HeaderTemplate_Source;
-            if (ExcelAction.WorksheetExist(wb_input_excel, sheet_to_select) == false)
+            // Find source template sheet
+            String source_template_sheet = InputExcel.SheetName_HeaderTemplate_Source;
+            if (ExcelAction.WorksheetExist(wb_input_excel, source_template_sheet) == false)
             {
-                LogMessage.WriteLine("ERR: template worksheet doesn't exist on excel: " + input_excel_file);
+                LogMessage.WriteLine("ERR: source template worksheet doesn't exist on excel: " + input_excel_file);
                 return false;
             }
-            ws_input_excel = ExcelAction.Find_Worksheet(wb_input_excel, sheet_to_select);
+            ws_source_template = ExcelAction.Find_Worksheet(wb_input_excel, source_template_sheet);
 
-            List<ReportContentPair> rcp = SetupHeaderTemplateContentPair(ws_input_excel, DefaultLabel.ToList(), DefaultVariable.ToList());
+            // Find destination template sheet
+            String destination_template_sheet = InputExcel.SheetName_HeaderTemplate_Destination;
+            if (ExcelAction.WorksheetExist(wb_input_excel, destination_template_sheet) == false)
+            {
+                LogMessage.WriteLine("ERR: destination template worksheet doesn't exist on excel: " + input_excel_file);
+                return false;
+            }
+            ws_destination_template = ExcelAction.Find_Worksheet(wb_input_excel, destination_template_sheet);
 
-            ExcelAction.CloseExcelWorkbook(wb_input_excel);
+            String reportList_sheet = InputExcel.SheetName_ReportList;
+            if (ExcelAction.WorksheetExist(wb_input_excel, reportList_sheet) == false)
+            {
+                LogMessage.WriteLine("ERR: Report List worksheet doesn't exist on excel: " + input_excel_file);
+                return false;
+            }
+            ws_input_excel = ExcelAction.Find_Worksheet(wb_input_excel, InputExcel.SheetName_ReportList);
 
-            // Template variable has been read, start to read all reports
+            input_excel_filename = input_excel_file;
 
             return true;
         }
+        static public Boolean ReadHeaderVariablesAccordingToTemplate()
+        {
 
+            List<ReportContentPair> source_rcp = SetupHeaderTemplateContentPair(ws_source_template, DefaultLabel.ToList(), DefaultVariable.ToList(), AllowRepeatedVariable: true);
+            List<ReportContentPair> destination_rcp = SetupHeaderTemplateContentPair(ws_destination_template, DefaultLabel.ToList(), DefaultVariable.ToList(), AllowRepeatedVariable: false);
+            return true;
+        }
+        static public Boolean UpdateTestReportHeader(out List<String> output_report_list, out String return_destination_path)
+        {
+            output_report_list = new List<String>();
+            return_destination_path = "";
+
+            Boolean bStillReadingExcel = true;
+            // check title row
+            const int row_start_index = 1;
+            int row_index = row_start_index, col_index = 1;
+            // start data processing since 2nd row
+            row_index++;
+            col_index = 1;
+            List<CopyReport> report_list_to_be_processed = new List<CopyReport>();
+            List<CopyReport> source_inexist_list = new List<CopyReport>();
+            do
+            {
+                CopyReport ctp = new CopyReport();
+
+                bStillReadingExcel = ctp.ReadFromExcelRow(ws_input_excel, row_index, col_index);
+                if (bStillReadingExcel)
+                {
+                    // Because copy-only doesn't need to check report filename condition, such check is done later not here
+                    // Here only checking whether source_file is available.
+                    String source_filename = ctp.Get_SRC_FullFilePath();
+                    if (Storage.FileExists(source_filename))
+                    {
+                        report_list_to_be_processed.Add(ctp);
+                    }
+                    else
+                    {
+                        source_inexist_list.Add(ctp);
+                    }
+                    row_index++;
+                    col_index = 1;
+                }
+            }
+            while (bStillReadingExcel);
+
+            List<CopyReport> destination_not_report_filename_list = new List<CopyReport>();
+            List<CopyReport> process_success_list = new List<CopyReport>();
+            List<CopyReport> process_fail_list = new List<CopyReport>();
+
+            // if valid file-list, sort it (when required) before further processing
+            if (report_list_to_be_processed.Count > 0)
+            {
+                {
+                    foreach (CopyReport cr in report_list_to_be_processed)
+                    {
+                        String source_file = cr.Get_SRC_FullFilePath();
+                        String destination_file = cr.Get_DEST_FullFilePath();
+                        String assignee = cr.DestinationAssignee;
+                        Boolean success = false;
+
+                        // only process when destination filename pass report/filename condition
+                        if (Storage.IsReportFilename(destination_file))
+                        {
+                            String today = DateTime.Now.ToString("yyyy/MM/dd");
+                            // To Be update;
+                            /*
+                            HeaderTemplate.UpdateVariables_TodayAssigneeLinkedIssue(today: today, assignee: assignee, LinkedIssue: StyleString.WhiteSpaceList());
+                            // // if parent directory does not exist, FullyProcessReportSaveAsAnother() will create recursively all parents
+                            success = TestReport.FullyProcessReportSaveAsAnother(source_file: source_file, destination_file: destination_file,
+                                                                    wb_header_template: wb_input_excel, always_save: true);
+                            */
+                            // END to be updated
+                            if (success)
+                            {
+                                process_success_list.Add(cr);
+                            }
+                            else
+                            {
+                                process_fail_list.Add(cr);
+                            }
+                        }
+                        else
+                        {
+                            destination_not_report_filename_list.Add(cr);
+                        }
+                    }
+                }
+            }
+
+            Boolean b_ret = true;
+            if ((process_fail_list.Count > 0) || (destination_not_report_filename_list.Count > 0) || (source_inexist_list.Count > 0))
+            {
+                CopyReport.WriteErrorLog(wb_input_excel, ws_input_excel, source_inexist_list, destination_not_report_filename_list, process_fail_list);
+                b_ret = false;
+                string new_filename = Storage.GenerateFilenameWithDateTime(input_excel_filename);
+                ExcelAction.CloseExcelWorkbook(workbook: wb_input_excel, SaveChanges: true, AsFilename: new_filename);
+            }
+            else
+            {
+                ExcelAction.CloseExcelWorkbook(wb_input_excel);
+                b_ret = true;
+            }
+
+            return b_ret;
+        }
+
+        static public Boolean ChangeReportHeaderTemplateTask(String input_excel_file)
+        {
+            String return_destination_path;
+            List<String> output_report_list;
+
+            if (ProcessInputExcelAndTemplate(input_excel_file) == false)
+                return false;
+            if (ReadHeaderVariablesAccordingToTemplate() == false)
+                return false;
+            if (UpdateTestReportHeader(out output_report_list, out return_destination_path) == false)
+                return false;
+
+            return true;
+        }
     }
 
     /*

@@ -1327,7 +1327,7 @@ namespace ExcelReportApplication
                         break;
                     case ReportType.ReadReportContentVariable:      // Report 5
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
-                        bRet = ReportManagement.ReadHeaderVariablesAccordingToTemplate(input_excel_file: txtOutputTemplate.Text);
+                        bRet = ReportManagement.ChangeReportHeaderTemplateTask(input_excel_file: txtOutputTemplate.Text);
                         break;
                     case ReportType.WriteReportContentVariable:     // Report 6
                         if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
