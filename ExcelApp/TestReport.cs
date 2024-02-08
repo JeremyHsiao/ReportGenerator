@@ -2521,7 +2521,7 @@ namespace ExcelReportApplication
 
             if (OpenReportWorksheet(source_file, out wb_source, out ws_source) == false)
             {
-                // Do nothing if opening excel & finding worksheett failed
+                // Do nothing if opening excel & finding worksheet failed
                 return file_has_been_updated;
             }
 
