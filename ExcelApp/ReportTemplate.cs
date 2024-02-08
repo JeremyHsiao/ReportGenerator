@@ -291,17 +291,19 @@ namespace ExcelReportApplication
             // dummy label for label-less
             "TITLE" };
         static public String[] DefaultVariable = {
-            "ModelName", "PanelModule" , "ADBoard", "SmartBD_OSVersion", "Speaker_AQVersion", "TestStage", "Judgement", "SampleSN", "Testby",
+            "ModelName", "PanelModule" , "ADBoard", "SmartBD_OSVersion", "Speaker_AQVersion", "TestStage", "Judgement", "SampleSN", "Assignee",
 	        "PartNo", "TConBoard", "PowerBoard", "TouchSensor", "SW_PQVersion", "TestPeriod", "Approvedby", 
             "Purpose", "Condition", "Equipment", "Method", "Criteria", "Conclusion", "SampleSN",
             // Some variable are label-less
-            "Title" };
+            "Filename" };
 
         static public List<ReportContentPair> SetupHeaderTemplateContentPair(Worksheet worksheet, List<String> labelList, List<String> variableList)
         {
-            List<String> variable_to_search = DefaultVariable.ToList();
-            List<String> label_list = DefaultLabel.ToList();
+            List<String> variable_to_search = new List<String>();
+            List<String> label_list_to_search = new List<String>(); 
             List<ReportContentPair> contentPairList = new List<ReportContentPair>();
+            variable_to_search.AddRange(variableList);
+            label_list_to_search.AddRange(labelList);
             for (int row = 1; row <= templateEndRow; row++)
             {
                 for (int col = 1; col <= templateEndCol; col++)
@@ -320,8 +322,8 @@ namespace ExcelReportApplication
                         continue;
 
                     variable_to_search.RemoveAt(index);
-                    String label = label_list[index];
-                    label_list.RemoveAt(index);
+                    String label = label_list_to_search[index];
+                    label_list_to_search.RemoveAt(index);
 
                     ReportContentPair cp = new ReportContentPair(label, variableName);
                     contentPairList.Add(cp);
@@ -329,6 +331,34 @@ namespace ExcelReportApplication
             }
             // search through excel until end of header section
             return contentPairList;
+        }
+
+        static public Boolean ReadHeaderVariablesAccordingToTemplate(String input_excel_file)
+        {
+            // Open Header Template Excel workbook
+            Workbook wb_input_excel = ExcelAction.OpenExcelWorkbook(filename: input_excel_file, ReadOnly: true);
+            if (wb_input_excel == null)
+            {
+                LogMessage.WriteLine("ERR: Open workbook failed in ReadHeaderVariablesAccordingToTemplate(): " + input_excel_file);
+                return false;
+            }
+
+            Worksheet ws_input_excel;
+            String sheet_to_select = HeaderTemplate.SheetName_HeaderTemplate;
+            if (ExcelAction.WorksheetExist(wb_input_excel, sheet_to_select) == false)
+            {
+                LogMessage.WriteLine("ERR: template worksheet doesn't exist on excel: " + input_excel_file);
+                return false;
+            }
+            ws_input_excel = ExcelAction.Find_Worksheet(wb_input_excel, sheet_to_select);
+
+            List<ReportContentPair> rcp = SetupHeaderTemplateContentPair(ws_input_excel, DefaultLabel.ToList(), DefaultVariable.ToList());
+
+            ExcelAction.CloseExcelWorkbook(wb_input_excel);
+
+            // Template variable has been read, start to read all reports
+
+            return true;
         }
 
     }
