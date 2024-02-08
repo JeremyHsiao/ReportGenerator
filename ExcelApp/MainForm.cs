@@ -27,8 +27,8 @@ namespace ExcelReportApplication
             FullIssueDescription_Summary,
             CreateImportToJiraCSV,
             KeywordIssue_Report_SingleFile,
-            TC_Likely_Passed,
-            FindAllKeywordInReport,
+            ReadReportContentVariable,                      // Report 5 -- read report variable and write to Excel
+            WriteReportContentVariable,                     // Report 6 -- Read from Excel report variable and write to report
             KeywordIssue_Report_Directory,                  // Report 7
             Excel_Sheet_Name_Update_Tool,
             FullIssueDescription_TC_report_judgement,       // Report 9 -- Update TC linked issue, according to reports, update Test Purpose, Test Criteria and Testcase Status.
@@ -52,8 +52,8 @@ namespace ExcelReportApplication
             //ReportType.FullIssueDescription_Summary,
             //ReportType.StandardTestReportCreation,
             //ReportType.KeywordIssue_Report_SingleFile,                            // Hide since v 1.3.21.0
-            //ReportType.TC_Likely_Passed,
-            //ReportType.FindAllKeywordInReport,                                    // Hide since v 1.3.21.0
+            ReportType.ReadReportContentVariable,                   // Report 5 -- read report variable and write to Excel
+            ReportType.WriteReportContentVariable,                  // Report 6 -- Read from Excel report variable and write to report
             //ReportType.KeywordIssue_Report_Directory,               // report 7   // Hide since v 1.3.21.0
             //ReportType.Excel_Sheet_Name_Update_Tool,
             ReportType.FullIssueDescription_TC_report_judgement,    // report 9
@@ -77,8 +77,8 @@ namespace ExcelReportApplication
         //    ReportType.FullIssueDescription_Summary,
         //    ReportType.CreateImportToJiraCSV,
         //    ReportType.KeywordIssue_Report_SingleFile,
-        //    ReportType.TC_Likely_Passed,
-        //    ReportType.FindAllKeywordInReport,
+        //    ReportType.ReadReportContentVariable, 
+        //    ReportType.WriteReportContentVariable,  
         //    ReportType.KeywordIssue_Report_Directory,
         //    ReportType.Excel_Sheet_Name_Update_Tool,
         //    ReportType.FullIssueDescription_TC_report_judgement,
@@ -124,8 +124,8 @@ namespace ExcelReportApplication
             "2.Issue Description for Summary",
             "3.Create ImportToJira CSV",
             "4.Keyword Issue - Single File",
-            "5.TC likely Pass",
-            "6.List Keywords of all detailed reports",
+            "5.Read Report Header to Excel",
+            "6.Write Report Header according to Excel",
             "7.Keyword Issue - Directory",
             "8.Excel sheet name update tool",
             "9.TC issue/judgement",
@@ -176,19 +176,19 @@ namespace ExcelReportApplication
                 "Input:",  "  Test Plan/Report with Keyword",
                 "Output:", "  Test Plan/Report with keyword issue list inserted on the 1st-column next to the right-side of printable area",
             },
-            // "5.TC likely Pass",
+            // "5.Read Report Header to Excel",
             new String[] 
             {
-                "Test case status is Fail but its linked issues are closed", 
-                "Input:",  "  Issue List + Test Case + Template (for Test case output)",
-                "Output:", "  Test Case whose linked issues are closed (other TC are hidden)",
+                "Read report header based on header template file and output data to Excel", 
+                "Input:",  "  Input excel file containing header template",
+                "Output:", "  Excel worksheet which contains header data defined as header template variables",
             },
-            // "6.List Keywords of all detailed reports",
+            // "6.Write Report Header according to Excel",
             new String[] 
             {
-                "Go Through all report to list down all keywords", 
-                "Input:",  "  Root-directory of Report Files",
-                "Output:", "  All keywords listed on output excel file",
+                "Write report header based on header template file and data on input Excel", 
+                "Input:",  "  Input excel file containing header template and header data worksheet",
+                "Output:", "  Header of reports are updated based on header template and header data",
             },
             // "7.Keyword Issue - Directory",
             new String[] 
@@ -338,21 +338,21 @@ namespace ExcelReportApplication
                 "Single Test Report",
                 "TC Template File",
             },
-            // "5.TC likely Pass",
+            // "5.Read Report Header to Excel",
             new String[] 
             {
                 "Jira Bug File", 
                 "Jira TC File",
                 "Test Report Path",
-                "TC Template File",
+                "Header Template",
             },
-            // "6.List Keywords of all detailed reports",
+            // "6.Write Report Header according to Excel",
             new String[] 
             {
                 "Jira Bug File", 
                 "Jira TC File",
                 "Test Report Path",
-                "TC Template File",
+                "Header Template",
             },
             // "7.Keyword Issue - Directory",
             new String[] 
@@ -1326,26 +1326,15 @@ namespace ExcelReportApplication
                         bRet = Execute_KeywordIssueGenerationTask(FileOrDirectoryName: txtReportFile.Text, IsDirectory: true);
                         */
                         break;
-                    case ReportType.TC_Likely_Passed:           /// report 5 not used now
-                        UpdateTextBoxPathToFullAndCheckExist(ref txtBugFile);
-                        UpdateTextBoxPathToFullAndCheckExist(ref txtTCFile);
-                        UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate);
-                        /*
-                        if (!LoadIssueListIfEmpty(txtBugFile.Text)) break;
-                        if (!LoadTCListIfEmpty(txtTCFile.Text)) break;
-                        bRet = Execute_FindFailTCLinkedIssueAllClosed(tc_file: txtTCFile.Text, template_file: txtOutputTemplate.Text);
-                        */
+                    case ReportType.ReadReportContentVariable:      // Report 5
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
+                        // to-be-updated
+                        //bRet = ConfigurableReportUpdate_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
                         break;
-                    case ReportType.FindAllKeywordInReport:
-                        /*
-                        if (UpdateTextBoxDirToFullAndCheckExist(ref txtReportFile) == false) break;  // Directory path here
-                        //UpdateTextBoxPathToFullAndCheckExist(ref txtStandardTestReport);
-                        //String main_file = txtStandardTestReport.Text;
-                        //String file_dir = Storage.GetDirectoryName(main_file);
-                        String output_filename = "";//use default in config file
-                        String report_root_dir = Storage.GetFullPath(txtReportFile.Text);
-                        bRet = Execute_ListAllDetailedTestPlanKeywordTask(report_root: report_root_dir, output_file: output_filename);
-                        */
+                    case ReportType.WriteReportContentVariable:     // Report 6
+                        if (UpdateTextBoxPathToFullAndCheckExist(ref txtOutputTemplate) == false) break;
+                        // to-be-updated
+                        //bRet = ConfigurableReportUpdate_Task(excel_input_file: Storage.GetFullPath(txtOutputTemplate.Text));
                         break;
                     case ReportType.Excel_Sheet_Name_Update_Tool:
                         /*
@@ -1693,17 +1682,17 @@ namespace ExcelReportApplication
                     SetEnable_ReportFile(true);
                     SetEnable_OutputTemplate(false);
                     break;
-                case ReportType.TC_Likely_Passed:
-                    SetEnable_BugFile(true);
-                    SetEnable_TCFile(true);
+                case ReportType.ReadReportContentVariable:          // Report 5
+                    SetEnable_BugFile(false);
+                    SetEnable_TCFile(false);
                     SetEnable_ReportFile(false);
                     SetEnable_OutputTemplate(true);
                     break;
-                case ReportType.FindAllKeywordInReport:
+                case ReportType.WriteReportContentVariable:         // Report 6
                     SetEnable_BugFile(false);
                     SetEnable_TCFile(false);
-                    SetEnable_ReportFile(true);
-                    SetEnable_OutputTemplate(false);
+                    SetEnable_ReportFile(false);
+                    SetEnable_OutputTemplate(true);
                     break;
                 case ReportType.Excel_Sheet_Name_Update_Tool:
                     SetEnable_BugFile(false);
@@ -1729,7 +1718,7 @@ namespace ExcelReportApplication
                     SetEnable_ReportFile(true);
                     SetEnable_OutputTemplate(true);
                     break;
-                case ReportType.ConfigurableReportUpdate:
+                case ReportType.ConfigurableReportUpdate:   // Report C
                     SetEnable_BugFile(false);
                     SetEnable_TCFile(false);
                     SetEnable_ReportFile(false);
@@ -1825,13 +1814,13 @@ namespace ExcelReportApplication
                     if (!btnSelectReportFile_Clicked)
                         txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_default_dir");
                     break;
-                case ReportType.TC_Likely_Passed:
+                case ReportType.ReadReportContentVariable:          // Report 5
                     if (!btnSelectOutputTemplate_Clicked)
-                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("workbook_TC_Template");
+                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_C_Default_Excel");
                     break;
-                case ReportType.FindAllKeywordInReport:
-                    if (!btnSelectReportFile_Clicked)
-                        txtReportFile.Text = XMLConfig.ReadAppSetting_String("TestReport_default_dir");
+                case ReportType.WriteReportContentVariable:         // Report 6
+                    if (!btnSelectOutputTemplate_Clicked)
+                        txtOutputTemplate.Text = XMLConfig.ReadAppSetting_String("Report_C_Default_Excel");
                     break;
                 case ReportType.Excel_Sheet_Name_Update_Tool:
                     if (!btnSelectReportFile_Clicked)
