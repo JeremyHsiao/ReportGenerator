@@ -227,6 +227,47 @@ namespace ExcelReportApplication
         {
             return CopyAndUpdateHeader_with_KEEP(template_worksheet, report_worksheet, StartRow, EndRow);
         }
+
+        static public Boolean FindKEEPCellLocation(Worksheet template_worksheet, int startRow, int startCol, int endRow, int endCol)
+        {
+            Boolean b_ret = false;
+            KEEP_ROW.Clear();
+            KEEP_COL.Clear();
+            KEEP_CELL.Clear();
+            for (int row_index = startRow; row_index <= endRow; row_index++)
+            {
+                for (int col_index = startCol; col_index <= endCol; col_index++)
+                {
+                    Object obj = ExcelAction.GetCellValue(template_worksheet, row_index, col_index);
+                    if (obj != null)
+                    {
+                        String to_check = obj.ToString();
+                        if (to_check.Contains(Variable_KEEP))
+                        {
+                            KEEP_ROW.Add(row_index);
+                            KEEP_COL.Add(col_index);
+                        }
+                    }
+                }
+            }
+            b_ret = true;
+            return b_ret;
+        }
+
+        static public Boolean ReadKEEPCellContent(Worksheet report_worksheet, int startRow, int startCol, int endRow, int endCol)
+        {
+            Boolean b_ret = false;
+            KEEP_CELL.Clear();
+            int count = KEEP_ROW.Count();
+            while (count-- > 0)
+            {
+                int row = KEEP_ROW[count], col = KEEP_COL[count];
+                Object obj = ExcelAction.GetCellValue(report_worksheet, row, col);
+                KEEP_CELL.Add(obj);
+            }
+            b_ret = true;
+            return b_ret;
+        }
     }
 
     class ReportTemplate
@@ -477,7 +518,7 @@ namespace ExcelReportApplication
             HeaderTemplate.UpdateVariables_TodayAssignee(today, assignee);
             HeaderTemplate.UpdateVariables_FilenameSheetname(filename: destination_report_title, sheetname: destination_report_sheetname);
 
-            if (HeaderTemplate.CopyKEEPCell(ws_source_template, ws_source, templateStartRow, templateStartCol, templateEndRow, templateEndCol) == false)
+            if (HeaderTemplate.ReadKEEPCellContent(ws_source, templateStartRow, templateStartCol, templateEndRow, templateEndCol) == false)
             {
                 return false;
             }
@@ -615,6 +656,8 @@ namespace ExcelReportApplication
             if (ProcessInputExcelAndTemplate(input_excel_file) == false)
                 return false;
             if (CreateHeaderVariablesLocationInfo(ws_source_template, ws_destination_template) == false)
+                
+            if (HeaderTemplate.FindKEEPCellLocation(ws_source_template, templateStartRow, templateStartCol, templateEndRow, templateEndCol) == false)
                 return false;
             if (UpdateTestReportHeader(out output_report_list, out return_destination_path) == false)
                 return false;
