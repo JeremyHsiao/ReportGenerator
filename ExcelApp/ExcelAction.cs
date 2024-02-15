@@ -98,7 +98,29 @@ namespace ExcelReportApplication
 
         static public void SaveExcelWorkbook(Workbook workbook, String filename)
         {
-            workbook.SaveAs(filename);
+            if (String.IsNullOrWhiteSpace(filename) == false)
+            {
+                // Try suggestion of https://stackoverflow.com/questions/5188527/how-to-deal-with-files-with-a-name-longer-than-259-characters
+                String retry_filename = @"\\?\" + filename, final_filename = " ";
+
+                try
+                {
+                    if (filename.Length < 259)
+                    {
+                        workbook.SaveAs(filename);
+                        final_filename = filename;
+                    }
+                    else
+                    {
+                        workbook.SaveAs(retry_filename);
+                        final_filename = retry_filename;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Error_Log.Add("SaveExcelWorkbook exception: " + final_filename); // here is for setting break-point
+                }
+            }
         }
 
         static public void CloseExcelWorkbook(Workbook workbook, bool SaveChanges = false, String AsFilename = "")
