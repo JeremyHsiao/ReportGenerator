@@ -113,13 +113,13 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
-        static public Boolean ReplaceHeaderVariableWithValue(Worksheet report_worksheet)
+        static public Boolean ReplaceHeaderVariableWithValue(Worksheet report_worksheet, int startRow, int startCol, int endRow, int endCol)
         {
             Boolean b_ret = false;
 
-            for (int row_index = StartRow; row_index <= EndRow; row_index++)
+            for (int row_index = startRow; row_index <= endRow; row_index++)
             {
-                for (int col_index = StartCol; col_index <= EndCol; col_index++)
+                for (int col_index = startCol; col_index <= endCol; col_index++)
                 {
                     CheckAndReplace(report_worksheet, row_index, col_index, Variable_ReportFileName, ReportFileName);
                     CheckAndReplace(report_worksheet, row_index, col_index, Variable_ReportSheetName, ReportSheetName);
@@ -133,6 +133,11 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
+        static public Boolean ReplaceHeaderVariableWithValue(Worksheet report_worksheet)
+        {
+            return ReplaceHeaderVariableWithValue(report_worksheet, StartRow, StartCol, EndRow, EndCol);
+        }
+/*
         static public Boolean CopyAndUpdateHeader(Worksheet template_worksheet, Worksheet report_worksheet)
         {
             Boolean b_ret = false;
@@ -144,7 +149,7 @@ namespace ExcelReportApplication
             b_ret = ReplaceHeaderVariableWithValue(report_worksheet);
             return b_ret;
         }
-
+*/
         static private List<int> KEEP_ROW = new List<int>(), KEEP_COL = new List<int>();
         static private List<Object> KEEP_CELL = new List<Object>();
 
@@ -207,14 +212,7 @@ namespace ExcelReportApplication
 
             b_ret = ReplaceHeaderVariableWithValue(report_worksheet);
 
-            // PasteKEEPCell
-            int count = KEEP_ROW.Count();
-            while (count-- > 0)
-            {
-                int row = KEEP_ROW[count], col = KEEP_COL[count];
-                Object obj = KEEP_CELL[count];
-                ExcelAction.SetCellValue(report_worksheet, row, col, obj);
-            }
+            PasteKEEPCell(report_worksheet);
 
             return b_ret;
         }
@@ -301,14 +299,14 @@ namespace ExcelReportApplication
         static private int templateEndCol = ExcelAction.ColumnNameToNumber("N");
         static private List<ReportContentPair> templateContentPair = new List<ReportContentPair>();
         static public String[] DefaultLabel = {
-            "Model Name", "Panel Module" , "AD Board", "Smart BD / OS Version", "Speaker / AQ Version", "Test Stage", "Judgement", "Sample S/N", "Test by",
+            "Model Name", "Panel Module" , "AD Board", "Smart BD / OS Version", "Speaker / AQ Version", "Test Stage", "Judgement", "Sample S/N", "Tested by",
 	        "Part No.", "T-Con Board", "Power Board", "Touch Sensor", "SW / PQ Version", "Test Period", "Approved by", 
-            "Purpose:", "Condition:", "Equipment:", "Method:", "Criteria:", "Conclusion:", "Sample S/N:",
+            "Purpose:", "Condition:", "Equipment:", "Method:", "Criteria:", "Conclusion:", "Sample S/N:", "Test Period Start", "Test Period End",
             // dummy label for label-less
             "TITLE" };
         static public String[] DefaultVariable = {
-            "ModelName", "PanelModule" , "ADBoard", "SmartBD_OSVersion", "Speaker_AQVersion", "TestStage", "Judgement", "SampleSN", "Assignee",
-	        "PartNo", "TConBoard", "PowerBoard", "TouchSensor", "SW_PQVersion", "TestPeriod", "Approvedby", 
+            "ModelName", "PanelModule" , "ADBoard", "SmartBD_OSVersion", "Speaker_AQVersion", "TestStage", "Judgement", "SampleSN", "TestedBy",
+	        "PartNo", "TConBoard", "PowerBoard", "TouchSensor", "SW_PQVersion", "TestPeriod", "Approvedby", "TestPeriodStart", "TestPeriodEnd",
             "Purpose", "Condition", "Equipment", "Method", "Criteria", "Conclusion", "SampleSN",
             // Some variable are label-less
             "Filename" };
