@@ -148,15 +148,15 @@ namespace ExcelReportApplication
         static private List<int> KEEP_ROW = new List<int>(), KEEP_COL = new List<int>();
         static private List<Object> KEEP_CELL = new List<Object>();
 
-        static public Boolean CopyKEEPCell(Worksheet template_worksheet, Worksheet report_workshee)
+        static public Boolean CopyKEEPCell(Worksheet template_worksheet, Worksheet report_worksheet, int startRow, int endRow, int startCol, int endCol)
         {
             Boolean b_ret = false;
             KEEP_ROW.Clear();
             KEEP_COL.Clear();
             KEEP_CELL.Clear();
-            for (int row_index = StartRow; row_index <= EndRow; row_index++)
+            for (int row_index = startRow; row_index <= endRow; row_index++)
             {
-                for (int col_index = StartCol; col_index <= EndCol; col_index++)
+                for (int col_index = startCol; col_index <= endCol; col_index++)
                 {
                     Object obj = ExcelAction.GetCellValue(template_worksheet, row_index, col_index);
                     if (obj != null)
@@ -166,12 +166,33 @@ namespace ExcelReportApplication
                         {
                             KEEP_ROW.Add(row_index);
                             KEEP_COL.Add(col_index);
-                            obj = ExcelAction.GetCellValue(report_workshee, row_index, col_index);
+                            obj = ExcelAction.GetCellValue(report_worksheet, row_index, col_index);
                             KEEP_CELL.Add(obj);
                         }
                     }
                 }
             }
+            b_ret = true;
+            return b_ret;
+        }
+
+        static public Boolean CopyKEEPCell(Worksheet template_worksheet, Worksheet report_worksheet)
+        {
+            return CopyKEEPCell(template_worksheet, report_worksheet, StartRow, EndRow, StartCol, EndCol);
+        }
+
+        static public Boolean PasteKEEPCell(Worksheet worksheet)
+        {
+            Boolean b_ret = false;
+            // PasteKEEPCell
+            int count = KEEP_ROW.Count();
+            while (count-- > 0)
+            {
+                int row = KEEP_ROW[count], col = KEEP_COL[count];
+                Object obj = KEEP_CELL[count];
+                ExcelAction.SetCellValue(worksheet, row, col, obj);
+            }
+            b_ret = true;
             return b_ret;
         }
 
@@ -206,37 +227,35 @@ namespace ExcelReportApplication
 
     public class ReportContentPair
     {
-        public String Data;
-        public int Row;
-        public int Col;
-        public String LabelData;
+        public String VariableName;
+        public String VariableContent;
+        public int VariableRow;
+        public int VariableCol;
+        public String LabelName;
         public int LabelRow;
         public int LabelCol;
-        public String VariableName;
         public Boolean On;
         public Boolean PreProcessing;
         public Boolean PostProcessing;
 
-        public ReportContentPair(String label, String variableName)
+        public ReportContentPair(String labelName, String variableName)
         {
-            InitialSetup(label, variableName);
+            InitialSetup(labelName, variableName);
         }
-        public Boolean InitialSetup(String label, String variableName)
+        public Boolean InitialSetup(String labelName, String variableName)
         {
-            LabelData = label;
+            LabelName = labelName;
             VariableName = variableName;
-            return !(String.IsNullOrWhiteSpace(LabelData) && String.IsNullOrWhiteSpace(VariableName));
+            return !(String.IsNullOrWhiteSpace(LabelName) && String.IsNullOrWhiteSpace(VariableName));
         }
-
         public Boolean ToLabel(String label)
         {
-            LabelData = label;
+            LabelName = label;
             return true;
         }
-
         public int Compare(String label)
         {
-            return String.Compare(LabelData, label);
+            return String.Compare(LabelName, label);
         }
     }
 
@@ -299,11 +318,13 @@ namespace ExcelReportApplication
         static private Worksheet ws_source_template;
         static private Worksheet ws_destination_template;
         static private String input_excel_filename;
+        static List<ReportContentPair> source_rcp = new List<ReportContentPair>();
+        static List<ReportContentPair> destination_rcp = new List<ReportContentPair>();
 
         static public List<ReportContentPair> SetupHeaderTemplateContentPair(Worksheet worksheet, List<String> labelList, List<String> variableList, Boolean AllowRepeatedVariable = false)
         {
             List<String> variable_to_search = new List<String>();
-            List<String> label_list_to_search = new List<String>(); 
+            List<String> label_list_to_search = new List<String>();
             List<ReportContentPair> contentPairList = new List<ReportContentPair>();
             variable_to_search.AddRange(variableList);
             label_list_to_search.AddRange(labelList);
@@ -324,14 +345,16 @@ namespace ExcelReportApplication
                     if (index < 0)
                         continue;
 
-                    String label = label_list_to_search[index];
+                    String labelName = label_list_to_search[index];
                     if (AllowRepeatedVariable == false)
                     {
                         variable_to_search.RemoveAt(index);
                         label_list_to_search.RemoveAt(index);
                     }
 
-                    ReportContentPair cp = new ReportContentPair(label, variableName);
+                    ReportContentPair cp = new ReportContentPair(labelName, variableName);
+                    cp.VariableRow = row;
+                    cp.VariableCol = col;
                     contentPairList.Add(cp);
                 }
             }
@@ -378,12 +401,102 @@ namespace ExcelReportApplication
 
             return true;
         }
-        static public Boolean ReadHeaderVariablesAccordingToTemplate()
+        static public Boolean CreateHeaderVariablesLocationInfo()
         {
-
-            List<ReportContentPair> source_rcp = SetupHeaderTemplateContentPair(ws_source_template, DefaultLabel.ToList(), DefaultVariable.ToList(), AllowRepeatedVariable: true);
-            List<ReportContentPair> destination_rcp = SetupHeaderTemplateContentPair(ws_destination_template, DefaultLabel.ToList(), DefaultVariable.ToList(), AllowRepeatedVariable: false);
+            source_rcp = SetupHeaderTemplateContentPair(ws_source_template, DefaultLabel.ToList(), DefaultVariable.ToList(), AllowRepeatedVariable: true);
+            destination_rcp = SetupHeaderTemplateContentPair(ws_destination_template, DefaultLabel.ToList(), DefaultVariable.ToList(), AllowRepeatedVariable: false);
             return true;
+        }
+        static public Boolean GetSourceAndDestinationVariableContent(Worksheet worksheet)
+        {
+            Boolean b_ret = false;
+
+            foreach (ReportContentPair rcp in source_rcp)
+            {
+                String str = ExcelAction.GetCellTrimmedString(worksheet, rcp.VariableRow, rcp.VariableCol);
+                rcp.VariableContent = str;
+                foreach (ReportContentPair dest_rcp in destination_rcp)
+                {
+                    if (dest_rcp.VariableName == rcp.VariableName)
+                    {
+                        dest_rcp.VariableContent = str;
+                        break;
+                    }
+                }
+            }
+            b_ret = true;
+            return b_ret;
+        }
+        static public Boolean OutputDestinationVariableContent(Worksheet worksheet)
+        {
+            Boolean b_ret = false;
+
+            foreach (ReportContentPair dest_rcp in destination_rcp)
+            {
+                ExcelAction.SetCellString(worksheet, dest_rcp.VariableRow, dest_rcp.VariableCol, dest_rcp.VariableContent);
+            }
+            b_ret = true;
+            return b_ret;
+        }
+        static public Boolean ReplaceHeader(CopyReport report_to_copy)
+        {
+            Boolean b_ret = false;
+            Workbook wb_source;
+            Worksheet ws_source;
+
+            String source_file = report_to_copy.Get_SRC_FullFilePath();
+            String destination_file = report_to_copy.Get_DEST_FullFilePath();
+            String assignee = report_to_copy.DestinationAssignee;
+            String today = DateTime.Now.ToString("yyyy/MM/dd");
+
+            if (Storage.IsReportFilename(destination_file) == false)
+            {
+                // Do nothing if new filename does not look like a report filename.
+                return false;
+            }
+
+            if (TestReport.OpenReportWorksheet(source_file, out wb_source, out ws_source) == false)
+            {
+                // Do nothing if opening excel & finding worksheet failed
+                return false;
+            }
+
+            if (HeaderTemplate.CopyKEEPCell(ws_source_template, ws_source, 1, 1, templateEndRow, templateEndCol) == false)
+            {
+                return false;
+            }
+
+            if (GetSourceAndDestinationVariableContent(ws_source) == false)
+            {
+                return false;
+            }
+
+            // paste new template
+            ExcelAction.CopyPasteRows(ws_destination_template, ws_source, 1, templateEndRow);
+
+            if (OutputDestinationVariableContent(ws_source) == false)
+            {
+                return false;
+            }
+
+            if (HeaderTemplate.PasteKEEPCell(ws_source) == false)
+            {
+                return false;
+            }
+
+            // Something has been updated or always save (ex: to copy file & update) ==> save to excel file
+            String destination_dir = Storage.GetDirectoryName(destination_file);
+            // if parent directory does not exist, create recursively all parents
+            if (Storage.DirectoryExists(destination_dir) == false)
+            {
+                Storage.CreateDirectory(destination_dir, auto_parent_dir: true);
+            }
+            ExcelAction.SaveExcelWorkbook(wb_source, filename: destination_file);
+
+            ExcelAction.CloseExcelWorkbook(wb_source);
+
+            b_ret = true;
+            return b_ret;
         }
         static public Boolean UpdateTestReportHeader(out List<String> output_report_list, out String return_destination_path)
         {
@@ -430,39 +543,28 @@ namespace ExcelReportApplication
             // if valid file-list, sort it (when required) before further processing
             if (report_list_to_be_processed.Count > 0)
             {
+                foreach (CopyReport cr in report_list_to_be_processed)
                 {
-                    foreach (CopyReport cr in report_list_to_be_processed)
-                    {
-                        String source_file = cr.Get_SRC_FullFilePath();
-                        String destination_file = cr.Get_DEST_FullFilePath();
-                        String assignee = cr.DestinationAssignee;
-                        Boolean success = false;
+                    Boolean success = false;
 
-                        // only process when destination filename pass report/filename condition
-                        if (Storage.IsReportFilename(destination_file))
+                    // only process when destination filename pass report/filename condition
+                    if (Storage.IsReportFilename(cr.Get_DEST_FullFilePath()))
+                    {
+                        // To Be update;
+                        success = ReplaceHeader(cr);
+
+                        if (success)
                         {
-                            String today = DateTime.Now.ToString("yyyy/MM/dd");
-                            // To Be update;
-                            /*
-                            HeaderTemplate.UpdateVariables_TodayAssigneeLinkedIssue(today: today, assignee: assignee, LinkedIssue: StyleString.WhiteSpaceList());
-                            // // if parent directory does not exist, FullyProcessReportSaveAsAnother() will create recursively all parents
-                            success = TestReport.FullyProcessReportSaveAsAnother(source_file: source_file, destination_file: destination_file,
-                                                                    wb_header_template: wb_input_excel, always_save: true);
-                            */
-                            // END to be updated
-                            if (success)
-                            {
-                                process_success_list.Add(cr);
-                            }
-                            else
-                            {
-                                process_fail_list.Add(cr);
-                            }
+                            process_success_list.Add(cr);
                         }
                         else
                         {
-                            destination_not_report_filename_list.Add(cr);
+                            process_fail_list.Add(cr);
                         }
+                    }
+                    else
+                    {
+                        destination_not_report_filename_list.Add(cr);
                     }
                 }
             }
@@ -491,7 +593,7 @@ namespace ExcelReportApplication
 
             if (ProcessInputExcelAndTemplate(input_excel_file) == false)
                 return false;
-            if (ReadHeaderVariablesAccordingToTemplate() == false)
+            if (CreateHeaderVariablesLocationInfo() == false)
                 return false;
             if (UpdateTestReportHeader(out output_report_list, out return_destination_path) == false)
                 return false;
