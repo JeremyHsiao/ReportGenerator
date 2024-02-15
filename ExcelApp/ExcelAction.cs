@@ -539,6 +539,12 @@ namespace ExcelReportApplication
             cell.Value2 = value;
         }
 
+        static public void SetCellString(Worksheet ws, int row, int col, String value)
+        {
+            Range cell = ws.Cells[row, col];
+            cell.Value2 = value;
+        }
+
         static public String GetCellTrimmedString(Worksheet ws, int row, int col)
         {
             Object cell_value2 = GetCellValue(ws, row, col);
