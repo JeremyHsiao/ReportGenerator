@@ -119,6 +119,10 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
+        static private List<String> VariableName = new List<String>();
+        static private List<int> VariableRow = new List<int>();
+        static private List<int> VariableCol = new List<int>();
+
         static public Boolean ReplaceHeaderVariableWithValue(Worksheet report_worksheet, int startRow, int startCol, int endRow, int endCol)
         {
             Boolean b_ret = false;
@@ -143,7 +147,95 @@ namespace ExcelReportApplication
         {
             return ReplaceHeaderVariableWithValue(report_worksheet, StartRow, StartCol, EndRow, EndCol);
         }
-/*
+
+        static public Boolean FindHeaderVariableLocation(Worksheet template_worksheet, int startRow, int startCol, int endRow, int endCol)
+        {
+            Boolean b_ret = false;
+            VariableName.Clear();
+            VariableRow.Clear();
+            VariableCol.Clear();
+            for (int row_index = startRow; row_index <= endRow; row_index++)
+            {
+                for (int col_index = startCol; col_index <= endCol; col_index++)
+                {
+                    Object obj = ExcelAction.GetCellValue(template_worksheet, row_index, col_index);
+                    if (obj != null)
+                    {
+                        String to_check = obj.ToString();
+                        if (to_check.Contains(Variable_ReportFileName))
+                        {
+                            VariableName.Add(Variable_ReportFileName);
+                            VariableRow.Add(row_index);
+                            VariableCol.Add(col_index);
+                        }
+                        if (to_check.Contains(Variable_ReportSheetName))
+                        {
+                            VariableName.Add(Variable_ReportSheetName);
+                            VariableRow.Add(row_index);
+                            VariableCol.Add(col_index);
+                        }
+                        if (to_check.Contains(Variable_Assignee))
+                        {
+                            VariableName.Add(Variable_Assignee);
+                            VariableRow.Add(row_index);
+                            VariableCol.Add(col_index);
+                        }
+                        if (to_check.Contains(Variable_Today))
+                        {
+                            VariableName.Add(Variable_Today);
+                            VariableRow.Add(row_index);
+                            VariableCol.Add(col_index);
+                        }
+                        if (to_check.Contains(Variable_TC_LinkedIssue))
+                        {
+                            VariableName.Add(Variable_TC_LinkedIssue);
+                            VariableRow.Add(row_index);
+                            VariableCol.Add(col_index);
+                        }
+                    }
+                }
+            }
+            b_ret = true;
+            return b_ret;
+        }
+
+        static public Boolean PasteHeaderVariableContent(Worksheet report_worksheet)
+        {
+            Boolean b_ret = false;
+            // PasteKEEPCell
+            int count = VariableName.Count();
+            while (count-- > 0)
+            {
+                int row_index = VariableRow[count], col_index = VariableCol[count];
+                String variableName = VariableName[count];
+                if (variableName == Variable_ReportFileName)
+                {
+                    CheckAndReplace(report_worksheet, row_index, col_index, Variable_ReportFileName, ReportFileName);
+                }
+                if (variableName == Variable_ReportSheetName)
+                {
+                    CheckAndReplace(report_worksheet, row_index, col_index, Variable_ReportSheetName, ReportSheetName);
+                }
+                if (variableName == Variable_Assignee)
+                {
+                    Assignee = Regex.Replace(Assignee, "[\u4E00-\u9FFF]", ""); // 移除中文
+                    CheckAndReplace(report_worksheet, row_index, col_index, Variable_Assignee, Assignee);
+                }
+                if (variableName == Variable_Today)
+                {
+                    CheckAndReplace(report_worksheet, row_index, col_index, Variable_Today, Today);
+                }
+                if (variableName == Variable_TC_LinkedIssue)
+                {
+                    CheckAndReplaceConclusion(report_worksheet, row_index, col_index, Variable_TC_LinkedIssue, TC_LinkedIssue);
+                }
+            }
+            b_ret = true;
+            return b_ret;
+        }
+
+        
+        /*
         static public Boolean CopyAndUpdateHeader(Worksheet template_worksheet, Worksheet report_worksheet)
         {
             Boolean b_ret = false;
@@ -536,7 +628,7 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            if (HeaderTemplate.ReplaceHeaderVariableWithValue(ws_source, templateStartRow, templateStartCol, templateEndRow, templateEndCol) == false)
+            if (HeaderTemplate.PasteHeaderVariableContent(ws_source) == false)
             {
                 return false;
             }
@@ -656,8 +748,11 @@ namespace ExcelReportApplication
             if (ProcessInputExcelAndTemplate(input_excel_file) == false)
                 return false;
             if (CreateHeaderVariablesLocationInfo(ws_source_template, ws_destination_template) == false)
-                
+                return false;
             if (HeaderTemplate.FindKEEPCellLocation(ws_source_template, templateStartRow, templateStartCol, templateEndRow, templateEndCol) == false)
+                return false;
+            // Previous Header Variable are specified in destination template (because they are directly applied to destination report and no need to get content from source report
+            if (HeaderTemplate.FindHeaderVariableLocation(ws_destination_template, templateStartRow, templateStartCol, templateEndRow, templateEndCol) == false)
                 return false;
             if (UpdateTestReportHeader(out output_report_list, out return_destination_path) == false)
                 return false;
