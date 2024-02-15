@@ -51,6 +51,12 @@ namespace ExcelReportApplication
             TC_LinkedIssue = LinkedIssue;
         }
 
+        static public void UpdateVariables_TodayAssignee(String today, String assignee)
+        {
+            Assignee = assignee;
+            Today = today;
+        }
+
         //static public void UpdateVariables(String filename = "", String sheetname = "", String assignee = "", String today = "", List<StyleString> LinkedIssue = null)
         //{
         //    if (String.IsNullOrWhiteSpace(filename) == false)
@@ -153,7 +159,7 @@ namespace ExcelReportApplication
         static private List<int> KEEP_ROW = new List<int>(), KEEP_COL = new List<int>();
         static private List<Object> KEEP_CELL = new List<Object>();
 
-        static public Boolean CopyKEEPCell(Worksheet template_worksheet, Worksheet report_worksheet, int startRow, int endRow, int startCol, int endCol)
+        static public Boolean CopyKEEPCell(Worksheet template_worksheet, Worksheet report_worksheet, int startRow, int startCol, int endRow, int endCol)
         {
             Boolean b_ret = false;
             KEEP_ROW.Clear();
@@ -183,7 +189,7 @@ namespace ExcelReportApplication
 
         static public Boolean CopyKEEPCell(Worksheet template_worksheet, Worksheet report_worksheet)
         {
-            return CopyKEEPCell(template_worksheet, report_worksheet, StartRow, EndRow, StartCol, EndCol);
+            return CopyKEEPCell(template_worksheet, report_worksheet, StartRow, StartCol, EndRow, EndCol);
         }
 
         static public Boolean PasteKEEPCell(Worksheet worksheet)
@@ -201,14 +207,14 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
-        static public Boolean CopyAndUpdateHeader_with_KEEP(Worksheet template_worksheet, Worksheet report_worksheet)
+        static public Boolean CopyAndUpdateHeader_with_KEEP(Worksheet template_worksheet, Worksheet report_worksheet, int startRow, int endRow)
         {
             Boolean b_ret = false;
 
             CopyKEEPCell(template_worksheet, report_worksheet);
             //ExcelAction.CopyRowHeight(template_worksheet, report_worksheet, StartRow, EndRow);
             //ExcelAction.CopyColumnWidth(template_worksheet, report_worksheet, StartCol, EndCol);
-            ExcelAction.CopyPasteRows(template_worksheet, report_worksheet, StartRow, EndRow);
+            ExcelAction.CopyPasteRows(template_worksheet, report_worksheet, startRow, endRow);
 
             b_ret = ReplaceHeaderVariableWithValue(report_worksheet);
 
@@ -217,6 +223,10 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
+        static public Boolean CopyAndUpdateHeader_with_KEEP(Worksheet template_worksheet, Worksheet report_worksheet)
+        {
+            return CopyAndUpdateHeader_with_KEEP(template_worksheet, report_worksheet, StartRow, EndRow);
+        }
     }
 
     class ReportTemplate
@@ -295,6 +305,8 @@ namespace ExcelReportApplication
 
     static public class ReportManagement
     {
+        static private int templateStartRow = 1;
+        static private int templateStartCol = ExcelAction.ColumnNameToNumber("A");
         static private int templateEndRow = 22;
         static private int templateEndCol = ExcelAction.ColumnNameToNumber("N");
         static private List<ReportContentPair> templateContentPair = new List<ReportContentPair>();
@@ -309,7 +321,7 @@ namespace ExcelReportApplication
 	        "PartNo", "TConBoard", "PowerBoard", "TouchSensor", "SW_PQVersion", "TestPeriod", "Approvedby", "TestPeriodStart", "TestPeriodEnd",
             "Purpose", "Condition", "Equipment", "Method", "Criteria", "Conclusion", "SampleSN",
             // Some variable are label-less
-            "Filename" };
+            "Title" };
 
         static private Workbook wb_input_excel;
         static private Worksheet ws_input_excel;
@@ -399,10 +411,10 @@ namespace ExcelReportApplication
 
             return true;
         }
-        static public Boolean CreateHeaderVariablesLocationInfo()
+        static public Boolean CreateHeaderVariablesLocationInfo(Worksheet sourceTemplateSheet, Worksheet destinationTemplateSheet)
         {
-            source_rcp = SetupHeaderTemplateContentPair(ws_source_template, DefaultLabel.ToList(), DefaultVariable.ToList(), AllowRepeatedVariable: true);
-            destination_rcp = SetupHeaderTemplateContentPair(ws_destination_template, DefaultLabel.ToList(), DefaultVariable.ToList(), AllowRepeatedVariable: false);
+            source_rcp = SetupHeaderTemplateContentPair(sourceTemplateSheet, DefaultLabel.ToList(), DefaultVariable.ToList(), AllowRepeatedVariable: true);
+            destination_rcp = SetupHeaderTemplateContentPair(destinationTemplateSheet, DefaultLabel.ToList(), DefaultVariable.ToList(), AllowRepeatedVariable: false);
             return true;
         }
         static public Boolean GetSourceAndDestinationVariableContent(Worksheet worksheet)
@@ -444,8 +456,6 @@ namespace ExcelReportApplication
 
             String source_file = report_to_copy.Get_SRC_FullFilePath();
             String destination_file = report_to_copy.Get_DEST_FullFilePath();
-            String assignee = report_to_copy.DestinationAssignee;
-            String today = DateTime.Now.ToString("yyyy/MM/dd");
 
             if (Storage.IsReportFilename(destination_file) == false)
             {
@@ -459,7 +469,15 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            if (HeaderTemplate.CopyKEEPCell(ws_source_template, ws_source, 1, 1, templateEndRow, templateEndCol) == false)
+            String destination_report_title = ReportGenerator.GetReportTitleAccordingToFilename(destination_file);
+            String destination_report_sheetname = ReportGenerator.GetSheetNameAccordingToFilename(destination_file);
+            String assignee = report_to_copy.DestinationAssignee;
+            String today = DateTime.Now.ToString("yyyy/MM/dd");
+            HeaderTemplate.ResetVariables();
+            HeaderTemplate.UpdateVariables_TodayAssignee(today, assignee);
+            HeaderTemplate.UpdateVariables_FilenameSheetname(filename: destination_report_title, sheetname: destination_report_sheetname);
+
+            if (HeaderTemplate.CopyKEEPCell(ws_source_template, ws_source, templateStartRow, templateStartCol, templateEndRow, templateEndCol) == false)
             {
                 return false;
             }
@@ -470,9 +488,14 @@ namespace ExcelReportApplication
             }
 
             // paste new template
-            ExcelAction.CopyPasteRows(ws_destination_template, ws_source, 1, templateEndRow);
+            ExcelAction.CopyPasteRows(ws_destination_template, ws_source, templateStartRow, templateEndRow);
 
             if (OutputDestinationVariableContent(ws_source) == false)
+            {
+                return false;
+            }
+
+            if (HeaderTemplate.ReplaceHeaderVariableWithValue(ws_source, templateStartRow, templateStartCol, templateEndRow, templateEndCol) == false)
             {
                 return false;
             }
@@ -591,7 +614,7 @@ namespace ExcelReportApplication
 
             if (ProcessInputExcelAndTemplate(input_excel_file) == false)
                 return false;
-            if (CreateHeaderVariablesLocationInfo() == false)
+            if (CreateHeaderVariablesLocationInfo(ws_source_template, ws_destination_template) == false)
                 return false;
             if (UpdateTestReportHeader(out output_report_list, out return_destination_path) == false)
                 return false;
