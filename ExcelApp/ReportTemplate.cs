@@ -430,7 +430,7 @@ namespace ExcelReportApplication
             TemplateEndRow = templateEndRow;
             TemplateEndCol = templateEndCol;
         }
-
+        /*
         public Boolean ContainVariable(String variable)
         {
             foreach (ReportContentPair pair in content)
@@ -442,6 +442,7 @@ namespace ExcelReportApplication
             }
             return false;
         }
+        */
     }
 
     static public class ReportManagement
@@ -508,13 +509,13 @@ namespace ExcelReportApplication
             // search through excel until end of header section
             return contentPairList;
         }
-        static public Boolean CreateHeaderVariablesLocationInfo(Worksheet sourceTemplateSheet, Worksheet destinationTemplateSheet)
+        static public Boolean CreateAllVariablesLocationInfo(Worksheet sourceTemplateSheet, Worksheet destinationTemplateSheet)
         {
-            source_rcp = SetupHeaderTemplateContentPair(sourceTemplateSheet, DefaultLabel.ToList(), DefaultVariable.ToList(), AllowRepeatedVariable: true);
-            destination_rcp = SetupHeaderTemplateContentPair(destinationTemplateSheet, DefaultLabel.ToList(), DefaultVariable.ToList(), AllowRepeatedVariable: false);
+            source_rcp = SetupHeaderTemplateContentPair(sourceTemplateSheet, DefaultLabel.ToList(), DefaultVariable.ToList(), AllowRepeatedVariable: false);
+            destination_rcp = SetupHeaderTemplateContentPair(destinationTemplateSheet, DefaultLabel.ToList(), DefaultVariable.ToList(), AllowRepeatedVariable: true);
             return true;
         }
-        static public Boolean GetSourceAndDestinationVariableContent(Worksheet worksheet)
+        static public Boolean CopySourceVariableContentToDestination(Worksheet worksheet)
         {
             Boolean b_ret = false;
 
@@ -527,7 +528,8 @@ namespace ExcelReportApplication
                     if (dest_rcp.VariableName == rcp.VariableName)
                     {
                         dest_rcp.VariableContent = str;
-                        break;
+                        // duplicated destination variables are possible so not to break here.
+                        //break;
                     }
                 }
             }
@@ -579,7 +581,7 @@ namespace ExcelReportApplication
                 return false;
             }
 
-            if (GetSourceAndDestinationVariableContent(ws_report) == false)
+            if (CopySourceVariableContentToDestination(ws_report) == false)
             {
                 return false;
             }
@@ -711,7 +713,7 @@ namespace ExcelReportApplication
 
             if (InputExcel.ProcessInputExcelHeaderTemplate(input_excel_file) == false)
                 return false;
-            if (CreateHeaderVariablesLocationInfo(InputExcel.sourceTemplateSheet, InputExcel.destinationTemplateSheet) == false)
+            if (CreateAllVariablesLocationInfo(InputExcel.sourceTemplateSheet, InputExcel.destinationTemplateSheet) == false)
                 return false;
             if (HeaderTemplate.FindKEEPCellLocation(InputExcel.sourceTemplateSheet, templateStartRow, templateStartCol, templateEndRow, templateEndCol) == false)
                 return false;
@@ -723,6 +725,24 @@ namespace ExcelReportApplication
 
             return true;
         }
+
+        static public Boolean CreateSourceVariablesLocationInfo(Worksheet sourceTemplateSheet)
+        {
+            source_rcp = SetupHeaderTemplateContentPair(sourceTemplateSheet, DefaultLabel.ToList(), DefaultVariable.ToList(), AllowRepeatedVariable: false);
+            return true;
+        }
+        static public Boolean ReadSourceVariableContent(Worksheet worksheet)
+        {
+            Boolean b_ret = false;
+            foreach (ReportContentPair rcp in source_rcp)
+            {
+                String str = ExcelAction.GetCellTrimmedString(worksheet, rcp.VariableRow, rcp.VariableCol);
+                rcp.VariableContent = str;
+            }
+            b_ret = true;
+            return b_ret;
+        }
+
     }
 
     /*
