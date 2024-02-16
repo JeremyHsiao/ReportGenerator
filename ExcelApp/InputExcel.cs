@@ -25,6 +25,7 @@ namespace ExcelReportApplication
         {
             SheetName_ReportList = XMLConfig.ReadAppSetting_String("Sheetname_ReportList");
             SheetName_HeaderTemplate_Source = XMLConfig.ReadAppSetting_String("Sheetname_HeaderTemplate_Source");
+            SheetName_HeaderTemplate_Source = XMLConfig.ReadAppSetting_String("Sheetname_HeaderTemplate_Source");
             SheetName_HeaderTemplate_Destination = XMLConfig.ReadAppSetting_String("Sheetname_HeaderTemplate_Destination");
             SheetName_BugList = XMLConfig.ReadAppSetting_String("Sheetname_BugList");
             SheetName_TestCaseList = XMLConfig.ReadAppSetting_String("Sheetname_TestCaseList");
@@ -45,19 +46,25 @@ namespace ExcelReportApplication
         public Worksheet tcTemplateSheet;
         public Worksheet importToJiraSheet;
 
-        public Boolean SetSourceTemplateSheet()
+        public Boolean CheckSourceTemplateSheet()
         {
             sourceTemplateSheet = ExcelAction.Find_Worksheet(workbook, SheetName_HeaderTemplate_Source);
             return (sourceTemplateSheet != null) ? true : false;
         }
 
-        public Boolean SetDestinationTemplateSheet()
+        public Boolean CheckDestinationTemplateSheet()
         {
             destinationTemplateSheet = ExcelAction.Find_Worksheet(workbook, SheetName_HeaderTemplate_Destination);
             return (destinationTemplateSheet != null) ? true : false;
         }
 
-        public Boolean SetActiveReportListSheet()
+        public Boolean CheckHeaderTemplateSheet()
+        {
+            destinationTemplateSheet = ExcelAction.Find_Worksheet(workbook, SheetName_HeaderTemplate_Destination);
+            return (destinationTemplateSheet != null) ? true : false;
+        }
+
+        public Boolean CheckReportListSheetActive()
         {
             if (ExcelAction.WorksheetExist(workbook, SheetName_ReportList))
             {
@@ -69,39 +76,63 @@ namespace ExcelReportApplication
 
         public Boolean ProcessInputExcelHeaderTemplate(String input_excel_file)
         {
+            inputExcelFilename = "";
+
             // Open Source Header Template Excel workbook
             workbook = ExcelAction.OpenExcelWorkbook(filename: input_excel_file, ReadOnly: true);
             if (workbook == null)
             {
-                LogMessage.WriteLine("ERR: Open workbook failed in ProcessInputExcelAndTemplate(): " + input_excel_file);
+                LogMessage.WriteLine("ERR: Open workbook failed in ProcessInputExcelHeaderTemplate(): " + input_excel_file);
                 return false;
             }
 
             // Find source template sheet
-            if (SetSourceTemplateSheet() == false)
+            if (CheckSourceTemplateSheet() == false)
             {
                 LogMessage.WriteLine("ERR: source template worksheet doesn't exist on excel: " + input_excel_file);
                 return false;
             }
 
             // Find destination template sheet
-            if (SetDestinationTemplateSheet() == false)
+            if (CheckDestinationTemplateSheet() == false)
             {
                 LogMessage.WriteLine("ERR: destination template worksheet doesn't exist on excel: " + input_excel_file);
                 return false;
             }
 
-            if (SetActiveReportListSheet() == false)
+            if (CheckReportListSheetActive() == false)
             {
                 LogMessage.WriteLine("ERR: report list worksheet doesn't exist on excel: " + input_excel_file);
                 return false;
             }
 
             inputExcelFilename = input_excel_file;
-
             return true;
         }
 
+        public Boolean ProcessInputExcelSelectReportList(String input_excel_file)
+        {
+            inputExcelFilename = "";
+
+            // Open Source Header Template Excel workbook
+            workbook = ExcelAction.OpenExcelWorkbook(filename: input_excel_file, ReadOnly: true);
+            if (workbook == null)
+            {
+                LogMessage.WriteLine("ERR: Open workbook failed in ProcessInputExcelSelectReportList(): " + input_excel_file);
+                return false;
+            }
+
+            if (CheckReportListSheetActive() == false)
+            {
+                LogMessage.WriteLine("ERR: report list worksheet doesn't exist on excel: " + input_excel_file);
+                // fall-back solution for backward compatibility of old version input excel where active sheet is always report list independent of sheetname
+                activeWorksheet = reportListSheet = workbook.ActiveSheet;
+                // return false;
+            }
+
+            inputExcelFilename = input_excel_file;
+            return true;
+        }
     }
 
     public class CopyReport
@@ -289,23 +320,12 @@ namespace ExcelReportApplication
             output_report_list = new List<String>();
             return_destination_path = "";
 
-            // open excel and read and close excel
-            // Open Excel workbook
-            Workbook wb_input_excel = ExcelAction.OpenExcelWorkbook(filename: input_excel_file, ReadOnly: true);
-            if (wb_input_excel == null)
-            {
-                LogMessage.WriteLine("ERR: Open workbook failed in UpdateTestReportByOptionAndSaveAsAnother(): " + input_excel_file);
-                return false;
-            }
+            InputExcel inputExcel = new InputExcel();
 
-            Worksheet ws_input_excel;
-            if (ExcelAction.WorksheetExist(wb_input_excel, InputExcel.SheetName_ReportList))
+            if (inputExcel.ProcessInputExcelSelectReportList(input_excel_file) == false)
             {
-                ws_input_excel = ExcelAction.Find_Worksheet(wb_input_excel, InputExcel.SheetName_ReportList);
-            }
-            else
-            {
-                ws_input_excel = wb_input_excel.ActiveSheet;
+                LogMessage.WriteLine("ERR: Failed in UpdateTestReportByOptionAndSaveAsAnother(): " + input_excel_file);
+                return false;
             }
 
             Boolean bStillReadingExcel = true;
@@ -321,7 +341,7 @@ namespace ExcelReportApplication
             {
                 CopyReport ctp = new CopyReport();
 
-                bStillReadingExcel = ctp.ReadFromExcelRow(ws_input_excel, row_index, col_index);
+                bStillReadingExcel = ctp.ReadFromExcelRow(inputExcel.reportListSheet, row_index, col_index);
                 if (bStillReadingExcel)
                 {
                     // Because copy-only doesn't need to check report filename condition, such check is done later not here
@@ -392,7 +412,7 @@ namespace ExcelReportApplication
                             HeaderTemplate.UpdateVariables_TodayAssigneeLinkedIssue(today: today, assignee: assignee, LinkedIssue: StyleString.WhiteSpaceList());
                             // // if parent directory does not exist, FullyProcessReportSaveAsAnother() will create recursively all parents
                             success = TestReport.FullyProcessReportSaveAsAnother(source_file: source_file, destination_file: destination_file,
-                                                                    wb_header_template: wb_input_excel, always_save: true);
+                                                        inputExcel: inputExcel, always_save: true);
                             if (success)
                             {
                                 process_success_list.Add(cr);
@@ -463,14 +483,14 @@ namespace ExcelReportApplication
             Boolean b_ret = true;
             if ((process_fail_list.Count > 0) || (destination_not_report_filename_list.Count > 0) || (source_inexist_list.Count > 0))
             {
-                WriteErrorLog(wb_input_excel, ws_input_excel, source_inexist_list, destination_not_report_filename_list, process_fail_list);
+                WriteErrorLog(inputExcel.workbook, inputExcel.reportListSheet, source_inexist_list, destination_not_report_filename_list, process_fail_list);
                 b_ret = false;
-                string new_filename = Storage.GenerateFilenameWithDateTime(input_excel_file);
-                ExcelAction.CloseExcelWorkbook(workbook: wb_input_excel, SaveChanges: true, AsFilename: new_filename);
+                string new_filename = Storage.GenerateFilenameWithDateTime(inputExcel.inputExcelFilename);
+                ExcelAction.CloseExcelWorkbook(workbook: inputExcel.workbook, SaveChanges: true, AsFilename: new_filename);
             }
             else
             {
-                ExcelAction.CloseExcelWorkbook(wb_input_excel);
+                ExcelAction.CloseExcelWorkbook(inputExcel.workbook);
                 b_ret = true;
             }
 
