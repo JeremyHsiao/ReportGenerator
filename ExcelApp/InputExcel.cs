@@ -395,6 +395,15 @@ namespace ExcelReportApplication
                 }
                 else // (TestReport.Option.FunctionC.CopyFileOnly == false)
                 {
+                    if (TestReport.Option.FunctionC.Update_Header_by_Template == true)
+                    {
+                        if (inputExcel.CheckSourceTemplateSheet())
+                        {
+                            HeaderTemplate.FindKEEPCellLocation(inputExcel.sourceTemplateSheet);
+                            HeaderTemplate.FindHeaderVariableLocation(inputExcel.sourceTemplateSheet);
+                        }
+                    }
+
                     // Sort in descending order of destination report sheetname (required for report processing with group summary report)
                     report_list_to_be_processed.Sort(CopyReport.Compare_by_Destination_Sheetname_Descending);
 

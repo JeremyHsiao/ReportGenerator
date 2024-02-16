@@ -198,7 +198,10 @@ namespace ExcelReportApplication
             b_ret = true;
             return b_ret;
         }
-
+        static public Boolean FindHeaderVariableLocation(Worksheet template_worksheet)
+        {
+            return FindHeaderVariableLocation(template_worksheet, StartRow, StartCol, EndRow, EndCol);
+        }
         static public Boolean PasteHeaderVariableContent(Worksheet report_worksheet)
         {
             Boolean b_ret = false;
@@ -233,7 +236,6 @@ namespace ExcelReportApplication
             b_ret = true;
             return b_ret;
         }
-
         
         /*
         static public Boolean CopyAndUpdateHeader(Worksheet template_worksheet, Worksheet report_worksheet)
@@ -338,6 +340,7 @@ namespace ExcelReportApplication
                         {
                             KEEP_ROW.Add(row_index);
                             KEEP_COL.Add(col_index);
+                            KEEP_CELL.Add(Variable_KEEP);
                         }
                     }
                 }
@@ -346,20 +349,25 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
-        static public Boolean ReadKEEPCellContent(Worksheet report_worksheet, int startRow, int startCol, int endRow, int endCol)
+        static public Boolean FindKEEPCellLocation(Worksheet template_worksheet)
+        {
+            return FindKEEPCellLocation(template_worksheet, StartRow, StartCol, EndRow, EndCol);
+        }
+
+        static public Boolean ReadKEEPCellContent(Worksheet report_worksheet)
         {
             Boolean b_ret = false;
-            KEEP_CELL.Clear();
             int count = KEEP_ROW.Count();
             while (count-- > 0)
             {
                 int row = KEEP_ROW[count], col = KEEP_COL[count];
                 Object obj = ExcelAction.GetCellValue(report_worksheet, row, col);
-                KEEP_CELL.Add(obj);
+                KEEP_CELL[count] = obj;
             }
             b_ret = true;
             return b_ret;
         }
+
     }
 
     class ReportTemplate
@@ -566,7 +574,7 @@ namespace ExcelReportApplication
             HeaderTemplate.UpdateVariables_TodayAssignee(today, assignee);
             HeaderTemplate.UpdateVariables_FilenameSheetname(filename: destination_report_title, sheetname: destination_report_sheetname);
 
-            if (HeaderTemplate.ReadKEEPCellContent(ws_report, templateStartRow, templateStartCol, templateEndRow, templateEndCol) == false)
+            if (HeaderTemplate.ReadKEEPCellContent(ws_report) == false)
             {
                 return false;
             }

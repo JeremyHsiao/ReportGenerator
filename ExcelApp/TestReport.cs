@@ -2509,8 +2509,8 @@ namespace ExcelReportApplication
         static public Boolean FullyProcessReportSaveAsAnother(String source_file, String destination_file, InputExcel inputExcel, Boolean always_save = false)
         {
             Boolean file_has_been_updated = false;
-            Workbook wb_source;
-            Worksheet ws_source;
+            Workbook wb_report;
+            Worksheet ws_report;
 
             destination_file = Storage.GetFullPath(destination_file);
             if (Storage.IsReportFilename(destination_file) == false)
@@ -2519,7 +2519,7 @@ namespace ExcelReportApplication
                 return file_has_been_updated;
             }
 
-            if (OpenReportWorksheet(source_file, out wb_source, out ws_source) == false)
+            if (OpenReportWorksheet(source_file, out wb_report, out ws_report) == false)
             {
                 // Do nothing if opening excel & finding worksheet failed
                 return file_has_been_updated;
@@ -2532,7 +2532,7 @@ namespace ExcelReportApplication
             // copy existing report before processing
             if (Option.FunctionC.Copy_Worksheet_AtTheBeginning)
             {
-                ExcelAction.CopyReportSheetAsHistory(wb_source, worksheet_append_string_pre);
+                ExcelAction.CopyReportSheetAsHistory(wb_report, worksheet_append_string_pre);
                 file_has_been_updated = true;
             }
 
@@ -2540,7 +2540,7 @@ namespace ExcelReportApplication
             if (Option.FunctionC.Update_Report_Sheetname)
             {
                 String new_sheet_name = ReportGenerator.GetSheetNameAccordingToFilename(destination_file);
-                ws_source.Name = new_sheet_name;
+                ws_report.Name = new_sheet_name;
                 file_has_been_updated = true;
             }
 
@@ -2550,11 +2550,30 @@ namespace ExcelReportApplication
             {
                 if (inputExcel.CheckSourceTemplateSheet())
                 {
-                    String filename = ReportGenerator.GetReportTitleAccordingToFilename(destination_file);
-                    String sheetname = ws_source.Name;
-                    HeaderTemplate.UpdateVariables_FilenameSheetname(filename: filename, sheetname: sheetname);
-                    //HeaderTemplate.CopyAndUpdateHeader(ws_template, ws);
-                    HeaderTemplate.CopyAndUpdateHeader_with_KEEP(inputExcel.sourceTemplateSheet, ws_source);
+                    {
+                        String destination_report_title = ReportGenerator.GetReportTitleAccordingToFilename(destination_file);
+                        String destination_report_sheetname = ReportGenerator.GetSheetNameAccordingToFilename(destination_file);
+                        HeaderTemplate.UpdateVariables_FilenameSheetname(filename: destination_report_title, sheetname: destination_report_sheetname);
+                        // The rest of variables are setup before entering this function
+                        if (HeaderTemplate.ReadKEEPCellContent(ws_report) == false)
+                        {
+                            return false;
+                        }
+
+                        // paste new template
+                        ExcelAction.CopyPasteRows(inputExcel.sourceTemplateSheet, ws_report, HeaderTemplate.StartRow, HeaderTemplate.EndRow);
+
+                        if (HeaderTemplate.PasteHeaderVariableContent(ws_report) == false)
+                        {
+                            return false;
+                        }
+
+                        if (HeaderTemplate.PasteKEEPCell(ws_report) == false)
+                        {
+                            return false;
+                        }
+
+                    }
                     file_has_been_updated = true;
                 }
 
@@ -2562,7 +2581,7 @@ namespace ExcelReportApplication
                 if (Option.FunctionC.Replace_Conclusion == true)
                 {
                     //StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
-                    ReplaceConclusionWithBugList(ws_source, blank_space_list);
+                    ReplaceConclusionWithBugList(ws_report, blank_space_list);
                     file_has_been_updated = true;
                 }
 
@@ -2576,7 +2595,7 @@ namespace ExcelReportApplication
                     LagacyOption.Report_Title = new_title;
                     // sheet-name is not defined as part of header --> it should be part of excel report (eg. filename, sheetname)
                     //KeywordReport.DefaultKeywordReportHeader.Report_SheetName = new_sheet_name;
-                    UpdateReportHeader_Lagacy(ws_source);
+                    UpdateReportHeader_Lagacy(ws_report);
                     file_has_been_updated = true;
                 }
 
@@ -2585,16 +2604,16 @@ namespace ExcelReportApplication
                 if (Option.FunctionC.Replace_Conclusion == true)
                 {
                     //StyleString blank_space = new StyleString(" ", StyleString.default_color, StyleString.default_font, StyleString.default_size);
-                    ReplaceConclusionWithBugList(ws_source, blank_space_list);
+                    ReplaceConclusionWithBugList(ws_report, blank_space_list);
                     file_has_been_updated = true;
                 }
 
                 // Clear bug-list, bug-count, Pass/Fail/Conditional_Pass count, judgement
                 if (Option.FunctionC.Clear_Keyword_Result)
                 {
-                    ReportKeyword.ClearKeywordBugResult(source_file, ws_source);
-                    ClearReportBugCount(ws_source);
-                    ClearJudgement(ws_source);
+                    ReportKeyword.ClearKeywordBugResult(source_file, ws_report);
+                    ClearReportBugCount(ws_report);
+                    ClearJudgement(ws_report);
                     file_has_been_updated = true;
                 }
             }
@@ -2602,38 +2621,38 @@ namespace ExcelReportApplication
             // Hide keyword result/bug-list row -- after clear because it is un-hide after clear
             if (Option.FunctionC.Hide_Keyword_Result_Bug_Row)
             {
-                ReportKeyword.HideKeywordResultBugRow(source_file, ws_source);
+                ReportKeyword.HideKeywordResultBugRow(source_file, ws_report);
                 file_has_been_updated = true;
             }
 
             if (Option.FunctionC.Update_Conclusion)
             {
-                Update_Conclusion_only_by_linked_issue(ws_source);
+                Update_Conclusion_only_by_linked_issue(ws_report);
                 file_has_been_updated = true;
             }
 
             if (Option.FunctionC.Update_Judgement)
             {
-                Update_Judgement_only_by_linked_issue(ws_source);
+                Update_Judgement_only_by_linked_issue(ws_report);
                 file_has_been_updated = true;
             }
 
             if (Option.FunctionC.Update_Sample_SN)
             {
-                UpdateSampleSN_to_common_string(ws_source);
+                UpdateSampleSN_to_common_string(ws_report);
                 file_has_been_updated = true;
             }
 
             if (Option.FunctionC.Remove_AUO_Internal)
             {
                 // step 1: remove sheets which are not to be released
-                String sheet_name_to_keep = ws_source.Name;
-                if (wb_source.Sheets.Count > 1)
+                String sheet_name_to_keep = ws_report.Name;
+                if (wb_report.Sheets.Count > 1)
                 {
                     // work-sheet can be deleted only when there are two or more sheets
-                    for (int sheet_index = wb_source.Sheets.Count; sheet_index > 0; sheet_index--)
+                    for (int sheet_index = wb_report.Sheets.Count; sheet_index > 0; sheet_index--)
                     {
-                        String temp_sheet_name = wb_source.Sheets[sheet_index].Name;
+                        String temp_sheet_name = wb_report.Sheets[sheet_index].Name;
                         if (temp_sheet_name.Length >= sheet_name_to_keep.Length)
                         {
                             if (temp_sheet_name.Substring(0, sheet_name_to_keep.Length) == sheet_name_to_keep)
@@ -2641,7 +2660,7 @@ namespace ExcelReportApplication
                                 continue;
                             }
                         }
-                        wb_source.Sheets[sheet_index].Delete();
+                        wb_report.Sheets[sheet_index].Delete();
                         file_has_been_updated = true;
                     }
                 }
@@ -2652,13 +2671,13 @@ namespace ExcelReportApplication
                     int search_start_row = row_test_brief_start, search_end_row = row_test_brief_end;
                     for (int row_index = search_start_row; row_index <= search_end_row; row_index++)
                     {
-                        String text = ExcelAction.GetCellTrimmedString(wb_source.Sheets[1], row_index, col_indentifier);
+                        String text = ExcelAction.GetCellTrimmedString(wb_report.Sheets[1], row_index, col_indentifier);
                         if (CheckIfStringMeetsMethod(text))
                         {
-                            ExcelAction.ClearContent(wb_source.Sheets[1], row_index, 1, row_index + 1, col_default_report_right_border);
+                            ExcelAction.ClearContent(wb_report.Sheets[1], row_index, 1, row_index + 1, col_default_report_right_border);
                             double new_row_height = 0.2;
-                            ExcelAction.Set_Row_Height(wb_source.Sheets[1], row_index, new_row_height);
-                            ExcelAction.Set_Row_Height(wb_source.Sheets[1], row_index + 1, new_row_height);
+                            ExcelAction.Set_Row_Height(wb_report.Sheets[1], row_index, new_row_height);
+                            ExcelAction.Set_Row_Height(wb_report.Sheets[1], row_index + 1, new_row_height);
                             file_has_been_updated = true;
                             break;
                         }
@@ -2669,7 +2688,7 @@ namespace ExcelReportApplication
             // copy existing report before processing
             if (Option.FunctionC.Copy_Worksheet_AtTheEnd)
             {
-                ExcelAction.CopyReportSheetAsHistory(wb_source, worksheet_append_string_post);
+                ExcelAction.CopyReportSheetAsHistory(wb_report, worksheet_append_string_post);
                 file_has_been_updated = true;
             }
 
@@ -2682,14 +2701,14 @@ namespace ExcelReportApplication
                 {
                     Storage.CreateDirectory(destination_dir, auto_parent_dir: true);
                 }
-                ExcelAction.SaveExcelWorkbook(wb_source, filename: destination_file);
+                ExcelAction.SaveExcelWorkbook(wb_report, filename: destination_file);
             }
             else
             {
                 // Doing nothing here.
             }
             // Close Excel workbook
-            ExcelAction.CloseExcelWorkbook(wb_source);
+            ExcelAction.CloseExcelWorkbook(wb_report);
 
             return file_has_been_updated;
         }
