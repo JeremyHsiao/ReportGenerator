@@ -34,6 +34,74 @@ namespace ExcelReportApplication
             SheetName_AssigneeList = XMLConfig.ReadAppSetting_String("Sheetname_AssigneeList");
             SheetName_TCTemplate = XMLConfig.ReadAppSetting_String("Sheetname_TCTemplate");
         }
+
+        public String inputExcelFilename;
+        public Workbook workbook;
+        public Worksheet activeWorksheet;
+        public Worksheet reportListSheet;
+        public Worksheet sourceTemplateSheet;
+        public Worksheet destinationTemplateSheet;
+        public Worksheet headerTemplateSheet;
+        public Worksheet tcTemplateSheet;
+        public Worksheet importToJiraSheet;
+
+        public Boolean SetSourceTemplateSheet()
+        {
+            sourceTemplateSheet = ExcelAction.Find_Worksheet(workbook, SheetName_HeaderTemplate_Source);
+            return (sourceTemplateSheet != null) ? true : false;
+        }
+
+        public Boolean SetDestinationTemplateSheet()
+        {
+            destinationTemplateSheet = ExcelAction.Find_Worksheet(workbook, SheetName_HeaderTemplate_Destination);
+            return (destinationTemplateSheet != null) ? true : false;
+        }
+
+        public Boolean SetActiveReportListSheet()
+        {
+            if (ExcelAction.WorksheetExist(workbook, SheetName_ReportList))
+            {
+                workbook.Worksheets[SheetName_ReportList].Activate();
+                activeWorksheet = reportListSheet = workbook.ActiveSheet;
+            }
+            return true;
+        }
+
+        public Boolean ProcessInputExcelHeaderTemplate(String input_excel_file)
+        {
+            // Open Source Header Template Excel workbook
+            workbook = ExcelAction.OpenExcelWorkbook(filename: input_excel_file, ReadOnly: true);
+            if (workbook == null)
+            {
+                LogMessage.WriteLine("ERR: Open workbook failed in ProcessInputExcelAndTemplate(): " + input_excel_file);
+                return false;
+            }
+
+            // Find source template sheet
+            if (SetSourceTemplateSheet() == false)
+            {
+                LogMessage.WriteLine("ERR: source template worksheet doesn't exist on excel: " + input_excel_file);
+                return false;
+            }
+
+            // Find destination template sheet
+            if (SetDestinationTemplateSheet() == false)
+            {
+                LogMessage.WriteLine("ERR: destination template worksheet doesn't exist on excel: " + input_excel_file);
+                return false;
+            }
+
+            if (SetActiveReportListSheet() == false)
+            {
+                LogMessage.WriteLine("ERR: report list worksheet doesn't exist on excel: " + input_excel_file);
+                return false;
+            }
+
+            inputExcelFilename = input_excel_file;
+
+            return true;
+        }
+
     }
 
     public class CopyReport
