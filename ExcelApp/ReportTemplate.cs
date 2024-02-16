@@ -122,7 +122,7 @@ namespace ExcelReportApplication
         static private List<String> VariableName = new List<String>();
         static private List<int> VariableRow = new List<int>();
         static private List<int> VariableCol = new List<int>();
-
+        /*
         static public Boolean ReplaceHeaderVariableWithValue(Worksheet report_worksheet, int startRow, int startCol, int endRow, int endCol)
         {
             Boolean b_ret = false;
@@ -147,7 +147,7 @@ namespace ExcelReportApplication
         {
             return ReplaceHeaderVariableWithValue(report_worksheet, StartRow, StartCol, EndRow, EndCol);
         }
-
+        */
         static public Boolean FindHeaderVariableLocation(Worksheet template_worksheet, int startRow, int startCol, int endRow, int endCol)
         {
             Boolean b_ret = false;
@@ -236,7 +236,7 @@ namespace ExcelReportApplication
             b_ret = true;
             return b_ret;
         }
-        
+
         /*
         static public Boolean CopyAndUpdateHeader(Worksheet template_worksheet, Worksheet report_worksheet)
         {
@@ -249,10 +249,11 @@ namespace ExcelReportApplication
             b_ret = ReplaceHeaderVariableWithValue(report_worksheet);
             return b_ret;
         }
-*/
+        */
+
         static private List<int> KEEP_ROW = new List<int>(), KEEP_COL = new List<int>();
         static private List<Object> KEEP_CELL = new List<Object>();
-
+        /*
         static public Boolean CopyKEEPCell(Worksheet template_worksheet, Worksheet report_worksheet, int startRow, int startCol, int endRow, int endCol)
         {
             Boolean b_ret = false;
@@ -280,12 +281,11 @@ namespace ExcelReportApplication
             b_ret = true;
             return b_ret;
         }
-
         static public Boolean CopyKEEPCell(Worksheet template_worksheet, Worksheet report_worksheet)
         {
             return CopyKEEPCell(template_worksheet, report_worksheet, StartRow, StartCol, EndRow, EndCol);
         }
-
+        */
         static public Boolean PasteKEEPCell(Worksheet worksheet)
         {
             Boolean b_ret = false;
@@ -301,6 +301,7 @@ namespace ExcelReportApplication
             return b_ret;
         }
 
+        /*
         static public Boolean CopyAndUpdateHeader_with_KEEP(Worksheet template_worksheet, Worksheet report_worksheet, int startRow, int endRow)
         {
             Boolean b_ret = false;
@@ -316,11 +317,11 @@ namespace ExcelReportApplication
 
             return b_ret;
         }
-
         static public Boolean CopyAndUpdateHeader_with_KEEP(Worksheet template_worksheet, Worksheet report_worksheet)
         {
             return CopyAndUpdateHeader_with_KEEP(template_worksheet, report_worksheet, StartRow, EndRow);
         }
+        */
 
         static public Boolean FindKEEPCellLocation(Worksheet template_worksheet, int startRow, int startCol, int endRow, int endCol)
         {
@@ -348,7 +349,6 @@ namespace ExcelReportApplication
             b_ret = true;
             return b_ret;
         }
-
         static public Boolean FindKEEPCellLocation(Worksheet template_worksheet)
         {
             return FindKEEPCellLocation(template_worksheet, StartRow, StartCol, EndRow, EndCol);
