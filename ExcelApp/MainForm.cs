@@ -52,8 +52,8 @@ namespace ExcelReportApplication
             //ReportType.FullIssueDescription_Summary,
             //ReportType.StandardTestReportCreation,
             //ReportType.KeywordIssue_Report_SingleFile,                            // Hide since v 1.3.21.0
-            ReportType.ReadReportContentVariable,                   // Report 5 -- read report variable and write to Excel
-            ReportType.WriteReportContentVariable,                  // Report 6 -- Read from Excel report variable and write to report
+            //ReportType.ReadReportContentVariable,                   // Report 5 -- read report variable and write to Excel
+            //ReportType.WriteReportContentVariable,                  // Report 6 -- Read from Excel report variable and write to report
             //ReportType.KeywordIssue_Report_Directory,               // report 7   // Hide since v 1.3.21.0
             //ReportType.Excel_Sheet_Name_Update_Tool,
             ReportType.FullIssueDescription_TC_report_judgement,    // report 9
