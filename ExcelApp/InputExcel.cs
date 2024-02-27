@@ -386,6 +386,7 @@ namespace ExcelReportApplication
                         if (success)
                         {
                             process_success_list.Add(cr);
+                            output_report_list.Add(destination_file);
                         }
                         else
                         {
@@ -425,6 +426,7 @@ namespace ExcelReportApplication
                             if (success)
                             {
                                 process_success_list.Add(cr);
+                                output_report_list.Add(destination_file);
                             }
                             else
                             {
@@ -437,6 +439,8 @@ namespace ExcelReportApplication
                         }
                     }
                 }
+
+                return_destination_path = process_success_list[0].Get_DEST_FullFilePath();
 
                 /*
                 // Sort in descending order of destination report sheetname (required for report processing with group summary report)
