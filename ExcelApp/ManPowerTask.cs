@@ -363,13 +363,13 @@ namespace ExcelReportApplication
             Daily_Average_Manhour_value = empty_average_manhour_value;
             ManHour = -1;
 
-            if (String.IsNullOrWhiteSpace(Target_start_date))
+            if (String.IsNullOrWhiteSpace(Target_start_date) == true)     // empty
                 return;
 
             Task_Start_Date = new ManPowerDate(Target_start_date);
             Task_Start_Week = Task_Start_Date.YearWeekNo();
 
-            if (String.IsNullOrWhiteSpace(Target_end_date))
+            if (String.IsNullOrWhiteSpace(Target_end_date) == true)     // empty
                 return;
 
             Task_End_Date = new ManPowerDate(Target_end_date);
@@ -651,7 +651,7 @@ namespace ExcelReportApplication
             }
 
             ManPower.ManPowerStartWeek = ManPower.ManPowerStartDate.YearWeekNo();
-            ManPower.ManPowerEndWeek = ManPower.ManPowerEndDate.YearWeekNo(); 
+            ManPower.ManPowerEndWeek = ManPower.ManPowerEndDate.YearWeekNo();
 
             return list_before_post_processing;
         }
@@ -1176,7 +1176,7 @@ namespace ExcelReportApplication
         public String Name   // property
         {
             get { return SiteIndexInRange(site) ? siteNameList[site] : UndefinedSite; }    // get method
-            set { site = ((String.IsNullOrWhiteSpace(value)) || (value.Length < 2)) ? UndefinedSiteIndex : SiteList.IndexOf(value.Substring(0, 2)); }   // set method
+            set { site = ((String.IsNullOrWhiteSpace(value) == true) || (value.Length < 2)) ? UndefinedSiteIndex : SiteList.IndexOf(value.Substring(0, 2)); }   // set method // check if empty or string too short
         }
         static public Site OfAssignee(String assignee)
         {
@@ -1294,7 +1294,7 @@ namespace ExcelReportApplication
         }
         private void FromString(String date_string)
         {
-            if (String.IsNullOrWhiteSpace(date_string))
+            if (String.IsNullOrWhiteSpace(date_string) == true)     // empty
                 date = InvalidDate.date;
 
             CultureInfo cultureInfo = new CultureInfo("en-GB");
@@ -1601,7 +1601,7 @@ namespace ExcelReportApplication
                     title.AddRange(csvParser.ReadFields());
                     foreach (String item in title)
                     {
-                        String site_string = (item.Length >= 2)? item.Substring(0, 2) : item;
+                        String site_string = (item.Length >= 2) ? item.Substring(0, 2) : item;
                         Site this_site = new Site(site_string);
                         title_site.Add(this_site);
                     }
@@ -1618,7 +1618,7 @@ namespace ExcelReportApplication
                     foreach (String item in elements)
                     {
                         col_index++;
-                        if (String.IsNullOrWhiteSpace(item))
+                        if (String.IsNullOrWhiteSpace(item) == true)     // empty
                             continue;
 
                         // item count more than title count

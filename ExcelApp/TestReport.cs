@@ -886,7 +886,7 @@ namespace ExcelReportApplication
             {
                 int row_position = GroupSummary_Title_Note_Row + row_found;
                 String no_str = ExcelAction.GetCellTrimmedString(ws_report, row_position, GroupSummary_Title_No_Col);
-                if (String.IsNullOrWhiteSpace(no_str))
+                if (String.IsNullOrWhiteSpace(no_str) == true)      // empty
                 {
                     break;
                 }

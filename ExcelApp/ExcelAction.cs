@@ -406,7 +406,7 @@ namespace ExcelReportApplication
             {
                 String cell_value2 = GetCellTrimmedString(ws, title_row, col_index);
                 //if (cell_value2 == "") { continue; }
-                if (String.IsNullOrWhiteSpace(cell_value2))
+                if (String.IsNullOrWhiteSpace(cell_value2) == true)     // empty
                 {
                     LogMessage.WriteLine("TC/Template title is empty at column: " + col_index);
                     continue;               // column header is empty. shouldn't be here
@@ -1127,8 +1127,8 @@ namespace ExcelReportApplication
             // use LUT of column index for mapping the same column_name of SRC/DST
             Dictionary<string, int> src_col_name_list = TestCase.TestCaseColumnIndexLUT();
             Dictionary<string, int> dst_col_name_list = TestCase.TCTemplateColumnIndexLUT();
-            int source_row_begin = TestCase.TC_DataBeginRow, 
-                destination_row_begin = TestCase.Template_DataBeginRow, 
+            int source_row_begin = TestCase.TC_DataBeginRow,
+                destination_row_begin = TestCase.Template_DataBeginRow,
                 source_row_end = Src_last_row;
 
             // reduce row_end by 1 when there isn't valid key value at last row.

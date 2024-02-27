@@ -474,7 +474,7 @@ Returns or sets the type of underline applied to the font.
                 Boolean is_waived = false;
 
                 processed_count++;
-                if (String.IsNullOrWhiteSpace(key) != true)
+                if (String.IsNullOrWhiteSpace(key) == false)
                 {
                     Color color_by_severity = Issue.KeywordIssue_report_FontColor;
                     if (issue.Status == Issue.STR_CLOSE)

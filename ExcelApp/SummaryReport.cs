@@ -63,7 +63,7 @@ namespace ExcelReportApplication
                             note = "";
                         }
 
-                        if (String.IsNullOrWhiteSpace(note)!=true)
+                        if (String.IsNullOrWhiteSpace(note) == false)
                         {
                             // issue --> Fail
                             ExcelAction.SetCellValue(result_worksheet, index, col_result, "Fail");

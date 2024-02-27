@@ -283,7 +283,7 @@ namespace ExcelReportApplication
             List<String> ret_list = new List<String>();
             // protection
             //if ((links == null) || (links == "")) return ret_list;   // return empty new object
-            if (String.IsNullOrWhiteSpace(links)) return ret_list;   // return empty new object
+            if (String.IsNullOrWhiteSpace(links) == true) return ret_list;   // return empty new object
             // Separate keys into string[]
             String[] issues = links.Split(separators, StringSplitOptions.RemoveEmptyEntries);
             if (issues == null) return ret_list;
