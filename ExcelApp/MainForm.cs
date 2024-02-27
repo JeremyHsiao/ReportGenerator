@@ -1376,10 +1376,10 @@ namespace ExcelReportApplication
                         else
                         {
                             String InputExcel = txtReportFile.Text;
-                            String ReturnDestinationPaht = "";
+                            String ReturnDestinationPath_Report_B = "";
                             List<String> DestinationReportList;
                             TestReport.Report_B_Push_Option();
-                            bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(InputExcel, out DestinationReportList, out ReturnDestinationPaht);
+                            bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(InputExcel, out DestinationReportList, out ReturnDestinationPath_Report_B);
                             TestReport.Report_B_Pop_Option();
                             bRet = ReportGenerator.Execute_UpdateLinkedIssueStatusOnTCTemplate(tc_file: txtTCFile.Text, report_list: DestinationReportList);
                         }
@@ -1552,12 +1552,12 @@ namespace ExcelReportApplication
                         else
                         {
                             String InputExcel = txtReportFile.Text;
-                            String ReturnDestinationPaht = "";
+                            String ReturnDestinationPath_report_L = "";
                             List<String> DestinationReportList;
                             TestReport.Report_B_Push_Option();
                             TestReport.Option.FunctionC.Copy_Worksheet_AtTheBeginning = false;          // Overridden 
                             TestReport.Option.FunctionC.Copy_Worksheet_AtTheEnd = false;                // Overridden
-                            bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(InputExcel, out DestinationReportList, out ReturnDestinationPaht);
+                            bRet = CopyReport.UpdateTestReportByOptionAndSaveAsAnother_output_ReportList(InputExcel, out DestinationReportList, out ReturnDestinationPath_report_L);
                             TestReport.Report_B_Pop_Option();
                             bRet = ReportGenerator.Execute_UpdateLinkedIssueStatusOnTCTemplate(tc_file: txtTCFile.Text, report_list: DestinationReportList);
                         }
