@@ -1425,7 +1425,7 @@ namespace ExcelReportApplication
             Boolean b_ret = false;
 
             List<String> all_file_list = new List<String>();
-            if (String.IsNullOrWhiteSpace(report_dir))
+            if (String.IsNullOrWhiteSpace(report_dir)==false)
             {
                 all_file_list = Storage.ListFilesUnderDirectory(report_dir);
             }
