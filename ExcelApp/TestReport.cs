@@ -1111,6 +1111,7 @@ namespace ExcelReportApplication
             if (true)    // always updating linked issue for non-keyword version of report 
             {
                 Update_Conclusion_Judgement_by_linked_issue(result_worksheet);
+                judgement_str = ExcelAction.GetCellTrimmedString(result_worksheet, TestReport.Judgement_at_row, TestReport.Judgement_at_col);
 
                 /*
                 // Add: replace conclusion with Bug-list
