@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
-using System.Drawing.Text; 
+using System.Drawing.Text;
 using System.Globalization;
 using Microsoft.Office.Interop.Excel;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -434,10 +434,14 @@ Returns or sets the type of underline applied to the font.
             }
         }
 
-/*
-        static private List<String> FontStyleNameList = Enum.GetNames(typeof(FontStyle)).ToList<String>();
+        static private List<String> FontStyleNameList = null;
         static public Boolean IsFontStyleAvailable(String fontStyleName)
         {
+            if (FontStyleNameList == null)
+            {
+                FontStyleNameList = new List<String>();
+                FontStyleNameList.AddRange(Enum.GetNames(typeof(FontStyle)));
+            }
             if (FontStyleNameList.IndexOf(fontStyleName) >= 0)
             {
                 return true;
@@ -448,9 +452,14 @@ Returns or sets the type of underline applied to the font.
             }
         }
 
-        static private List<String> ColorNameList = Enum.GetNames(typeof(Color)).ToList<String>();
+        static private List<String> ColorNameList = null;
         static public Boolean IsColorNameAvailable(String colorName)
         {
+            if (ColorNameList == null)
+            {
+                ColorNameList = new List<String>();
+                ColorNameList.AddRange(Enum.GetNames(typeof(Color)));
+            }
             if (ColorNameList.IndexOf(colorName) >= 0)
             {
                 return true;
@@ -460,7 +469,7 @@ Returns or sets the type of underline applied to the font.
                 return false;
             }
         }
-*/
+
         // create key/rich-text-issue-description pair.
         // 
         // Format: KEY+SUMMARY+(+SEVERITY+)
