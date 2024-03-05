@@ -814,6 +814,7 @@ namespace ExcelReportApplication
         }
         */
 
+        /*
         private bool Execute_WriteIssueDescriptionToSummary(String template_file)
         {
             if ((ReportGenerator.IsGlobalIssueListEmpty()) || (ReportGenerator.IsGlobalTestcaseListEmpty()) ||
@@ -827,6 +828,7 @@ namespace ExcelReportApplication
 
             return true;
         }
+        */
 
         //private bool Execute_CreateStandardTestReportTask(String main_file)
         //{

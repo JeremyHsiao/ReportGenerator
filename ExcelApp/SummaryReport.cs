@@ -12,6 +12,7 @@ namespace ExcelReportApplication
         // 
         // This demo open Summary Report Excel and write to Notes with all issues beloging to this test group (issue written in ID+Summary+Severity+RD_Comment)
         //
+        /*
         static public string sheet_Report_Result = "Result";
         static public void SaveIssueToSummaryReport(string report_filename)
         {
@@ -94,6 +95,6 @@ namespace ExcelReportApplication
                 }
             }
         }
-
+        */
     }
 }

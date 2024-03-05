@@ -360,6 +360,7 @@ Returns or sets the type of underline applied to the font.
             WriteStyleString(ref input_range, style_string_list);
         }
 
+        /*
         static public List<StyleString> BugList_To_SummaryPageFullIssueDescription(List<Issue> issuelist)
         {
             Color descrption_color_issue = Color.Red;
@@ -406,6 +407,7 @@ Returns or sets the type of underline applied to the font.
             }
             return ret_style_string;
         }
+        */
 
         static private List<String> FontNameList = null;
         static public Boolean IsFontAvailable(String fontName)
@@ -515,6 +517,7 @@ Returns or sets the type of underline applied to the font.
         //    return ret_list;
         //}
 
+        /*
         static public List<StyleString> BugList_To_KeywordIssueDescription(List<Issue> issuelist)
         {
             List<StyleString> ret_style_string = new List<StyleString>();
@@ -582,6 +585,7 @@ Returns or sets the type of underline applied to the font.
             }
             return ret_style_string;
         }
+        */
 
         //static public Dictionary<string, List<StyleString>> GenerateIssueDescription_Severity_by_Linked_Issue(List<Issue> issuelist)
         //{
