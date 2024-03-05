@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using System.Drawing.Text; 
 using System.Globalization;
 using Microsoft.Office.Interop.Excel;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -406,6 +407,58 @@ Returns or sets the type of underline applied to the font.
             return ret_style_string;
         }
 
+        static private List<String> FontNameList = null;
+        static public Boolean IsFontAvailable(String fontName)
+        {
+            // If null (not-yet created), create once
+            if (FontNameList == null)
+            {
+                FontNameList = new List<String>();
+                using (InstalledFontCollection col = new InstalledFontCollection())
+                {
+                    foreach (FontFamily fa in col.Families)
+                    {
+                        FontNameList.Add(fa.Name);
+                    }
+                }
+            }
+            if (FontNameList.IndexOf(fontName) >= 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+/*
+        static private List<String> FontStyleNameList = Enum.GetNames(typeof(FontStyle)).ToList<String>();
+        static public Boolean IsFontStyleAvailable(String fontStyleName)
+        {
+            if (FontStyleNameList.IndexOf(fontStyleName) >= 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static private List<String> ColorNameList = Enum.GetNames(typeof(Color)).ToList<String>();
+        static public Boolean IsColorNameAvailable(String colorName)
+        {
+            if (ColorNameList.IndexOf(colorName) >= 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+*/
         // create key/rich-text-issue-description pair.
         // 
         // Format: KEY+SUMMARY+(+SEVERITY+)
