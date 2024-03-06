@@ -69,7 +69,7 @@ namespace ExcelReportApplication
 
             PreFilterReportByTCSummaryStatus = XMLConfig.ReadAppSetting_String("Report_C_PreFilterReportByTCSummaryStatus");
             SampleSN_String = XMLConfig.ReadAppSetting_String("SampleSN_String");
-            SN_Font = XMLConfig.ReadAppSetting_String("SampleSN_String");
+            SN_Font = XMLConfig.ReadAppSetting_String("SampleSN_String_Font");
             SN_FontSize = XMLConfig.ReadAppSetting_int("SampleSN_String_FontSize");
             SN_FontColor = XMLConfig.ReadAppSetting_Color("SampleSN_String_FontColor");
             SN_FontStyle = XMLConfig.ReadAppSetting_FontStyle("SampleSN_String_FontStyle");
@@ -808,7 +808,7 @@ namespace ExcelReportApplication
 
         static public Boolean CheckIfStringMeetsSampleSN(String text_to_check)
         {
-            String regex = @"^(?i)\s*Sample S/N:\s*$";
+            String regex = @"^(?i)\s*Sample (S/N|SN)(:|：)\s*$";
             return CheckIfStringMeetsRegexString(text_to_check, regex);
         }
 
@@ -2064,6 +2064,7 @@ namespace ExcelReportApplication
         static public Boolean UpdateSampleSN(Worksheet ws, String new_sample_sn)
         {
             Boolean b_ret = false;
+            String SN_Title = "Sample S/N:";
             int SN_row = 0, SN_title_col = ExcelAction.ColumnNameToNumber("B"), SN_number_col = ExcelAction.ColumnNameToNumber("C");
 
             // Find SN title
@@ -2085,7 +2086,6 @@ namespace ExcelReportApplication
                 // insert a new one
                 ExcelAction.Insert_Row(ws, SN_row);
 
-                String SN_Title = "Sample S/N:";
                 StyleString StyleString_SN_Title = new StyleString(SN_Title);
                 StyleString_SN_Title.FontStyle = FontStyle.Bold;
                 //ExcelAction.SetCellValue(ws, SN_row, SN_title_col, SN_Title);
@@ -2098,6 +2098,7 @@ namespace ExcelReportApplication
                 int col_start = SN_number_col,
                     col_end = ExcelAction.ColumnNameToNumber("M");
 
+                ExcelAction.SetCellString(ws, SN_row, SN_title_col, SN_Title);
                 ExcelAction.ClearContent(ws, SN_row, SN_number_col + 1, SN_row, col_end);
                 ExcelAction.CellTextAlignLeft(ws, SN_row, SN_number_col);
 
