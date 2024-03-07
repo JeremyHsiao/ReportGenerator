@@ -55,6 +55,8 @@ namespace ExcelReportApplication
             @"SampleSN_String_FontColor",                       @"Black",
             @"SampleSN_String_FontStyle",                       @"Regular",
             @"SampleSN_String_Font",                            @"Gill Sans MT",
+            @"SampleSN_RegexString",                            @"^(?i)\s*Sample (S/N|SN)(:|：)\s*$",
+            @"SampleSN_TitleString",                            @"Sample S/N:",
 
             @"Copy_Report_DateTime_Format_AtTheBeginning",      @"_MMdd_pre",
             @"Copy_Report_DateTime_Format_AtTheEnd",            @"_MMdd_post",
