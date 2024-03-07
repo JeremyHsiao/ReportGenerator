@@ -303,6 +303,7 @@ Returns or sets the type of underline applied to the font.
             input_range.NumberFormat = "@";
             input_range.Value2 = txt_str;
 
+            Boolean isDefaultFontAvailable;
             using (System.Drawing.Font fontTester =
                         new System.Drawing.Font(StyleString.default_font,
                                                 StyleString.default_size,
@@ -312,19 +313,16 @@ Returns or sets the type of underline applied to the font.
                 if (fontTester.Name == StyleString.default_font)
                 {
                     // Font exists
+                    isDefaultFontAvailable = true;
                 }
                 else
                 {
+                    isDefaultFontAvailable = false;
                     // Default font doesn't exist ==> no need to change font (font as it is) at all
-                    return;
+                    //return;
                 }
             }
             //if (StyleString.default_font == "NoChange") return;
-
-            input_range.Characters.Font.Name = StyleString.default_font;
-            input_range.Characters.Font.Size = StyleString.default_size;
-            input_range.Characters.Font.Color = StyleString.default_color;
-            input_range.Characters.Font.FontStyle = SetupExcelFontStyle(input_range.Characters.Font, default_fontstyle);
 
             // Change font settings when required for the string portion
             int chr_index = 1;
@@ -356,7 +354,17 @@ Returns or sets the type of underline applied to the font.
                     input_range.get_Characters(chr_index, len).Font.Name = style_str.Font;
                     input_range.get_Characters(chr_index, len).Font.Color = style_str.Color;
                     input_range.get_Characters(chr_index, len).Font.Size = style_str.Size;
-                    input_range.get_Characters(chr_index, len).Font.FontStyle= SetupExcelFontStyle(input_range.get_Characters(chr_index, len).Font, style_str.FontStyle);
+                    input_range.get_Characters(chr_index, len).Font.FontStyle = SetupExcelFontStyle(input_range.get_Characters(chr_index, len).Font, style_str.FontStyle);
+                }
+                else
+                {
+                    if (isDefaultFontAvailable)
+                    {
+                        input_range.get_Characters(chr_index, len).Font.Name = StyleString.default_font;
+                        input_range.get_Characters(chr_index, len).Font.Size = StyleString.default_size;
+                        input_range.get_Characters(chr_index, len).Font.Color = StyleString.default_color;
+                        input_range.get_Characters(chr_index, len).Font.FontStyle = SetupExcelFontStyle(input_range.Characters.Font, StyleString.default_fontstyle);
+                    }
                 }
                 chr_index += len;
             }
