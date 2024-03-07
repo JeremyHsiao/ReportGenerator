@@ -59,6 +59,8 @@ namespace ExcelReportApplication
         public int SN_FontSize = 12;
         public Color SN_FontColor = Color.Black;
         public FontStyle SN_FontStyle = FontStyle.Regular;
+        public String SampleSN_RegexString = @"^(?i)\s*Sample (S/N|SN)(:|：)\s*$";
+        public String SampleSN_TitleString = @"Sample S/N:";
         public String Copy_Report_DateTime_Format_AtTheBeginning = "_MMddHHmm_01";
         public String Copy_Report_DateTime_Format_AtTheEnd = "_MMddHHmm_02";
 
@@ -73,6 +75,8 @@ namespace ExcelReportApplication
             SN_FontSize = XMLConfig.ReadAppSetting_int("SampleSN_String_FontSize");
             SN_FontColor = XMLConfig.ReadAppSetting_Color("SampleSN_String_FontColor");
             SN_FontStyle = XMLConfig.ReadAppSetting_FontStyle("SampleSN_String_FontStyle");
+            SampleSN_RegexString = XMLConfig.ReadAppSetting_String("SampleSN_RegexString");
+            SampleSN_TitleString = XMLConfig.ReadAppSetting_String("SampleSN_TitleString");
             Copy_Report_DateTime_Format_AtTheBeginning = XMLConfig.ReadAppSetting_String("Copy_Report_DateTime_Format_AtTheBeginning");
             Copy_Report_DateTime_Format_AtTheEnd = XMLConfig.ReadAppSetting_String("Copy_Report_DateTime_Format_AtTheEnd");
         }
@@ -804,12 +808,6 @@ namespace ExcelReportApplication
                 ret_bol = false;
             }
             return ret_bol;
-        }
-
-        static public Boolean CheckIfStringMeetsSampleSN(String text_to_check)
-        {
-            String regex = @"^(?i)\s*Sample (S/N|SN)(:|：)\s*$";
-            return CheckIfStringMeetsRegexString(text_to_check, regex);
         }
 
         // Code for Report *.0
@@ -2064,15 +2062,15 @@ namespace ExcelReportApplication
         static public Boolean UpdateSampleSN(Worksheet ws, String new_sample_sn)
         {
             Boolean b_ret = false;
-            String SN_Title = "Sample S/N:";
+            String SN_TitleString = Option.SampleSN_TitleString;
             int SN_row = 0, SN_title_col = ExcelAction.ColumnNameToNumber("B"), SN_number_col = ExcelAction.ColumnNameToNumber("C");
 
             // Find SN title
             int conclusion_start_row = row_test_brief_start, conclusion_end_row = row_test_brief_end;
             for (int row_index = (row_test_brief_end); row_index <= (row_test_brief_end + 3); row_index++)
             {
-                String text = ExcelAction.GetCellTrimmedString(ws, row_index, SN_title_col);
-                if (CheckIfStringMeetsSampleSN(text))
+                String text_to_check = ExcelAction.GetCellTrimmedString(ws, row_index, SN_title_col);
+                if (CheckIfStringMeetsRegexString(text_to_check, Option.SampleSN_RegexString) == true)
                 {
                     SN_row = row_index;
                     break;
@@ -2086,10 +2084,8 @@ namespace ExcelReportApplication
                 // insert a new one
                 ExcelAction.Insert_Row(ws, SN_row);
 
-                StyleString StyleString_SN_Title = new StyleString(SN_Title);
-                StyleString_SN_Title.FontStyle = FontStyle.Bold;
-                //ExcelAction.SetCellValue(ws, SN_row, SN_title_col, SN_Title);
-                StyleString.WriteStyleString(ws, SN_row, SN_title_col, StyleString_SN_Title.ConvertToList());
+//                StyleString StyleString_SN_Title = new StyleString(SN_Title, Color.Black, "Gill Sans MT", 12, FontStyle.Bold);
+//                StyleString.WriteStyleString(ws, SN_row, SN_title_col, StyleString_SN_Title.ConvertToList());
             }
 
             // Update SN string
@@ -2098,7 +2094,10 @@ namespace ExcelReportApplication
                 int col_start = SN_number_col,
                     col_end = ExcelAction.ColumnNameToNumber("M");
 
-                ExcelAction.SetCellString(ws, SN_row, SN_title_col, SN_Title);
+                // Always overwrite title to unify it across report
+                StyleString StyleString_SN_Title = new StyleString(SN_TitleString, Color.Black, "Gill Sans MT", 12, FontStyle.Bold);
+                StyleString.WriteStyleString(ws, SN_row, SN_title_col, StyleString_SN_Title.ConvertToList());
+
                 ExcelAction.ClearContent(ws, SN_row, SN_number_col + 1, SN_row, col_end);
                 ExcelAction.CellTextAlignLeft(ws, SN_row, SN_number_col);
 
