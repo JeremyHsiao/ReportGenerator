@@ -276,6 +276,18 @@ Returns or sets the type of underline applied to the font.
         //    return Link_Issue_Detail;
         //}
 
+        static public Object SetupExcelFontStyle(Excel.Font excelFont, FontStyle fontStyleToSet)
+        {
+            Excel.Font temp_font = excelFont;
+
+            temp_font.Bold = (fontStyleToSet.HasFlag(FontStyle.Bold)) ? true : false;
+            temp_font.Italic = (fontStyleToSet.HasFlag(FontStyle.Italic)) ? true : false;
+            temp_font.Strikethrough = (fontStyleToSet.HasFlag(FontStyle.Strikeout)) ? true : false;
+            temp_font.Underline = (fontStyleToSet.HasFlag(FontStyle.Underline))? true : false;
+
+            return temp_font.FontStyle;
+        }
+
         static public void WriteStyleString(ref Range input_range, List<StyleString> style_string_list, Boolean ClearContentFirst = false)
         {
             // Fill the text into excel cell with default font settings.
@@ -312,7 +324,7 @@ Returns or sets the type of underline applied to the font.
             input_range.Characters.Font.Name = StyleString.default_font;
             input_range.Characters.Font.Size = StyleString.default_size;
             input_range.Characters.Font.Color = StyleString.default_color;
-            input_range.Characters.Font.FontStyle = StyleString.default_fontstyle;
+            input_range.Characters.Font.FontStyle = SetupExcelFontStyle(input_range.Characters.Font, default_fontstyle);
 
             // Change font settings when required for the string portion
             int chr_index = 1;
@@ -344,7 +356,7 @@ Returns or sets the type of underline applied to the font.
                     input_range.get_Characters(chr_index, len).Font.Name = style_str.Font;
                     input_range.get_Characters(chr_index, len).Font.Color = style_str.Color;
                     input_range.get_Characters(chr_index, len).Font.Size = style_str.Size;
-                    input_range.get_Characters(chr_index, len).Font.FontStyle = style_str.FontStyle;
+                    input_range.get_Characters(chr_index, len).Font.FontStyle= SetupExcelFontStyle(input_range.get_Characters(chr_index, len).Font, style_str.FontStyle);
                 }
                 chr_index += len;
             }
