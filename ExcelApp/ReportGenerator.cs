@@ -47,6 +47,14 @@ namespace ExcelReportApplication
         static public Color LinkIssue_WAIVED_ISSUE_COLOR = Color.Black;
         static public Color LinkIssue_CLOSED_ISSUE_COLOR = Color.Black;
 
+        static public ExcelFontProperty LinkIssue_OPEN = new ExcelFontProperty();
+        static public ExcelFontProperty LinkIssue_A = new ExcelFontProperty();
+        static public ExcelFontProperty LinkIssue_B = new ExcelFontProperty();
+        static public ExcelFontProperty LinkIssue_C = new ExcelFontProperty();
+        static public ExcelFontProperty LinkIssue_D = new ExcelFontProperty();
+        static public ExcelFontProperty LinkIssue_WAIVED= new ExcelFontProperty();
+        static public ExcelFontProperty LinkIssue_CLOSED= new ExcelFontProperty();
+
         static public Boolean copy_bug_list = true;
         static public Boolean copy_and_extend_bug_list = false;
         static public Boolean Option_update_status_even_no_report = false;

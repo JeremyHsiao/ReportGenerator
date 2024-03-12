@@ -563,6 +563,25 @@ namespace ExcelReportApplication
             ReportGenerator.LinkIssue_WAIVED_ISSUE_COLOR = ReportGenerator.LinkIssue_report_FontColor;
             ReportGenerator.LinkIssue_CLOSED_ISSUE_COLOR = ReportGenerator.LinkIssue_report_FontColor;
 
+            // code during transition
+
+            ReportGenerator.LinkIssue_OPEN = new ExcelFontProperty(ReportGenerator.LinkIssue_report_Font, ReportGenerator.LinkIssue_report_FontColor,
+                                                                    ReportGenerator.LinkIssue_report_FontSize, ReportGenerator.LinkIssue_report_FontStyle);
+            ReportGenerator.LinkIssue_A = new ExcelFontProperty(ReportGenerator.LinkIssue_report_Font, ReportGenerator.LinkIssue_A_Issue_Color,
+                                                                    ReportGenerator.LinkIssue_report_FontSize, ReportGenerator.LinkIssue_report_FontStyle);
+            ReportGenerator.LinkIssue_B = new ExcelFontProperty(ReportGenerator.LinkIssue_report_Font, ReportGenerator.LinkIssue_B_Issue_Color,
+                                                                    ReportGenerator.LinkIssue_report_FontSize, ReportGenerator.LinkIssue_report_FontStyle);
+            ReportGenerator.LinkIssue_C = new ExcelFontProperty(ReportGenerator.LinkIssue_report_Font, ReportGenerator.LinkIssue_C_Issue_Color,
+                                                                    ReportGenerator.LinkIssue_report_FontSize, ReportGenerator.LinkIssue_report_FontStyle);
+            ReportGenerator.LinkIssue_D = new ExcelFontProperty(ReportGenerator.LinkIssue_report_Font, ReportGenerator.LinkIssue_D_Issue_Color,
+                                                                    ReportGenerator.LinkIssue_report_FontSize, ReportGenerator.LinkIssue_report_FontStyle);
+            ReportGenerator.LinkIssue_WAIVED = new ExcelFontProperty(ReportGenerator.LinkIssue_report_Font, ReportGenerator.LinkIssue_WAIVED_ISSUE_COLOR,
+                                                                    ReportGenerator.LinkIssue_report_FontSize, ReportGenerator.LinkIssue_report_FontStyle);
+            ReportGenerator.LinkIssue_CLOSED = new ExcelFontProperty(ReportGenerator.LinkIssue_report_Font, ReportGenerator.LinkIssue_CLOSED_ISSUE_COLOR,
+                                                                    ReportGenerator.LinkIssue_report_FontSize, ReportGenerator.LinkIssue_report_FontStyle);
+
+            //
+
             ReportGenerator.copy_bug_list = XMLConfig.ReadAppSetting_Boolean("TCSummary_copy_bug_list");
             ReportGenerator.copy_and_extend_bug_list = XMLConfig.ReadAppSetting_Boolean("TCSummary_copy_and_extend_bug_list");
             ReportGenerator.Option_update_status_even_no_report = XMLConfig.ReadAppSetting_Boolean("TCSummary_update_status_even_no_report");
