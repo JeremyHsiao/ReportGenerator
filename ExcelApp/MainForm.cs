@@ -544,7 +544,7 @@ namespace ExcelReportApplication
 
             // config for excel report output (also linked issue)
             String fontName_default = XMLConfig.ReadAppSetting_String("default_report_Font");
-            StyleString.default_font = (StyleString.IsFontAvailable(fontName_default)) ? fontName_default : @"Gill Sans MT";
+            StyleString.default_font = (ExcelFontProperty.IsFontAvailable(fontName_default)) ? fontName_default : @"Gill Sans MT";
             StyleString.default_size = XMLConfig.ReadAppSetting_int("default_report_FontSize");
             StyleString.default_color = XMLConfig.ReadAppSetting_Color("default_report_FontColor");
             StyleString.default_fontstyle = XMLConfig.ReadAppSetting_FontStyle("default_report_FontStyle");
@@ -552,7 +552,7 @@ namespace ExcelReportApplication
 
             // linked issue color
             String fontName_linkIssue = XMLConfig.ReadAppSetting_String("LinkIssue_report_Font");
-            ReportGenerator.LinkIssue_report_Font = (StyleString.IsFontAvailable(fontName_linkIssue)) ? fontName_linkIssue : StyleString.default_font;
+            ReportGenerator.LinkIssue_report_Font = (ExcelFontProperty.IsFontAvailable(fontName_linkIssue)) ? fontName_linkIssue : StyleString.default_font;
             ReportGenerator.LinkIssue_report_FontSize = XMLConfig.ReadAppSetting_int("LinkIssue_report_FontSize");
             ReportGenerator.LinkIssue_report_FontColor = XMLConfig.ReadAppSetting_Color("LinkIssue_report_FontColor");
             ReportGenerator.LinkIssue_report_FontStyle = XMLConfig.ReadAppSetting_FontStyle("LinkIssue_report_FontStyle");

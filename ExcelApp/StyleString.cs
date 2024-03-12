@@ -64,6 +64,228 @@ Underline
 Returns or sets the type of underline applied to the font.
 */
 
+    public class ExcelFontProperty
+    {
+        public Boolean Bold = false;
+        public Boolean Italic = false;
+        public Boolean OutlineFont = false;
+        public Boolean Shadow = false;
+        public Boolean Strikethrough = false;
+        public Boolean Subscript = false;
+        public Boolean Superscript = false;
+        public Boolean Underline = false;
+        private uint size = 12;
+        private Color Color = System.Drawing.Color.Black;
+        private String Name = @"Gill Sans MT";
+        public String FontName   // property
+        {
+            get { return Name; }   // get method
+            set
+            {
+                if (IsFontAvailable(value))
+                {
+                    Name = value;
+                }
+            }  // set method
+        }
+        public String ColorName   // property
+        {
+            get { return Color.Name; }   // get method
+            set
+            {
+                if (IsColorNameAvailable(value))
+                {
+                    Enum.TryParse<Color>(value, out Color);
+                }
+            }  // set method
+        }
+        public int Size   // property
+        {
+            get { return (int)size; }   // get method
+            set
+            {
+                if (value > 0)
+                {
+                    size = (uint)value;
+                }
+            }  // set method
+        }
+
+        ExcelFontProperty() { }
+        ExcelFontProperty(String fontName, String fontColorName, uint fontSize)
+        {
+            InitExcelFontSettings(fontName, fontColorName, fontSize);
+        }
+        ExcelFontProperty(String fontName, String fontColorName, uint fontSize, FontStyle fontStyle)
+        {
+            InitExcelFontSettings(fontName, fontColorName, fontSize);
+            SetExcelFontStyle(fontStyle);
+        }
+
+        // Error font/Color string checking is done during init
+        public void InitExcelFontSettings(String fontName, String fontColorName, uint fontSize)
+        {
+            Size = (int)fontSize;
+            FontName = fontName;
+            ColorName = fontColorName;
+        }
+        public void SetExcelFontStyle(FontStyle fontStyle)
+        {
+            Bold = fontStyle.HasFlag(FontStyle.Bold);
+            Italic = fontStyle.HasFlag(FontStyle.Italic);
+            Strikethrough = fontStyle.HasFlag(FontStyle.Strikeout);
+            Underline = fontStyle.HasFlag(FontStyle.Underline);
+        }
+
+        // Assumed that Name/Color error-checking has been done.
+        public Excel.Font SetExcelFontProperty(Excel.Font excelFont)
+        {
+            excelFont.Name = Name;
+            excelFont.Color = Color;
+            excelFont.Size = Size;
+            excelFont.Bold = Bold;
+            excelFont.Italic = Italic;
+            excelFont.Strikethrough = Strikethrough;
+            excelFont.Underline = Underline;
+            excelFont.OutlineFont = OutlineFont;
+            excelFont.Shadow = Shadow;
+            excelFont.Subscript = Subscript;
+            excelFont.Superscript = Superscript;
+
+            return excelFont;
+        }
+        public void GetExcelFontProperty(Excel.Font excelFont)
+        {
+            FontName = excelFont.Name;
+            Color = excelFont.Color;
+            Size = excelFont.Size = Size;
+            Bold = excelFont.Bold;
+            Italic = excelFont.Italic;
+            Strikethrough = excelFont.Strikethrough;
+            Underline = excelFont.Underline;
+            OutlineFont = excelFont.OutlineFont;
+            Shadow = excelFont.Shadow;
+            Subscript = excelFont.Subscript;
+            Superscript = excelFont.Superscript;
+        }
+
+        // Usage:
+        // (1) new an object
+        // (2) GetExcelFont() of an cell to the object
+        // (3) modify font setting by changing member settings.
+        // (4) apply the setting by SetExcelFont()
+
+        static private List<String> FontNameList = null;
+        static public Boolean IsFontAvailable(String fontName)
+        {
+            // If null (not-yet created), create once
+            if (FontNameList == null)
+            {
+                FontNameList = new List<String>();
+                using (InstalledFontCollection col = new InstalledFontCollection())
+                {
+                    foreach (FontFamily fa in col.Families)
+                    {
+                        FontNameList.Add(fa.Name);
+                    }
+                }
+            }
+            if (FontNameList.IndexOf(fontName) >= 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static private List<String> FontStyleNameList = null;
+        static public Boolean IsFontStyleAvailable(String fontStyleName)
+        {
+            if (FontStyleNameList == null)
+            {
+                FontStyleNameList = new List<String>();
+                FontStyleNameList.AddRange(Enum.GetNames(typeof(FontStyle)));
+            }
+            if (FontStyleNameList.IndexOf(fontStyleName) >= 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static private List<String> ColorNameList = null;
+        static public Boolean IsColorNameAvailable(String colorName)
+        {
+            if (ColorNameList == null)
+            {
+                ColorNameList = new List<String>();
+                ColorNameList.AddRange(Enum.GetNames(typeof(Color)));
+            }
+            if (ColorNameList.IndexOf(colorName) >= 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static public Boolean ParseFontSettingString(String settings, out String fontName, out int fontSize, out Color fontColor, out FontStyle fontStyle)
+        {
+            // default if not set
+            fontName = "";
+            fontSize = 0;
+            fontColor = new Color();
+            fontStyle = new FontStyle();
+
+            // Find out all TCs required by this summary report
+            String[] sp_str;
+            sp_str = settings.Split(new Char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (String str in sp_str)
+            {
+                String str_trim = str.Trim();
+                if (IsFontAvailable(str_trim))
+                {
+                    fontName = str_trim;
+                }
+                else if (Int32.TryParse(str_trim, out fontSize))
+                {
+
+                }
+                else if (Enum.TryParse<Color>(str_trim, out fontColor))
+                {
+
+                }
+                else
+                {
+                    String[] styles;
+                    styles = str_trim.Split(new Char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (String style in styles)
+                    {
+                        String style_trim = style.Trim();
+                        FontStyle temp_style;
+                        if (Enum.TryParse<FontStyle>(style_trim, out temp_style))
+                        {
+                            if (fontStyle.HasFlag(temp_style) == false)
+                            {
+                                fontStyle |= temp_style;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+    }
+
     public class StyleString
     {
         private String text;
@@ -428,67 +650,6 @@ Returns or sets the type of underline applied to the font.
             return ret_style_string;
         }
         */
-
-        static private List<String> FontNameList = null;
-        static public Boolean IsFontAvailable(String fontName)
-        {
-            // If null (not-yet created), create once
-            if (FontNameList == null)
-            {
-                FontNameList = new List<String>();
-                using (InstalledFontCollection col = new InstalledFontCollection())
-                {
-                    foreach (FontFamily fa in col.Families)
-                    {
-                        FontNameList.Add(fa.Name);
-                    }
-                }
-            }
-            if (FontNameList.IndexOf(fontName) >= 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        static private List<String> FontStyleNameList = null;
-        static public Boolean IsFontStyleAvailable(String fontStyleName)
-        {
-            if (FontStyleNameList == null)
-            {
-                FontStyleNameList = new List<String>();
-                FontStyleNameList.AddRange(Enum.GetNames(typeof(FontStyle)));
-            }
-            if (FontStyleNameList.IndexOf(fontStyleName) >= 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        static private List<String> ColorNameList = null;
-        static public Boolean IsColorNameAvailable(String colorName)
-        {
-            if (ColorNameList == null)
-            {
-                ColorNameList = new List<String>();
-                ColorNameList.AddRange(Enum.GetNames(typeof(Color)));
-            }
-            if (ColorNameList.IndexOf(colorName) >= 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
 
         // create key/rich-text-issue-description pair.
         // 
