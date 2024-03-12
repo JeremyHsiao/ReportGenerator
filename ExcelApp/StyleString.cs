@@ -95,7 +95,7 @@ Returns or sets the type of underline applied to the font.
             {
                 if (IsColorNameAvailable(value))
                 {
-                    Enum.TryParse<Color>(value, out Color);
+                    Color = System.Drawing.Color.FromName(value);
                 }
             }  // set method
         }
@@ -111,19 +111,24 @@ Returns or sets the type of underline applied to the font.
             }  // set method
         }
 
-        ExcelFontProperty() { }
-        ExcelFontProperty(String fontName, String fontColorName, uint fontSize)
+        public ExcelFontProperty() { }
+        public ExcelFontProperty(String fontName, String fontColorName, int fontSize)
         {
             InitExcelFontSettings(fontName, fontColorName, fontSize);
         }
-        ExcelFontProperty(String fontName, String fontColorName, uint fontSize, FontStyle fontStyle)
+        public ExcelFontProperty(String fontName, String fontColorName, int fontSize, FontStyle fontStyle)
         {
             InitExcelFontSettings(fontName, fontColorName, fontSize);
             SetExcelFontStyle(fontStyle);
         }
+        public ExcelFontProperty(String fontName, Color fontColor, int fontSize, FontStyle fontStyle)
+        {
+            InitExcelFontSettings(fontName, fontColor.Name, fontSize);
+            SetExcelFontStyle(fontStyle);
+        }
 
         // Error font/Color string checking is done during init
-        public void InitExcelFontSettings(String fontName, String fontColorName, uint fontSize)
+        public void InitExcelFontSettings(String fontName, String fontColorName, int fontSize)
         {
             Size = (int)fontSize;
             FontName = fontName;
@@ -224,7 +229,7 @@ Returns or sets the type of underline applied to the font.
             if (ColorNameList == null)
             {
                 ColorNameList = new List<String>();
-                ColorNameList.AddRange(Enum.GetNames(typeof(Color)));
+                ColorNameList.AddRange(Enum.GetNames(typeof(System.Drawing.KnownColor)));
             }
             if (ColorNameList.IndexOf(colorName) >= 0)
             {
