@@ -202,7 +202,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="report.ico" />
     <Content Include="Resources\report.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
